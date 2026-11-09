@@ -1,0 +1,210 @@
+{
+  "about": "全局装的包：Homebrew 和 /usr/local 的 npm（照 npm i -g 的样子：包自己的 node_modules 一层层往下，带 scope 的写全名）、nvm、pipx、uv tool、cargo install、bun 的全局锁文件；npm link 和 node_modules 里的链接不跟",
+  "case": "rules/supplychain.malicious/global",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "malicious-import",
+        "--data",
+        "$FIXTURE/data",
+        "$FIXTURE/osv"
+      ],
+      "stdout": [
+        "恶意包名单导入好了：这次 6 条（换掉原有的 0 条），名单里现在共 6 条，日期 2026-10-15（读了 7 份 OSV 记录）",
+        "没留：不是 MAL- 的 1 条、撤回的 0 条、别的生态的 0 个包、没法比对版本的 0 个包、读不了的 0 份"
+      ]
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "count": "2",
+              "ecosystem": "npm",
+              "how": "用 npm uninstall -g @fixture-org/agent-cli 卸掉它，等它换掉这个依赖再装；把用到它的全局包卸掉（bun remove -g、pnpm remove -g、yarn global remove）；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换",
+              "ids": "MAL-2026-9002",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "package": "@fixture/evil-utils@1.0.2",
+              "places": "全局装的 @fixture-org/agent-cli（$FIXTURE/opt-homebrew/lib/node_modules/@fixture-org/agent-cli/node_modules/@fixture/evil-utils）；全局装的 npm 包（~/.bun/install/global/bun.lock）",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "npm\u0000@fixture/evil-utils@1.0.2\u0000\u0000~/.bun/install/global/bun.lock\u0000$FIXTURE/opt-homebrew/lib/node_modules/@fixture-org/agent-cli/node_modules/@fixture/evil-utils",
+            "path": "$FIXTURE/opt-homebrew/lib/node_modules/@fixture-org/agent-cli/node_modules/@fixture/evil-utils",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "2 处用了已知恶意的 @fixture/evil-utils@1.0.2",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "count": "2",
+              "ecosystem": "npm",
+              "how": "用 npm uninstall -g good-cli 卸掉它，等它换掉这个依赖再装；用 npm uninstall -g fixture-colors 卸掉；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换",
+              "ids": "MAL-2026-9003",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "package": "fixture-colors@1.4.1",
+              "places": "全局装的 good-cli（$FIXTURE/opt-homebrew/lib/node_modules/good-cli/node_modules/fixture-colors）；全局装的 fixture-colors（~/.nvm/versions/node/v22.0.0/lib/node_modules/fixture-colors）",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "npm\u0000fixture-colors@1.4.1\u0000\u0000~/.nvm/versions/node/v22.0.0/lib/node_modules/fixture-colors\u0000$FIXTURE/opt-homebrew/lib/node_modules/good-cli/node_modules/fixture-colors",
+            "path": "$FIXTURE/opt-homebrew/lib/node_modules/good-cli/node_modules/fixture-colors",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "2 处用了已知恶意的 fixture-colors@1.4.1",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "PyPI",
+              "how": "用 pipx uninstall fixture-cli 卸掉；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换",
+              "ids": "MAL-2026-9004",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "package": "evil_requests@2.31.1",
+              "where": "~/.local/pipx/venvs/fixture-cli",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/.local/pipx/venvs/fixture-cli\u0000PyPI\u0000evil_requests@2.31.1",
+            "path": "~/.local/pipx/venvs/fixture-cli",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "pipx 装的 fixture-cli 里有已知恶意的 evil_requests@2.31.1",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "PyPI",
+              "how": "用 uv tool uninstall other-cli 卸掉；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换",
+              "ids": "MAL-2026-9005",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "package": "fixture_setup_tools@3.0.0",
+              "where": "~/.local/share/uv/tools/other-cli",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/.local/share/uv/tools/other-cli\u0000PyPI\u0000fixture_setup_tools@3.0.0",
+            "path": "~/.local/share/uv/tools/other-cli",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "uv tool 装的 other-cli 里有已知恶意的 fixture_setup_tools@3.0.0",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "crates.io",
+              "how": "用 cargo uninstall evil_crate 卸掉；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换",
+              "ids": "MAL-2026-9006",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "package": "evil_crate@0.3.4",
+              "where": "~/.cargo/.crates2.json",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/.cargo/.crates2.json\u0000crates.io\u0000evil_crate@0.3.4",
+            "path": "~/.cargo/.crates2.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "cargo install 装的 evil_crate@0.3.4 是已知恶意的",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "用 npm uninstall -g @fixture/evil-utils 卸掉；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换",
+              "ids": "MAL-2026-9002",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "package": "@fixture/evil-utils@1.0.1",
+              "where": "$FIXTURE/usr-local/lib/node_modules/@fixture/evil-utils",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "$FIXTURE/usr-local/lib/node_modules/@fixture/evil-utils\u0000npm\u0000@fixture/evil-utils@1.0.1",
+            "path": "$FIXTURE/usr-local/lib/node_modules/@fixture/evil-utils",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "全局装的 npm 包 @fixture/evil-utils@1.0.1 是已知恶意的",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "用 npm uninstall -g evil-stealer 卸掉；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换",
+              "ids": "MAL-2026-9001",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "package": "evil-stealer@0.0.1",
+              "where": "$FIXTURE/opt-homebrew/lib/node_modules/evil-stealer",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "$FIXTURE/opt-homebrew/lib/node_modules/evil-stealer\u0000npm\u0000evil-stealer@0.0.1",
+            "path": "$FIXTURE/opt-homebrew/lib/node_modules/evil-stealer",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "全局装的 npm 包 evil-stealer@0.0.1 是已知恶意的",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "用 npm uninstall -g good-cli 卸掉它，等它换掉这个依赖再装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换",
+              "ids": "MAL-2026-9001",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "package": "evil-stealer@2.0.0",
+              "where": "$FIXTURE/opt-homebrew/lib/node_modules/good-cli/node_modules/chalk/node_modules/evil-stealer",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "$FIXTURE/opt-homebrew/lib/node_modules/good-cli/node_modules/chalk/node_modules/evil-stealer\u0000npm\u0000evil-stealer@2.0.0",
+            "path": "$FIXTURE/opt-homebrew/lib/node_modules/good-cli/node_modules/chalk/node_modules/evil-stealer",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "全局装的 good-cli 用了已知恶意的 evil-stealer@2.0.0",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "malicious_list_date": "2026-10-15",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

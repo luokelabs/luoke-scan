@@ -1,0 +1,78 @@
+{
+  "about": "被忽略的里头：依赖和日志不算，.env、数据之类只在这里，列前 5 个和一共几项",
+  "case": "rules/stale.project/ignored-kept",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 147456,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:web": "2025-09-15",
+              "repos": "1",
+              "size": "147 KB"
+            },
+            "path": "~/Projects/web",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "web 半年多没动过，都已推送，删了能从远程找回",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 176128,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:app": "2025-09-15",
+              "repos": "1",
+              "size": "176 KB",
+              "would_lose": "app 有被 git 忽略、只在这台 Mac 上的：.env、data、export.csv、local.db、scratch.txt 等 7 项"
+            },
+            "path": "~/Projects/app",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "app 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

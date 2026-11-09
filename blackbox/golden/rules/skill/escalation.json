@@ -1,0 +1,270 @@
+{
+  "about": "要管理员权限、关掉保护（高）：去隔离标记、关 Gatekeeper、关 SIP、LSQuarantine、把密码交给 sudo、AppleScript 管理员、写 TCC 数据库、关防火墙、改 sudoers、加管理员组、改启动参数；只读 TCC 是中，单独的 sudo 是低；Linux 的包管理器、讲 sudo 的话、sudo -k/-v、只看不改的不报",
+  "case": "rules/skill/escalation",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-admin-group",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把账户加进管理员组（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-admin-group|eaf7def1e2b8bb7f",
+            "path": "~/.claude/skills/esc-admin-group",
+            "rule": "skill.escalation",
+            "severity": "high",
+            "title": "Claude Code 的 skill「esc-admin-group」：把账户加进管理员组",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-csrutil",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：关掉系统完整性保护（SIP）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-csrutil|d5b49925c5a5a9c5",
+            "path": "~/.claude/skills/esc-csrutil",
+            "rule": "skill.escalation",
+            "severity": "high",
+            "title": "Claude Code 的 skill「esc-csrutil」：关掉系统完整性保护（SIP）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-firewall",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：关掉防火墙（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-firewall|478d1908aa1e36ba",
+            "path": "~/.claude/skills/esc-firewall",
+            "rule": "skill.escalation",
+            "severity": "high",
+            "title": "Claude Code 的 skill「esc-firewall」：关掉防火墙",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-nvram",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改启动参数或允许未签名的系统扩展（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-nvram|cf62d719820628ac",
+            "path": "~/.claude/skills/esc-nvram",
+            "rule": "skill.escalation",
+            "severity": "high",
+            "title": "Claude Code 的 skill「esc-nvram」：改启动参数或允许未签名的系统扩展",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-osascript",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：以管理员身份运行 AppleScript（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-osascript|61ad476cc915023a",
+            "path": "~/.claude/skills/esc-osascript",
+            "rule": "skill.escalation",
+            "severity": "high",
+            "title": "Claude Code 的 skill「esc-osascript」：以管理员身份运行 AppleScript",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-quarantine-pref",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：关掉下载文件的隔离（LSQuarantine）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-quarantine-pref|6ee8afbe1695d983",
+            "path": "~/.claude/skills/esc-quarantine-pref",
+            "rule": "skill.escalation",
+            "severity": "high",
+            "title": "Claude Code 的 skill「esc-quarantine-pref」：关掉下载文件的隔离（LSQuarantine）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-spctl",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：关掉 Gatekeeper（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-spctl|e905f6b6dcf9e113",
+            "path": "~/.claude/skills/esc-spctl",
+            "rule": "skill.escalation",
+            "severity": "high",
+            "title": "Claude Code 的 skill「esc-spctl」：关掉 Gatekeeper",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-sudo-low",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：要管理员权限（sudo）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-sudo-low|a1bd6734c9b1bf4d",
+            "path": "~/.claude/skills/esc-sudo-low",
+            "rule": "skill.escalation",
+            "severity": "low",
+            "title": "Claude Code 的 skill「esc-sudo-low」：要管理员权限（sudo）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-sudo-stdin",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把密码直接交给 sudo（a.sh 第 2 行）；要管理员权限（sudo）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-sudo-stdin|32164d8417249cb0",
+            "path": "~/.claude/skills/esc-sudo-stdin",
+            "rule": "skill.escalation",
+            "severity": "high",
+            "title": "Claude Code 的 skill「esc-sudo-stdin」：把密码直接交给 sudo，另有 1 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-sudoers",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 sudo 的设置（不用密码就能当管理员）（a.sh 第 2 行）；要管理员权限（sudo）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-sudoers|70f70b1ce89297d3",
+            "path": "~/.claude/skills/esc-sudoers",
+            "rule": "skill.escalation",
+            "severity": "high",
+            "title": "Claude Code 的 skill「esc-sudoers」：改 sudo 的设置（不用密码就能当管理员），另有 1 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-tcc-read",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：碰 macOS 的隐私权限（TCC）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-tcc-read|0f1abc3c1d20b72a",
+            "path": "~/.claude/skills/esc-tcc-read",
+            "rule": "skill.escalation",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「esc-tcc-read」：碰 macOS 的隐私权限（TCC）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-tcc-write",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 macOS 的隐私权限数据库（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-tcc-write|ca752dc9c44c1556",
+            "path": "~/.claude/skills/esc-tcc-write",
+            "rule": "skill.escalation",
+            "severity": "high",
+            "title": "Claude Code 的 skill「esc-tcc-write」：改 macOS 的隐私权限数据库",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改",
+              "kinds": "escalation",
+              "scope": "personal",
+              "skill": "esc-xattr",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：去掉下载来的文件的隔离标记（绕过 Gatekeeper 的检查）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/esc-xattr|ff8c81f467fc64c9",
+            "path": "~/.claude/skills/esc-xattr",
+            "rule": "skill.escalation",
+            "severity": "high",
+            "title": "Claude Code 的 skill「esc-xattr」：去掉下载来的文件的隔离标记（绕过 Gatekeeper 的检查）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "about": "大面积删除（高）：rm 带递归和强制删家目录、根、系统文件夹（各种写法）、--no-preserve-root、Python/Node 删家目录、find 整个家目录删、抹盘；项目里清构建产物、只递归不强制、只删 .DS_Store、说别这样做的不报",
+  "case": "rules/skill/destructive",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "destructive",
+              "scope": "personal",
+              "skill": "de-code",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：删掉整个家目录、整个磁盘或系统文件夹（a.py 第 3 行）；删掉整个家目录、整个磁盘或系统文件夹（b.js 第 2 行）；删掉整个家目录、整个磁盘或系统文件夹（c.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/de-code|8bbffaeaa1cb1921",
+            "path": "~/.claude/skills/de-code",
+            "rule": "skill.destructive",
+            "severity": "high",
+            "title": "Claude Code 的 skill「de-code」：删掉整个家目录、整个磁盘或系统文件夹",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "destructive",
+              "scope": "personal",
+              "skill": "de-disk",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：在整个家目录或整个磁盘上批量删文件（a.sh 第 2 行）；抹掉磁盘（a.sh 第 3、4 行）"
+            },
+            "key": "~/.claude/skills/de-disk|e1d8a54a607d9827",
+            "path": "~/.claude/skills/de-disk",
+            "rule": "skill.destructive",
+            "severity": "high",
+            "title": "Claude Code 的 skill「de-disk」：在整个家目录或整个磁盘上批量删文件，另有 1 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "destructive",
+              "scope": "personal",
+              "skill": "de-rm",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：删掉整个家目录、整个磁盘或系统文件夹（a.sh 第 2、3、4、5 行）"
+            },
+            "key": "~/.claude/skills/de-rm|9b1e7d9fcbd847b6",
+            "path": "~/.claude/skills/de-rm",
+            "rule": "skill.destructive",
+            "severity": "high",
+            "title": "Claude Code 的 skill「de-rm」：删掉整个家目录、整个磁盘或系统文件夹",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

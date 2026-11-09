@@ -1,0 +1,101 @@
+{
+  "about": "家目录的后台任务指向不存在的程序、参数里的路径、工作目录：报；都在的、系统程序、不是 plist 的不报",
+  "case": "rules/persistence.launchagent-missing/missing",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "它每次登录都会启动失败；以后有人在这个位置放了东西，就会以你的身份运行",
+              "label": "io.example.binary",
+              "missing": "~/bin/third-gone"
+            },
+            "path": "~/Library/LaunchAgents/io.example.binary.plist",
+            "rule": "persistence.launchagent-missing",
+            "severity": "medium",
+            "title": "后台任务 io.example.binary 指向已经不存在的位置",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "它每次登录都会启动失败；以后有人在这个位置放了东西，就会以你的身份运行",
+              "label": "io.example.gone",
+              "missing": "~/src/removed-checkout/services/x；~/src/removed-checkout"
+            },
+            "path": "~/Library/LaunchAgents/io.example.gone.plist",
+            "rule": "persistence.launchagent-missing",
+            "severity": "medium",
+            "title": "后台任务 io.example.gone 指向已经不存在的位置",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "它每次登录都会启动失败；以后有人在这个位置放了东西，就会以你的身份运行",
+              "label": "io.example.prog",
+              "missing": "~/bin/gone-tool"
+            },
+            "path": "~/Library/LaunchAgents/io.example.prog.plist",
+            "rule": "persistence.launchagent-missing",
+            "severity": "medium",
+            "title": "后台任务 io.example.prog 指向已经不存在的位置",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "它每次登录都会启动失败；以后有人在这个位置放了东西，就会以你的身份运行",
+              "label": "nolabel",
+              "missing": "~/bin/also-gone"
+            },
+            "path": "~/Library/LaunchAgents/nolabel.plist",
+            "rule": "persistence.launchagent-missing",
+            "severity": "medium",
+            "title": "后台任务 nolabel 指向已经不存在的位置",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

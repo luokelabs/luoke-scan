@@ -1,0 +1,96 @@
+{
+  "about": "所有用户的后台任务、系统后台任务：程序不在了的报；以 root 跑、你自己能改的报高；系统自带的程序不报",
+  "case": "rules/persistence.review/system-dirs",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "admin": "1",
+              "hint": "它每次启动都会失败；以后有人在这个位置放了东西，就会以每个用户的身份运行",
+              "label": "io.example.allusers",
+              "missing": "/opt/io-example/gone-agent",
+              "scope": "system-agent"
+            },
+            "path": "$FIXTURE/SystemLibrary/LaunchAgents/io.example.allusers.plist",
+            "rule": "persistence.daemon-missing",
+            "severity": "medium",
+            "title": "所有用户的后台任务 io.example.allusers 指向已经不存在的程序",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "admin": "1",
+              "hint": "它每次启动都会失败；以后有人在这个位置放了东西，就会以管理员的身份运行",
+              "label": "io.example.gonedaemon",
+              "missing": "/opt/io-example/gone-daemon",
+              "scope": "daemon"
+            },
+            "path": "$FIXTURE/SystemLibrary/LaunchDaemons/io.example.gonedaemon.plist",
+            "rule": "persistence.daemon-missing",
+            "severity": "medium",
+            "title": "系统后台任务（以管理员身份运行） io.example.gonedaemon 指向已经不存在的程序",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "admin": "1",
+              "how": "Homebrew 的服务别用 sudo 起（`brew services start` 不加 sudo，就以你自己的身份运行）；用不到了就删掉这个系统级的后台任务",
+              "label": "io.example.writable",
+              "program": "$FIXTURE/SystemLibrary/Application Support/io.example.tool/helper",
+              "scope": "daemon",
+              "signature": "开发者签名（FIXTURE000）",
+              "why": "它以管理员（root）身份运行：任何以你身份运行的程序都能换掉它，下次启动就拿到管理员权限"
+            },
+            "path": "$FIXTURE/SystemLibrary/LaunchDaemons/io.example.writable.plist",
+            "rule": "persistence.daemon-writable",
+            "severity": "high",
+            "title": "系统后台任务（以管理员身份运行） io.example.writable 运行的程序你自己就能改",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

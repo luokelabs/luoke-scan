@@ -1,0 +1,63 @@
+{
+  "about": "lume 的 macOS 虚拟机（~/.lume/<名字>）合起来 6 GiB：报虚拟磁盘，说用 lume 自己删",
+  "case": "rules/space.system/vm-lume",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 6442450944,
+            "category": "space",
+            "evidence": {
+              "how": "`lume ls` 看有哪些虚拟机，用不到的 `lume delete <名字>` 删掉（那台虚拟机里的东西都会没）",
+              "tool": "lume",
+              "why": "每台 macOS 虚拟机一个文件夹，里面是它的整块硬盘；虚拟机里删了东西，这里不一定变小"
+            },
+            "path": "~/.lume",
+            "rule": "space.vm-disk",
+            "severity": "low",
+            "title": "lume 的虚拟磁盘占了 6.44 GB",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

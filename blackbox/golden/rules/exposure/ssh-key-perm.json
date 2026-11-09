@@ -1,0 +1,88 @@
+{
+  "about": "别人能读的私钥：644、640、604 各报一条（看不懂格式的也报）；600、400 不报",
+  "case": "rules/exposure/ssh-key-perm",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "终端里运行 chmod 600 ~/.ssh/id_group",
+              "mode": "640",
+              "why": "私钥只该你自己能读；ssh 也会因此拒绝用它"
+            },
+            "path": "~/.ssh/id_group",
+            "rule": "exposure.ssh-key-perm",
+            "severity": "medium",
+            "title": "SSH 私钥 id_group 别的用户也能读",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "终端里运行 chmod 600 ~/.ssh/id_odd",
+              "mode": "604",
+              "why": "私钥只该你自己能读；ssh 也会因此拒绝用它"
+            },
+            "path": "~/.ssh/id_odd",
+            "rule": "exposure.ssh-key-perm",
+            "severity": "medium",
+            "title": "SSH 私钥 id_odd 别的用户也能读",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "终端里运行 chmod 600 ~/.ssh/id_world",
+              "mode": "644",
+              "why": "私钥只该你自己能读；ssh 也会因此拒绝用它"
+            },
+            "path": "~/.ssh/id_world",
+            "rule": "exposure.ssh-key-perm",
+            "severity": "medium",
+            "title": "SSH 私钥 id_world 别的用户也能读",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

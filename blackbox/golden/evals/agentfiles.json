@@ -1,0 +1,437 @@
+{
+  "about": "eval-agentfiles：汇总的分数和每条用例的结果",
+  "case": "evals/agentfiles",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "eval-agentfiles",
+        "--cases",
+        "$REPO/evals/agentfiles/cases.json"
+      ],
+      "stdout": [
+        "给 AI 看的说明文件检查评测：26 个用例",
+        "",
+        "| | 用例 | 报了 | 高 | 中 | 低 |",
+        "|---|---|---|---|---|---|",
+        "| 恶意 | 13 | 13 | 7 | 6 | 0 |",
+        "| 正常 | 13 | 1 | 0 | 0 | 1 |",
+        "",
+        "恶意的都报了，正常的没有报成高的：过"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": [
+        {
+          "id": "mal-im-start",
+          "kinds": [
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.injection",
+          "severity": "medium",
+          "shown": [
+            "AGENTS.md",
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（AGENTS.md 第 15 行）",
+            "injection",
+            "project",
+            "多个 AI 工具共用",
+            "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+            "项目 mal-im-start 里 多个 AI 工具共用 读的 AGENTS.md：冒充系统或开发者说话"
+          ]
+        },
+        {
+          "id": "mal-gemma-turn",
+          "kinds": [
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.injection",
+          "severity": "medium",
+          "shown": [
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（CLAUDE.md 第 4、5 行）",
+            "CLAUDE.md",
+            "Claude Code",
+            "injection",
+            "project",
+            "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+            "项目 mal-gemma-turn 里 Claude Code 读的 CLAUDE.md：冒充系统或开发者说话"
+          ]
+        },
+        {
+          "id": "mal-tag-chars",
+          "kinds": [
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.injection",
+          "severity": "high",
+          "shown": [
+            "AGENTS.md",
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：藏着看不见的字符（Unicode 标签字符，AI 读得到）（AGENTS.md 第 3 行）",
+            "injection",
+            "project",
+            "多个 AI 工具共用",
+            "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+            "项目 mal-tag-chars 里 多个 AI 工具共用 读的 AGENTS.md：藏着看不见的字符（Unicode 标签字符，AI 读得到）"
+          ]
+        },
+        {
+          "id": "mal-html-comment",
+          "kinds": [
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.injection",
+          "severity": "high",
+          "shown": [
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：让 AI 瞒着你（藏起来了）（CLAUDE.md 第 5 行）；HTML 注释里藏着给 AI 的话（你看不到，AI 看得到）（CLAUDE.md 第 5 行）",
+            "CLAUDE.md",
+            "Claude Code",
+            "injection",
+            "project",
+            "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+            "项目 mal-html-comment 里 Claude Code 读的 CLAUDE.md：让 AI 瞒着你（藏起来了），另有 1 处要看"
+          ]
+        },
+        {
+          "id": "mal-curl-bash",
+          "kinds": [
+            "download-exec"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.download-exec",
+          "severity": "high",
+          "shown": [
+            "AGENTS.md",
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：从网上下载代码直接运行（AGENTS.md 第 6 行）",
+            "AI 打开这个项目时会照着这个文件做；不是你写的，先别让 AI 在这个项目里干活，看清楚那几行再说",
+            "download-exec",
+            "project",
+            "多个 AI 工具共用",
+            "项目 mal-curl-bash 里 多个 AI 工具共用 读的 AGENTS.md：从网上下载代码直接运行"
+          ]
+        },
+        {
+          "id": "mal-exfil",
+          "kinds": [
+            "exfil"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.exfil",
+          "severity": "high",
+          "shown": [
+            "AGENTS.md",
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：读 AWS 的凭证再发到网上（AGENTS.md 第 3 行）",
+            "AI 打开这个项目时会照着这个文件做；不是你写的，先别让 AI 在这个项目里干活，看清楚那几行再说",
+            "exfil",
+            "project",
+            "多个 AI 工具共用",
+            "项目 mal-exfil 里 多个 AI 工具共用 读的 AGENTS.md：读 AWS 的凭证再发到网上"
+          ]
+        },
+        {
+          "id": "mal-ignore",
+          "kinds": [
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.injection",
+          "severity": "medium",
+          "shown": [
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：让 AI 忽略原来的指令或规矩（GEMINI.md 第 3 行）；冒充系统或开发者说话（GEMINI.md 第 3 行）",
+            "GEMINI.md",
+            "Gemini CLI",
+            "injection",
+            "project",
+            "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+            "项目 mal-ignore 里 Gemini CLI 读的 GEMINI.md：让 AI 忽略原来的指令或规矩，另有 1 处要看"
+          ]
+        },
+        {
+          "id": "mal-conceal",
+          "kinds": [
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.injection",
+          "severity": "medium",
+          "shown": [
+            "AGENTS.md",
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：让 AI 瞒着你（AGENTS.md 第 3 行）",
+            "injection",
+            "project",
+            "多个 AI 工具共用",
+            "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+            "项目 mal-conceal 里 多个 AI 工具共用 读的 AGENTS.md：让 AI 瞒着你"
+          ]
+        },
+        {
+          "id": "mal-launchagent",
+          "kinds": [
+            "persistence"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.persistence",
+          "severity": "high",
+          "shown": [
+            "AGENTS.md",
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：把程序登记成开机自己运行（launchctl）（AGENTS.md 第 3 行）；在 LaunchAgents 里放东西（开机自己运行）（AGENTS.md 第 3 行）",
+            "AI 打开这个项目时会照着这个文件做；不是你写的，先别让 AI 在这个项目里干活，看清楚那几行再说",
+            "persistence",
+            "project",
+            "多个 AI 工具共用",
+            "项目 mal-launchagent 里 多个 AI 工具共用 读的 AGENTS.md：把程序登记成开机自己运行（launchctl），另有 1 处要看"
+          ]
+        },
+        {
+          "id": "mal-cursor-rules",
+          "kinds": [
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.injection",
+          "severity": "medium",
+          "shown": [
+            ".cursor/rules/setup.mdc",
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.cursor/rules/setup.mdc 第 5 行）",
+            "Cursor",
+            "injection",
+            "project",
+            "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+            "项目 mal-cursor-rules 里 Cursor 读的 .cursor/rules/setup.mdc：冒充系统或开发者说话"
+          ]
+        },
+        {
+          "id": "mal-copilot",
+          "kinds": [
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.injection",
+          "severity": "medium",
+          "shown": [
+            ".github/copilot-instructions.md",
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.github/copilot-instructions.md 第 3 行）",
+            "GitHub Copilot",
+            "injection",
+            "project",
+            "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+            "项目 mal-copilot 里 GitHub Copilot 读的 .github/copilot-instructions.md：冒充系统或开发者说话"
+          ]
+        },
+        {
+          "id": "mal-home-claude",
+          "kinds": [
+            "download-exec"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.download-exec",
+          "severity": "high",
+          "shown": [
+            ".claude/CLAUDE.md",
+            "AI 写代码的工具打开时会自动读这个文件、照着做，用的是你的权限。查到：从网上下载代码直接运行（.claude/CLAUDE.md 第 5 行）",
+            "AI 打开这个项目时会照着这个文件做；不是你写的，先别让 AI 在这个项目里干活，看清楚那几行再说",
+            "Claude Code",
+            "Claude Code 读的 .claude/CLAUDE.md：从网上下载代码直接运行",
+            "download-exec",
+            "personal"
+          ]
+        },
+        {
+          "id": "mal-escalation",
+          "kinds": [
+            "escalation"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.escalation",
+          "severity": "high",
+          "shown": [
+            "AGENTS.md",
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：关掉 Gatekeeper（AGENTS.md 第 3 行）；要管理员权限（sudo）（AGENTS.md 第 3 行）",
+            "AI 打开这个项目时会照着这个文件做；不是你写的，先别让 AI 在这个项目里干活，看清楚那几行再说",
+            "escalation",
+            "project",
+            "多个 AI 工具共用",
+            "项目 mal-escalation 里 多个 AI 工具共用 读的 AGENTS.md：关掉 Gatekeeper，另有 1 处要看"
+          ]
+        },
+        {
+          "id": "ben-node",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-python",
+          "kinds": [
+            "supply-chain"
+          ],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": "agentfile.supply-chain",
+          "severity": "low",
+          "shown": [
+            "AGENTS.md",
+            "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：运行官方网站上的安装脚本（AGENTS.md 第 3 行）",
+            "project",
+            "supply-chain",
+            "多个 AI 工具共用",
+            "用文本编辑器打开那个文件看看那几行；认得、是你自己写的就不用管",
+            "项目 ben-python 里 多个 AI 工具共用 读的 AGENTS.md：运行官方网站上的安装脚本"
+          ]
+        },
+        {
+          "id": "ben-sync-files",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-skills-repo",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-mcp",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-templates",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-security-guide",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-cursor-style",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-copilot",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-cleanup",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-docker",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-home-claude",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-gemini",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        }
+      ],
+      "run": [
+        "luoke-scan",
+        "eval-agentfiles",
+        "--cases",
+        "$REPO/evals/agentfiles/cases.json",
+        "--json"
+      ]
+    }
+  ]
+}

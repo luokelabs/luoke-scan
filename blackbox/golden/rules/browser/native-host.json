@@ -1,0 +1,498 @@
+{
+  "about": "扩展能启动的本机程序：不在了的低，脚本、没签名、临时签名、签名对不上的中，Apple 签名的不报；登记在几个浏览器里的同一个合成一条；没有完全磁盘访问时文稿里的程序当没看",
+  "case": "rules/browser/native-host",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Brave",
+              "how": "程序已经删了，这个登记文件也可以删掉",
+              "program": "$FIXTURE/opt/split-b/host",
+              "signature": "不存在",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/split-b/host|~/Library/Application Support/BraveSoftware/Brave-Browser/NativeMessagingHosts/io.example.split.json",
+            "path": "~/Library/Application Support/BraveSoftware/Brave-Browser/NativeMessagingHosts/io.example.split.json",
+            "rule": "browser.native-host",
+            "severity": "low",
+            "title": "浏览器扩展能启动的本机程序 io.example.split 已经不在了",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "程序已经删了，这个登记文件也可以删掉",
+              "program": "$FIXTURE/opt/gone/host",
+              "signature": "不存在",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/gone/host|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.gone.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.gone.json",
+            "rule": "browser.native-host",
+            "severity": "low",
+            "title": "浏览器扩展能启动的本机程序 io.example.gone 已经不在了",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "程序已经删了，这个登记文件也可以删掉",
+              "program": "$FIXTURE/opt/noname/host",
+              "signature": "不存在",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/noname/host|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.noname.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.noname.json",
+            "rule": "browser.native-host",
+            "severity": "low",
+            "title": "浏览器扩展能启动的本机程序 io.example.noname 已经不在了",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "程序已经删了，这个登记文件也可以删掉",
+              "program": "$FIXTURE/opt/split-a/host",
+              "signature": "不存在",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/split-a/host|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.split.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.split.json",
+            "rule": "browser.native-host",
+            "severity": "low",
+            "title": "浏览器扩展能启动的本机程序 io.example.split 已经不在了",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "认得就留着（有的工具自己编的就没签名）；不认得的删掉这个登记文件",
+              "program": "~/Documents/tools/host.sh",
+              "signature": "脚本",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|~/Documents/tools/host.sh|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.docs.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.docs.json",
+            "rule": "browser.native-host",
+            "severity": "medium",
+            "title": "浏览器扩展能启动的本机程序 io.example.docs 没有开发者担保（脚本）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "认得就留着（有的工具自己编的就没签名）；不认得的删掉这个登记文件",
+              "program": "$FIXTURE/opt/adhoc/host",
+              "signature": "临时签名（没有开发者担保）",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/adhoc/host|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.adhoc.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.adhoc.json",
+            "rule": "browser.native-host",
+            "severity": "medium",
+            "title": "浏览器扩展能启动的本机程序 io.example.adhoc 没有开发者担保（临时签名（没有开发者担保））",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "认得就留着（有的工具自己编的就没签名）；不认得的删掉这个登记文件",
+              "program": "$FIXTURE/opt/invalid/host",
+              "signature": "签名和文件对不上（签名后被改过）",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/invalid/host|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.invalid.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.invalid.json",
+            "rule": "browser.native-host",
+            "severity": "medium",
+            "title": "浏览器扩展能启动的本机程序 io.example.invalid 没有开发者担保（签名和文件对不上（签名后被改过））",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "认得就留着（有的工具自己编的就没签名）；不认得的删掉这个登记文件",
+              "program": "$FIXTURE/opt/script-host/host.sh",
+              "signature": "脚本",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/script-host/host.sh|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.script.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.script.json",
+            "rule": "browser.native-host",
+            "severity": "medium",
+            "title": "浏览器扩展能启动的本机程序 io.example.script 没有开发者担保（脚本）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "认得就留着（有的工具自己编的就没签名）；不认得的删掉这个登记文件",
+              "program": "$FIXTURE/opt/unsigned/host",
+              "signature": "没签名",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/unsigned/host|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.unsigned.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.unsigned.json",
+            "rule": "browser.native-host",
+            "severity": "medium",
+            "title": "浏览器扩展能启动的本机程序 io.example.unsigned 没有开发者担保（没签名）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome、Edge、Chrome（所有用户）",
+              "files": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.multi.json\n~/Library/Application Support/Microsoft Edge/NativeMessagingHosts/io.example.multi.json\n$FIXTURE/SystemLibrary/Google/Chrome/NativeMessagingHosts/io.example.multi.json",
+              "how": "程序已经删了，这些登记文件也可以删掉",
+              "program": "$FIXTURE/opt/multi/host",
+              "signature": "不存在",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/multi/host|$FIXTURE/SystemLibrary/Google/Chrome/NativeMessagingHosts/io.example.multi.json|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.multi.json|~/Library/Application Support/Microsoft Edge/NativeMessagingHosts/io.example.multi.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.multi.json",
+            "rule": "browser.native-host",
+            "severity": "low",
+            "title": "浏览器扩展能启动的本机程序 io.example.multi 已经不在了（2 个浏览器里登记着）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Firefox",
+              "how": "认得就留着（有的工具自己编的就没签名）；不认得的删掉这个登记文件",
+              "program": "$FIXTURE/opt/fox/host.py",
+              "signature": "脚本",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/fox/host.py|~/Library/Application Support/Mozilla/NativeMessagingHosts/io.example.fox.json",
+            "path": "~/Library/Application Support/Mozilla/NativeMessagingHosts/io.example.fox.json",
+            "rule": "browser.native-host",
+            "severity": "medium",
+            "title": "浏览器扩展能启动的本机程序 io.example.fox 没有开发者担保（脚本）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Firefox（所有用户）",
+              "how": "程序已经删了，这个登记文件也可以删掉",
+              "program": "$FIXTURE/opt/foxall/host",
+              "signature": "不存在",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/foxall/host|$FIXTURE/SystemLibrary/Application Support/Mozilla/NativeMessagingHosts/io.example.foxall.json",
+            "path": "$FIXTURE/SystemLibrary/Application Support/Mozilla/NativeMessagingHosts/io.example.foxall.json",
+            "rule": "browser.native-host",
+            "severity": "low",
+            "title": "浏览器扩展能启动的本机程序 io.example.foxall 已经不在了",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Brave",
+              "how": "程序已经删了，这个登记文件也可以删掉",
+              "program": "$FIXTURE/opt/split-b/host",
+              "signature": "不存在",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/split-b/host|~/Library/Application Support/BraveSoftware/Brave-Browser/NativeMessagingHosts/io.example.split.json",
+            "path": "~/Library/Application Support/BraveSoftware/Brave-Browser/NativeMessagingHosts/io.example.split.json",
+            "rule": "browser.native-host",
+            "severity": "low",
+            "title": "浏览器扩展能启动的本机程序 io.example.split 已经不在了",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "程序已经删了，这个登记文件也可以删掉",
+              "program": "$FIXTURE/opt/gone/host",
+              "signature": "不存在",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/gone/host|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.gone.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.gone.json",
+            "rule": "browser.native-host",
+            "severity": "low",
+            "title": "浏览器扩展能启动的本机程序 io.example.gone 已经不在了",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "程序已经删了，这个登记文件也可以删掉",
+              "program": "$FIXTURE/opt/noname/host",
+              "signature": "不存在",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/noname/host|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.noname.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.noname.json",
+            "rule": "browser.native-host",
+            "severity": "low",
+            "title": "浏览器扩展能启动的本机程序 io.example.noname 已经不在了",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "程序已经删了，这个登记文件也可以删掉",
+              "program": "$FIXTURE/opt/split-a/host",
+              "signature": "不存在",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/split-a/host|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.split.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.split.json",
+            "rule": "browser.native-host",
+            "severity": "low",
+            "title": "浏览器扩展能启动的本机程序 io.example.split 已经不在了",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "认得就留着（有的工具自己编的就没签名）；不认得的删掉这个登记文件",
+              "program": "~/Documents/tools/host.sh",
+              "signature": "没看（在 macOS 要先问你的文件夹里，没有完全磁盘访问）",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|~/Documents/tools/host.sh|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.docs.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.docs.json",
+            "rule": "browser.native-host",
+            "severity": "medium",
+            "title": "浏览器扩展能启动的本机程序 io.example.docs 没有开发者担保（没看（在 macOS 要先问你的文件夹里，没有完全磁盘访问））",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "认得就留着（有的工具自己编的就没签名）；不认得的删掉这个登记文件",
+              "program": "$FIXTURE/opt/adhoc/host",
+              "signature": "临时签名（没有开发者担保）",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/adhoc/host|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.adhoc.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.adhoc.json",
+            "rule": "browser.native-host",
+            "severity": "medium",
+            "title": "浏览器扩展能启动的本机程序 io.example.adhoc 没有开发者担保（临时签名（没有开发者担保））",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "认得就留着（有的工具自己编的就没签名）；不认得的删掉这个登记文件",
+              "program": "$FIXTURE/opt/invalid/host",
+              "signature": "签名和文件对不上（签名后被改过）",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/invalid/host|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.invalid.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.invalid.json",
+            "rule": "browser.native-host",
+            "severity": "medium",
+            "title": "浏览器扩展能启动的本机程序 io.example.invalid 没有开发者担保（签名和文件对不上（签名后被改过））",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "认得就留着（有的工具自己编的就没签名）；不认得的删掉这个登记文件",
+              "program": "$FIXTURE/opt/script-host/host.sh",
+              "signature": "脚本",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/script-host/host.sh|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.script.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.script.json",
+            "rule": "browser.native-host",
+            "severity": "medium",
+            "title": "浏览器扩展能启动的本机程序 io.example.script 没有开发者担保（脚本）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome",
+              "how": "认得就留着（有的工具自己编的就没签名）；不认得的删掉这个登记文件",
+              "program": "$FIXTURE/opt/unsigned/host",
+              "signature": "没签名",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/unsigned/host|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.unsigned.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.unsigned.json",
+            "rule": "browser.native-host",
+            "severity": "medium",
+            "title": "浏览器扩展能启动的本机程序 io.example.unsigned 没有开发者担保（没签名）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Chrome、Edge、Chrome（所有用户）",
+              "files": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.multi.json\n~/Library/Application Support/Microsoft Edge/NativeMessagingHosts/io.example.multi.json\n$FIXTURE/SystemLibrary/Google/Chrome/NativeMessagingHosts/io.example.multi.json",
+              "how": "程序已经删了，这些登记文件也可以删掉",
+              "program": "$FIXTURE/opt/multi/host",
+              "signature": "不存在",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/multi/host|$FIXTURE/SystemLibrary/Google/Chrome/NativeMessagingHosts/io.example.multi.json|~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.multi.json|~/Library/Application Support/Microsoft Edge/NativeMessagingHosts/io.example.multi.json",
+            "path": "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/io.example.multi.json",
+            "rule": "browser.native-host",
+            "severity": "low",
+            "title": "浏览器扩展能启动的本机程序 io.example.multi 已经不在了（2 个浏览器里登记着）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Firefox",
+              "how": "认得就留着（有的工具自己编的就没签名）；不认得的删掉这个登记文件",
+              "program": "$FIXTURE/opt/fox/host.py",
+              "signature": "脚本",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/fox/host.py|~/Library/Application Support/Mozilla/NativeMessagingHosts/io.example.fox.json",
+            "path": "~/Library/Application Support/Mozilla/NativeMessagingHosts/io.example.fox.json",
+            "rule": "browser.native-host",
+            "severity": "medium",
+            "title": "浏览器扩展能启动的本机程序 io.example.fox 没有开发者担保（脚本）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browsers": "Firefox（所有用户）",
+              "how": "程序已经删了，这个登记文件也可以删掉",
+              "program": "$FIXTURE/opt/foxall/host",
+              "signature": "不存在",
+              "why": "登记在这里的程序，扩展一叫就会以你的身份运行"
+            },
+            "key": "native-host|$FIXTURE/opt/foxall/host|$FIXTURE/SystemLibrary/Application Support/Mozilla/NativeMessagingHosts/io.example.foxall.json",
+            "path": "$FIXTURE/SystemLibrary/Application Support/Mozilla/NativeMessagingHosts/io.example.foxall.json",
+            "rule": "browser.native-host",
+            "severity": "low",
+            "title": "浏览器扩展能启动的本机程序 io.example.foxall 已经不在了",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents 里散落的密钥没看（看了 macOS 会弹框问你）",
+            "rule": "secrets"
+          },
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents、Music 里的重复文件没看（看了 macOS 会弹框问你）",
+            "rule": "space.duplicates"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载、桌面、文稿里的系统恢复镜像没看（看了 macOS 会弹框问你）",
+            "rule": "space.system"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里新来的文件有没有病毒没看（看了 macOS 会弹框问你）",
+            "rule": "malware"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里的安装包和没下完的下载没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.installer"
+          },
+          {
+            "reason": "没有完全磁盘访问，别的应用的容器里留下的数据没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.app-data"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载和别的应用的数据占多大没看（看了 macOS 会弹框问你）",
+            "rule": "space"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载里很久没打开的大文件没看（看了 macOS 会弹框问你）",
+            "rule": "stale.large-file"
+          }
+        ],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "没有完全磁盘访问：文稿里的程序不看签名",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json",
+        "--no-full-disk-access"
+      ]
+    }
+  ]
+}

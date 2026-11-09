@@ -1,0 +1,65 @@
+{
+  "about": "/usr/local/bin/brew 是老的布局（没有 /usr/local/Homebrew）：只说，说明不是那种布局",
+  "case": "rules/leftover.installer/intel-homebrew-old-layout",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 1048576,
+            "category": "leftover",
+            "evidence": {
+              "both": "1",
+              "how": "先确认 /opt/homebrew 里装齐了你要的工具，再用 Homebrew 官方的卸载脚本（加 --path=/usr/local）删掉旧的这套",
+              "not_now": "不是 Homebrew 装在 /usr/local/Homebrew 的那种布局",
+              "only_here": "wget",
+              "why": "Intel 版的工具要经 Rosetta 转译，慢；苹果已经说过以后的 macOS 会收回 Rosetta"
+            },
+            "path": "$FIXTURE/usr-local/Homebrew",
+            "rule": "leftover.intel-homebrew",
+            "severity": "low",
+            "title": "/usr/local 里还留着一套 Intel 版的 Homebrew（1 MB）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

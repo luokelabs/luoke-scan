@@ -1,0 +1,84 @@
+{
+  "about": "同一份说明只说一次：CLAUDE.md 链接到 AGENTS.md 的、抄到好几个项目和家目录里的（also 列前 3 处，多了说一共几处）",
+  "case": "rules/agentfile/dedupe",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "also": "~/Projects/a/AGENTS.md；~/Projects/b/AGENTS.md；~/Projects/c/AGENTS.md 等 5 处",
+              "file": ".claude/CLAUDE.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "why": "AI 写代码的工具打开时会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.claude/CLAUDE.md 第 4 行）"
+            },
+            "key": "~/.claude/CLAUDE.md|9e713a9fbf31d52d",
+            "path": "~/.claude/CLAUDE.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "Claude Code 读的 .claude/CLAUDE.md：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（AGENTS.md 第 4 行）"
+            },
+            "key": "~/Projects/f/AGENTS.md|bf866c54dcb78562",
+            "path": "~/Projects/f/AGENTS.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 f 里 多个 AI 工具共用 读的 AGENTS.md：冒充系统或开发者说话",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

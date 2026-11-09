@@ -1,0 +1,15 @@
+#!/bin/sh
+# 假的 sigtool（照真的那一版的输出和退出码）。有 record-args 时，每次的参数记进 args.sigtool。
+d=$(dirname "$0"); [ -e "$d/record-args" ] && echo "$*" >> "$d/args.$(basename "$0")"
+case "$1" in --unpack=*)
+  f="${1#--unpack=}"; b=$(basename "$f"); b="${b%.*}"
+  printf 'Win.Trojan.Fake-1:0:*:aabbccdd\nOsx.Trojan.Fake-1:0:*:ddeeff00\nPUA.Win.Tool.Fake-1:0:*:00112233\n' > "$b.ndb"
+  printf 'aa:1:Win.Trojan.Hash-1:73\nbb:2:Unix.Trojan.Hash-1:73\n' > "$b.hsb"
+  printf 'cc:3:Win.Trojan.Section-1\n' > "$b.mdb"
+  echo "index" > "$b.info"
+  exit 0;;
+esac
+f="${1#--info=}"
+head -c 3 "$f" | grep -q bad && exit 1
+echo "File: $f"; echo "Version: $(awk '{print $2}' "$f")"
+exit 0

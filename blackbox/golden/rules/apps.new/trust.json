@@ -1,0 +1,82 @@
+{
+  "about": "最近装的：苹果的、App Store 的、公证过的不报；只有开发者签名、本机没有公证记录的报低；一个月以前装的不看",
+  "case": "rules/apps.new/trust",
+  "steps": [
+    {
+      "fakes": {
+        "appTrust": {
+          "~/Applications/Apples.app": "apple",
+          "~/Applications/Devonly.app": "developer:ABCDE12345",
+          "~/Applications/Notarized.app": "notarized",
+          "~/Applications/Olddev.app": "developer:ABCDE12345",
+          "~/Applications/Store.app": "appStore"
+        },
+        "appsAdded": {
+          "~/Applications/Apples.app": "2026-10-15T12:00:00Z",
+          "~/Applications/Devonly.app": "2026-10-15T12:00:00Z",
+          "~/Applications/Notarized.app": "2026-10-15T12:00:00Z",
+          "~/Applications/Olddev.app": "2026-09-10T12:00:00Z",
+          "~/Applications/Store.app": "2026-10-15T12:00:00Z"
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-10-15",
+              "how": "多半是还没公证的老版本；从开发者官网换成新版本，或确认来源可信",
+              "note": "只看本机已有的公证记录（没联网问苹果）：公证过、但没把记录附在应用里、又还没打开过的，也会出现在这里",
+              "quarantine": "没有下载标记：自己编译、从 App Store 或安装包装的，也可能下载后被人去掉了",
+              "team": "ABCDE12345"
+            },
+            "path": "~/Applications/Devonly.app",
+            "rule": "apps.not-notarized",
+            "severity": "low",
+            "title": "最近装的 Devonly 有开发者签名（ABCDE12345），本机没找到苹果的公证记录",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

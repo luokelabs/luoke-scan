@@ -1,0 +1,194 @@
+{
+  "about": "LUOKE_HUB_SOCKET 指着的地方没有主控：报告照出，没有模型的话",
+  "case": "model/no-hub",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "sync-notes",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读 AWS 的凭证再发到网上（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/sync-notes|f7428ec60749a22c",
+            "path": "~/.claude/skills/sync-notes",
+            "rule": "skill.exfil",
+            "severity": "high",
+            "title": "Claude Code 的 skill「sync-notes」：读 AWS 的凭证再发到网上",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-13T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-13T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "一周前查过一轮：认不出的文件夹 1 MB",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-13T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "那个文件夹一周涨到 30 MB"
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库已经是最新的"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 131072000,
+            "category": "leak",
+            "evidence": {
+              "count": "25",
+              "first": "2026-10-15",
+              "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+              "last": "2026-10-18",
+              "per_day": "43.7 MB",
+              "prefix": "wings",
+              "size": "131.1 MB"
+            },
+            "path": "$TMPDIR/wings-*",
+            "rule": "leak.temp-prefix",
+            "severity": "low",
+            "title": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 131072000,
+            "category": "space",
+            "evidence": {
+              "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满",
+              "now": "131.1 MB",
+              "per_day": "18.7 MB",
+              "since": "2026-10-13",
+              "then": "Zero KB"
+            },
+            "path": "$TMPDIR",
+            "rule": "space.growth",
+            "severity": "medium",
+            "title": "tmp 每天涨 18.7 MB",
+            "verdict": "info"
+          },
+          {
+            "bytes": 31457280,
+            "category": "space",
+            "evidence": {
+              "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满",
+              "now": "31.5 MB",
+              "per_day": "4.3 MB",
+              "since": "2026-10-13",
+              "then": "1 MB"
+            },
+            "path": "~/.local/share/io.mystery.sync",
+            "rule": "space.growth",
+            "severity": "medium",
+            "title": "io.mystery.sync 每天涨 4.3 MB",
+            "verdict": "info"
+          },
+          {
+            "bytes": 62914560,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "62.9 MB",
+              "tool": "pip"
+            },
+            "path": "~/Library/Caches/pip",
+            "rule": "cache.rebuildable.pip",
+            "severity": "low",
+            "title": "pip 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "sync-notes",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读 AWS 的凭证再发到网上（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/sync-notes|f7428ec60749a22c",
+            "path": "~/.claude/skills/sync-notes",
+            "rule": "skill.exfil",
+            "severity": "high",
+            "title": "Claude Code 的 skill「sync-notes」：读 AWS 的凭证再发到网上",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

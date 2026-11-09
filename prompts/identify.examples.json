@@ -1,0 +1,121 @@
+[
+  {
+    "input": {
+      "路径": "~/Library/Application Support/Postman",
+      "大小": "640 MB",
+      "最后改动": "2026-10-18",
+      "文件数": 1900,
+      "常见扩展名": [
+        "json",
+        "ldb",
+        "log"
+      ],
+      "前几项": [
+        "Partitions",
+        "Local Storage",
+        "workspaces",
+        "Preferences"
+      ]
+    },
+    "output": {
+      "name": "Postman",
+      "what": "Postman 的工作区、请求集合和登录状态",
+      "kind": "app-data",
+      "sure": true
+    }
+  },
+  {
+    "input": {
+      "路径": "~/.npm/_cacache",
+      "大小": "1.8 GB",
+      "最后改动": "2026-10-19",
+      "文件数": 86000,
+      "常见扩展名": [
+        "",
+        "json"
+      ],
+      "前几项": [
+        "content-v2",
+        "index-v5",
+        "tmp"
+      ]
+    },
+    "output": {
+      "name": "npm",
+      "what": "npm 下载过的包的缓存",
+      "kind": "cache",
+      "sure": true
+    }
+  },
+  {
+    "input": {
+      "路径": "~/.sdkman/candidates",
+      "大小": "1.1 GB",
+      "最后改动": "2026-04-02",
+      "文件数": 23000,
+      "常见扩展名": [
+        "jar",
+        "dylib",
+        "so"
+      ],
+      "前几项": [
+        "java",
+        "java/17.0.9-tem",
+        "gradle",
+        "current"
+      ]
+    },
+    "output": {
+      "name": "SDKMAN!",
+      "what": "SDKMAN 装的各版本 JDK 和构建工具",
+      "kind": "tool",
+      "sure": true
+    }
+  },
+  {
+    "input": {
+      "路径": "~/.local/state/aw1",
+      "大小": "95 MB",
+      "最后改动": "2026-02-03",
+      "文件数": 5,
+      "常见扩展名": [
+        "",
+        "lock"
+      ],
+      "前几项": [
+        "state",
+        "journal.0001",
+        "index.lock"
+      ]
+    },
+    "output": {
+      "name": "不确定",
+      "what": "看不出来",
+      "kind": "unknown",
+      "sure": false
+    }
+  },
+  {
+    "input": {
+      "路径": "~/Library/Logs/com.example.uploader",
+      "大小": "220 MB",
+      "最后改动": "2026-09-30",
+      "文件数": 31,
+      "常见扩展名": [
+        "log",
+        "gz"
+      ],
+      "前几项": [
+        "uploader.log",
+        "uploader.1.log.gz",
+        "crash"
+      ]
+    },
+    "output": {
+      "name": "不确定",
+      "what": "某个上传工具的运行日志",
+      "kind": "logs",
+      "sure": false
+    }
+  }
+]

@@ -1,0 +1,420 @@
+{
+  "about": "21 个很久没打开的：只报最大的 20 个",
+  "case": "rules/stale.large-file/cap",
+  "steps": [
+    {
+      "fakes": {
+        "staleFiles": [
+          {
+            "changed": null,
+            "path": "~/Movies/old-00.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-01.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-02.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-03.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-04.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-05.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-06.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-07.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-08.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-09.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-10.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-11.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-12.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-13.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-14.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-15.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-16.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-17.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-18.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-19.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/old-20.mov",
+            "used": "2024-08-11T12:00:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 1114112,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-01.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-01.mov（1.1 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1179648,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-02.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-02.mov（1.2 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1245184,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-03.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-03.mov（1.2 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1310720,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-04.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-04.mov（1.3 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1376256,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-05.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-05.mov（1.4 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1441792,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-06.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-06.mov（1.4 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1507328,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-07.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-07.mov（1.5 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1572864,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-08.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-08.mov（1.6 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1638400,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-09.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-09.mov（1.6 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1703936,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-10.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-10.mov（1.7 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1769472,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-11.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-11.mov（1.8 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1835008,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-12.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-12.mov（1.8 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1900544,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-13.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-13.mov（1.9 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1966080,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-14.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-14.mov（2 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2031616,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-15.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-15.mov（2 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-16.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-16.mov（2.1 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2162688,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-17.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-17.mov（2.2 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2228224,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-18.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-18.mov（2.2 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2293760,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-19.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-19.mov（2.3 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2359296,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/old-20.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old-20.mov（2.4 MB）2 年多没打开过",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

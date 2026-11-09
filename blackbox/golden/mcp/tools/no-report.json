@@ -1,0 +1,351 @@
+{
+  "about": "还没查过：状态、发现、outbox、概览、权限、基础页都说还没查过",
+  "case": "mcp/tools/no-report",
+  "steps": [
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "luoke://luoke-scan/outbox"
+      },
+      "reply": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "items": []
+              },
+              "uri": "luoke://luoke-scan/outbox"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "summary"
+      },
+      "reply": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "count": 0,
+                "text": "还没查过这台 Mac"
+              },
+              "uri": "summary"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "permissions"
+      },
+      "reply": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "admin": "ask",
+                "auto": "off",
+                "fda": "ask"
+              },
+              "uri": "permissions"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "page/overview"
+      },
+      "reply": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": [
+                {
+                  "createSurface": {
+                    "catalogId": "ai.luoke/a2ui/agent/1",
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                },
+                {
+                  "updateComponents": {
+                    "components": [
+                      {
+                        "children": [
+                          "h1",
+                          "t2",
+                          "r4"
+                        ],
+                        "component": "Column",
+                        "id": "root"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "h1",
+                        "text": "扫描",
+                        "variant": "h4"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t2",
+                        "text": "还没查过这台 Mac。"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {},
+                            "name": "scan_now"
+                          }
+                        },
+                        "child": "b3-text",
+                        "component": "Button",
+                        "id": "b3",
+                        "variant": "primary"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b3-text",
+                        "text": "现在查一下"
+                      },
+                      {
+                        "children": [
+                          "b3"
+                        ],
+                        "component": "Row",
+                        "id": "r4"
+                      }
+                    ],
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                }
+              ],
+              "uri": "page/overview"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "page/cleaned"
+      },
+      "reply": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": [
+                {
+                  "createSurface": {
+                    "catalogId": "ai.luoke/a2ui/agent/1",
+                    "surfaceId": "cleaned"
+                  },
+                  "version": "v0.9"
+                },
+                {
+                  "updateComponents": {
+                    "components": [
+                      {
+                        "children": [
+                          "h1",
+                          "t2"
+                        ],
+                        "component": "Column",
+                        "id": "root"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "h1",
+                        "text": "清理记录",
+                        "variant": "h4"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t2",
+                        "text": "还没清理过。"
+                      }
+                    ],
+                    "surfaceId": "cleaned"
+                  },
+                  "version": "v0.9"
+                }
+              ],
+              "uri": "page/cleaned"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {},
+        "name": "scan_status"
+      },
+      "reply": {
+        "id": 6,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "还没查过。",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "createSurface": {
+                  "catalogId": "ai.luoke/a2ui/agent/1",
+                  "surfaceId": "scan-000000000001"
+                },
+                "version": "v0.9"
+              },
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "t1",
+                        "r3"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t1",
+                      "text": "还没查过这台 Mac。"
+                    },
+                    {
+                      "action": {
+                        "event": {
+                          "context": {},
+                          "name": "scan_now"
+                        }
+                      },
+                      "child": "b2-text",
+                      "component": "Button",
+                      "id": "b2",
+                      "variant": "primary"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "b2-text",
+                      "text": "现在查一下"
+                    },
+                    {
+                      "children": [
+                        "b2"
+                      ],
+                      "component": "Row",
+                      "id": "r3"
+                    }
+                  ],
+                  "surfaceId": "scan-000000000001"
+                },
+                "version": "v0.9"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {},
+        "name": "scan_findings"
+      },
+      "reply": {
+        "id": 7,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "还没查过，先查一轮。",
+              "type": "text"
+            }
+          ],
+          "isError": true,
+          "resultType": "complete",
+          "structuredContent": {
+            "code": "not_ready"
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {},
+        "name": "scan_plan"
+      },
+      "reply": {
+        "id": 8,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "还没查过，先查一轮。",
+              "type": "text"
+            }
+          ],
+          "isError": true,
+          "resultType": "complete",
+          "structuredContent": {
+            "code": "not_ready"
+          }
+        }
+      }
+    }
+  ]
+}

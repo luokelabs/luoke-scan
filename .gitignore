@@ -1,0 +1,7 @@
+.build/
+.dev/
+.swiftpm/
+*.xcodeproj
+__pycache__/
+build.noindex/
+packaging/clamav-certs/*.crt

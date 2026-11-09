@@ -1,0 +1,362 @@
+{
+  "about": "21 个够大的模型：只列最大的 20 个，总的照报",
+  "case": "rules/space.system/ai-model-cap",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2214592512,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-29",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m01",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m01",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m01（2.21 GB），21 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2281701376,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-28",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m02",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m02",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m02（2.28 GB），22 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2348810240,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-27",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m03",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m03",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m03（2.35 GB），23 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2415919104,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-26",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m04",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m04",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m04（2.42 GB），24 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2483027968,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-25",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m05",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m05",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m05（2.48 GB），25 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2550136832,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-24",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m06",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m06",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m06（2.55 GB），26 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2617245696,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-23",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m07",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m07",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m07（2.62 GB），27 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2684354560,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-22",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m08",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m08",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m08（2.68 GB），28 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2751463424,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-21",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m09",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m09",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m09（2.75 GB），29 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2818572288,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-20",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m10",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m10",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m10（2.82 GB），30 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2885681152,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-19",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m11",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m11",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m11（2.89 GB），31 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2952790016,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-18",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m12",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m12",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m12（2.95 GB），32 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 3019898880,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-17",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m13",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m13",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m13（3.02 GB），33 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 3087007744,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-16",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m14",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m14",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m14（3.09 GB），34 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 3154116608,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-15",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m15",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m15",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m15（3.15 GB），35 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 3221225472,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-14",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m16",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m16",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m16（3.22 GB），36 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 3288334336,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-13",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m17",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m17",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m17（3.29 GB），37 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 3355443200,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-12",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m18",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m18",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m18（3.36 GB），38 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 3422552064,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-11",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m19",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m19",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m19（3.42 GB），39 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 3489660928,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-10",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/m20",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--m20",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/m20（3.49 GB），40 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 59190018048,
+            "category": "space",
+            "evidence": {
+              "how": "大的模型单独列出来了；用不到的删掉，再用时会重新下载",
+              "tools": "Hugging Face 59.19 GB"
+            },
+            "path": "",
+            "rule": "space.ai-models",
+            "severity": "low",
+            "title": "AI 工具下载的模型一共占了 59.19 GB",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

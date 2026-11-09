@@ -1,0 +1,124 @@
+{
+  "about": "家目录里、它的文件夹和下一层、iTunes 和 lume 放的 .ipsw：各报一条，大的在前；一天内动过的、太小的、链接、更深的、隐藏文件夹里的、Library 别处的不报",
+  "case": "rules/space.ipsw/found",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 1048576,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-07-22",
+              "file": "old.ipsw",
+              "how": "用不到就移到废纸篓；要再用时 lume、UTM、Apple Configurator 会从 Apple 重新下载",
+              "why": "装 macOS 虚拟机、恢复或升级设备时下载的整套系统；装好以后就用不到了"
+            },
+            "path": "~/old.ipsw",
+            "rule": "space.ipsw",
+            "severity": "low",
+            "title": "系统恢复镜像 old.ipsw（1 MB），90 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-04-03",
+              "file": "iPhone16,2_18.1_22B83_Restore.ipsw",
+              "how": "用不到就移到废纸篓；要再用时 lume、UTM、Apple Configurator 会从 Apple 重新下载",
+              "why": "装 macOS 虚拟机、恢复或升级设备时下载的整套系统；装好以后就用不到了"
+            },
+            "path": "~/Library/iTunes/iPhone Software Updates/iPhone16,2_18.1_22B83_Restore.ipsw",
+            "rule": "space.ipsw",
+            "severity": "low",
+            "title": "系统恢复镜像 iPhone16,2_18.1_22B83_Restore.ipsw（2.1 MB），200 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-10",
+              "file": "UniversalMac_26.5_25F71_Restore.ipsw",
+              "how": "用不到就移到废纸篓；要再用时 lume、UTM、Apple Configurator 会从 Apple 重新下载",
+              "why": "装 macOS 虚拟机、恢复或升级设备时下载的整套系统；装好以后就用不到了"
+            },
+            "path": "~/.lume/UniversalMac_26.5_25F71_Restore.ipsw",
+            "rule": "space.ipsw",
+            "severity": "low",
+            "title": "系统恢复镜像 UniversalMac_26.5_25F71_Restore.ipsw（2.1 MB），40 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-10-10",
+              "file": "iPhone17,1_26.1_23B85_Restore.IPSW",
+              "how": "用不到就移到废纸篓；要再用时 lume、UTM、Apple Configurator 会从 Apple 重新下载",
+              "why": "装 macOS 虚拟机、恢复或升级设备时下载的整套系统；装好以后就用不到了"
+            },
+            "path": "~/Downloads/iPhone17,1_26.1_23B85_Restore.IPSW",
+            "rule": "space.ipsw",
+            "severity": "low",
+            "title": "系统恢复镜像 iPhone17,1_26.1_23B85_Restore.IPSW（2.1 MB），10 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 3145728,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-20",
+              "file": "UniversalMac_26.6.2_25G83_Restore.ipsw",
+              "how": "用不到就移到废纸篓；要再用时 lume、UTM、Apple Configurator 会从 Apple 重新下载",
+              "why": "装 macOS 虚拟机、恢复或升级设备时下载的整套系统；装好以后就用不到了"
+            },
+            "path": "~/lume-ipsw/UniversalMac_26.6.2_25G83_Restore.ipsw",
+            "rule": "space.ipsw",
+            "severity": "low",
+            "title": "系统恢复镜像 UniversalMac_26.6.2_25G83_Restore.ipsw（3.1 MB），30 天前下载",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

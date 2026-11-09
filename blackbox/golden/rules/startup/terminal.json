@@ -1,0 +1,103 @@
+{
+  "about": "终端每开一个窗口先跑的命令（只记程序名）、iTerm2 启动时跑的脚本；清掉以后不报",
+  "case": "rules/startup/terminal",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你自己放的就留着；不认得的从这个文件夹里删掉",
+              "scripts": "hello.py；status_bar.py"
+            },
+            "path": "~/Library/Application Support/iTerm2/Scripts/AutoLaunch",
+            "rule": "startup.iterm-autolaunch",
+            "severity": "low",
+            "title": "iTerm2 每次打开都会运行 2 个脚本",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你自己设的就留着；不认得的在 终端 → 设置 → 描述文件 → Shell，清掉「运行命令」",
+              "profiles": "Basic：start；Tool：helper-cli"
+            },
+            "path": "~/Library/Preferences/com.apple.Terminal.plist",
+            "rule": "startup.terminal-command",
+            "severity": "low",
+            "title": "终端每开一个窗口都会先运行一条命令（2 个描述文件）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "终端的命令清掉了，AutoLaunch 里只剩隐藏文件"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

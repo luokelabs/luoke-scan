@@ -1,0 +1,107 @@
+{
+  "about": "系统偏好里的登录、退出钩子：各报一条；用户自己偏好里的从来不跑，不算；空的不算",
+  "case": "rules/startup/login-hook",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "不认得的话，在终端里运行 sudo defaults delete /Library/Preferences/com.apple.loginwindow LoginHook",
+              "script": "/Library/Scripts/.hook.sh",
+              "why": "这是早就不推荐的老办法，现在几乎只有很旧的软件和恶意软件还在用"
+            },
+            "key": "$FIXTURE/SystemLibrary/Preferences/com.apple.loginwindow.plist#LoginHook",
+            "path": "$FIXTURE/SystemLibrary/Preferences/com.apple.loginwindow.plist",
+            "rule": "startup.login-hook",
+            "severity": "medium",
+            "title": "每次登录都会以管理员身份运行 .hook.sh",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "不认得的话，在终端里运行 sudo defaults delete /Library/Preferences/com.apple.loginwindow LogoutHook",
+              "script": "/Library/Scripts/cleanup.sh",
+              "why": "这是早就不推荐的老办法，现在几乎只有很旧的软件和恶意软件还在用"
+            },
+            "key": "$FIXTURE/SystemLibrary/Preferences/com.apple.loginwindow.plist#LogoutHook",
+            "path": "$FIXTURE/SystemLibrary/Preferences/com.apple.loginwindow.plist",
+            "rule": "startup.login-hook",
+            "severity": "medium",
+            "title": "每次退出登录都会以管理员身份运行 cleanup.sh",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "系统偏好里的钩子清空了"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

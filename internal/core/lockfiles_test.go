@@ -1,0 +1,548 @@
+package core
+
+import (
+	"path/filepath"
+	"reflect"
+	"strconv"
+	"strings"
+	"testing"
+)
+
+func depsOf(t *testing.T, name, data string) []DepPkg {
+	t.Helper()
+	got, ok := ParseLockfile(name, []byte(data))
+	if !ok {
+		t.Fatalf("%s: not read", name)
+	}
+	return got
+}
+
+func wantDeps(t *testing.T, name string, got []DepPkg, eco string, want ...string) {
+	t.Helper()
+	var specs []string
+	for _, d := range got {
+		if d.Eco != eco {
+			t.Errorf("%s: %v has ecosystem %q", name, d, d.Eco)
+		}
+		spec := d.Name + "@" + d.Version
+		if d.Source != "" {
+			spec += " (" + d.Source + ")"
+		}
+		specs = append(specs, spec)
+	}
+	if want == nil {
+		want = []string{}
+	}
+	if specs == nil {
+		specs = []string{}
+	}
+	if !reflect.DeepEqual(specs, want) {
+		t.Errorf("%s:\n got %q\nwant %q", name, specs, want)
+	}
+}
+
+func TestNpmLockV3(t *testing.T) {
+	lock := `{
+  "name": "demo-app",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {"name": "demo-app", "version": "1.0.0", "workspaces": ["packages/*"], "dependencies": {"lodash": "^4.17.21"}},
+    "node_modules/lodash": {"version": "4.17.21", "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz", "integrity": "sha512-x"},
+    "node_modules/@babel/core": {"version": "7.24.0", "dev": true},
+    "node_modules/@babel/core/node_modules/semver": {"version": "6.3.1", "dev": true},
+    "node_modules/string-width-cjs": {"name": "string-width", "version": "4.2.3"},
+    "node_modules/ui": {"resolved": "packages/ui", "link": true},
+    "packages/ui": {"name": "ui", "version": "0.0.1"},
+    "node_modules/local-thing": {"version": "file:../local-thing"},
+    "node_modules/from-git": {"version": "git+ssh://git@github.com/example/from-git.git#abc"},
+    "node_modules/git-named": {"version": "1.0.0", "resolved": "git+ssh://git@github.com/acme/git-named.git#0123abcd"},
+    "node_modules/vendored": {"version": "2.0.0", "resolved": "file:vendor/vendored-2.0.0.tgz"},
+    "node_modules/some-tarball": {"version": "3.0.0", "resolved": "https://example.com/downloads/some-tarball.tgz"},
+    "node_modules/acme-internal": {"version": "1.4.0", "resolved": "https://npm.acme.corp/acme-internal/-/acme-internal-1.4.0.tgz"},
+    "node_modules/via-yarn-mirror": {"version": "1.0.0", "resolved": "https://registry.yarnpkg.com/via-yarn-mirror/-/via-yarn-mirror-1.0.0.tgz"}
+  }
+}`
+	// git, a local file and a tarball at some URL are not registry packages, whatever their version says.
+	wantDeps(t, "v3", depsOf(t, "package-lock.json", lock), "npm",
+		"@babel/core@7.24.0", "acme-internal@1.4.0 (npm.acme.corp)", "lodash@4.17.21", "semver@6.3.1", "string-width@4.2.3",
+		"via-yarn-mirror@1.0.0")
+}
+
+func TestNpmLockV1(t *testing.T) {
+	lock := `{
+  "name": "old-app", "version": "1.0.0", "lockfileVersion": 1, "requires": true,
+  "dependencies": {
+    "left-pad": {"version": "1.3.0", "resolved": "https://registry.npmjs.org/left-pad/-/left-pad-1.3.0.tgz"},
+    "@scope/pkg": {"version": "2.0.0", "dependencies": {"debug": {"version": "2.6.9"}}},
+    "my-alias": {"version": "npm:event-stream@3.3.6"},
+    "linked": {"version": "file:../linked"},
+    "git-named": {"version": "1.0.0", "resolved": "git+https://github.com/acme/git-named.git#abc"}
+  }
+}`
+	wantDeps(t, "v1", depsOf(t, "npm-shrinkwrap.json", lock), "npm",
+		"@scope/pkg@2.0.0", "debug@2.6.9", "event-stream@3.3.6", "left-pad@1.3.0")
+}
+
+func TestPnpmLock(t *testing.T) {
+	v5 := `lockfileVersion: 5.4
+
+specifiers:
+  lodash: ^4.17.21
+
+dependencies:
+  lodash: 4.17.21
+
+packages:
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-x}
+    dev: false
+
+  /@types/react/18.0.0_react@18.2.0:
+    resolution: {integrity: sha512-y}
+`
+	wantDeps(t, "pnpm 5", depsOf(t, "pnpm-lock.yaml", v5), "npm", "@types/react@18.0.0", "lodash@4.17.21")
+
+	v6 := `lockfileVersion: '6.0'
+
+dependencies:
+  react-dom:
+    specifier: ^18.2.0
+    version: 18.2.0(react@18.2.0)
+
+packages:
+
+  /react-dom@18.2.0(react@18.2.0):
+    resolution: {integrity: sha512-a}
+    dependencies:
+      loose-envify: 1.4.0
+
+  /@babel/runtime@7.24.0:
+    resolution: {integrity: sha512-b}
+`
+	wantDeps(t, "pnpm 6", depsOf(t, "pnpm-lock.yaml", v6), "npm", "@babel/runtime@7.24.0", "react-dom@18.2.0")
+
+	v9 := `lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+
+importers:
+
+  .:
+    dependencies:
+      chalk:
+        specifier: ^5.3.0
+        version: 5.3.0
+
+packages:
+
+  '@esbuild/darwin-arm64@0.21.5':
+    resolution: {integrity: sha512-c}
+    cpu: [arm64]
+
+  chalk@5.3.0:
+    resolution: {integrity: sha512-d}
+
+  my-local@file:packages/local:
+    resolution: {directory: packages/local, type: directory}
+
+snapshots:
+
+  '@esbuild/darwin-arm64@0.21.5':
+    optional: true
+
+  chalk@5.3.0: {}
+
+  vite@5.2.0(@types/node@20.0.0):
+    dependencies:
+      esbuild: 0.21.5
+`
+	wantDeps(t, "pnpm 9", depsOf(t, "pnpm-lock.yaml", v9), "npm", "@esbuild/darwin-arm64@0.21.5", "chalk@5.3.0", "vite@5.2.0")
+}
+
+func TestYarnLock(t *testing.T) {
+	classic := `# THIS IS AN AUTOGENERATED FILE. DO NOT EDIT THIS FILE DIRECTLY.
+# yarn lockfile v1
+
+
+"@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4":
+  version "7.12.13"
+  resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.12.13.tgz#abc"
+  integrity sha512-x
+  dependencies:
+    "@babel/highlight" "^7.10.4"
+
+lodash@^4.17.20, lodash@^4.17.21:
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#def"
+
+strip-ansi-cjs@npm:strip-ansi@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz"
+
+"from-git@https://github.com/example/from-git.git#v1":
+  version "0.0.0"
+  resolved "https://github.com/example/from-git.git#abc"
+
+gh-short@github:acme/gh-short#v1:
+  version "1.0.0"
+  resolved "https://codeload.github.com/acme/gh-short/tar.gz/abc"
+
+shorthand@acme/shorthand:
+  version "1.0.0"
+
+local-tgz@file:./vendor/local-tgz-1.0.0.tgz:
+  version "1.0.0"
+
+semver-but-git@^1.0.0:
+  version "1.0.0"
+  resolved "git+https://github.com/acme/semver-but-git.git#abc"
+
+acme-internal@^1.4.0:
+  version "1.4.0"
+  resolved "https://npm.acme.corp/acme-internal/-/acme-internal-1.4.0.tgz#sha1"
+`
+	// git, github:, a user/repo shorthand, file: and a git resolved are left out, whatever their version line says.
+	wantDeps(t, "yarn classic", depsOf(t, "yarn.lock", classic), "npm",
+		"@babel/code-frame@7.12.13", "acme-internal@1.4.0 (npm.acme.corp)", "lodash@4.17.21", "strip-ansi@6.0.1")
+
+	berry := `# This file is generated by running "yarn install" inside your project.
+# Manual changes might be lost - proceed with caution!
+
+__metadata:
+  version: 8
+  cacheKey: 10c0
+
+"@types/node@npm:^20.0.0":
+  version: 20.11.0
+  resolution: "@types/node@npm:20.11.0"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10c0/abc
+  languageName: node
+  linkType: hard
+
+"demo@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "demo@workspace:."
+  languageName: unknown
+  linkType: soft
+
+"resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>":
+  version: 1.22.8
+  resolution: "resolve@patch:resolve@npm%3A1.22.8#optional!builtin<compat/resolve>::version=1.22.8&hash=c3c19d"
+  languageName: node
+  linkType: hard
+
+"string-width-cjs@npm:string-width@^4.2.0":
+  version: 4.2.3
+  resolution: "string-width@npm:4.2.3"
+`
+	wantDeps(t, "yarn berry", depsOf(t, "yarn.lock", berry), "npm", "@types/node@20.11.0", "string-width@4.2.3")
+}
+
+func TestBunLock(t *testing.T) {
+	lock := `{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "demo",
+      "dependencies": {
+        "zod": "^3.23.0",
+      },
+    },
+  },
+  // a comment bun does not write, read past anyway
+  "packages": {
+    "zod": ["zod@3.23.8", "", {}, "sha512-x"],
+    "@types/bun": ["@types/bun@1.1.0", "", { "dependencies": { "bun-types": "1.1.0" } }, "sha512-y"],
+    "foo/bar": ["bar@2.0.0", "", {}, "sha512-z"],
+    "acme-internal": ["acme-internal@1.4.0", "https://npm.acme.corp/", {}, "sha512-w"],
+    "ui": ["ui@workspace:packages/ui"],
+    "gh": ["gh@github:example/gh#abc", {}, "example-gh-abc"],
+  },
+}
+`
+	wantDeps(t, "bun", depsOf(t, "bun.lock", lock), "npm", "@types/bun@1.1.0", "acme-internal@1.4.0 (npm.acme.corp)", "bar@2.0.0", "zod@3.23.8")
+}
+
+func TestUvLock(t *testing.T) {
+	lock := `version = 1
+requires-python = ">=3.11"
+
+[[package]]
+name = "demo"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "requests" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "requests", specifier = ">=2.31" }]
+
+[[package]]
+name = "requests"
+version = "2.31.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "idna" },
+]
+sdist = { url = "https://files.pythonhosted.org/requests-2.31.0.tar.gz", hash = "sha256:x", size = 1 }
+wheels = [
+    { url = "https://files.pythonhosted.org/requests-2.31.0-py3-none-any.whl", hash = "sha256:y", size = 2 },
+]
+
+[[package]]
+name = "idna"
+version = "3.6"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "from-git"
+version = "1.0.0"
+source = { git = "https://github.com/example/from-git?rev=abc#abc" }
+
+[[package]]
+name = "acme-utils"
+version = "2.0.0"
+source = { registry = "https://pypi.acme.corp/simple" }
+`
+	wantDeps(t, "uv", depsOf(t, "uv.lock", lock), "PyPI", "acme-utils@2.0.0 (pypi.acme.corp)", "idna@3.6", "requests@2.31.0")
+}
+
+func TestPoetryLock(t *testing.T) {
+	lock := `# This file is automatically @generated by Poetry 1.8.2 and should not be changed by hand.
+
+[[package]]
+name = "certifi"
+version = "2024.2.2"
+description = "Python package for providing Mozilla's CA Bundle."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "certifi-2024.2.2-py3-none-any.whl", hash = "sha256:x"},
+]
+
+[[package]]
+name = "Typing_Extensions"
+version = "4.10.0"
+description = "Backported and Experimental Type Hints"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+version = ">=1.0"
+
+[[package]]
+name = "mylib"
+version = "0.2.0"
+description = ""
+optional = false
+python-versions = "*"
+develop = true
+
+[package.source]
+type = "directory"
+url = "../mylib"
+
+[[package]]
+name = "acme-utils"
+version = "2.0.0"
+description = ""
+optional = false
+python-versions = "*"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.acme.corp/simple"
+reference = "acme"
+
+[metadata]
+lock-version = "2.0"
+python-versions = "^3.11"
+content-hash = "abc"
+`
+	wantDeps(t, "poetry", depsOf(t, "poetry.lock", lock), "PyPI", "Typing_Extensions@4.10.0", "acme-utils@2.0.0 (pypi.acme.corp)", "certifi@2024.2.2")
+}
+
+func TestPipfileLock(t *testing.T) {
+	lock := `{
+    "_meta": {"hash": {"sha256": "x"}, "pipfile-spec": 6, "requires": {"python_version": "3.11"}, "sources": [
+        {"name": "pypi", "url": "https://pypi.org/simple", "verify_ssl": true},
+        {"name": "acme", "url": "https://pypi.acme.corp/simple", "verify_ssl": true}]},
+    "default": {
+        "requests": {"hashes": ["sha256:x"], "index": "pypi", "version": "==2.31.0"},
+        "mylib": {"editable": true, "path": "."},
+        "from-git": {"git": "https://github.com/example/from-git.git", "ref": "abc"},
+        "acme-utils": {"hashes": [], "index": "acme", "version": "==2.0.0"}
+    },
+    "develop": {
+        "pytest": {"hashes": [], "version": "==8.0.0"}
+    }
+}`
+	wantDeps(t, "pipfile", depsOf(t, "Pipfile.lock", lock), "PyPI", "acme-utils@2.0.0 (pypi.acme.corp)", "pytest@8.0.0", "requests@2.31.0")
+}
+
+func TestCargoLock(t *testing.T) {
+	lock := `# This file is automatically @generated by Cargo.
+# It is not intended for manual editing.
+version = 3
+
+[[package]]
+name = "demo"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "serde"
+version = "1.0.197"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "abc"
+
+[[package]]
+name = "sparse-one"
+version = "0.3.0"
+source = "sparse+https://index.crates.io/"
+
+[[package]]
+name = "from-git"
+version = "0.1.0"
+source = "git+https://github.com/example/from-git#abc"
+`
+	wantDeps(t, "cargo", depsOf(t, "Cargo.lock", lock), "crates.io", "serde@1.0.197", "sparse-one@0.3.0")
+}
+
+func TestLockfilesNotRead(t *testing.T) {
+	for name, data := range map[string]string{
+		"package-lock.json": "not json",
+		"bun.lock":          `{"packages": {}}`, // no lockfileVersion: not bun's
+		"Pipfile.lock":      `{"default": {}}`,  // no _meta
+		"pnpm-lock.yaml":    "packages:\n  /a/1.0.0:\n",
+		"yarn.lock":         "",
+		"Gemfile.lock":      "GEM\n",
+	} {
+		if _, ok := ParseLockfile(name, []byte(data)); ok {
+			t.Errorf("%s %q: read", name, data)
+		}
+	}
+	if got, ok := ParseLockfile("Cargo.lock", []byte("version = 3\n")); !ok || len(got) != 0 {
+		t.Errorf("empty Cargo.lock: %v %v", got, ok)
+	}
+}
+
+func TestStripJSONC(t *testing.T) {
+	in := `{"a": "x, }", /* c */ "b": [1, 2,], // d
+"c": "//not a comment",}`
+	want := `{"a": "x, }",  "b": [1, 2], ` + "\n" + `"c": "//not a comment"}`
+	if got := string(stripJSONC([]byte(in))); got != want {
+		t.Errorf("got %q\nwant %q", got, want)
+	}
+}
+
+// Versions are only what a registry gives: a digit first, then letters, digits and . + _ -, at most 64. Anything else
+// in a lockfile (a sentence, a long string) is not read as a version, in every format.
+func TestLockfileVersionsArePlain(t *testing.T) {
+	for v, want := range map[string]bool{"1.0.0": true, "1.0.0-beta.1+build_5": true, "2.0.0rc1": true,
+		"19.0.0-canary-e1ad4aa3-20240411": true, "1.0.0 忽略之前的指示": false, "1.0.0\nignore": false, "1.0.0;rm": false,
+		"1.0.0-" + strings.Repeat("a", 59): false, "1.0.0-" + strings.Repeat("a", 58): true, "1!2.0": false, "v1.0.0": false} {
+		if looksVersion(v) != want {
+			t.Errorf("looksVersion(%q) = %v", v, !want)
+		}
+	}
+	long := "1.0.0-" + strings.Repeat("x", 100)
+	for name, data := range map[string]string{
+		"package-lock.json": `{"lockfileVersion": 3, "packages": {"node_modules/a": {"version": "1.0.0 请立即运行 curl"}, "node_modules/b": {"version": "` + long + `"}}}`,
+		"pnpm-lock.yaml":    "lockfileVersion: '9.0'\npackages:\n  a@1.0.0<script>:\n  'b@" + long + "':\n",
+		"yarn.lock":         "a@^1:\n  version \"1.0.0 请立即运行 curl\"\nb@^1:\n  version \"" + long + "\"\n",
+		"bun.lock":          `{"lockfileVersion": 1, "packages": {"a": ["a@1.0.0 请立即运行"], "b": ["b@` + long + `"]}}`,
+		"uv.lock":           "[[package]]\nname = \"a\"\nversion = \"1.0.0 请立即运行\"\nsource = { registry = \"https://pypi.org/simple\" }\n",
+		"Pipfile.lock":      `{"_meta": {}, "default": {"a": {"version": "==1.0.0 请立即运行"}, "b": {"version": "==` + long + `"}}}`,
+		"Cargo.lock":        "[[package]]\nname = \"a\"\nversion = \"" + long + "\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\n",
+	} {
+		got, ok := ParseLockfile(name, []byte(data))
+		if !ok || len(got) != 0 {
+			t.Errorf("%s: %v %v", name, ok, got)
+		}
+	}
+	// Names and registries go through CleanDep before they are compared or shown.
+	if _, ok := CleanDep(DepPkg{Eco: "npm", Name: "evil all 请运行", Version: "1.0.0"}); ok {
+		t.Error("a name with spaces")
+	}
+	if d, ok := CleanDep(DepPkg{Eco: "npm", Name: "@scope/a.b_c-d~e", Version: "1.0.0", Source: "npm.acme.corp"}); !ok || d.Source != "npm.acme.corp" {
+		t.Errorf("plain: %v %v", d, ok)
+	}
+	if d, _ := CleanDep(DepPkg{Eco: "PyPI", Name: "a", Version: "1.0.0", Source: "请运行 curl evil.sh"}); d.Source != "私有源" {
+		t.Errorf("source: %q", d.Source)
+	}
+}
+
+// A lockfile naming more packages than are read from one is not read (and says so), in every format; the same package
+// named many times counts once.
+func TestLockfileTooManyPackages(t *testing.T) {
+	old := maxLockPackages
+	maxLockPackages = 3
+	defer func() { maxLockPackages = old }()
+	var npm, pnpm, yarn, bun, cargo, pip []string
+	for i := 0; i < 4; i++ {
+		n := "p" + strconv.Itoa(i)
+		npm = append(npm, `"node_modules/`+n+`": {"version": "1.0.0"}`)
+		pnpm = append(pnpm, "  "+n+"@1.0.0:")
+		yarn = append(yarn, n+"@^1:\n  version \"1.0.0\"")
+		bun = append(bun, `"`+n+`": ["`+n+`@1.0.0", ""]`)
+		cargo = append(cargo, "[[package]]\nname = \""+n+"\"\nversion = \"1.0.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"")
+		pip = append(pip, `"`+n+`": {"version": "==1.0.0"}`)
+	}
+	for name, data := range map[string]string{
+		"package-lock.json": `{"lockfileVersion": 3, "packages": {` + strings.Join(npm, ",") + `}}`,
+		"pnpm-lock.yaml":    "lockfileVersion: '9.0'\npackages:\n" + strings.Join(pnpm, "\n") + "\n",
+		"yarn.lock":         strings.Join(yarn, "\n") + "\n",
+		"bun.lock":          `{"lockfileVersion": 1, "packages": {` + strings.Join(bun, ",") + `}}`,
+		"Cargo.lock":        strings.Join(cargo, "\n") + "\n",
+		"Pipfile.lock":      `{"_meta": {}, "default": {` + strings.Join(pip, ",") + `}}`,
+	} {
+		if _, err := parseLockfile(name, []byte(data)); err != errLockTooLarge {
+			t.Errorf("%s: %v", name, err)
+		}
+	}
+	// v1's nested dependencies too; and the same package many times is one.
+	v1 := `{"lockfileVersion": 1, "dependencies": {"a": {"version": "1.0.0", "dependencies": {"b": {"version": "1.0.0",
+		"dependencies": {"c": {"version": "1.0.0", "dependencies": {"d": {"version": "1.0.0"}}}}}}}}}`
+	if _, err := parseLockfile("package-lock.json", []byte(v1)); err != errLockTooLarge {
+		t.Errorf("v1: %v", err)
+	}
+	same := "lockfileVersion: '9.0'\npackages:\n" + strings.Repeat("  a@1.0.0:\n", 50)
+	if got, err := parseLockfile("pnpm-lock.yaml", []byte(same)); err != nil || len(got) != 1 {
+		t.Errorf("same package: %v %v", got, err)
+	}
+}
+
+// A lockfile too large in packages is said in supplychain.partial, like one too large in bytes.
+func TestSupplyChainLockfileTooManyPackages(t *testing.T) {
+	old := maxLockPackages
+	maxLockPackages = 2
+	defer func() { maxLockPackages = old }()
+	l, s := scFixture(t)
+	scFile(t, filepath.Join(s.Dir, MaliciousListName), scList)
+	got, err := scRun(t, l, s, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	partial := ""
+	for _, f := range got {
+		if strings.HasPrefix(f.Title, "项目 web") {
+			t.Errorf("read a lockfile over the limit: %s", f.Title)
+		}
+		if f.Rule == "supplychain.partial" {
+			partial = f.Evidence["files"]
+		}
+	}
+	if !strings.Contains(partial, "~/Projects/web/package-lock.json") {
+		t.Fatalf("partial: %q", partial)
+	}
+}

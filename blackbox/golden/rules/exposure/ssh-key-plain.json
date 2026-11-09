@@ -1,0 +1,62 @@
+{
+  "about": "没设口令的 ed25519 私钥：报一条；公钥、known_hosts、config 不看",
+  "case": "rules/exposure/ssh-key-plain",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "ssh-keygen -p -f ~/.ssh/id_ed25519 加一个口令；~/.ssh/config 里写 UseKeychain yes 和 AddKeysToAgent yes，平时用时不用每次输",
+              "type": "ssh-ed25519",
+              "why": "备份、同步盘、被偷走的电脑里的这个文件，都能直接拿去用"
+            },
+            "path": "~/.ssh/id_ed25519",
+            "rule": "exposure.ssh-key-plain",
+            "severity": "low",
+            "title": "SSH 私钥 id_ed25519 没设口令：谁拿到这个文件就能用它登录",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

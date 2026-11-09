@@ -1,0 +1,16 @@
+螺壳扫描（luoke-scan）
+Copyright 2026 螺壳实验室 Luoke Labs
+
+以 Apache License 2.0 发布，见 LICENSE。「螺壳」「Luoke」的名称、图标和品牌素材不随许可授予（Apache-2.0 第 6 条），用它们发布改版要另经同意。
+
+packaging/third-party/ 里是第三方组件的许可证原文，不是本项目的代码：clamav/ 下取自 ClamAV 源码包的 COPYING/ 目录，是 ClamAV 编进去的 UnRAR、libmspack、YARA、bzip2、zlib 等代码的许可证。打包时它们和各组件自己的许可证一起放进「螺壳扫描.app」的 Contents/Resources/licenses/。
+
+发布的「螺壳扫描.app」随带下面这些第三方程序和库，各按自己的许可（从 Homebrew 装好的版本拷进来，只改了库的查找路径、重新签名，代码没有改动）：
+- ClamAV（clamscan、freshclam、sigtool 和它们的库）：GPLv2，带一条允许和 OpenSSL 链接的例外；
+- libclamunrar：UnRAR 许可；
+- libmspack：LGPL-2.1；
+- YARA、PCRE2、json-c、OpenSSL、libmagic、jansson：各自的许可。
+
+它们是单独的程序和库。螺壳扫描只用命令行起 clamscan、freshclam、sigtool、yara 这几个进程，自己的两个程序（luoke-scan、luoke-scan-admin）不链接其中任何一个库。每个组件的版本、许可证、包里的哪些文件、源码在哪，见 .app 里的 Contents/Resources/licenses/THIRD-PARTY.md（打包时由 scripts/package_app.py 生成）；ClamAV 完整的对应源码怎么取得，也写在那里。
+
+病毒库（ClamAV 的特征库）不随包发布，由 freshclam 在用户的 Mac 上下载。

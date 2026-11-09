@@ -1,0 +1,65 @@
+# 打 v<版本> 的 tag 就出一个 release：测过、打好包（不签名，只是临时签名能跑），挂上 tar 包和它的 SHA-256。
+# 螺壳每天打包时从这里取最新的 release，和别的一起用 Developer ID 签名、公证（集成方案在 luoke-core 的 PR 里）。
+#
+# 仓库变量 LUOKE_RELEASE_TEAM：root 那一步核对签名用的团队标识，编进 luoke-scan，源码里不写。
+# 病毒库不在这里下载：打包用 --without-virus-db，不核「包里的 ClamAV 能不能读官方病毒库」那一项（输出里写明；EICAR 用自带的一行
+# 测试库照样扫，YARA、RAR 支持、各工具能不能起照样核）。螺壳出版时在有病毒库的机器上核这一项。
+name: 发行
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release:
+    name: 测试、打包、发行
+    runs-on: macos-26
+    timeout-minutes: 60
+    env:
+      CC: /usr/bin/clang
+    steps:
+      - uses: actions/checkout@v7
+      - name: 版本对得上
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          manifest=$(python3 -c 'import json;print(json.load(open("packaging/luoke-accessory.json"))["version"])')
+          tool=$(sed -n 's/^const ToolVersion = "\(.*\)"$/\1/p' internal/service/service.go)
+          echo "tag $tag, 配件清单 $manifest, ToolVersion $tool"
+          [ "$tag" = "$manifest" ] && [ "$tag" = "$tool" ] || { echo "tag、配件清单、ToolVersion 要一样"; exit 1; }
+      - name: 工具链
+        run: |
+          sw_vers
+          go version
+      - name: 检查和测试
+        run: |
+          go vet ./...
+          go test ./...
+      - name: 从外面测（blackbox）
+        run: |
+          go build -o .build/go/luoke-scan ./cmd/luoke-scan
+          LUOKE_SCAN_BIN=$PWD/.build/go/luoke-scan python3 -I blackbox/run.py
+      - name: ClamAV 和 YARA
+        run: brew install clamav yara
+      - name: 打包
+        env:
+          LUOKE_RELEASE_TEAM: ${{ vars.LUOKE_RELEASE_TEAM }}
+        run: python3 scripts/package_app.py --tarball --without-virus-db --tools-from "$(brew --prefix)"
+      - name: 发行
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd build.noindex
+          gh release create "$GITHUB_REF_NAME" luoke-scan-*-macos-arm64.tar.gz luoke-scan-*-macos-arm64.tar.gz.sha256 \
+            --title "luoke-scan ${GITHUB_REF_NAME#v}" \
+            --notes "螺壳扫描 ${GITHUB_REF_NAME#v}（Go 版）。包里是临时签名的 luoke-scan/（螺壳.app 的 Contents 下的样子：Helpers、Frameworks、Resources），只作记录：螺壳打包时按这个 tag 现编、放进螺壳.app，跟螺壳一起签名、公证。"

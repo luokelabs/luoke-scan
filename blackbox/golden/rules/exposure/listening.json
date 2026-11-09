@@ -1,0 +1,187 @@
+{
+  "about": "在所有网络上、局域网地址上监听的报；只听本机的、系统的、别的用户的不报；同一个程序几个进程合成一条",
+  "case": "rules/exposure/listening",
+  "steps": [
+    {
+      "fakes": {
+        "processes": [
+          {
+            "path": "/Applications/Safari.app/Contents/MacOS/Safari",
+            "pid": 400,
+            "ppid": 1,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "listening": [
+              {
+                "address": "0.0.0.0",
+                "port": 3000
+              },
+              {
+                "address": "127.0.0.1",
+                "port": 9229
+              }
+            ],
+            "path": "~/.local/bin/devserver",
+            "pid": 3001,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "listening": [
+              {
+                "address": "::",
+                "port": 3001
+              }
+            ],
+            "path": "~/.local/bin/devserver",
+            "pid": 3002,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "listening": [
+              {
+                "address": "192.168.1.20",
+                "port": 8080
+              }
+            ],
+            "path": "~/Applications/Tool.app/Contents/MacOS/Tool",
+            "pid": 3003,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "listening": [
+              {
+                "address": "127.0.0.1",
+                "port": 5432
+              },
+              {
+                "address": "::1",
+                "port": 6379
+              },
+              {
+                "address": "::ffff:127.0.0.1",
+                "port": 7000
+              }
+            ],
+            "path": "~/.local/bin/only-local",
+            "pid": 3004,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "listening": [
+              {
+                "address": "0.0.0.0",
+                "port": 5000
+              }
+            ],
+            "path": "/usr/libexec/sharingd",
+            "pid": 3005,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "listening": [
+              {
+                "address": "0.0.0.0",
+                "port": 4000
+              }
+            ],
+            "path": "~/.local/bin/someone-elses",
+            "pid": 3006,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": 0
+          },
+          {
+            "path": "~/.local/bin/quiet",
+            "pid": 3007,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "addresses": "0.0.0.0、::",
+              "how": "开发用的服务改成只听 127.0.0.1（多数工具有 --host 127.0.0.1 之类的选项）；不需要就关掉。防火墙打开时会先问你放不放行",
+              "ports": "3000、3001"
+            },
+            "key": "exposure.listening:~/.local/bin/devserver",
+            "path": "~/.local/bin/devserver",
+            "rule": "exposure.listening",
+            "severity": "low",
+            "title": "devserver 在所有网络上监听 3000、3001 端口：同一个网络里的人能连进来",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "addresses": "192.168.1.20",
+              "how": "开发用的服务改成只听 127.0.0.1（多数工具有 --host 127.0.0.1 之类的选项）；不需要就关掉。防火墙打开时会先问你放不放行",
+              "ports": "8080"
+            },
+            "key": "exposure.listening:~/Applications/Tool.app/Contents/MacOS/Tool",
+            "path": "~/Applications/Tool.app/Contents/MacOS/Tool",
+            "rule": "exposure.listening",
+            "severity": "low",
+            "title": "Tool 在局域网地址上监听 8080 端口：同一个网络里的人能连进来",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

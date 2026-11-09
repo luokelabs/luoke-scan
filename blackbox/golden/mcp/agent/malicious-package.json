@@ -1,0 +1,1185 @@
+{
+  "about": "项目用了已知恶意的包：outbox 里是急事，卡片写清怎么办，只给「在访达里显示」和「处理好了」，不给删",
+  "case": "mcp/agent/malicious-package",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "malicious-import",
+        "--data",
+        "$FIXTURE/data",
+        "$FIXTURE/osv"
+      ],
+      "stdout": [
+        "恶意包名单导入好了：这次 6 条（换掉原有的 0 条），名单里现在共 6 条，日期 2026-10-15（读了 7 份 OSV 记录）",
+        "没留：不是 MAL- 的 1 条、撤回的 0 条、别的生态的 0 个包、没法比对版本的 0 个包、读不了的 0 份"
+      ]
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "系统设置 → 通用 → 软件更新；重启也会释放交换文件",
+              "pending": "1",
+              "uptime_days": "79"
+            },
+            "path": "",
+            "rule": "posture.pending-updates",
+            "severity": "low",
+            "title": "有 1 个系统更新等着装，这台 Mac 已经 79 天没重启",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "系统设置 → 隐私与安全性 → FileVault"
+            },
+            "path": "",
+            "rule": "posture.filevault",
+            "severity": "high",
+            "title": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "skipped": "Gatekeeper"
+            },
+            "path": "",
+            "rule": "posture.partial",
+            "severity": "low",
+            "title": "有几项没查成：Gatekeeper",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "1",
+              "pids": "100",
+              "started": "2026-10-18"
+            },
+            "path": "~/Applications/Gone.app/Contents/MacOS/gone",
+            "rule": "process.deleted-binary",
+            "severity": "medium",
+            "title": "进程 100（gone）的程序已经被删掉了，它还在跑",
+            "verdict": "confirm"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "2",
+              "hint": "启动它们的程序已经退出了；不是你自己放在后台的任务的话，多半是没收拾干净",
+              "oldest": "tail（703，144 小时）；log（200，24 小时）",
+              "pids": "703,200"
+            },
+            "path": "",
+            "rule": "process.orphan",
+            "severity": "low",
+            "title": "2 个后台进程的父进程已经退出，还在跑",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "25",
+              "hint": "多半是父进程反复启动它、却没等它结束；占内存，也可能拖慢系统",
+              "parent": "/bin/sh",
+              "parent_pid": "1000"
+            },
+            "key": "/bin/sh\u0000/usr/sbin/lsof",
+            "path": "/usr/sbin/lsof",
+            "rule": "process.pile-up",
+            "severity": "medium",
+            "title": "lsof 在同一个父进程下堆了 25 个",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "30",
+              "pids": "2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019",
+              "started": "2026-10-20"
+            },
+            "path": "~/Applications/Browser.app/Contents/Frameworks/Helper (Renderer).app/Contents/MacOS/Helper",
+            "rule": "process.deleted-binary",
+            "severity": "medium",
+            "title": "30 个 Helper 进程的程序已经被删掉了，还在跑",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 evil-stealer 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9001",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/web-app/package-lock.json",
+              "package": "evil-stealer@3.2.1",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/web-app/package-lock.json\u0000npm\u0000evil-stealer@3.2.1",
+            "path": "~/Projects/web-app/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 web-app 用了已知恶意的 evil-stealer@3.2.1",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "malicious_list_date": "2026-10-15",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "server/discover",
+      "reply": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "result": {
+          "_meta": {
+            "io.modelcontextprotocol/serverInfo": {
+              "name": "luoke-scan",
+              "version": "$VERSION"
+            }
+          },
+          "capabilities": {
+            "resources": {},
+            "tools": {}
+          },
+          "resultType": "complete",
+          "supportedVersions": [
+            "2026-07-28"
+          ]
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/list",
+      "reply": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "result": {
+          "resultType": "complete",
+          "tools": [
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "上一轮什么时候查的、查出多少、病毒库日期、哪些项没查成",
+              "inputSchema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "scan_status",
+              "title": "扫描的状态"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "上一轮的发现，可以按结论、类别筛",
+              "inputSchema": {
+                "properties": {
+                  "category": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "maximum": 50,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "verdict": {
+                    "enum": [
+                      "safe",
+                      "confirm",
+                      "info"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "name": "scan_findings",
+              "title": "列出发现"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "马上开始一轮扫描（只读，不改动任何东西）",
+              "inputSchema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "scan_now",
+              "title": "现在查一下"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "按上一轮的发现出一份清理方案，每项可以选移到废纸篓、先不动、以后别提",
+              "inputSchema": {
+                "properties": {
+                  "scope": {
+                    "enum": [
+                      "all",
+                      "cache"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "name": "scan_plan",
+              "title": "出清理方案"
+            },
+            {
+              "annotations": {
+                "destructiveHint": true,
+                "readOnlyHint": false
+              },
+              "description": "执行用户在卡片上点过的方案：只做方案里列的、用户选的",
+              "inputSchema": {
+                "properties": {
+                  "choices": {
+                    "type": "object"
+                  },
+                  "plan_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "plan_id",
+                  "choices"
+                ],
+                "type": "object"
+              },
+              "name": "scan_apply",
+              "title": "执行清理方案"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": false
+              },
+              "description": "把一条发现标成不用管，以后不再报",
+              "inputSchema": {
+                "properties": {
+                  "finding_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "finding_id"
+                ],
+                "type": "object"
+              },
+              "name": "scan_ignore",
+              "title": "以后别提这一条"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": false
+              },
+              "description": "把清理时移进废纸篓的放回原处：一条清理记录（c-…），或一次清理的整批（p-… / auto-…）；原位置有同名的就放在旁边，不盖掉",
+              "inputSchema": {
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id"
+                ],
+                "type": "object"
+              },
+              "name": "scan_restore",
+              "title": "放回"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": false
+              },
+              "description": "开或关不用点就清的四类：会重建的缓存、装好了的应用的安装包、下载文件夹里的重复文件、测试工具留下的临时文件夹",
+              "inputSchema": {
+                "properties": {
+                  "enable": {
+                    "description": "旧写法，和 on 一样；给了 on 就不看它",
+                    "type": "boolean"
+                  },
+                  "on": {
+                    "description": "开（true）还是关（false）；要给",
+                    "type": "boolean"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "name": "scan_autoclean",
+              "title": "自动清理"
+            },
+            {
+              "_meta": {
+                "ai.luoke/where": "mac"
+              },
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "在访达里选中一条发现指的文件或文件夹",
+              "inputSchema": {
+                "properties": {
+                  "finding_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "finding_id"
+                ],
+                "type": "object"
+              },
+              "name": "scan_reveal",
+              "title": "在访达里显示"
+            },
+            {
+              "_meta": {
+                "ai.luoke/where": "mac"
+              },
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "打开系统设置里对应的页面（隐私与安全性的某个权限，或「登录项」）",
+              "inputSchema": {
+                "properties": {
+                  "grant": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "grant"
+                ],
+                "type": "object"
+              },
+              "name": "scan_open_settings",
+              "title": "打开系统设置"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "agent 告诉扫描某件事已经说过、答过或放下了",
+              "inputSchema": {
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "enum": [
+                      "shown",
+                      "answered",
+                      "dismissed"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "state"
+                ],
+                "type": "object"
+              },
+              "name": "outbox_ack",
+              "title": "记下说过了"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/list",
+      "reply": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "result": {
+          "resources": [
+            {
+              "mimeType": "application/json",
+              "name": "扫描要告诉你的事",
+              "uri": "luoke://luoke-scan/outbox"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "扫描要告诉你的事",
+              "uri": "outbox"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "清理记录",
+              "uri": "page/cleaned"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "概览",
+              "uri": "page/overview"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "权限的状态",
+              "uri": "permissions"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "概览",
+              "uri": "summary"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "luoke://luoke-scan/outbox"
+      },
+      "reply": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "items": [
+                  {
+                    "card": [
+                      {
+                        "createSurface": {
+                          "catalogId": "ai.luoke/a2ui/agent/1",
+                          "surfaceId": "security-000000000001"
+                        },
+                        "version": "v0.9"
+                      },
+                      {
+                        "updateComponents": {
+                          "components": [
+                            {
+                              "children": [
+                                "h1",
+                                "t2",
+                                "t3",
+                                "r6"
+                              ],
+                              "component": "Column",
+                              "id": "root"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "h1",
+                              "text": "项目 web-app 用了已知恶意的 evil-stealer@3.2.1",
+                              "variant": "h4"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t2",
+                              "text": "删掉这个项目的 node_modules，把 evil-stealer 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西。"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t3",
+                              "text": "依据：恶意包名单 2026-10-15（OSV 的 MAL- 条目），MAL-2026-9001\n位置：~/Projects/web-app/package-lock.json",
+                              "variant": "caption"
+                            },
+                            {
+                              "action": {
+                                "event": {
+                                  "context": {
+                                    "finding_id": "supplychain.malicious/000000000002"
+                                  },
+                                  "name": "scan_reveal"
+                                }
+                              },
+                              "child": "b4-text",
+                              "component": "Button",
+                              "id": "b4",
+                              "variant": "primary"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "b4-text",
+                              "text": "在访达里显示"
+                            },
+                            {
+                              "action": {
+                                "event": {
+                                  "context": {
+                                    "finding_id": "supplychain.malicious/000000000002"
+                                  },
+                                  "name": "scan_ignore"
+                                }
+                              },
+                              "child": "b5-text",
+                              "component": "Button",
+                              "id": "b5"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "b5-text",
+                              "text": "处理好了，以后别提"
+                            },
+                            {
+                              "children": [
+                                "b4",
+                                "b5"
+                              ],
+                              "component": "Row",
+                              "id": "r6"
+                            }
+                          ],
+                          "surfaceId": "security-000000000001"
+                        },
+                        "version": "v0.9"
+                      }
+                    ],
+                    "created": "2026-10-20T12:00:00Z",
+                    "deadline": null,
+                    "expires": null,
+                    "id": "security/supplychain.malicious/000000000002",
+                    "kind": "security",
+                    "summary": "项目 web-app 用了已知恶意的 evil-stealer@3.2.1。删掉这个项目的 node_modules，把 evil-stealer 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西。",
+                    "title": "项目 web-app 用了已知恶意的 evil-stealer@3.2.1",
+                    "urgency": "urgent",
+                    "why_now": "这一轮和恶意包名单比对出来的；装过就当令牌和钥匙已经泄露"
+                  },
+                  {
+                    "card": [
+                      {
+                        "createSurface": {
+                          "catalogId": "ai.luoke/a2ui/agent/1",
+                          "surfaceId": "round-000000000003"
+                        },
+                        "version": "v0.9"
+                      },
+                      {
+                        "updateComponents": {
+                          "components": [
+                            {
+                              "children": [
+                                "h1",
+                                "d2",
+                                "t3",
+                                "t4",
+                                "t5",
+                                "r7",
+                                "t8",
+                                "t9",
+                                "d10",
+                                "t11",
+                                "t12",
+                                "t13",
+                                "t14"
+                              ],
+                              "component": "Column",
+                              "id": "root"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "h1",
+                              "text": "有 4 件事值得看一眼",
+                              "variant": "h4"
+                            },
+                            {
+                              "component": "Divider",
+                              "id": "d2"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t3",
+                              "text": "这几样螺壳不替你动，你可以自己看看：",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t4",
+                              "text": "项目 web-app 用了已知恶意的 evil-stealer@3.2.1"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t5",
+                              "text": "怎么办：删掉这个项目的 node_modules，把 evil-stealer 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+                              "variant": "caption"
+                            },
+                            {
+                              "action": {
+                                "event": {
+                                  "context": {
+                                    "finding_id": "supplychain.malicious/000000000002"
+                                  },
+                                  "name": "scan_reveal"
+                                }
+                              },
+                              "child": "b6-text",
+                              "component": "Button",
+                              "id": "b6"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "b6-text",
+                              "text": "在访达里显示"
+                            },
+                            {
+                              "children": [
+                                "b6"
+                              ],
+                              "component": "Row",
+                              "id": "r7"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t8",
+                              "text": "30 个 Helper 进程的程序已经被删掉了，还在跑"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t9",
+                              "text": "进程 100（gone）的程序已经被删掉了，它还在跑"
+                            },
+                            {
+                              "component": "Divider",
+                              "id": "d10"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t11",
+                              "text": "这几条值得留意，有空看一下：",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t12",
+                              "text": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t13",
+                              "text": "怎么办：系统设置 → 隐私与安全性 → FileVault",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t14",
+                              "text": "另有 4 条仅供参考，问我就列给你。",
+                              "variant": "caption"
+                            }
+                          ],
+                          "surfaceId": "round-000000000003"
+                        },
+                        "version": "v0.9"
+                      }
+                    ],
+                    "created": "2026-10-20T12:00:00Z",
+                    "deadline": null,
+                    "expires": "2026-10-23T12:00:00Z",
+                    "id": "round/2026-10-20T12:00:00Z",
+                    "kind": "findings",
+                    "summary": "放心删 0 条、要确认 3 条、仅供参考 5 条（其中需要留意的 1 条）。",
+                    "title": "有 4 件事值得看一眼",
+                    "urgency": "low",
+                    "why_now": "扫描刚查完一轮"
+                  }
+                ]
+              },
+              "uri": "luoke://luoke-scan/outbox"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "summary"
+      },
+      "reply": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "count": 4,
+                "text": "有 1 件要尽快看看，另外 1 条需要留意"
+              },
+              "uri": "summary"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "permissions"
+      },
+      "reply": {
+        "id": 6,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "admin": "ask",
+                "auto": "off",
+                "fda": "granted"
+              },
+              "uri": "permissions"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "page/overview"
+      },
+      "reply": {
+        "id": 7,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": [
+                {
+                  "createSurface": {
+                    "catalogId": "ai.luoke/a2ui/agent/1",
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                },
+                {
+                  "updateComponents": {
+                    "components": [
+                      {
+                        "children": [
+                          "h1",
+                          "t2",
+                          "t3",
+                          "t4",
+                          "t5",
+                          "r7"
+                        ],
+                        "component": "Column",
+                        "id": "root"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "h1",
+                        "text": "扫描",
+                        "variant": "h4"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t2",
+                        "text": "有 1 件要尽快看看，另外 1 条需要留意"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t3",
+                        "text": "上一轮 10月20日 20:00：放心删 0、要确认 3、仅供参考 5",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t4",
+                        "text": "病毒库 daily 27000（2026-10-20）",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t5",
+                        "text": "自动清：关",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {},
+                            "name": "scan_now"
+                          }
+                        },
+                        "child": "b6-text",
+                        "component": "Button",
+                        "id": "b6"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b6-text",
+                        "text": "现在查一下"
+                      },
+                      {
+                        "children": [
+                          "b6"
+                        ],
+                        "component": "Row",
+                        "id": "r7"
+                      }
+                    ],
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                }
+              ],
+              "uri": "page/overview"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "page/cleaned"
+      },
+      "reply": {
+        "id": 8,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": [
+                {
+                  "createSurface": {
+                    "catalogId": "ai.luoke/a2ui/agent/1",
+                    "surfaceId": "cleaned"
+                  },
+                  "version": "v0.9"
+                },
+                {
+                  "updateComponents": {
+                    "components": [
+                      {
+                        "children": [
+                          "h1",
+                          "t2"
+                        ],
+                        "component": "Column",
+                        "id": "root"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "h1",
+                        "text": "清理记录",
+                        "variant": "h4"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t2",
+                        "text": "还没清理过。"
+                      }
+                    ],
+                    "surfaceId": "cleaned"
+                  },
+                  "version": "v0.9"
+                }
+              ],
+              "uri": "page/cleaned"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "commands": [
+        {
+          "args": [
+            "-R",
+            "~/Projects/web-app/package-lock.json"
+          ],
+          "tool": "/usr/bin/open"
+        }
+      ],
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "finding_id": "supplychain.malicious/000000000002"
+        },
+        "name": "scan_reveal"
+      },
+      "reply": {
+        "id": 9,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "在访达里选中了 ~/Projects/web-app/package-lock.json。",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete"
+        }
+      },
+      "user-action": {
+        "at": "2026-10-20T20:01:00+08:00",
+        "componentId": "b4",
+        "surfaceId": "security-000000000001"
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "finding_id": "supplychain.malicious/000000000002"
+        },
+        "name": "scan_ignore"
+      },
+      "reply": {
+        "id": 10,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "好，以后不再提「项目 web-app 用了已知恶意的 evil-stealer@3.2.1」。",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "r97660-t1"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "r97660-t1",
+                      "text": "好，以后不再提「项目 web-app 用了已知恶意的 evil-stealer@3.2.1」。"
+                    }
+                  ],
+                  "surfaceId": "security-000000000001"
+                },
+                "version": "v0.9"
+              }
+            ],
+            "done": true
+          }
+        }
+      },
+      "user-action": {
+        "at": "2026-10-20T20:01:00+08:00",
+        "componentId": "b5",
+        "surfaceId": "security-000000000001"
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "luoke://luoke-scan/outbox"
+      },
+      "reply": {
+        "id": 11,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "items": [
+                  {
+                    "card": [
+                      {
+                        "createSurface": {
+                          "catalogId": "ai.luoke/a2ui/agent/1",
+                          "surfaceId": "round-000000000003"
+                        },
+                        "version": "v0.9"
+                      },
+                      {
+                        "updateComponents": {
+                          "components": [
+                            {
+                              "children": [
+                                "h1",
+                                "d2",
+                                "t3",
+                                "t4",
+                                "t5",
+                                "d6",
+                                "t7",
+                                "t8",
+                                "t9",
+                                "t10"
+                              ],
+                              "component": "Column",
+                              "id": "root"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "h1",
+                              "text": "有 3 件事值得看一眼",
+                              "variant": "h4"
+                            },
+                            {
+                              "component": "Divider",
+                              "id": "d2"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t3",
+                              "text": "这几样螺壳不替你动，你可以自己看看：",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t4",
+                              "text": "30 个 Helper 进程的程序已经被删掉了，还在跑"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t5",
+                              "text": "进程 100（gone）的程序已经被删掉了，它还在跑"
+                            },
+                            {
+                              "component": "Divider",
+                              "id": "d6"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t7",
+                              "text": "这几条值得留意，有空看一下：",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t8",
+                              "text": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t9",
+                              "text": "怎么办：系统设置 → 隐私与安全性 → FileVault",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t10",
+                              "text": "另有 4 条仅供参考，问我就列给你。",
+                              "variant": "caption"
+                            }
+                          ],
+                          "surfaceId": "round-000000000003"
+                        },
+                        "version": "v0.9"
+                      }
+                    ],
+                    "created": "2026-10-20T12:00:00Z",
+                    "deadline": null,
+                    "expires": "2026-10-23T12:00:00Z",
+                    "id": "round/2026-10-20T12:00:00Z",
+                    "kind": "findings",
+                    "summary": "放心删 0 条、要确认 2 条、仅供参考 5 条（其中需要留意的 1 条）。",
+                    "title": "有 3 件事值得看一眼",
+                    "urgency": "low",
+                    "why_now": "扫描刚查完一轮"
+                  }
+                ]
+              },
+              "uri": "luoke://luoke-scan/outbox"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    }
+  ]
+}

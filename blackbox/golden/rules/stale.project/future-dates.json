@@ -1,0 +1,63 @@
+{
+  "about": "一年多没动、但解压出来的一个文件带着将来的时间：将来的时间不算，照报",
+  "case": "rules/stale.project/future-dates",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2101248,
+            "category": "stale-project",
+            "evidence": {
+              "count": "1",
+              "folders": "unpacked（2.1 MB）",
+              "size": "2.1 MB"
+            },
+            "path": "~/Projects",
+            "rule": "stale.folders",
+            "severity": "low",
+            "title": "Projects 里有 1 个文件夹半年多没动过（不在 git 里，无法确认别处有没有副本）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "about": "名字像钱包、密码库、验证码、VPN 的：只说不删，标题注明可能有密钥",
+  "case": "rules/leftover.app-data/sensitive",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "com.twilio.authy",
+              "hint": "名字像钱包、密码库、密钥或 VPN 配置：里面可能是唯一的一份，别直接删；确认已经迁移或备份过",
+              "last_changed": "2026-08-21",
+              "places": "~/Library/Containers/com.twilio.authy",
+              "size": "2.1 MB"
+            },
+            "key": "com.twilio.authy",
+            "path": "~/Library/Containers/com.twilio.authy",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "com.twilio.authy 的数据还在，但这台 Mac 上没有这个应用（可能有密钥或密码库）",
+            "verdict": "info"
+          },
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "com.wireguard.macos",
+              "hint": "名字像钱包、密码库、密钥或 VPN 配置：里面可能是唯一的一份，别直接删；确认已经迁移或备份过",
+              "last_changed": "2026-08-21",
+              "places": "~/Library/Application Support/com.wireguard.macos",
+              "size": "2.1 MB"
+            },
+            "key": "com.wireguard.macos",
+            "path": "~/Library/Application Support/com.wireguard.macos",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "com.wireguard.macos 的数据还在，但这台 Mac 上没有这个应用（可能有密钥或密码库）",
+            "verdict": "info"
+          },
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "io.parity.ethereum",
+              "hint": "名字像钱包、密码库、密钥或 VPN 配置：里面可能是唯一的一份，别直接删；确认已经迁移或备份过",
+              "last_changed": "2026-08-21",
+              "places": "~/Library/Application Support/io.parity.ethereum",
+              "size": "2.1 MB"
+            },
+            "key": "io.parity.ethereum",
+            "path": "~/Library/Application Support/io.parity.ethereum",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "io.parity.ethereum 的数据还在，但这台 Mac 上没有这个应用（可能有密钥或密码库）",
+            "verdict": "info"
+          },
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "org.keepassxc.keepassxc",
+              "hint": "名字像钱包、密码库、密钥或 VPN 配置：里面可能是唯一的一份，别直接删；确认已经迁移或备份过",
+              "last_changed": "2026-08-21",
+              "places": "~/Library/Application Support/org.keepassxc.keepassxc",
+              "size": "2.1 MB"
+            },
+            "key": "org.keepassxc.keepassxc",
+            "path": "~/Library/Application Support/org.keepassxc.keepassxc",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "org.keepassxc.keepassxc 的数据还在，但这台 Mac 上没有这个应用（可能有密钥或密码库）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

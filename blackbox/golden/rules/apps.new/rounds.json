@@ -1,0 +1,188 @@
+{
+  "about": "几轮：查过的应用没变照样报；程序被改了再查（签名坏了）；来了超过一个月就不再看",
+  "case": "rules/apps.new/rounds",
+  "steps": [
+    {
+      "fakes": {
+        "appsAdded": {
+          "~/Applications/Homemade.app": "2026-09-15T12:00:00Z",
+          "~/Applications/Plain.app": "2026-10-08T12:00:00Z"
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-09-15",
+              "how": "确认是你自己要装、来源可信的；不认识就在访达里把它移到废纸篓",
+              "quarantine": "没有下载标记：自己编译、从 App Store 或安装包装的，也可能下载后被人去掉了",
+              "why": "只有临时签名"
+            },
+            "path": "~/Applications/Homemade.app",
+            "rule": "apps.unsigned",
+            "severity": "medium",
+            "title": "最近装的 Homemade 只有临时签名：谁做的、改没改过，没人担保",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-10-08",
+              "how": "确认是你自己要装、来源可信的；不认识就在访达里把它移到废纸篓",
+              "quarantine": "没有下载标记：自己编译、从 App Store 或安装包装的，也可能下载后被人去掉了",
+              "why": "没有签名"
+            },
+            "path": "~/Applications/Plain.app",
+            "rule": "apps.unsigned",
+            "severity": "medium",
+            "title": "最近装的 Plain 没有签名：谁做的、改没改过，没人担保",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-10T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-10T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "T0 前 10 天：Homemade 来了 25 天，Plain 来了 2 天",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-10T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "Homemade 的主程序被改了"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-09-15",
+              "how": "别打开它；从开发者的官网重新下载",
+              "quarantine": "没有下载标记：自己编译、从 App Store 或安装包装的，也可能下载后被人去掉了"
+            },
+            "path": "~/Applications/Homemade.app",
+            "rule": "apps.bad-signature",
+            "severity": "high",
+            "title": "最近装的 Homemade 签名和程序对不上（签名以后被改过）",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-10-08",
+              "how": "确认是你自己要装、来源可信的；不认识就在访达里把它移到废纸篓",
+              "quarantine": "没有下载标记：自己编译、从 App Store 或安装包装的，也可能下载后被人去掉了",
+              "why": "没有签名"
+            },
+            "path": "~/Applications/Plain.app",
+            "rule": "apps.unsigned",
+            "severity": "medium",
+            "title": "最近装的 Plain 没有签名：谁做的、改没改过，没人担保",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-14T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-14T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "T0 前 6 天",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-14T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-10-08",
+              "how": "确认是你自己要装、来源可信的；不认识就在访达里把它移到废纸篓",
+              "quarantine": "没有下载标记：自己编译、从 App Store 或安装包装的，也可能下载后被人去掉了",
+              "why": "没有签名"
+            },
+            "path": "~/Applications/Plain.app",
+            "rule": "apps.unsigned",
+            "severity": "medium",
+            "title": "最近装的 Plain 没有签名：谁做的、改没改过，没人担保",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "T0：Homemade 来了 35 天",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

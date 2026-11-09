@@ -1,0 +1,11 @@
+{
+  "_说明": "生成任务 luoke-scan.skills（顶层 ADR 0019）。看一个 AI 工具的 skill：它说自己做的（名字、说明），和它的说明正文、脚本实际做的，对不对得上。只问扫描的规则已经报了的 skill；回答只作为一段说明附在那条发现上，不改轻重、结论和标题（11-02 定）；模型说对得上时不附说明，免得替 skill 打包票。输入由 SkillReview.input 拼（Sources/ScanCore/SkillReview.swift）：工具、名字、说明、允许的工具、文件列表、SKILL.md 正文、其他几个文件的内容（长的只给开头和规则指到的几行）、规则查到的（重的在前），整个 JSON 不超过 6000 个字符；看不见的字符和长段编码换成标记。发给模型的是：skills.system.txt（{{risks}} 由 skills.schema.json 里 risk 的 x-describe 按顺序填成「- 值：说明」一行一个），skills.examples.json 里每条一问一答，最后 user 是这个 skill 的 JSON（skills.user.txt）；输出照 skills.schema.json（发给主控时去掉 x- 开头的键）。skills.examples.json 和评测集 bench/evalsets/skills.json 都由 luoke-scan make-skill-evalset 用同一段代码生成（示范取自 evals/skills/examples.json，不取自评测集），不要手改。答错不重试，没有 retry.txt。扫描收到回答后再核一遍（SkillReview.answer）：带网址、域名、IP、命令、密钥、代码或替 skill 打包票的句子不显示，指到 skill 里没有的文件的那条去掉。params 是建议的任务参数。",
+  "task": "luoke-scan.skills",
+  "version": 3,
+  "max_tokens": 400,
+  "params": {
+    "temperature": 0,
+    "top_p": 1,
+    "thinking": false
+  }
+}

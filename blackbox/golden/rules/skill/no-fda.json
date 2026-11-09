@@ -1,0 +1,184 @@
+{
+  "about": "链接到文稿、桌面里的 skill：有完全磁盘访问照看；没有就不跟过去，说没看（连着链接断了的也算没看），别处的照报",
+  "case": "rules/skill/no-fda",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "docs-skill",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/Documents/agent-skills/docs-skill|c551b41c165d5ef4",
+            "path": "~/.claude/skills/docs-skill",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「docs-skill」：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Cursor",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "desk-skill",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/Desktop/skills/desk-skill|f8e76e584500bbef",
+            "path": "~/.cursor/skills/desk-skill",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Cursor 的 skill「desk-skill」：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Gemini CLI",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "plain",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/.gemini/skills/plain|6c6697972988e260",
+            "path": "~/.gemini/skills/plain",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Gemini CLI 的 skill「plain」：从网上下载代码直接运行",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Gemini CLI",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "plain",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/.gemini/skills/plain|6c6697972988e260",
+            "path": "~/.gemini/skills/plain",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Gemini CLI 的 skill「plain」：从网上下载代码直接运行",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents 里散落的密钥没看（看了 macOS 会弹框问你）",
+            "rule": "secrets"
+          },
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents、Music 里的重复文件没看（看了 macOS 会弹框问你）",
+            "rule": "space.duplicates"
+          },
+          {
+            "reason": "没有完全磁盘访问，~/.agents/skills/dangling 链接到的 skill、~/.claude/skills 链接到的 skill、~/.cursor/skills/desk-skill 链接到的 skill 没看（看了 macOS 会弹框问你）",
+            "rule": "skill"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载、桌面、文稿里的系统恢复镜像没看（看了 macOS 会弹框问你）",
+            "rule": "space.system"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里新来的文件有没有病毒没看（看了 macOS 会弹框问你）",
+            "rule": "malware"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里的安装包和没下完的下载没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.installer"
+          },
+          {
+            "reason": "没有完全磁盘访问，别的应用的容器里留下的数据没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.app-data"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载和别的应用的数据占多大没看（看了 macOS 会弹框问你）",
+            "rule": "space"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载里很久没打开的大文件没看（看了 macOS 会弹框问你）",
+            "rule": "stale.large-file"
+          }
+        ],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "没有完全磁盘访问：不跟到文稿、桌面里",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json",
+        "--no-full-disk-access"
+      ]
+    }
+  ]
+}

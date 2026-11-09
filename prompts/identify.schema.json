@@ -1,0 +1,65 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "what": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "cache",
+        "app-data",
+        "user-data",
+        "logs",
+        "tool",
+        "build",
+        "unknown"
+      ],
+      "x-describe": [
+        [
+          "cache",
+          "工具会自己重新下载或生成的缓存（下载的包、模型、编译缓存）"
+        ],
+        [
+          "tool",
+          "工具链和运行时的安装（pyenv、nvm、rustup、conda、SDKMAN 装的各个版本）"
+        ],
+        [
+          "app-data",
+          "应用自己的数据、设置、登录状态、数据库、模拟器和虚拟机镜像；浏览器的资料（Default、Profile、书签、历史）也是 app-data，不是 cache"
+        ],
+        [
+          "logs",
+          "日志"
+        ],
+        [
+          "build",
+          "构建产物"
+        ],
+        [
+          "user-data",
+          "用户亲手产生或保存的：文档、照片、自己的项目和数据表、密钥、助记词、钱包和它们的备份"
+        ],
+        [
+          "unknown",
+          "看不出来"
+        ]
+      ]
+    },
+    "sure": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "name",
+    "what",
+    "kind",
+    "sure"
+  ],
+  "additionalProperties": false
+}

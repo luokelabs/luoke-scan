@@ -1,0 +1,66 @@
+{
+  "about": "装着的应用（连它的辅助程序、组容器）、还在写的、Apple 和运行时的、不像 bundle id 的、太小的都不算；只报一个真删了的",
+  "case": "rules/leftover.app-data/not-leftover",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "io.gone.editor",
+              "hint": "有的应用把文档、本地数据库放在这里；删之前确认里面没有你还要的东西，或者新版本已经导入过",
+              "last_changed": "2026-08-21",
+              "places": "~/Library/Application Support/io.gone.editor",
+              "size": "2.1 MB"
+            },
+            "key": "io.gone.editor",
+            "path": "~/Library/Application Support/io.gone.editor",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "io.gone.editor 的数据还在，但这台 Mac 上没有这个应用",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

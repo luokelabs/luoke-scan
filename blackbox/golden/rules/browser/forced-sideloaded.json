@@ -1,0 +1,198 @@
+{
+  "about": "策略强制装的（7、9、管理的偏好里点名的）报高；解包装的、命令行装的、别的程序放进来的报中，名字从偏好里或那个文件夹的清单取；商店装的不算；没有完全磁盘访问时文稿里那个解包的只显示编号",
+  "case": "rules/browser/forced-sideloaded",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "browser": "Brave",
+              "extensions": "Brave Dev",
+              "how": "自己开发、调试用的就留着；不认得的在 Brave 的扩展管理页里删掉"
+            },
+            "key": "~/Library/Application Support/BraveSoftware/Brave-Browser|aside|Brave Dev",
+            "path": "~/Library/Application Support/BraveSoftware/Brave-Browser",
+            "rule": "browser.sideloaded-extensions",
+            "severity": "medium",
+            "title": "Brave 里有 1 个扩展不是从扩展商店装的",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browser": "Chrome",
+              "extensions": "Bundled Helper；CLI Ext；Docs Ext；My Dev Tool；Prefs Unpacked；mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+              "how": "自己开发、调试用的就留着；不认得的在 Chrome 的扩展管理页里删掉"
+            },
+            "key": "~/Library/Application Support/Google/Chrome|aside|Bundled Helper|CLI Ext|Docs Ext|My Dev Tool|Prefs Unpacked|mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+            "path": "~/Library/Application Support/Google/Chrome",
+            "rule": "browser.sideloaded-extensions",
+            "severity": "medium",
+            "title": "Chrome 里有 6 个扩展不是从扩展商店装的",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browser": "Chrome",
+              "extensions": "Corp Filter；Policy Ext；cccccccccccccccccccccccccccccccc",
+              "how": "不是公司电脑的话：系统设置 → 隐私与安全性 → 描述文件，删掉不认得的描述文件，再在浏览器里删掉这些扩展",
+              "why": "公司管的电脑上是管理员装的；自己的电脑上，这是恶意软件常用的办法（装一个描述文件，再强制装扩展）"
+            },
+            "key": "~/Library/Application Support/Google/Chrome|forced|Corp Filter|Policy Ext|cccccccccccccccccccccccccccccccc",
+            "path": "~/Library/Application Support/Google/Chrome",
+            "rule": "browser.forced-extensions",
+            "severity": "high",
+            "title": "Chrome 里有 3 个扩展是被策略强制装上的，你自己删不掉",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "browser": "Brave",
+              "extensions": "Brave Dev",
+              "how": "自己开发、调试用的就留着；不认得的在 Brave 的扩展管理页里删掉"
+            },
+            "key": "~/Library/Application Support/BraveSoftware/Brave-Browser|aside|Brave Dev",
+            "path": "~/Library/Application Support/BraveSoftware/Brave-Browser",
+            "rule": "browser.sideloaded-extensions",
+            "severity": "medium",
+            "title": "Brave 里有 1 个扩展不是从扩展商店装的",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browser": "Chrome",
+              "extensions": "Bundled Helper；CLI Ext；My Dev Tool；Prefs Unpacked；kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk；mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+              "how": "自己开发、调试用的就留着；不认得的在 Chrome 的扩展管理页里删掉"
+            },
+            "key": "~/Library/Application Support/Google/Chrome|aside|Bundled Helper|CLI Ext|My Dev Tool|Prefs Unpacked|kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk|mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+            "path": "~/Library/Application Support/Google/Chrome",
+            "rule": "browser.sideloaded-extensions",
+            "severity": "medium",
+            "title": "Chrome 里有 6 个扩展不是从扩展商店装的",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "browser": "Chrome",
+              "extensions": "Corp Filter；Policy Ext；cccccccccccccccccccccccccccccccc",
+              "how": "不是公司电脑的话：系统设置 → 隐私与安全性 → 描述文件，删掉不认得的描述文件，再在浏览器里删掉这些扩展",
+              "why": "公司管的电脑上是管理员装的；自己的电脑上，这是恶意软件常用的办法（装一个描述文件，再强制装扩展）"
+            },
+            "key": "~/Library/Application Support/Google/Chrome|forced|Corp Filter|Policy Ext|cccccccccccccccccccccccccccccccc",
+            "path": "~/Library/Application Support/Google/Chrome",
+            "rule": "browser.forced-extensions",
+            "severity": "high",
+            "title": "Chrome 里有 3 个扩展是被策略强制装上的，你自己删不掉",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents 里散落的密钥没看（看了 macOS 会弹框问你）",
+            "rule": "secrets"
+          },
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents、Music 里的重复文件没看（看了 macOS 会弹框问你）",
+            "rule": "space.duplicates"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载、桌面、文稿里的系统恢复镜像没看（看了 macOS 会弹框问你）",
+            "rule": "space.system"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里新来的文件有没有病毒没看（看了 macOS 会弹框问你）",
+            "rule": "malware"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里的安装包和没下完的下载没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.installer"
+          },
+          {
+            "reason": "没有完全磁盘访问，别的应用的容器里留下的数据没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.app-data"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载和别的应用的数据占多大没看（看了 macOS 会弹框问你）",
+            "rule": "space"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载里很久没打开的大文件没看（看了 macOS 会弹框问你）",
+            "rule": "stale.large-file"
+          }
+        ],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "没有完全磁盘访问：文稿里那个解包的扩展读不到名字",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json",
+        "--no-full-disk-access"
+      ]
+    }
+  ]
+}

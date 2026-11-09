@@ -1,0 +1,74 @@
+{
+  "about": "agent 叫的那一轮（--for-agent）：只用已经有的答复，不问新的（有人在等）",
+  "case": "model/for-agent",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "hub": [
+        {
+          "accessory": "luoke-scan/$VERSION",
+          "method": "GET",
+          "path": "/tasks"
+        }
+      ],
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "sync-notes",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读 AWS 的凭证再发到网上（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/sync-notes|f7428ec60749a22c",
+            "path": "~/.claude/skills/sync-notes",
+            "rule": "skill.exfil",
+            "severity": "high",
+            "title": "Claude Code 的 skill「sync-notes」：读 AWS 的凭证再发到网上",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json",
+        "--for-agent"
+      ]
+    }
+  ]
+}

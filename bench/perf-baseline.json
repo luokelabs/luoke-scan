@@ -1,0 +1,121 @@
+{
+ "label": "第三块之后：21 条规则（10-27 定重录）",
+ "commit": "497d264",
+ "machine": {
+  "model": "MacBookPro18,4",
+  "memory_gb": 64,
+  "macos": "26.6"
+ },
+ "files": 120000,
+ "runs": {
+  "no_db": {
+   "cold": {
+    "wall_s": 19.99,
+    "cpu_s": 3.63,
+    "peak_mb": 32.2,
+    "own_peak_mb": 15.5,
+    "findings": 25,
+    "slowest": [
+     [
+      "apps.new",
+      5.5
+     ],
+     [
+      "space",
+      4.7
+     ],
+     [
+      "persistence.review",
+      4.2
+     ]
+    ]
+   },
+   "unchanged": {
+    "wall_s": 2.03,
+    "cpu_s": 0.65,
+    "peak_mb": 28.9,
+    "own_peak_mb": 10.1,
+    "findings": 25,
+    "slowest": [
+     [
+      "posture",
+      0.8
+     ],
+     [
+      "cache.rebuildable",
+      0.2
+     ],
+     [
+      "space.system",
+      0.2
+     ]
+    ]
+   },
+   "one_percent": {
+    "wall_s": 2.49,
+    "cpu_s": 1.25,
+    "peak_mb": 30.8,
+    "own_peak_mb": 12.1,
+    "findings": 16,
+    "slowest": [
+     [
+      "space",
+      0.7
+     ],
+     [
+      "posture",
+      0.4
+     ],
+     [
+      "stale.large-file",
+      0.3
+     ]
+    ]
+   }
+  },
+  "with_db": {
+   "cold": {
+    "wall_s": 21.69,
+    "cpu_s": 13.12,
+    "peak_mb": 1011.9,
+    "own_peak_mb": 16.1,
+    "findings": 25,
+    "slowest": [
+     [
+      "malware",
+      10.3
+     ],
+     [
+      "persistence.review",
+      4.7
+     ],
+     [
+      "apps.new",
+      3
+     ]
+    ]
+   },
+   "unchanged": {
+    "wall_s": 3.27,
+    "cpu_s": 1.0,
+    "peak_mb": 36.5,
+    "own_peak_mb": 10.4,
+    "findings": 25,
+    "slowest": [
+     [
+      "posture",
+      1.4
+     ],
+     [
+      "space.low",
+      0.3
+     ],
+     [
+      "cache.rebuildable",
+      0.2
+     ]
+    ]
+   }
+  }
+ }
+}

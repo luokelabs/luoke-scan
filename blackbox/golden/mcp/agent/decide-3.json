@@ -1,0 +1,1932 @@
+{
+  "about": "要你决定 3 项的清理方案：照默认的选项点「按这个处理」，pip 的缓存移进废纸篓",
+  "case": "mcp/agent/decide-3",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 118784,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:old-noremote": "2025-09-15",
+              "repos": "1",
+              "size": "119 KB",
+              "would_lose": "old-noremote 没有远程仓库"
+            },
+            "path": "~/Projects/old-noremote",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "old-noremote 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          },
+          {
+            "bytes": 131072,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:old-filter": "2025-09-15",
+              "repos": "1",
+              "size": "131 KB",
+              "would_lose": "old-filter 配了过滤器（filter），没检查有没有没提交的改动"
+            },
+            "path": "~/Projects/old-filter",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "old-filter 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          },
+          {
+            "bytes": 131072000,
+            "category": "leak",
+            "evidence": {
+              "count": "25",
+              "first": "?",
+              "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+              "last": "?",
+              "per_day": "131.1 MB",
+              "prefix": "busy",
+              "size": "131.1 MB"
+            },
+            "path": "$TMPDIR/busy-*",
+            "rule": "leak.temp-prefix",
+            "severity": "low",
+            "title": "临时目录里有 25 个 busy-* 没被删掉，共 131.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 147456,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:old-env": "2025-09-15",
+              "repos": "1",
+              "size": "147 KB",
+              "would_lose": "old-env 有被 git 忽略、只在这台 Mac 上的：.env"
+            },
+            "path": "~/Projects/old-env",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "old-env 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          },
+          {
+            "bytes": 147456,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:old-pushed": "2025-09-15",
+              "repos": "1",
+              "size": "147 KB"
+            },
+            "path": "~/Projects/old-pushed",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "old-pushed 半年多没动过，都已推送，删了能从远程找回",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 147456,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:old-unpushed": "2025-09-15",
+              "repos": "1",
+              "size": "147 KB",
+              "would_lose": "old-unpushed 有 1 个提交没推送"
+            },
+            "path": "~/Projects/old-unpushed",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "old-unpushed 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          },
+          {
+            "bytes": 159744,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:old-stash": "2025-09-15",
+              "repos": "1",
+              "size": "160 KB",
+              "would_lose": "old-stash 有 1 个 stash"
+            },
+            "path": "~/Projects/old-stash",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "old-stash 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          },
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "io.example.stillused",
+              "hint": "有的应用把文档、本地数据库放在这里；删之前确认里面没有你还要的东西，或者新版本已经导入过",
+              "last_changed": "?",
+              "places": "~/Library/Caches/io.example.stillused",
+              "size": "2.1 MB"
+            },
+            "key": "io.example.stillused",
+            "path": "~/Library/Caches/io.example.stillused",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "io.example.stillused 的数据还在，但这台 Mac 上没有这个应用",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "io.parity.ethereum",
+              "hint": "名字像钱包、密码库、密钥或 VPN 配置：里面可能是唯一的一份，别直接删；确认已经迁移或备份过",
+              "last_changed": "2026-08-21",
+              "places": "~/Library/Application Support/io.parity.ethereum",
+              "size": "2.1 MB"
+            },
+            "key": "io.parity.ethereum",
+            "path": "~/Library/Application Support/io.parity.ethereum",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "io.parity.ethereum 的数据还在，但这台 Mac 上没有这个应用（可能有密钥或密码库）",
+            "verdict": "info"
+          },
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "org.present.oldhelper",
+              "hint": "同一家开发商的应用或组件（安装包、后台程序、扩展）还装着，这可能是它的组件或旧版本留下的",
+              "last_changed": "2026-08-21",
+              "places": "~/Library/Application Support/org.present.oldhelper",
+              "size": "2.1 MB"
+            },
+            "key": "org.present.oldhelper",
+            "path": "~/Library/Application Support/org.present.oldhelper",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "org.present.oldhelper 的数据还在，但这台 Mac 上没有这个应用",
+            "verdict": "info"
+          },
+          {
+            "bytes": 2101248,
+            "category": "stale-project",
+            "evidence": {
+              "count": "1",
+              "folders": "unpacked（2.1 MB）",
+              "size": "2.1 MB"
+            },
+            "path": "~/Projects",
+            "rule": "stale.folders",
+            "severity": "low",
+            "title": "Projects 里有 1 个文件夹半年多没动过（不在 git 里，无法确认别处有没有副本）",
+            "verdict": "info"
+          },
+          {
+            "bytes": 282624,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:group/a": "2025-09-15",
+              "last_commit:group/b": "2025-09-15",
+              "repos": "2",
+              "size": "283 KB",
+              "would_lose": "group 里还有不在 git 里的：designs；group/b 有 1 个提交没推送"
+            },
+            "path": "~/Projects/group",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "group 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          },
+          {
+            "bytes": 4198400,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "io.example.removed",
+              "hint": "有的应用把文档、本地数据库放在这里；删之前确认里面没有你还要的东西，或者新版本已经导入过",
+              "last_changed": "2026-08-21",
+              "places": "~/Library/Application Support/io.example.removed；~/Library/Containers/ABCDE12345.io.example.removed；~/Library/Preferences/io.example.removed.plist；~/Library/Group Containers/ABCDE12345.io.example.removed",
+              "size": "4.2 MB"
+            },
+            "key": "io.example.removed",
+            "path": "~/Library/Application Support/io.example.removed",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "io.example.removed 的数据还在，但这台 Mac 上没有这个应用",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "完全磁盘访问",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 完全磁盘访问，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+            },
+            "path": "io.example.removed",
+            "rule": "permission.stale-grant",
+            "severity": "medium",
+            "title": "io.example.removed 已经不在这台 Mac 上，还拿着「完全磁盘访问」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "录屏",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 录屏，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"
+            },
+            "path": "/opt/gone/tool",
+            "rule": "permission.stale-grant",
+            "severity": "medium",
+            "title": "/opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "它每次登录都会启动失败；以后有人在这个位置放了东西，就会以你的身份运行",
+              "label": "io.example.gone",
+              "missing": "~/.codex/worktrees/c870/tool/services/x；~/.codex/worktrees/c870/tool"
+            },
+            "path": "~/Library/LaunchAgents/io.example.gone.plist",
+            "rule": "persistence.launchagent-missing",
+            "severity": "medium",
+            "title": "后台任务 io.example.gone 指向已经不存在的位置",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {},
+            "path": "~/Library/LaunchAgents/broken.plist",
+            "rule": "persistence.launchagent-unreadable",
+            "severity": "low",
+            "title": "broken.plist 读不出来",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "系统设置 → 通用 → 软件更新；重启也会释放交换文件",
+              "pending": "1",
+              "uptime_days": "76"
+            },
+            "path": "",
+            "rule": "posture.pending-updates",
+            "severity": "low",
+            "title": "有 1 个系统更新等着装，这台 Mac 已经 76 天没重启",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "系统设置 → 隐私与安全性 → FileVault"
+            },
+            "path": "",
+            "rule": "posture.filevault",
+            "severity": "high",
+            "title": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "skipped": "Gatekeeper"
+            },
+            "path": "",
+            "rule": "posture.partial",
+            "severity": "low",
+            "title": "有几项没查成：Gatekeeper",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "1",
+              "hint": "启动它们的程序已经退出了；不是你自己放在后台的任务的话，多半是没收拾干净",
+              "oldest": "tail（703，72 小时）",
+              "pids": "703"
+            },
+            "path": "",
+            "rule": "process.orphan",
+            "severity": "low",
+            "title": "1 个后台进程的父进程已经退出，还在跑",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "1",
+              "pids": "100",
+              "started": "2026-10-18"
+            },
+            "path": "~/Applications/Gone.app/Contents/MacOS/gone",
+            "rule": "process.deleted-binary",
+            "severity": "medium",
+            "title": "进程 100（gone）的程序已经被删掉了，它还在跑",
+            "verdict": "confirm"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "25",
+              "hint": "多半是父进程反复启动它、却没等它结束；占内存，也可能拖慢系统",
+              "parent": "/bin/sh",
+              "parent_pid": "1000"
+            },
+            "key": "/bin/sh\u0000/usr/sbin/lsof",
+            "path": "/usr/sbin/lsof",
+            "rule": "process.pile-up",
+            "severity": "medium",
+            "title": "lsof 在同一个父进程下堆了 25 个",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-17T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-17T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "3 天前查过一轮：pip 的缓存还是空的",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-17T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "pip 的缓存长到 60 MB；去掉了报毒的两个文件、坏了的 LaunchAgent、删了的应用留下的数据"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 118784,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:old-noremote": "2025-09-15",
+              "repos": "1",
+              "size": "119 KB",
+              "would_lose": "old-noremote 没有远程仓库"
+            },
+            "path": "~/Projects/old-noremote",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "old-noremote 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          },
+          {
+            "bytes": 131072,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:old-filter": "2025-09-15",
+              "repos": "1",
+              "size": "131 KB",
+              "would_lose": "old-filter 配了过滤器（filter），没检查有没有没提交的改动"
+            },
+            "path": "~/Projects/old-filter",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "old-filter 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          },
+          {
+            "bytes": 131072000,
+            "category": "leak",
+            "evidence": {
+              "count": "25",
+              "first": "2026-10-15",
+              "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+              "last": "2026-10-18",
+              "per_day": "43.7 MB",
+              "prefix": "wings",
+              "size": "131.1 MB"
+            },
+            "path": "$TMPDIR/wings-*",
+            "rule": "leak.temp-prefix",
+            "severity": "low",
+            "title": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 147456,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:old-env": "2025-09-15",
+              "repos": "1",
+              "size": "147 KB",
+              "would_lose": "old-env 有被 git 忽略、只在这台 Mac 上的：.env"
+            },
+            "path": "~/Projects/old-env",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "old-env 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          },
+          {
+            "bytes": 147456,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:old-pushed": "2025-09-15",
+              "repos": "1",
+              "size": "147 KB"
+            },
+            "path": "~/Projects/old-pushed",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "old-pushed 半年多没动过，都已推送，删了能从远程找回",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 147456,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:old-unpushed": "2025-09-15",
+              "repos": "1",
+              "size": "147 KB",
+              "would_lose": "old-unpushed 有 1 个提交没推送"
+            },
+            "path": "~/Projects/old-unpushed",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "old-unpushed 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          },
+          {
+            "bytes": 159744,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:old-stash": "2025-09-15",
+              "repos": "1",
+              "size": "160 KB",
+              "would_lose": "old-stash 有 1 个 stash"
+            },
+            "path": "~/Projects/old-stash",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "old-stash 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          },
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "io.example.stillused",
+              "hint": "有的应用把文档、本地数据库放在这里；删之前确认里面没有你还要的东西，或者新版本已经导入过",
+              "last_changed": "?",
+              "places": "~/Library/Caches/io.example.stillused",
+              "size": "2.1 MB"
+            },
+            "key": "io.example.stillused",
+            "path": "~/Library/Caches/io.example.stillused",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "io.example.stillused 的数据还在，但这台 Mac 上没有这个应用",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "io.parity.ethereum",
+              "hint": "名字像钱包、密码库、密钥或 VPN 配置：里面可能是唯一的一份，别直接删；确认已经迁移或备份过",
+              "last_changed": "2026-08-21",
+              "places": "~/Library/Application Support/io.parity.ethereum",
+              "size": "2.1 MB"
+            },
+            "key": "io.parity.ethereum",
+            "path": "~/Library/Application Support/io.parity.ethereum",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "io.parity.ethereum 的数据还在，但这台 Mac 上没有这个应用（可能有密钥或密码库）",
+            "verdict": "info"
+          },
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "org.present.oldhelper",
+              "hint": "同一家开发商的应用或组件（安装包、后台程序、扩展）还装着，这可能是它的组件或旧版本留下的",
+              "last_changed": "2026-08-21",
+              "places": "~/Library/Application Support/org.present.oldhelper",
+              "size": "2.1 MB"
+            },
+            "key": "org.present.oldhelper",
+            "path": "~/Library/Application Support/org.present.oldhelper",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "org.present.oldhelper 的数据还在，但这台 Mac 上没有这个应用",
+            "verdict": "info"
+          },
+          {
+            "bytes": 2101248,
+            "category": "stale-project",
+            "evidence": {
+              "count": "1",
+              "folders": "unpacked（2.1 MB）",
+              "size": "2.1 MB"
+            },
+            "path": "~/Projects",
+            "rule": "stale.folders",
+            "severity": "low",
+            "title": "Projects 里有 1 个文件夹半年多没动过（不在 git 里，无法确认别处有没有副本）",
+            "verdict": "info"
+          },
+          {
+            "bytes": 282624,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:group/a": "2025-09-15",
+              "last_commit:group/b": "2025-09-15",
+              "repos": "2",
+              "size": "283 KB",
+              "would_lose": "group 里还有不在 git 里的：designs；group/b 有 1 个提交没推送"
+            },
+            "path": "~/Projects/group",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "group 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          },
+          {
+            "bytes": 62914560,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "62.9 MB",
+              "tool": "pip"
+            },
+            "path": "~/Library/Caches/pip",
+            "rule": "cache.rebuildable.pip",
+            "severity": "low",
+            "title": "pip 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 62914560,
+            "category": "space",
+            "evidence": {
+              "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满",
+              "now": "62.9 MB",
+              "per_day": "21 MB",
+              "since": "2026-10-17",
+              "then": "Zero KB"
+            },
+            "path": "~/Library/Caches/pip",
+            "rule": "space.growth",
+            "severity": "medium",
+            "title": "pip 每天涨 21 MB",
+            "verdict": "info"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "完全磁盘访问",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 完全磁盘访问，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+            },
+            "path": "io.example.removed",
+            "rule": "permission.stale-grant",
+            "severity": "medium",
+            "title": "io.example.removed 已经不在这台 Mac 上，还拿着「完全磁盘访问」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "录屏",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 录屏，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"
+            },
+            "path": "/opt/gone/tool",
+            "rule": "permission.stale-grant",
+            "severity": "medium",
+            "title": "/opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {},
+            "path": "~/Library/LaunchAgents/broken.plist",
+            "rule": "persistence.launchagent-unreadable",
+            "severity": "low",
+            "title": "broken.plist 读不出来",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "系统设置 → 通用 → 软件更新；重启也会释放交换文件",
+              "pending": "1",
+              "uptime_days": "79"
+            },
+            "path": "",
+            "rule": "posture.pending-updates",
+            "severity": "low",
+            "title": "有 1 个系统更新等着装，这台 Mac 已经 79 天没重启",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "系统设置 → 隐私与安全性 → FileVault"
+            },
+            "path": "",
+            "rule": "posture.filevault",
+            "severity": "high",
+            "title": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "skipped": "Gatekeeper"
+            },
+            "path": "",
+            "rule": "posture.partial",
+            "severity": "low",
+            "title": "有几项没查成：Gatekeeper",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "1",
+              "pids": "100",
+              "started": "2026-10-18"
+            },
+            "path": "~/Applications/Gone.app/Contents/MacOS/gone",
+            "rule": "process.deleted-binary",
+            "severity": "medium",
+            "title": "进程 100（gone）的程序已经被删掉了，它还在跑",
+            "verdict": "confirm"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "2",
+              "hint": "启动它们的程序已经退出了；不是你自己放在后台的任务的话，多半是没收拾干净",
+              "oldest": "tail（703，144 小时）；log（200，24 小时）",
+              "pids": "703,200"
+            },
+            "path": "",
+            "rule": "process.orphan",
+            "severity": "low",
+            "title": "2 个后台进程的父进程已经退出，还在跑",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "25",
+              "hint": "多半是父进程反复启动它、却没等它结束；占内存，也可能拖慢系统",
+              "parent": "/bin/sh",
+              "parent_pid": "1000"
+            },
+            "key": "/bin/sh\u0000/usr/sbin/lsof",
+            "path": "/usr/sbin/lsof",
+            "rule": "process.pile-up",
+            "severity": "medium",
+            "title": "lsof 在同一个父进程下堆了 25 个",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "server/discover",
+      "reply": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "result": {
+          "_meta": {
+            "io.modelcontextprotocol/serverInfo": {
+              "name": "luoke-scan",
+              "version": "$VERSION"
+            }
+          },
+          "capabilities": {
+            "resources": {},
+            "tools": {}
+          },
+          "resultType": "complete",
+          "supportedVersions": [
+            "2026-07-28"
+          ]
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/list",
+      "reply": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "result": {
+          "resultType": "complete",
+          "tools": [
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "上一轮什么时候查的、查出多少、病毒库日期、哪些项没查成",
+              "inputSchema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "scan_status",
+              "title": "扫描的状态"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "上一轮的发现，可以按结论、类别筛",
+              "inputSchema": {
+                "properties": {
+                  "category": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "maximum": 50,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "verdict": {
+                    "enum": [
+                      "safe",
+                      "confirm",
+                      "info"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "name": "scan_findings",
+              "title": "列出发现"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "马上开始一轮扫描（只读，不改动任何东西）",
+              "inputSchema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              },
+              "name": "scan_now",
+              "title": "现在查一下"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "按上一轮的发现出一份清理方案，每项可以选移到废纸篓、先不动、以后别提",
+              "inputSchema": {
+                "properties": {
+                  "scope": {
+                    "enum": [
+                      "all",
+                      "cache"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "name": "scan_plan",
+              "title": "出清理方案"
+            },
+            {
+              "annotations": {
+                "destructiveHint": true,
+                "readOnlyHint": false
+              },
+              "description": "执行用户在卡片上点过的方案：只做方案里列的、用户选的",
+              "inputSchema": {
+                "properties": {
+                  "choices": {
+                    "type": "object"
+                  },
+                  "plan_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "plan_id",
+                  "choices"
+                ],
+                "type": "object"
+              },
+              "name": "scan_apply",
+              "title": "执行清理方案"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": false
+              },
+              "description": "把一条发现标成不用管，以后不再报",
+              "inputSchema": {
+                "properties": {
+                  "finding_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "finding_id"
+                ],
+                "type": "object"
+              },
+              "name": "scan_ignore",
+              "title": "以后别提这一条"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": false
+              },
+              "description": "把清理时移进废纸篓的放回原处：一条清理记录（c-…），或一次清理的整批（p-… / auto-…）；原位置有同名的就放在旁边，不盖掉",
+              "inputSchema": {
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id"
+                ],
+                "type": "object"
+              },
+              "name": "scan_restore",
+              "title": "放回"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": false
+              },
+              "description": "开或关不用点就清的四类：会重建的缓存、装好了的应用的安装包、下载文件夹里的重复文件、测试工具留下的临时文件夹",
+              "inputSchema": {
+                "properties": {
+                  "enable": {
+                    "description": "旧写法，和 on 一样；给了 on 就不看它",
+                    "type": "boolean"
+                  },
+                  "on": {
+                    "description": "开（true）还是关（false）；要给",
+                    "type": "boolean"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "name": "scan_autoclean",
+              "title": "自动清理"
+            },
+            {
+              "_meta": {
+                "ai.luoke/where": "mac"
+              },
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "在访达里选中一条发现指的文件或文件夹",
+              "inputSchema": {
+                "properties": {
+                  "finding_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "finding_id"
+                ],
+                "type": "object"
+              },
+              "name": "scan_reveal",
+              "title": "在访达里显示"
+            },
+            {
+              "_meta": {
+                "ai.luoke/where": "mac"
+              },
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "打开系统设置里对应的页面（隐私与安全性的某个权限，或「登录项」）",
+              "inputSchema": {
+                "properties": {
+                  "grant": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "grant"
+                ],
+                "type": "object"
+              },
+              "name": "scan_open_settings",
+              "title": "打开系统设置"
+            },
+            {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "agent 告诉扫描某件事已经说过、答过或放下了",
+              "inputSchema": {
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "enum": [
+                      "shown",
+                      "answered",
+                      "dismissed"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "state"
+                ],
+                "type": "object"
+              },
+              "name": "outbox_ack",
+              "title": "记下说过了"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/list",
+      "reply": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "result": {
+          "resources": [
+            {
+              "mimeType": "application/json",
+              "name": "扫描要告诉你的事",
+              "uri": "luoke://luoke-scan/outbox"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "扫描要告诉你的事",
+              "uri": "outbox"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "清理记录",
+              "uri": "page/cleaned"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "概览",
+              "uri": "page/overview"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "权限的状态",
+              "uri": "permissions"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "概览",
+              "uri": "summary"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "luoke://luoke-scan/outbox"
+      },
+      "reply": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "items": [
+                  {
+                    "card": [
+                      {
+                        "createSurface": {
+                          "catalogId": "ai.luoke/a2ui/agent/1",
+                          "surfaceId": "round-000000000001"
+                        },
+                        "version": "v0.9"
+                      },
+                      {
+                        "updateComponents": {
+                          "components": [
+                            {
+                              "children": [
+                                "h1",
+                                "t2",
+                                "c-i0",
+                                "t3",
+                                "c-i1",
+                                "t4",
+                                "c-i2",
+                                "t5",
+                                "c-i3",
+                                "t6",
+                                "r9",
+                                "d10",
+                                "t11",
+                                "t12",
+                                "r14",
+                                "t15",
+                                "r17",
+                                "d18",
+                                "t19",
+                                "t20",
+                                "d21",
+                                "t22",
+                                "t23",
+                                "t24",
+                                "t25"
+                              ],
+                              "component": "Column",
+                              "id": "root"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "h1",
+                              "text": "能清出 62.9 MB，另外有 7 件事值得看一眼",
+                              "variant": "h4"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t2",
+                              "text": "会自动重建的缓存直接删掉，别的放心删的移到废纸篓，要你确认的先不动。",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "ChoicePicker",
+                              "id": "c-i0",
+                              "label": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                              "options": [
+                                {
+                                  "label": "移到废纸篓",
+                                  "value": "trash"
+                                },
+                                {
+                                  "label": "先不动",
+                                  "value": "keep"
+                                },
+                                {
+                                  "label": "以后别提",
+                                  "value": "ignore"
+                                }
+                              ],
+                              "value": {
+                                "path": "/choices/i0"
+                              }
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t3",
+                              "text": "$TMPDIR 里的 25 项",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "ChoicePicker",
+                              "id": "c-i1",
+                              "label": "pip 的缓存，删了会自动重建（62.9 MB）",
+                              "options": [
+                                {
+                                  "label": "删掉（会自动重建）",
+                                  "value": "remove"
+                                },
+                                {
+                                  "label": "先不动",
+                                  "value": "keep"
+                                },
+                                {
+                                  "label": "以后别提",
+                                  "value": "ignore"
+                                }
+                              ],
+                              "value": {
+                                "path": "/choices/i1"
+                              }
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t4",
+                              "text": "~/Library/Caches/pip",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "ChoicePicker",
+                              "id": "c-i2",
+                              "label": "io.example.stillused 的数据还在，但这台 Mac 上没有这个应用（2.1 MB）",
+                              "options": [
+                                {
+                                  "label": "移到废纸篓",
+                                  "value": "trash"
+                                },
+                                {
+                                  "label": "先不动",
+                                  "value": "keep"
+                                },
+                                {
+                                  "label": "以后别提",
+                                  "value": "ignore"
+                                }
+                              ],
+                              "value": {
+                                "path": "/choices/i2"
+                              }
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t5",
+                              "text": "~/Library/Caches/io.example.stillused",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "ChoicePicker",
+                              "id": "c-i3",
+                              "label": "old-pushed 半年多没动过，都已推送，删了能从远程找回（147 KB）",
+                              "options": [
+                                {
+                                  "label": "移到废纸篓",
+                                  "value": "trash"
+                                },
+                                {
+                                  "label": "先不动",
+                                  "value": "keep"
+                                },
+                                {
+                                  "label": "以后别提",
+                                  "value": "ignore"
+                                }
+                              ],
+                              "value": {
+                                "path": "/choices/i3"
+                              }
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t6",
+                              "text": "~/Projects/old-pushed",
+                              "variant": "caption"
+                            },
+                            {
+                              "action": {
+                                "event": {
+                                  "context": {
+                                    "choices": {
+                                      "path": "/choices"
+                                    },
+                                    "plan_id": "p-000000000002"
+                                  },
+                                  "name": "scan_apply"
+                                }
+                              },
+                              "child": "b7-text",
+                              "component": "Button",
+                              "id": "b7",
+                              "variant": "primary"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "b7-text",
+                              "text": "按这个处理"
+                            },
+                            {
+                              "action": {
+                                "event": {
+                                  "context": {
+                                    "on": true
+                                  },
+                                  "name": "scan_autoclean"
+                                }
+                              },
+                              "child": "b8-text",
+                              "component": "Button",
+                              "id": "b8"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "b8-text",
+                              "text": "以后自动清"
+                            },
+                            {
+                              "children": [
+                                "b7",
+                                "b8"
+                              ],
+                              "component": "Row",
+                              "id": "r9"
+                            },
+                            {
+                              "component": "Divider",
+                              "id": "d10"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t11",
+                              "text": "这几个应用已经删了，权限还留着，可以在系统设置里移除：",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t12",
+                              "text": "/opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」"
+                            },
+                            {
+                              "action": {
+                                "event": {
+                                  "context": {
+                                    "grant": "录屏"
+                                  },
+                                  "name": "scan_open_settings"
+                                }
+                              },
+                              "child": "b13-text",
+                              "component": "Button",
+                              "id": "b13"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "b13-text",
+                              "text": "打开「录屏」设置"
+                            },
+                            {
+                              "children": [
+                                "b13"
+                              ],
+                              "component": "Row",
+                              "id": "r14"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t15",
+                              "text": "io.example.removed 已经不在这台 Mac 上，还拿着「完全磁盘访问」"
+                            },
+                            {
+                              "action": {
+                                "event": {
+                                  "context": {
+                                    "grant": "完全磁盘访问"
+                                  },
+                                  "name": "scan_open_settings"
+                                }
+                              },
+                              "child": "b16-text",
+                              "component": "Button",
+                              "id": "b16"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "b16-text",
+                              "text": "打开「完全磁盘访问」设置"
+                            },
+                            {
+                              "children": [
+                                "b16"
+                              ],
+                              "component": "Row",
+                              "id": "r17"
+                            },
+                            {
+                              "component": "Divider",
+                              "id": "d18"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t19",
+                              "text": "这几样螺壳不替你动，你可以自己看看：",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t20",
+                              "text": "进程 100（gone）的程序已经被删掉了，它还在跑"
+                            },
+                            {
+                              "component": "Divider",
+                              "id": "d21"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t22",
+                              "text": "这几条值得留意，有空看一下：",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t23",
+                              "text": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t24",
+                              "text": "怎么办：系统设置 → 隐私与安全性 → FileVault",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t25",
+                              "text": "另有 15 条仅供参考，问我就列给你。",
+                              "variant": "caption"
+                            }
+                          ],
+                          "surfaceId": "round-000000000001"
+                        },
+                        "version": "v0.9"
+                      },
+                      {
+                        "updateDataModel": {
+                          "path": "/",
+                          "surfaceId": "round-000000000001",
+                          "value": {
+                            "choices": {
+                              "i0": [
+                                "keep"
+                              ],
+                              "i1": [
+                                "remove"
+                              ],
+                              "i2": [
+                                "keep"
+                              ],
+                              "i3": [
+                                "keep"
+                              ]
+                            }
+                          }
+                        },
+                        "version": "v0.9"
+                      }
+                    ],
+                    "created": "2026-10-20T12:00:00Z",
+                    "deadline": null,
+                    "expires": "2026-10-23T12:00:00Z",
+                    "id": "round/2026-10-20T12:00:00Z",
+                    "kind": "findings",
+                    "summary": "放心删 1 条、要确认 6 条、仅供参考 16 条（其中需要留意的 1 条）。",
+                    "title": "能清出 62.9 MB，另外有 7 件事值得看一眼",
+                    "urgency": "low",
+                    "why_now": "扫描刚查完一轮"
+                  }
+                ]
+              },
+              "uri": "luoke://luoke-scan/outbox"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "summary"
+      },
+      "reply": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "count": 8,
+                "text": "能清出 62.9 MB，另外有 7 件事值得看一眼"
+              },
+              "uri": "summary"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "permissions"
+      },
+      "reply": {
+        "id": 6,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "admin": "ask",
+                "auto": "off",
+                "fda": "granted"
+              },
+              "uri": "permissions"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "page/overview"
+      },
+      "reply": {
+        "id": 7,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": [
+                {
+                  "createSurface": {
+                    "catalogId": "ai.luoke/a2ui/agent/1",
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                },
+                {
+                  "updateComponents": {
+                    "components": [
+                      {
+                        "children": [
+                          "h1",
+                          "t2",
+                          "t3",
+                          "t4",
+                          "t5",
+                          "r7"
+                        ],
+                        "component": "Column",
+                        "id": "root"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "h1",
+                        "text": "扫描",
+                        "variant": "h4"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t2",
+                        "text": "能清出 62.9 MB，另外有 7 件事值得看一眼"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t3",
+                        "text": "上一轮 10月20日 20:00：放心删 1、要确认 6、仅供参考 16",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t4",
+                        "text": "病毒库 daily 27000（2026-10-20）",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t5",
+                        "text": "自动清：关",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {},
+                            "name": "scan_now"
+                          }
+                        },
+                        "child": "b6-text",
+                        "component": "Button",
+                        "id": "b6"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b6-text",
+                        "text": "现在查一下"
+                      },
+                      {
+                        "children": [
+                          "b6"
+                        ],
+                        "component": "Row",
+                        "id": "r7"
+                      }
+                    ],
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                }
+              ],
+              "uri": "page/overview"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "page/cleaned"
+      },
+      "reply": {
+        "id": 8,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": [
+                {
+                  "createSurface": {
+                    "catalogId": "ai.luoke/a2ui/agent/1",
+                    "surfaceId": "cleaned"
+                  },
+                  "version": "v0.9"
+                },
+                {
+                  "updateComponents": {
+                    "components": [
+                      {
+                        "children": [
+                          "h1",
+                          "t2"
+                        ],
+                        "component": "Column",
+                        "id": "root"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "h1",
+                        "text": "清理记录",
+                        "variant": "h4"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t2",
+                        "text": "还没清理过。"
+                      }
+                    ],
+                    "surfaceId": "cleaned"
+                  },
+                  "version": "v0.9"
+                }
+              ],
+              "uri": "page/cleaned"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "verdict": "confirm"
+        },
+        "name": "scan_findings"
+      },
+      "reply": {
+        "id": 9,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "[要确认] 进程 100（gone）的程序已经被删掉了，它还在跑\n[要确认] /opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」\n[要确认] io.example.removed 已经不在这台 Mac 上，还拿着「完全磁盘访问」\n[要确认] 临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB\n[要确认] io.example.stillused 的数据还在，但这台 Mac 上没有这个应用\n[要确认] old-pushed 半年多没动过，都已推送，删了能从远程找回",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "createSurface": {
+                  "catalogId": "ai.luoke/a2ui/agent/1",
+                  "surfaceId": "scan-000000000003"
+                },
+                "version": "v0.9"
+              },
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "h1",
+                        "t2",
+                        "t3",
+                        "t4",
+                        "t5",
+                        "t6",
+                        "t7",
+                        "t8",
+                        "t9",
+                        "t10",
+                        "t11",
+                        "t12",
+                        "t13"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "h1",
+                      "text": "发现 6 条",
+                      "variant": "h4"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t2",
+                      "text": "[要确认] 进程 100（gone）的程序已经被删掉了，它还在跑"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t3",
+                      "text": "~/Applications/Gone.app/Contents/MacOS/gone",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t4",
+                      "text": "[要确认] /opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t5",
+                      "text": "/opt/gone/tool\n以后装上同名的东西，会直接拿到这些权限\n系统设置 → 隐私与安全性 → 录屏，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t6",
+                      "text": "[要确认] io.example.removed 已经不在这台 Mac 上，还拿着「完全磁盘访问」"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t7",
+                      "text": "io.example.removed\n以后装上同名的东西，会直接拿到这些权限\n系统设置 → 隐私与安全性 → 完全磁盘访问，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t8",
+                      "text": "[要确认] 临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t9",
+                      "text": "$TMPDIR/wings-*\n多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t10",
+                      "text": "[要确认] io.example.stillused 的数据还在，但这台 Mac 上没有这个应用"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t11",
+                      "text": "~/Library/Caches/io.example.stillused\n有的应用把文档、本地数据库放在这里；删之前确认里面没有你还要的东西，或者新版本已经导入过",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t12",
+                      "text": "[要确认] old-pushed 半年多没动过，都已推送，删了能从远程找回"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t13",
+                      "text": "~/Projects/old-pushed",
+                      "variant": "caption"
+                    }
+                  ],
+                  "surfaceId": "scan-000000000003"
+                },
+                "version": "v0.9"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "choices": {
+            "i0": [
+              "keep"
+            ],
+            "i1": [
+              "remove"
+            ],
+            "i2": [
+              "keep"
+            ],
+            "i3": [
+              "keep"
+            ]
+          },
+          "plan_id": "p-000000000002"
+        },
+        "name": "scan_apply"
+      },
+      "reply": {
+        "id": 10,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "删掉会重建的缓存 1 项（腾出 62.9 MB）。",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "r97900-t1"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "r97900-t1",
+                      "text": "删掉会重建的缓存 1 项（腾出 62.9 MB）。"
+                    }
+                  ],
+                  "surfaceId": "round-000000000001"
+                },
+                "version": "v0.9"
+              }
+            ],
+            "done": true
+          }
+        }
+      },
+      "tree": {
+        "removed": [
+          "home/Library/Caches/pip: dir 0o755",
+          "home/Library/Caches/pip/http: dir 0o755",
+          "home/Library/Caches/pip/http/blob: file 62914560 0o644 1792454400"
+        ]
+      },
+      "user-action": {
+        "at": "2026-10-20T20:05:00+08:00",
+        "componentId": "b7",
+        "surfaceId": "round-000000000001"
+      }
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "luoke://luoke-scan/outbox"
+      },
+      "reply": {
+        "id": 11,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "items": []
+              },
+              "uri": "luoke://luoke-scan/outbox"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:05:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "summary"
+      },
+      "reply": {
+        "id": 12,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "count": 8,
+                "text": "能清出 62.9 MB，另外有 7 件事值得看一眼"
+              },
+              "uri": "summary"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "about": "下载文件夹里两周前来的安装包：认得出是哪个应用、是不是正好是它、版本、是不是下载的；太新、太小、挂着的、不是安装包、链接、应用包里的都不报",
+  "case": "rules/leftover.installer/installers",
+  "steps": [
+    {
+      "fakes": {
+        "attachedImages": [
+          "~/Downloads/Open.dmg"
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 6291456,
+            "category": "leftover",
+            "evidence": {
+              "added": "2026-08-31",
+              "days": "50",
+              "how": "装好了就用不到安装包了；想留着这个版本以后重装的，就留着",
+              "installed": "Pixelboard"
+            },
+            "path": "~/Downloads/Pixelboard.dmg",
+            "rule": "leftover.installer",
+            "severity": "low",
+            "title": "下载文件夹里 50 天前的安装包 Pixelboard.dmg（Pixelboard 已经装好了）",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 6291456,
+            "category": "leftover",
+            "evidence": {
+              "added": "2026-09-10",
+              "app_version": "2.4.1",
+              "days": "40",
+              "downloaded": "1",
+              "exact": "Lumen",
+              "how": "装好了就用不到安装包了；想留着这个版本以后重装的，就留着",
+              "installed": "Lumen",
+              "installer_version": "2.4.1",
+              "signed": "0"
+            },
+            "path": "~/Downloads/Lumen-2.4.1-arm64.dmg",
+            "rule": "leftover.installer",
+            "severity": "low",
+            "title": "下载文件夹里 40 天前的安装包 Lumen-2.4.1-arm64.dmg（Lumen 已经装好了）",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 6291456,
+            "category": "leftover",
+            "evidence": {
+              "added": "2026-09-10",
+              "days": "40",
+              "how": "装好了就用不到安装包了；想留着这个版本以后重装的，就留着"
+            },
+            "path": "~/Downloads/Open.dmg",
+            "rule": "leftover.installer",
+            "severity": "low",
+            "title": "下载文件夹里 40 天前的安装包 Open.dmg",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 6291456,
+            "category": "leftover",
+            "evidence": {
+              "added": "2026-09-15",
+              "app_version": "16.1",
+              "days": "35",
+              "exact": "Xcode",
+              "how": "装好了就用不到安装包了；想留着这个版本以后重装的，就留着",
+              "installed": "Xcode",
+              "installer_version": "16.1"
+            },
+            "path": "~/Downloads/Xcode_16.1.xip",
+            "rule": "leftover.installer",
+            "severity": "low",
+            "title": "下载文件夹里 35 天前的安装包 Xcode_16.1.xip（Xcode 已经装好了）",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 6291456,
+            "category": "leftover",
+            "evidence": {
+              "added": "2026-09-20",
+              "days": "30",
+              "how": "装好了就用不到安装包了；想留着这个版本以后重装的，就留着",
+              "installed": "Lumen",
+              "installer_version": "1.2"
+            },
+            "path": "~/Downloads/LumenSync-1.2.dmg",
+            "rule": "leftover.installer",
+            "severity": "low",
+            "title": "下载文件夹里 30 天前的安装包 LumenSync-1.2.dmg（Lumen 已经装好了）",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 6291456,
+            "category": "leftover",
+            "evidence": {
+              "added": "2026-09-25",
+              "days": "25",
+              "how": "装好了就用不到安装包了；想留着这个版本以后重装的，就留着",
+              "installed": "Pages",
+              "installer_version": "14"
+            },
+            "path": "~/Downloads/Pages 14.dmg",
+            "rule": "leftover.installer",
+            "severity": "low",
+            "title": "下载文件夹里 25 天前的安装包 Pages 14.dmg（Pages 已经装好了）",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 6291456,
+            "category": "leftover",
+            "evidence": {
+              "added": "2026-09-30",
+              "app_version": "3.0",
+              "days": "20",
+              "exact": "Harbor",
+              "how": "装好了就用不到安装包了；想留着这个版本以后重装的，就留着",
+              "installed": "Harbor",
+              "installer_version": "3"
+            },
+            "path": "~/Downloads/Harbor Setup 3.pkg",
+            "rule": "leftover.installer",
+            "severity": "low",
+            "title": "下载文件夹里 20 天前的安装包 Harbor Setup 3.pkg（Harbor 已经装好了）",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 6291456,
+            "category": "leftover",
+            "evidence": {
+              "added": "2026-10-04",
+              "days": "16",
+              "how": "装好了就用不到安装包了；想留着这个版本以后重装的，就留着",
+              "installer_version": "5.0"
+            },
+            "path": "~/Downloads/installers/Tool 5.0.mpkg",
+            "rule": "leftover.installer",
+            "severity": "low",
+            "title": "下载文件夹里 16 天前的安装包 Tool 5.0.mpkg",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

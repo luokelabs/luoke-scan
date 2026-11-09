@@ -1,0 +1,67 @@
+{
+  "about": "直接放在临时目录里的 22 个 upload_* 文件：也算一组",
+  "case": "rules/leak.temp-prefix/files",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 115343360,
+            "category": "leak",
+            "evidence": {
+              "count": "22",
+              "first": "2026-10-16",
+              "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+              "last": "2026-10-18",
+              "per_day": "57.7 MB",
+              "prefix": "upload",
+              "size": "115.3 MB"
+            },
+            "path": "$TMPDIR/upload-*",
+            "rule": "leak.temp-prefix",
+            "severity": "low",
+            "title": "临时目录里有 22 个 upload-* 没被删掉，共 115.3 MB",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "about": "--if-none：已经有报告就不查（主控第一次装好时用）；没有就查",
+  "case": "cli/if-none",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--if-none"
+      ],
+      "stdout": [
+        "共 0 条发现，0 项没扫描（规则 0.1.0）"
+      ]
+    },
+    {
+      "do": "pip 的缓存 60 MB"
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:05:00Z",
+        "--if-none"
+      ],
+      "stdout": []
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "findings",
+        "--data",
+        "$FIXTURE/data"
+      ],
+      "stdout": []
+    }
+  ]
+}

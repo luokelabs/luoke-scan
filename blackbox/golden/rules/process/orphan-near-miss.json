@@ -1,0 +1,148 @@
+{
+  "about": "父进程是 1 但不算孤儿的：launchd 的任务、差一分钟到 6 小时、系统的服务、XPC 服务、扩展、应用、故意独立的守护进程、别的用户的",
+  "case": "rules/process/orphan-near-miss",
+  "steps": [
+    {
+      "fakes": {
+        "launchdPIDs": [
+          8101
+        ],
+        "processes": [
+          {
+            "path": "/Applications/Safari.app/Contents/MacOS/Safari",
+            "pid": 400,
+            "ppid": 1,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/sync-job",
+            "pid": 8101,
+            "ppid": 1,
+            "started": "2026-10-18T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/young",
+            "pid": 8102,
+            "ppid": 1,
+            "started": "2026-10-20T06:01:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/libexec/xpcproxy",
+            "pid": 8103,
+            "ppid": 1,
+            "started": "2026-10-16T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/cfprefsd",
+            "pid": 8104,
+            "ppid": 1,
+            "started": "2026-10-16T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/sbin/launchd",
+            "pid": 8105,
+            "ppid": 1,
+            "started": "2026-10-16T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/System/Library/CoreServices/Dock.app/Contents/MacOS/Dock",
+            "pid": 8106,
+            "ppid": 1,
+            "started": "2026-10-16T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/lib/Kit.framework/XPCServices/io.example.svc.xpc/Contents/MacOS/io.example.svc",
+            "pid": 8107,
+            "ppid": 1,
+            "started": "2026-10-16T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Library/ExtensionKit/Extensions/io.example.ext.appex/Contents/MacOS/io.example.ext",
+            "pid": 8108,
+            "ppid": 1,
+            "started": "2026-10-16T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Menu.app/Contents/MacOS/Menu",
+            "pid": 8109,
+            "ppid": 1,
+            "started": "2026-10-16T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/gpg-agent",
+            "pid": 8110,
+            "ppid": 1,
+            "started": "2026-09-30T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/tmux",
+            "pid": 8111,
+            "ppid": 1,
+            "started": "2026-09-30T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/bin/tail",
+            "pid": 8112,
+            "ppid": 1,
+            "started": "2026-10-11T12:00:00Z",
+            "uid": 0
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

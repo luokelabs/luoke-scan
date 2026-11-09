@@ -1,0 +1,18 @@
+#!/bin/sh
+# 假的 freshclam。怎么答由旁边的文件定（不看扫描自己的数据目录）：
+#   fail-next 下载失败（退出 52）；bad-next 下来一个坏库；same-next 已经是最新（退出 1）；
+#   next-version 下一个 daily 的版本号（默认 27000，每更新一次加一）；db-date 库文件的时间（UTC，touch -t 的格式，默认 202610200100）。
+# 有 record-args 时，每次的参数记进 args.freshclam。
+d=$(dirname "$0"); [ -e "$d/record-args" ] && echo "$*" >> "$d/args.$(basename "$0")"
+dir=""; for a in "$@"; do case "$a" in --datadir=*) dir="${a#--datadir=}";; esac; done
+[ -n "$dir" ] || { echo "ERROR: no --datadir" >&2; exit 2; }
+echo "cool-down state" > "$dir/freshclam.dat"
+[ -e "$d/fail-next" ] && { echo "ERROR: Can't download daily.cvd"; exit 52; }
+[ -e "$d/bad-next" ] && { echo "bad" > "$dir/daily.cvd"; exit 0; }
+[ -e "$d/same-next" ] && exit 1
+n=$(( $(cat "$d/next-version" 2>/dev/null || echo 27000) ))
+echo "daily $n" > "$dir/daily.cvd"; [ -e "$dir/main.cvd" ] || echo "main 62" > "$dir/main.cvd"
+TZ=UTC touch -t "$(cat "$d/db-date" 2>/dev/null || echo 202610200100)" "$dir/daily.cvd" "$dir/main.cvd"
+echo "main.cvd database is up-to-date (version: 62, sigs: 2074290, f-level: 90, builder: fixture)"
+echo $((n + 1)) > "$d/next-version"
+exit 0

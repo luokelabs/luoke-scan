@@ -1,0 +1,400 @@
+{
+  "about": "会改动东西的四个工具没有用户点按（ai.luoke/user-action）一律拒绝，文件一个不动",
+  "case": "mcp/protocol/needs-click",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 131072000,
+            "category": "leak",
+            "evidence": {
+              "count": "25",
+              "first": "2026-10-15",
+              "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+              "last": "2026-10-18",
+              "per_day": "43.7 MB",
+              "prefix": "wings",
+              "size": "131.1 MB"
+            },
+            "path": "$TMPDIR/wings-*",
+            "rule": "leak.temp-prefix",
+            "severity": "low",
+            "title": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 62914560,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "62.9 MB",
+              "tool": "pip"
+            },
+            "path": "~/Library/Caches/pip",
+            "rule": "cache.rebuildable.pip",
+            "severity": "low",
+            "title": "pip 的缓存，删了会自动重建",
+            "verdict": "safe"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "luoke://luoke-scan/outbox"
+      },
+      "reply": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "items": [
+                  {
+                    "card": [
+                      {
+                        "createSurface": {
+                          "catalogId": "ai.luoke/a2ui/agent/1",
+                          "surfaceId": "round-000000000001"
+                        },
+                        "version": "v0.9"
+                      },
+                      {
+                        "updateComponents": {
+                          "components": [
+                            {
+                              "children": [
+                                "h1",
+                                "t2",
+                                "c-i0",
+                                "t3",
+                                "c-i1",
+                                "t4",
+                                "r7"
+                              ],
+                              "component": "Column",
+                              "id": "root"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "h1",
+                              "text": "能清出 62.9 MB，另外有 1 件事值得看一眼",
+                              "variant": "h4"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t2",
+                              "text": "会自动重建的缓存直接删掉，别的放心删的移到废纸篓，要你确认的先不动。",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "ChoicePicker",
+                              "id": "c-i0",
+                              "label": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                              "options": [
+                                {
+                                  "label": "移到废纸篓",
+                                  "value": "trash"
+                                },
+                                {
+                                  "label": "先不动",
+                                  "value": "keep"
+                                },
+                                {
+                                  "label": "以后别提",
+                                  "value": "ignore"
+                                }
+                              ],
+                              "value": {
+                                "path": "/choices/i0"
+                              }
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t3",
+                              "text": "$TMPDIR 里的 25 项",
+                              "variant": "caption"
+                            },
+                            {
+                              "component": "ChoicePicker",
+                              "id": "c-i1",
+                              "label": "pip 的缓存，删了会自动重建（62.9 MB）",
+                              "options": [
+                                {
+                                  "label": "删掉（会自动重建）",
+                                  "value": "remove"
+                                },
+                                {
+                                  "label": "先不动",
+                                  "value": "keep"
+                                },
+                                {
+                                  "label": "以后别提",
+                                  "value": "ignore"
+                                }
+                              ],
+                              "value": {
+                                "path": "/choices/i1"
+                              }
+                            },
+                            {
+                              "component": "Text",
+                              "id": "t4",
+                              "text": "~/Library/Caches/pip",
+                              "variant": "caption"
+                            },
+                            {
+                              "action": {
+                                "event": {
+                                  "context": {
+                                    "choices": {
+                                      "path": "/choices"
+                                    },
+                                    "plan_id": "p-000000000002"
+                                  },
+                                  "name": "scan_apply"
+                                }
+                              },
+                              "child": "b5-text",
+                              "component": "Button",
+                              "id": "b5",
+                              "variant": "primary"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "b5-text",
+                              "text": "按这个处理"
+                            },
+                            {
+                              "action": {
+                                "event": {
+                                  "context": {
+                                    "on": true
+                                  },
+                                  "name": "scan_autoclean"
+                                }
+                              },
+                              "child": "b6-text",
+                              "component": "Button",
+                              "id": "b6"
+                            },
+                            {
+                              "component": "Text",
+                              "id": "b6-text",
+                              "text": "以后自动清"
+                            },
+                            {
+                              "children": [
+                                "b5",
+                                "b6"
+                              ],
+                              "component": "Row",
+                              "id": "r7"
+                            }
+                          ],
+                          "surfaceId": "round-000000000001"
+                        },
+                        "version": "v0.9"
+                      },
+                      {
+                        "updateDataModel": {
+                          "path": "/",
+                          "surfaceId": "round-000000000001",
+                          "value": {
+                            "choices": {
+                              "i0": [
+                                "keep"
+                              ],
+                              "i1": [
+                                "remove"
+                              ]
+                            }
+                          }
+                        },
+                        "version": "v0.9"
+                      }
+                    ],
+                    "created": "2026-10-20T12:00:00Z",
+                    "deadline": null,
+                    "expires": "2026-10-23T12:00:00Z",
+                    "id": "round/2026-10-20T12:00:00Z",
+                    "kind": "findings",
+                    "summary": "放心删 1 条、要确认 1 条、仅供参考 0 条。",
+                    "title": "能清出 62.9 MB，另外有 1 件事值得看一眼",
+                    "urgency": "low",
+                    "why_now": "扫描刚查完一轮"
+                  }
+                ]
+              },
+              "uri": "luoke://luoke-scan/outbox"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "choices": {
+            "i0": [
+              "trash"
+            ],
+            "i1": [
+              "remove"
+            ]
+          },
+          "plan_id": "p-000000000002"
+        },
+        "name": "scan_apply"
+      },
+      "reply": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "这个操作要你在卡片上点过才能执行。",
+              "type": "text"
+            }
+          ],
+          "isError": true,
+          "resultType": "complete",
+          "structuredContent": {
+            "code": "needs_user_action"
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "finding_id": "leak.temp-prefix/000000000003"
+        },
+        "name": "scan_ignore"
+      },
+      "reply": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "这个操作要你在卡片上点过才能执行。",
+              "type": "text"
+            }
+          ],
+          "isError": true,
+          "resultType": "complete",
+          "structuredContent": {
+            "code": "needs_user_action"
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "id": "p-000000000003"
+        },
+        "name": "scan_restore"
+      },
+      "reply": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "这个操作要你在卡片上点过才能执行。",
+              "type": "text"
+            }
+          ],
+          "isError": true,
+          "resultType": "complete",
+          "structuredContent": {
+            "code": "needs_user_action"
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "on": true
+        },
+        "name": "scan_autoclean"
+      },
+      "reply": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "这个操作要你在卡片上点过才能执行。",
+              "type": "text"
+            }
+          ],
+          "isError": true,
+          "resultType": "complete",
+          "structuredContent": {
+            "code": "needs_user_action"
+          }
+        }
+      }
+    }
+  ]
+}

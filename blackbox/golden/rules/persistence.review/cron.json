@@ -1,0 +1,184 @@
+{
+  "about": "crontab：有几行只说；要运行的程序不在了的单独报；之后新加的行报新出现的（找不到程序的不重复报）",
+  "case": "rules/persistence.review/cron",
+  "steps": [
+    {
+      "fakes": {
+        "crontab": "# 注释\nMAILTO=me@example.invalid\n@reboot ~/bin/gone-job\n0 3 * * * cd /tmp && make\n*/5 * * * * ~/bin/backup --quiet\n"
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "entries": "@reboot gone-job；0 3 * * * 命令；*/5 * * * * backup",
+              "how": "在终端里运行 crontab -l 查看，crontab -e 修改"
+            },
+            "path": "",
+            "rule": "persistence.cron",
+            "severity": "low",
+            "title": "有 3 个定时任务（crontab）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "在终端里运行 crontab -e，删掉这一行",
+              "missing": "~/bin/gone-job",
+              "schedule": "@reboot"
+            },
+            "path": "",
+            "rule": "persistence.cron-missing",
+            "severity": "medium",
+            "title": "定时任务（@reboot）要运行的 gone-job 已经不在了",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-15T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-15T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "第一轮只记下来",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-15T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "crontab 里加了三行：系统的程序、家目录里的程序、不存在的程序"
+    },
+    {
+      "fakes": {
+        "crontab": "# 注释\nMAILTO=me@example.invalid\n@reboot ~/bin/gone-job\n0 3 * * * cd /tmp && make\n*/5 * * * * ~/bin/backup --quiet\n30 2 * * 1 /usr/bin/true\n15 * * * * ~/bin/new-job\n@hourly ~/bin/also-gone\n"
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "entries": "@reboot gone-job；0 3 * * * 命令；*/5 * * * * backup；30 2 * * 1 true；15 * * * * new-job；@hourly also-gone",
+              "how": "在终端里运行 crontab -l 查看，crontab -e 修改"
+            },
+            "path": "",
+            "rule": "persistence.cron",
+            "severity": "low",
+            "title": "有 6 个定时任务（crontab）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "在终端里运行 crontab -e，删掉这一行",
+              "missing": "~/bin/also-gone",
+              "schedule": "@hourly"
+            },
+            "path": "",
+            "rule": "persistence.cron-missing",
+            "severity": "medium",
+            "title": "定时任务（@hourly）要运行的 also-gone 已经不在了",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "在终端里运行 crontab -e，删掉这一行",
+              "missing": "~/bin/gone-job",
+              "schedule": "@reboot"
+            },
+            "path": "",
+            "rule": "persistence.cron-missing",
+            "severity": "medium",
+            "title": "定时任务（@reboot）要运行的 gone-job 已经不在了",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你加的就不用管；不认识的话，在终端里运行 crontab -e 删掉这一行",
+              "name": "new-job",
+              "program": "~/bin/new-job",
+              "scope": "cron",
+              "why": "是 crontab 里新加的一行"
+            },
+            "path": "~/bin/new-job",
+            "rule": "persistence.new",
+            "severity": "medium",
+            "title": "新加了一个定时任务：new-job",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你加的就不用管；不认识的话，在终端里运行 crontab -e 删掉这一行",
+              "name": "true",
+              "program": "/usr/bin/true",
+              "scope": "cron",
+              "why": "是 crontab 里新加的一行"
+            },
+            "path": "/usr/bin/true",
+            "rule": "persistence.new",
+            "severity": "medium",
+            "title": "新加了一个定时任务：true",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-16T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-16T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-16T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

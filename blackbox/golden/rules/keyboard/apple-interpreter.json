@@ -1,0 +1,130 @@
+{
+  "about": "苹果签名的解释器（zsh、python3、osascript）在看按键：在跑的脚本没人担保，中；苹果别的程序、/System 下的不报",
+  "case": "rules/keyboard/apple-interpreter",
+  "steps": [
+    {
+      "fakes": {
+        "eventTaps": [
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": null,
+            "program": "/bin/zsh"
+          },
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": null,
+            "program": "/usr/bin/python3"
+          },
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": null,
+            "program": "/usr/bin/osascript"
+          },
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": null,
+            "program": "/usr/bin/true"
+          },
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": null,
+            "program": "/System/Library/CoreServices/Dock.app/Contents/MacOS/Dock"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "process",
+            "evidence": {
+              "how": "认得就留着；不认得的先退出它，再在 系统设置 → 隐私与安全性 → 输入监控、辅助功能 里关掉它的权限，把程序移到废纸篓",
+              "program": "/bin/zsh",
+              "signature": "苹果签名的解释器，脚本没人担保",
+              "why": "键盘记录器就是这样偷密码的；自己编的小工具、Homebrew 装的快捷键工具也可能这样"
+            },
+            "key": "keyboard//bin/zsh",
+            "path": "/bin/zsh",
+            "rule": "keyboard.unvouched",
+            "severity": "medium",
+            "title": "跑脚本的 zsh（在跑某个脚本） 在看你在所有应用里按的每一个键",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "how": "认得就留着；不认得的先退出它，再在 系统设置 → 隐私与安全性 → 输入监控、辅助功能 里关掉它的权限，把程序移到废纸篓",
+              "program": "/usr/bin/osascript",
+              "signature": "苹果签名的解释器，脚本没人担保",
+              "why": "键盘记录器就是这样偷密码的；自己编的小工具、Homebrew 装的快捷键工具也可能这样"
+            },
+            "key": "keyboard//usr/bin/osascript",
+            "path": "/usr/bin/osascript",
+            "rule": "keyboard.unvouched",
+            "severity": "medium",
+            "title": "跑脚本的 osascript（在跑某个脚本） 在看你在所有应用里按的每一个键",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "how": "认得就留着；不认得的先退出它，再在 系统设置 → 隐私与安全性 → 输入监控、辅助功能 里关掉它的权限，把程序移到废纸篓",
+              "program": "/usr/bin/python3",
+              "signature": "苹果签名的解释器，脚本没人担保",
+              "why": "键盘记录器就是这样偷密码的；自己编的小工具、Homebrew 装的快捷键工具也可能这样"
+            },
+            "key": "keyboard//usr/bin/python3",
+            "path": "/usr/bin/python3",
+            "rule": "keyboard.unvouched",
+            "severity": "medium",
+            "title": "跑脚本的 python3（在跑某个脚本） 在看你在所有应用里按的每一个键",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

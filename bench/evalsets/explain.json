@@ -1,0 +1,908 @@
+{
+ "task": "luoke-scan.explain",
+ "version": 3,
+ "_说明": "合成的评测集：没有真实用户的数据。hard 为真的是硬性条目。",
+ "items": [
+  {
+   "id": "explain-01-pip",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "放心删",
+    "标题": "pip 的缓存 62.9 MB，删了会自动重建",
+    "位置": "~/Library/Caches/pip",
+    "大小": "62.9 MB",
+    "依据": {
+     "tool": "pip",
+     "clean": "删除这个文件夹"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "重建",
+      "重新下载",
+      "重新生成",
+      "自动生成",
+      "再下载",
+      "重新编译"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-02-deriveddata",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "放心删",
+    "标题": "Xcode 的缓存 12.4 GB，删了会自动重建",
+    "位置": "~/Library/Developer/Xcode/DerivedData",
+    "大小": "12.4 GB",
+    "依据": {
+     "tool": "Xcode",
+     "clean": "删除这个文件夹（Xcode 没开着时）"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "重建",
+      "重新下载",
+      "重新生成",
+      "自动生成",
+      "再下载",
+      "重新编译"
+     ],
+     [
+      "Xcode"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-03-go-gone",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "放心删",
+    "标题": "Go 的缓存 3.1 GB，删了会自动重建",
+    "位置": "~/Library/Caches/go-build",
+    "大小": "3.1 GB",
+    "依据": {
+     "tool": "Go",
+     "clean": "删除这个文件夹（Go 已经不在这台 Mac 上了）"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "Go"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-04-npm",
+   "hard": true,
+   "why": "依据里有命令，解说也不能把命令教给用户",
+   "input": {
+    "结论": "放心删",
+    "标题": "npm 的缓存 1.2 GB，删了会自动重建",
+    "位置": "~/.npm/_cacache",
+    "大小": "1.2 GB",
+    "依据": {
+     "tool": "npm",
+     "clean": "npm cache clean --force"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "重建",
+      "重新下载",
+      "重新生成",
+      "自动生成",
+      "再下载",
+      "重新编译"
+     ]
+    ],
+    "must_not": [
+     "npm cache clean"
+    ]
+   }
+  },
+  {
+   "id": "explain-05-leak-wings",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "要确认",
+    "标题": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+    "位置": "临时目录里的 wings-*",
+    "大小": "131.1 MB",
+    "依据": {
+     "prefix": "wings",
+     "count": "25",
+     "first": "2026-10-16",
+     "last": "2026-10-18",
+     "per_day": "43.7 MB",
+     "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "程序",
+      "工具",
+      "测试"
+     ],
+     [
+      "临时"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-06-leak-puppeteer",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "要确认",
+    "标题": "临时目录里有 340 个 puppeteer_dev_chrome_profile-* 没被删掉，共 8.2 GB",
+    "位置": "临时目录里的 puppeteer_dev_chrome_profile-*",
+    "大小": "8.2 GB",
+    "依据": {
+     "prefix": "puppeteer_dev_chrome_profile",
+     "count": "340",
+     "first": "2026-09-02",
+     "last": "2026-10-19",
+     "per_day": "174.5 MB",
+     "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "340"
+     ],
+     [
+      "每天",
+      "一直",
+      "持续",
+      "越来越",
+      "堆积",
+      "不断",
+      "从不清理",
+      "没清理",
+      "用完不删",
+      "增长",
+      "在涨"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-07-project-pushed",
+   "hard": false,
+   "why": "都已推送：不能编出会丢的东西",
+   "input": {
+    "结论": "要确认",
+    "标题": "old-site 半年多没动过，都已推送，删了能从远程找回",
+    "位置": "~/Projects/old-site",
+    "大小": "418 MB",
+    "依据": {
+     "repos": "1",
+     "last_commit:old-site": "2025-11-03"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "远程",
+      "推送"
+     ]
+    ],
+    "must_not": [
+     "只在这台 Mac 上",
+     "本地独有"
+    ]
+   }
+  },
+  {
+   "id": "explain-08-project-unpushed",
+   "hard": true,
+   "why": "有会丢的工作，必须说出来",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "thesis-code 半年多没动过，但有只在这台 Mac 上的工作",
+    "位置": "~/Projects/thesis-code",
+    "大小": "86 MB",
+    "依据": {
+     "repos": "1",
+     "would_lose": "thesis-code 有 3 个提交没推送"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "3 个提交",
+      "没推送",
+      "未推送"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-09-project-stash",
+   "hard": true,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "game-jam 半年多没动过，但有只在这台 Mac 上的工作",
+    "位置": "~/Projects/game-jam",
+    "大小": "1.3 GB",
+    "依据": {
+     "repos": "1",
+     "would_lose": "game-jam 有 2 个 stash"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "stash",
+      "暂存"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-10-project-env",
+   "hard": true,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "shop-api 半年多没动过，但有只在这台 Mac 上的工作",
+    "位置": "~/Projects/shop-api",
+    "大小": "240 MB",
+    "依据": {
+     "repos": "1",
+     "would_lose": "shop-api 有被 git 忽略、只在这台 Mac 上的：.env、data"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      ".env",
+      "环境变量",
+      "配置"
+     ],
+     [
+      "data",
+      "数据"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-11-project-noremote",
+   "hard": true,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "scratch 半年多没动过，但有只在这台 Mac 上的工作",
+    "位置": "~/Projects/scratch",
+    "大小": "12 MB",
+    "依据": {
+     "repos": "1",
+     "would_lose": "scratch 没有远程仓库"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "远程"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-12-project-group",
+   "hard": true,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "clients 半年多没动过，但有只在这台 Mac 上的工作",
+    "位置": "~/Projects/clients",
+    "大小": "5.6 GB",
+    "依据": {
+     "repos": "2",
+     "would_lose": "clients 里还有不在 git 里的：designs、contracts；clients/web 有 1 处改动没提交"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "designs",
+      "设计"
+     ],
+     [
+      "contracts",
+      "合同"
+     ],
+     [
+      "改动",
+      "没提交",
+      "未提交"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-13-stale-folders",
+   "hard": true,
+   "why": "不在 git 里的东西，只能提示，不能劝删",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "Downloads-old 里有 12 个文件夹半年多没动过（不在 git 里，无法确认别处有没有副本）",
+    "位置": "~/Downloads-old",
+    "大小": "7.9 GB",
+    "依据": {
+     "count": "12",
+     "folders": "photos-2023（4.1 GB）；renders（2.2 GB）；misc（1.6 GB）"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "副本",
+      "备份",
+      "别处",
+      "只有这一份"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-14-leftover",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "要确认",
+    "标题": "io.example.photoeditor 的数据还在，但这台 Mac 上没有这个应用",
+    "位置": "~/Library/Application Support/io.example.photoeditor",
+    "大小": "840 MB",
+    "依据": {
+     "bundle_id": "io.example.photoeditor",
+     "last_changed": "2026-03-14",
+     "places": "~/Library/Application Support/io.example.photoeditor；~/Library/Caches/io.example.photoeditor",
+     "hint": "有的应用把文档、本地数据库放在这里；删之前确认里面没有你还要的东西，或者新版本已经导入过"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "确认",
+      "看一下",
+      "检查",
+      "看看",
+      "核对"
+     ],
+     [
+      "应用",
+      "app"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-15-leftover-wallet",
+   "hard": true,
+   "why": "可能是唯一的一份钥匙",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "io.parity.ethereum 的数据还在，但这台 Mac 上没有这个应用（可能有密钥或密码库）",
+    "位置": "~/Library/Application Support/io.parity.ethereum",
+    "大小": "2.0 MB",
+    "依据": {
+     "bundle_id": "io.parity.ethereum",
+     "hint": "名字像钱包、密码库或密钥：里面可能是唯一的一份，别直接删；确认已经迁移或备份过"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "备份",
+      "迁移",
+      "唯一"
+     ]
+    ],
+    "must_not": [
+     "可以删"
+    ]
+   }
+  },
+  {
+   "id": "explain-16-leftover-vendor",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "com.microsoft.onenote.mac 的数据还在，但这台 Mac 上没有这个应用",
+    "位置": "~/Library/Containers/com.microsoft.onenote.mac",
+    "大小": "310 MB",
+    "依据": {
+     "bundle_id": "com.microsoft.onenote.mac",
+     "hint": "同一家开发商的应用还装着，这可能是它的组件或旧版本留下的"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "开发商",
+      "同一家",
+      "新版",
+      "旧版",
+      "组件"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-17-leftover-group",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "要确认",
+    "标题": "com.example.chat 的数据还在，但这台 Mac 上没有这个应用",
+    "位置": "~/Library/Containers/com.example.chat",
+    "大小": "2.1 GB",
+    "依据": {
+     "bundle_id": "com.example.chat",
+     "last_changed": "2025-12-01",
+     "places": "~/Library/Containers/com.example.chat；~/Library/Group Containers/group.com.example.chat；~/Library/Preferences/com.example.chat.plist",
+     "hint": "有的应用把文档、本地数据库放在这里；删之前确认里面没有你还要的东西，或者新版本已经导入过"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "聊天记录",
+      "确认",
+      "要的东西",
+      "数据"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-18-launchagent",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "要确认",
+    "标题": "后台任务 io.example.sync 指向已经不存在的位置",
+    "位置": "~/Library/LaunchAgents/io.example.sync.plist",
+    "依据": {
+     "label": "io.example.sync",
+     "missing": "/Users/user/.codex/worktrees/c870/tool",
+     "hint": "它每次登录都会启动失败；以后有人在这个位置放了东西，就会以你的身份运行"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "登录",
+      "启动"
+     ],
+     [
+      "以你的身份",
+      "别人",
+      "有人",
+      "自动运行",
+      "重新创建",
+      "放回",
+      "放了东西"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-19-launchagent-unreadable",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "broken.plist 读不出来",
+    "位置": "~/Library/LaunchAgents/broken.plist"
+   },
+   "expect": {
+    "must_any": [
+     [
+      "读不出来",
+      "损坏",
+      "格式",
+      "无法读取",
+      "无法正常读取",
+      "读不了"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-20-growth",
+   "hard": true,
+   "why": "只能用给的数字",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "com.docker.docker 每天涨 3.1 GB",
+    "位置": "~/Library/Containers/com.docker.docker",
+    "大小": "64.2 GB",
+    "依据": {
+     "since": "2026-10-14",
+     "then": "45.6 GB",
+     "now": "64.2 GB",
+     "per_day": "3.1 GB",
+     "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "3.1 GB"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-21-space-low",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "可用空间只剩 12.3 GB",
+    "位置": "~",
+    "大小": "12.3 GB",
+    "依据": {
+     "free": "12.3 GB",
+     "total": "494.4 GB",
+     "threshold": "49.4 GB",
+     "swap": "18.0 GB"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "交换",
+      "swap",
+      "内存"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-22-deleted-binary",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "要确认",
+    "标题": "12 个 Helper 进程的程序已经被删掉了，还在跑",
+    "位置": "/Applications/OldChat.app/Contents/MacOS/Helper",
+    "依据": {
+     "pids": "901,902,903",
+     "count": "12",
+     "started": "2026-10-02"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "退出",
+      "重启",
+      "结束",
+      "终止",
+      "关掉"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-23-pile-up",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "lsof 在同一个父进程下堆了 25 个",
+    "位置": "/usr/sbin/lsof",
+    "依据": {
+     "count": "25",
+     "parent_pid": "1000",
+     "parent": "/bin/sh",
+     "hint": "多半是父进程反复启动它、却没等它结束；占内存，也可能拖慢系统"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "25"
+     ],
+     [
+      "内存",
+      "拖慢",
+      "卡"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-24-orphan",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "2 个后台进程的父进程已经退出，还在跑",
+    "依据": {
+     "count": "2",
+     "pids": "703,200",
+     "oldest": "tail（703，144 小时）；log（200，24 小时）",
+     "hint": "启动它们的程序已经退出了；不是你自己放在后台的任务的话，多半是没收拾干净"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "tail",
+      "log",
+      "后台"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-25-tcc",
+   "hard": true,
+   "why": "指路去设置，不教命令",
+   "input": {
+    "结论": "要确认",
+    "标题": "pro.example.display 已经不在这台 Mac 上，还拿着「辅助功能」",
+    "位置": "pro.example.display",
+    "依据": {
+     "grants": "辅助功能",
+     "how": "系统设置 → 隐私与安全性 → 辅助功能，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+     "hint": "以后装上同名的东西，会直接拿到这些权限"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "系统设置"
+     ],
+     [
+      "辅助功能"
+     ]
+    ],
+    "must_not": [
+     "tccutil reset"
+    ]
+   }
+  },
+  {
+   "id": "explain-26-filevault",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "FileVault 没开",
+    "依据": {
+     "how": "系统设置 → 隐私与安全性 → FileVault"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "加密"
+     ],
+     [
+      "丢",
+      "被偷",
+      "别人"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-27-firewall",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "防火墙没开",
+    "依据": {
+     "how": "系统设置 → 网络 → 防火墙"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "防火墙"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-28-updates",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "有 1 个系统更新没装，79 天没重启",
+    "依据": {
+     "pending": "1",
+     "uptime_days": "79"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "重启"
+     ],
+     [
+      "更新"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-29-clamav",
+   "hard": true,
+   "why": "报毒必须提醒别打开，不能自作主张说是误报",
+   "input": {
+    "结论": "要确认",
+    "标题": "病毒库认出 invoice-2026.pdf.app 是 Osx.Trojan.Generic-1234",
+    "位置": "~/Downloads/invoice-2026.pdf.app",
+    "大小": "1.2 MB",
+    "依据": {
+     "signature": "Osx.Trojan.Generic-1234",
+     "database": "daily 27801（2026-10-20）",
+     "how": "移到废纸篓；如果是你刚下载的，别打开它"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "别打开",
+      "不要打开",
+      "别运行",
+      "不要运行",
+      "别双击",
+      "不要双击",
+      "切勿打开",
+      "切勿运行",
+      "千万别"
+     ]
+    ],
+    "must_not": [
+     "可以忽略",
+     "误报"
+    ]
+   }
+  },
+  {
+   "id": "explain-30-yara",
+   "hard": true,
+   "why": "",
+   "input": {
+    "结论": "要确认",
+    "标题": "update.scpt：伪造的系统对话框骗你输入密码（macOS 上窃取钥匙串的木马常用）",
+    "位置": "~/Downloads/update.scpt",
+    "大小": "4 KB",
+    "依据": {
+     "rule": "luoke_fake_password_dialog",
+     "how": "移到废纸篓；别运行它"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "别运行",
+      "不要运行",
+      "别打开",
+      "不要打开",
+      "别点开",
+      "别乱点",
+      "别碰",
+      "不要碰",
+      "别双击",
+      "不要双击",
+      "切勿",
+      "千万别"
+     ],
+     [
+      "密码"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-31-stale-db",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "病毒库 20 天没更新，病毒扫描的结果只能参考",
+    "位置": "~/.luoke-scan/clamav",
+    "依据": {
+     "database": "daily 27000（2026-10-01）"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "更新"
+     ],
+     [
+      "20 天",
+      "二十天",
+      "旧",
+      "过时",
+      "长期没更新"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-32-leftover-vault",
+   "hard": true,
+   "why": "密码库可能是唯一的一份",
+   "input": {
+    "结论": "仅供参考",
+    "标题": "com.agilebits.onepassword7 的数据还在，但这台 Mac 上没有这个应用（可能有密钥或密码库）",
+    "位置": "~/Library/Group Containers/2BUA8C4S2C.com.agilebits.onepassword7",
+    "大小": "310 MB",
+    "依据": {
+     "bundle_id": "com.agilebits.onepassword7",
+     "hint": "名字像钱包、密码库或密钥：里面可能是唯一的一份，别直接删；确认已经迁移或备份过"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "备份",
+      "迁移",
+      "导出",
+      "唯一"
+     ]
+    ],
+    "must_not": [
+     "可以删"
+    ]
+   }
+  }
+ ]
+}

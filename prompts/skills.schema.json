@@ -1,0 +1,63 @@
+{
+  "type": "object",
+  "properties": {
+    "fits": {
+      "type": "boolean"
+    },
+    "does": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "beyond": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "what": {
+            "type": "string",
+            "maxLength": 60
+          }
+        },
+        "required": [
+          "file",
+          "what"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "risk": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "x-describe": [
+        [
+          "low",
+          "做的都在说明里（说明写了要读、要发、要删的也算），或者只是写法不够小心（装包没写版本、给的权限太宽）"
+        ],
+        [
+          "medium",
+          "有说明里没说、但不一定有害的动作（读敏感的文件但不往外发、从网上装东西）"
+        ],
+        [
+          "high",
+          "说明里没说的：把密钥或私人数据往外发、下载就运行、藏起来的话、让自己自动启动、改 AI 工具的设置和记忆、要管理员权限或关掉保护、大范围删除"
+        ]
+      ]
+    }
+  },
+  "required": [
+    "fits",
+    "does",
+    "beyond",
+    "risk"
+  ],
+  "additionalProperties": false
+}

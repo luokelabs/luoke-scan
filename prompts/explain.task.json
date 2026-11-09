@@ -1,0 +1,12 @@
+{
+  "_说明": "生成任务 luoke-scan.explain（顶层 ADR 0019：提示词放成文件）。发给模型的是：explain.system.txt（{{max_chars}} 填这里的 max_chars），然后 explain.examples.json 里每条一问一答（user 照 explain.user.txt，{{input}} 是输入的 JSON；assistant 是输出），最后 user 是这条发现的 JSON（结论、标题、位置、大小、依据：规则给的事实，原样）。输出是一段话，没有 schema；答错不重试，所以没有 retry.txt。params 是建议的任务参数（登记任务时交给主控，由主控覆盖）。扫描和评测程序（bench/run_eval.py）都读这一组；改了要重跑评测。例子不能取自评测集。",
+  "task": "luoke-scan.explain",
+  "version": 4,
+  "max_chars": 120,
+  "max_tokens": 300,
+  "params": {
+    "temperature": 0,
+    "top_p": 1,
+    "thinking": false
+  }
+}

@@ -1,0 +1,393 @@
+{
+  "about": "同一个父进程下堆了 20 个 lsof（正好到门槛）：报；另一个父进程（不在进程表里）下的 22 个再报一条，父进程写「?」",
+  "case": "rules/process/pile-up",
+  "steps": [
+    {
+      "fakes": {
+        "processes": [
+          {
+            "path": "/Applications/Safari.app/Contents/MacOS/Safari",
+            "pid": 400,
+            "ppid": 1,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/status-poller",
+            "pid": 6000,
+            "ppid": 50,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6001,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6002,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6003,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6004,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6005,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6006,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6007,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6008,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6009,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6010,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6011,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6012,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6013,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6014,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6015,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6016,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6017,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6018,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6019,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6020,
+            "ppid": 6000,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6101,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6102,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6103,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6104,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6105,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6106,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6107,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6108,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6109,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6110,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6111,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6112,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6113,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6114,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6115,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6116,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6117,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6118,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6119,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6120,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6121,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/lsof",
+            "pid": 6122,
+            "ppid": 6100,
+            "started": "2026-10-20T12:00:00Z",
+            "uid": "$UID"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "process",
+            "evidence": {
+              "count": "20",
+              "hint": "多半是父进程反复启动它、却没等它结束；占内存，也可能拖慢系统",
+              "parent": "~/.local/bin/status-poller",
+              "parent_pid": "6000"
+            },
+            "key": "~/.local/bin/status-poller\u0000/usr/sbin/lsof",
+            "path": "/usr/sbin/lsof",
+            "rule": "process.pile-up",
+            "severity": "medium",
+            "title": "lsof 在同一个父进程下堆了 20 个",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "22",
+              "hint": "多半是父进程反复启动它、却没等它结束；占内存，也可能拖慢系统",
+              "parent": "?",
+              "parent_pid": "6100"
+            },
+            "key": "?\u0000/usr/sbin/lsof",
+            "path": "/usr/sbin/lsof",
+            "rule": "process.pile-up",
+            "severity": "medium",
+            "title": "lsof 在同一个父进程下堆了 22 个",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

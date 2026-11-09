@@ -1,0 +1,118 @@
+{
+  "about": "第一轮：签名对不上的单独报，没人担保的（临时签名、没签名、脚本、没看）合成一条；关掉的、系统的、只写名字的、程序不在的不算；不报新出现的",
+  "case": "rules/persistence.review/signatures",
+  "steps": [
+    {
+      "fakes": {
+        "signatures": [
+          {
+            "pathContains": "adhoc",
+            "signature": "adhoc"
+          },
+          {
+            "pathContains": "invalid",
+            "signature": "invalid"
+          },
+          {
+            "pathContains": "script",
+            "signature": "script"
+          },
+          {
+            "pathContains": "apple",
+            "signature": "apple"
+          },
+          {
+            "pathContains": "weird",
+            "signature": "unknown"
+          },
+          {
+            "pathContains": "unsigned",
+            "signature": "unsigned"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "Homebrew 和自己编的程序通常就是这样，不一定有问题；不认识的值得看一眼",
+              "items": "io.example.script：脚本；io.example.adhoc：临时签名（没有开发者担保）；io.example.unsigned：没签名；io.example.weird：没看（在 macOS 要先问你的文件夹里，没有完全磁盘访问）"
+            },
+            "path": "",
+            "rule": "persistence.unvouched",
+            "severity": "low",
+            "title": "4 个会自己启动的程序没有开发者签名",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "它每次登录都会启动失败；以后有人在这个位置放了东西，就会以你的身份运行",
+              "label": "io.example.missing",
+              "missing": "~/bin/adhoc-gone"
+            },
+            "path": "~/Library/LaunchAgents/io.example.missing.plist",
+            "rule": "persistence.launchagent-missing",
+            "severity": "medium",
+            "title": "后台任务 io.example.missing 指向已经不存在的位置",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "label": "io.example.invalid",
+              "program": "~/bin/invalid-tool",
+              "scope": "user-agent",
+              "why": "签名以后文件被改过：可能是更新到一半，也可能被换过"
+            },
+            "path": "~/Library/LaunchAgents/io.example.invalid.plist",
+            "rule": "persistence.bad-signature",
+            "severity": "medium",
+            "title": "你的后台任务 io.example.invalid 的程序签名和文件对不上",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

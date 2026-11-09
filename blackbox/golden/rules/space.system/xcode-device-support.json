@@ -1,0 +1,97 @@
+{
+  "about": "设备支持文件：比同一平台最新的旧、一个月没用、100 MiB 以上的才报",
+  "case": "rules/space.system/xcode-device-support",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 134217728,
+            "category": "cache",
+            "evidence": {
+              "how": "删了以后，再接上这个版本的设备，Xcode 会重新拷一次（几分钟）",
+              "newest": "17.0",
+              "platform": "tvOS",
+              "version": "16.0",
+              "why": "Xcode 第一次调试这个系统版本的设备时从设备上拷来的；只有还要调试这个版本的设备才用得到"
+            },
+            "path": "~/Library/Developer/Xcode/tvOS DeviceSupport/16.0 (20J373)",
+            "rule": "space.xcode-device-support",
+            "severity": "low",
+            "title": "Xcode 为 tvOS 16.0 留的设备支持文件（134.2 MB），已经有 17.0 的了",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 134217728,
+            "category": "cache",
+            "evidence": {
+              "how": "删了以后，再接上这个版本的设备，Xcode 会重新拷一次（几分钟）",
+              "newest": "18.1",
+              "platform": "iOS",
+              "version": "17.2",
+              "why": "Xcode 第一次调试这个系统版本的设备时从设备上拷来的；只有还要调试这个版本的设备才用得到"
+            },
+            "path": "~/Library/Developer/Xcode/iOS DeviceSupport/17.2 (21C62)",
+            "rule": "space.xcode-device-support",
+            "severity": "low",
+            "title": "Xcode 为 iOS 17.2 留的设备支持文件（134.2 MB），已经有 18.1 的了",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 134217728,
+            "category": "cache",
+            "evidence": {
+              "how": "删了以后，再接上这个版本的设备，Xcode 会重新拷一次（几分钟）",
+              "newest": "18.1",
+              "platform": "iOS",
+              "version": "17.5",
+              "why": "Xcode 第一次调试这个系统版本的设备时从设备上拷来的；只有还要调试这个版本的设备才用得到"
+            },
+            "path": "~/Library/Developer/Xcode/iOS DeviceSupport/iPhone16,2 17.5 (21F79)",
+            "rule": "space.xcode-device-support",
+            "severity": "low",
+            "title": "Xcode 为 iOS 17.5 留的设备支持文件（134.2 MB），已经有 18.1 的了",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

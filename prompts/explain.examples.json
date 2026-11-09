@@ -1,0 +1,67 @@
+[
+  {
+    "input": {
+      "结论": "仅供参考",
+      "标题": "notes-app 半年多没动过，但有只在这台 Mac 上的工作",
+      "位置": "~/Projects/notes-app",
+      "大小": "64 MB",
+      "依据": {
+        "repos": "1",
+        "would_lose": "notes-app 有 2 个提交没推送；notes-app 有被 git 忽略、只在这台 Mac 上的：.env、local.db"
+      }
+    },
+    "output": "notes-app 半年多没动过，但有 2 个提交没推送，还有只在这台 Mac 上的 .env 和 local.db，删了就找不回来。要清理的话先推送，再把这两个文件备份好。"
+  },
+  {
+    "input": {
+      "结论": "放心删",
+      "标题": "uv 的缓存 2.1 GB，删了会自动重建",
+      "位置": "~/.cache/uv",
+      "大小": "2.1 GB",
+      "依据": {
+        "tool": "uv",
+        "clean": "uv cache clean",
+        "size": "2.1 GB"
+      }
+    },
+    "output": "这是 uv 装 Python 包时留下的缓存，占 2.1 GB。删了不丢你的东西，下次用到时 uv 会自己重新下载。"
+  },
+  {
+    "input": {
+      "结论": "要确认",
+      "标题": "病毒库认出 setup-helper.pkg 是 Osx.Malware.Agent-1",
+      "位置": "~/Downloads/setup-helper.pkg",
+      "大小": "3.4 MB",
+      "依据": {
+        "signature": "Osx.Malware.Agent-1",
+        "database": "daily 27800（2026-10-18）",
+        "how": "移到废纸篓；如果是你刚下载的，别打开它"
+      }
+    },
+    "output": "病毒库认出下载里的 setup-helper.pkg 是恶意软件（Osx.Malware.Agent-1）。别打开、别运行它，确认不是你要的就移到废纸篓。"
+  },
+  {
+    "input": {
+      "结论": "要确认",
+      "标题": "com.example.reader 的数据还在，但这台 Mac 上没有这个应用",
+      "位置": "~/Library/Application Support/com.example.reader",
+      "大小": "420 MB",
+      "依据": {
+        "bundle_id": "com.example.reader",
+        "last_changed": "2026-01-09",
+        "hint": "有的应用把文档、本地数据库放在这里；删之前确认里面没有你还要的东西，或者新版本已经导入过"
+      }
+    },
+    "output": "com.example.reader 这个应用已经不在这台 Mac 上了，它的数据还占着 420 MB。里面可能有它存的文档或数据库，先在访达里看看有没有你还要的，再决定删不删。"
+  },
+  {
+    "input": {
+      "结论": "仅供参考",
+      "标题": "Gatekeeper 关了",
+      "依据": {
+        "how": "系统设置 → 隐私与安全性"
+      }
+    },
+    "output": "Gatekeeper 是 macOS 检查下载来的程序有没有签名的那道关，现在关了，来路不明的程序打开时不会被拦。要开的话去系统设置 → 隐私与安全性。"
+  }
+]

@@ -1,0 +1,287 @@
+{
+  "about": "哪些说明文件会看：家目录里 3 个工具的、项目顶层的 AGENTS.md、CLAUDE.md、CLAUDE.local.md、.claude/CLAUDE.md、GEMINI.md、.cursorrules、.windsurfrules、Copilot 的，和 Cursor 规则、Copilot 说明文件夹里的 .md/.mdc；子文件夹里的、README、别的扩展名、文件夹里第 41 个以后的、不是文件的不看",
+  "case": "rules/agentfile/places",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "file": ".claude/CLAUDE.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "why": "AI 写代码的工具打开时会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.claude/CLAUDE.md 第 4 行）"
+            },
+            "key": "~/.claude/CLAUDE.md|00b318184aade33b",
+            "path": "~/.claude/CLAUDE.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "Claude Code 读的 .claude/CLAUDE.md：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "file": ".claude/CLAUDE.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.claude/CLAUDE.md 第 4 行）"
+            },
+            "key": "~/Projects/demo/.claude/CLAUDE.md|d625d28a97be69d9",
+            "path": "~/Projects/demo/.claude/CLAUDE.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 demo 里 Claude Code 读的 .claude/CLAUDE.md：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "file": "CLAUDE.local.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（CLAUDE.local.md 第 4 行）"
+            },
+            "key": "~/Projects/demo/CLAUDE.local.md|80646c996db4ad06",
+            "path": "~/Projects/demo/CLAUDE.local.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 demo 里 Claude Code 读的 CLAUDE.local.md：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "file": "CLAUDE.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（CLAUDE.md 第 4 行）"
+            },
+            "key": "~/Projects/demo/CLAUDE.md|4ff5c218d4bbf450",
+            "path": "~/Projects/demo/CLAUDE.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 demo 里 Claude Code 读的 CLAUDE.md：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Codex",
+              "file": ".codex/AGENTS.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "why": "AI 写代码的工具打开时会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.codex/AGENTS.md 第 4 行）"
+            },
+            "key": "~/.codex/AGENTS.md|d0694cb766b0e5e6",
+            "path": "~/.codex/AGENTS.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "Codex 读的 .codex/AGENTS.md：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Cursor",
+              "file": ".cursor/rules/a.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.cursor/rules/a.md 第 4 行）"
+            },
+            "key": "~/Projects/demo/.cursor/rules/a.md|4221805da9d1f41c",
+            "path": "~/Projects/demo/.cursor/rules/a.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 demo 里 Cursor 读的 .cursor/rules/a.md：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Cursor",
+              "file": ".cursor/rules/style.mdc",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.cursor/rules/style.mdc 第 4 行）"
+            },
+            "key": "~/Projects/demo/.cursor/rules/style.mdc|a38076b93c129a18",
+            "path": "~/Projects/demo/.cursor/rules/style.mdc",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 demo 里 Cursor 读的 .cursor/rules/style.mdc：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Cursor",
+              "file": ".cursorrules",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.cursorrules 第 4 行）"
+            },
+            "key": "~/Projects/demo/.cursorrules|849113c4810721b8",
+            "path": "~/Projects/demo/.cursorrules",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 demo 里 Cursor 读的 .cursorrules：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Gemini CLI",
+              "file": ".gemini/GEMINI.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "why": "AI 写代码的工具打开时会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.gemini/GEMINI.md 第 4 行）"
+            },
+            "key": "~/.gemini/GEMINI.md|940e4657f703998e",
+            "path": "~/.gemini/GEMINI.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "Gemini CLI 读的 .gemini/GEMINI.md：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Gemini CLI",
+              "file": "GEMINI.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（GEMINI.md 第 4 行）"
+            },
+            "key": "~/Projects/demo/GEMINI.md|ad2659db434eec7d",
+            "path": "~/Projects/demo/GEMINI.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 demo 里 Gemini CLI 读的 GEMINI.md：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "GitHub Copilot",
+              "file": ".github/copilot-instructions.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.github/copilot-instructions.md 第 4 行）"
+            },
+            "key": "~/Projects/demo/.github/copilot-instructions.md|6828625226c67f28",
+            "path": "~/Projects/demo/.github/copilot-instructions.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 demo 里 GitHub Copilot 读的 .github/copilot-instructions.md：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "GitHub Copilot",
+              "file": ".github/instructions/x.instructions.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.github/instructions/x.instructions.md 第 4 行）"
+            },
+            "key": "~/Projects/demo/.github/instructions/x.instructions.md|cb270f0910913223",
+            "path": "~/Projects/demo/.github/instructions/x.instructions.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 demo 里 GitHub Copilot 读的 .github/instructions/x.instructions.md：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Windsurf",
+              "file": ".windsurfrules",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.windsurfrules 第 4 行）"
+            },
+            "key": "~/Projects/demo/.windsurfrules|eb2a038fd194ddf7",
+            "path": "~/Projects/demo/.windsurfrules",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 demo 里 Windsurf 读的 .windsurfrules：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（AGENTS.md 第 4 行）"
+            },
+            "key": "~/Projects/demo/AGENTS.md|b2fe51eac138b54e",
+            "path": "~/Projects/demo/AGENTS.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 demo 里 多个 AI 工具共用 读的 AGENTS.md：冒充系统或开发者说话",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

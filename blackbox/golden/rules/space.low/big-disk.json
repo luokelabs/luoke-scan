@@ -1,0 +1,73 @@
+{
+  "about": "盘 2 TiB：门槛是总量的一成（约 205 GiB），剩 150 GiB 也报",
+  "case": "rules/space.low/big-disk",
+  "steps": [
+    {
+      "fakes": {
+        "volume": {
+          "free": 161061273600,
+          "swap": 0,
+          "total": 2199023255552
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 161061273600,
+            "category": "space",
+            "evidence": {
+              "free": "161.06 GB",
+              "swap": "Zero KB",
+              "threshold": "219.9 GB",
+              "total": "2.2 TB"
+            },
+            "path": "~",
+            "rule": "space.low",
+            "severity": "medium",
+            "title": "可用空间只剩 161.06 GB",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

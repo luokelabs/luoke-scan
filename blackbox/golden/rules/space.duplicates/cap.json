@@ -1,0 +1,389 @@
+{
+  "about": "21 组重复：只报多占最多的 20 组",
+  "case": "rules/space.duplicates/cap",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 1114112,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-01.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-01.bin",
+              "sha256": "ec724019032e6a36",
+              "targets": "~/Pictures/dup-01.bin"
+            },
+            "key": "space.duplicates:ec724019032e6a36bddefb3a84684afa6a3fdfd0844c16fe7d2c0ca8f2c6f219",
+            "path": "~/Documents/dup-01.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-01.bin（每份 1.1 MB），多占了 1.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1179648,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-02.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-02.bin",
+              "sha256": "a29e8768fbf31ae5",
+              "targets": "~/Pictures/dup-02.bin"
+            },
+            "key": "space.duplicates:a29e8768fbf31ae5b4bc4de9f7d444d34f7fe1f3e8c96a8867de695d06c350b5",
+            "path": "~/Documents/dup-02.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-02.bin（每份 1.2 MB），多占了 1.2 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1245184,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-03.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-03.bin",
+              "sha256": "cce182311f4f892d",
+              "targets": "~/Pictures/dup-03.bin"
+            },
+            "key": "space.duplicates:cce182311f4f892db16acb94b8fdd48dfed9de2d2118668b63c2048ede1a2c1c",
+            "path": "~/Documents/dup-03.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-03.bin（每份 1.2 MB），多占了 1.2 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1310720,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-04.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-04.bin",
+              "sha256": "6c5f1222ba29efca",
+              "targets": "~/Pictures/dup-04.bin"
+            },
+            "key": "space.duplicates:6c5f1222ba29efca90b17cfe054d198711ba7bffba91197cc6aaeb3fd3ce315f",
+            "path": "~/Documents/dup-04.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-04.bin（每份 1.3 MB），多占了 1.3 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1376256,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-05.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-05.bin",
+              "sha256": "85bf0dd15d2b818f",
+              "targets": "~/Pictures/dup-05.bin"
+            },
+            "key": "space.duplicates:85bf0dd15d2b818f6fbfce6da08bbe75d86757158c9d96ec0a976ed8965b14a0",
+            "path": "~/Documents/dup-05.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-05.bin（每份 1.4 MB），多占了 1.4 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1441792,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-06.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-06.bin",
+              "sha256": "3572651a9767978f",
+              "targets": "~/Pictures/dup-06.bin"
+            },
+            "key": "space.duplicates:3572651a9767978f9f07bdf49826d449f0ac87119d140fc59a4c312c0ccf2ab5",
+            "path": "~/Documents/dup-06.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-06.bin（每份 1.4 MB），多占了 1.4 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1507328,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-07.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-07.bin",
+              "sha256": "c8b37279cf6a5e29",
+              "targets": "~/Pictures/dup-07.bin"
+            },
+            "key": "space.duplicates:c8b37279cf6a5e29b609211704d065c738f2acf838c3cfa41c79a220d46676f4",
+            "path": "~/Documents/dup-07.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-07.bin（每份 1.5 MB），多占了 1.5 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1572864,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-08.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-08.bin",
+              "sha256": "9038a50a3cd26e4a",
+              "targets": "~/Pictures/dup-08.bin"
+            },
+            "key": "space.duplicates:9038a50a3cd26e4ae9ebeea81fcd5cbd49ce4b8faa7d97cc148de53b2fbaef76",
+            "path": "~/Documents/dup-08.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-08.bin（每份 1.6 MB），多占了 1.6 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1638400,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-09.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-09.bin",
+              "sha256": "e27948d3028835d6",
+              "targets": "~/Pictures/dup-09.bin"
+            },
+            "key": "space.duplicates:e27948d3028835d67b7867c144b360d298f58cb473b7400ae634f62acd78cf94",
+            "path": "~/Documents/dup-09.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-09.bin（每份 1.6 MB），多占了 1.6 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1703936,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-10.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-10.bin",
+              "sha256": "b334c6e16257b5a1",
+              "targets": "~/Pictures/dup-10.bin"
+            },
+            "key": "space.duplicates:b334c6e16257b5a10f599b8a1dae03b9b261da82a7bd7054e90213bcbff52129",
+            "path": "~/Documents/dup-10.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-10.bin（每份 1.7 MB），多占了 1.7 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1769472,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-11.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-11.bin",
+              "sha256": "74c8127a4ab40fb6",
+              "targets": "~/Pictures/dup-11.bin"
+            },
+            "key": "space.duplicates:74c8127a4ab40fb61aadff86ad47b8abbd34509eeb1bef257bc9deba3991e8be",
+            "path": "~/Documents/dup-11.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-11.bin（每份 1.8 MB），多占了 1.8 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1835008,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-12.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-12.bin",
+              "sha256": "3ecb03a6e4183a85",
+              "targets": "~/Pictures/dup-12.bin"
+            },
+            "key": "space.duplicates:3ecb03a6e4183a8549cec131e2e4ba38e864eeaec5668214e9200e36e2de9c51",
+            "path": "~/Documents/dup-12.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-12.bin（每份 1.8 MB），多占了 1.8 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1900544,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-13.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-13.bin",
+              "sha256": "19b5133b62b868f8",
+              "targets": "~/Pictures/dup-13.bin"
+            },
+            "key": "space.duplicates:19b5133b62b868f8d2b14af86c6e0081eecca3b5530e612f5bc6f2a3e04f7543",
+            "path": "~/Documents/dup-13.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-13.bin（每份 1.9 MB），多占了 1.9 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 1966080,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-14.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-14.bin",
+              "sha256": "fb7c79f51e1ffd93",
+              "targets": "~/Pictures/dup-14.bin"
+            },
+            "key": "space.duplicates:fb7c79f51e1ffd93fe536fc5941b46e287b6926d083b1353165401b044e78889",
+            "path": "~/Documents/dup-14.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-14.bin（每份 2 MB），多占了 2 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2031616,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-15.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-15.bin",
+              "sha256": "680e1b814097f84f",
+              "targets": "~/Pictures/dup-15.bin"
+            },
+            "key": "space.duplicates:680e1b814097f84f959c67fc1bf17e58ebacb7bf28fef5a526f09529d24990f8",
+            "path": "~/Documents/dup-15.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-15.bin（每份 2 MB），多占了 2 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-16.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-16.bin",
+              "sha256": "0ba2bc44e1dede32",
+              "targets": "~/Pictures/dup-16.bin"
+            },
+            "key": "space.duplicates:0ba2bc44e1dede32c50cb4dee31aa983e104e3d5782052f7dfc267efd9e0ddeb",
+            "path": "~/Documents/dup-16.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-16.bin（每份 2.1 MB），多占了 2.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2162688,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-17.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-17.bin",
+              "sha256": "85430934ae2108a0",
+              "targets": "~/Pictures/dup-17.bin"
+            },
+            "key": "space.duplicates:85430934ae2108a0a60651c388b55579f967a4bac2e3829f2635029e9015f1cc",
+            "path": "~/Documents/dup-17.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-17.bin（每份 2.2 MB），多占了 2.2 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2228224,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-18.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-18.bin",
+              "sha256": "1080cd22e131fc41",
+              "targets": "~/Pictures/dup-18.bin"
+            },
+            "key": "space.duplicates:1080cd22e131fc41c94f4ae04c9917b49bc8b0aa2dc8d65e25a910566e6399d1",
+            "path": "~/Documents/dup-18.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-18.bin（每份 2.2 MB），多占了 2.2 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2293760,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-19.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-19.bin",
+              "sha256": "88c0c7cf57a1ee9f",
+              "targets": "~/Pictures/dup-19.bin"
+            },
+            "key": "space.duplicates:88c0c7cf57a1ee9f20810d7a91ba37c5d1b7f895d5f92a339373d94ef8bd40a5",
+            "path": "~/Documents/dup-19.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-19.bin（每份 2.3 MB），多占了 2.3 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2359296,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/dup-20.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/dup-20.bin",
+              "sha256": "adbf5de40e4c2222",
+              "targets": "~/Pictures/dup-20.bin"
+            },
+            "key": "space.duplicates:adbf5de40e4c2222132761a0355df75d0cf11e57115413b1a9792523951ba5a0",
+            "path": "~/Documents/dup-20.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 dup-20.bin（每份 2.4 MB），多占了 2.4 MB",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

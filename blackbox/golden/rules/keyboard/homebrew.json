@@ -1,0 +1,118 @@
+{
+  "about": "Homebrew 的目录里没签名（这里是不在了）的快捷键工具：多半是快捷键工具，中",
+  "case": "rules/keyboard/homebrew",
+  "steps": [
+    {
+      "fakes": {
+        "eventTaps": [
+          {
+            "allApps": true,
+            "listenOnly": false,
+            "pid": null,
+            "program": "/opt/homebrew/Cellar/io-example-hotkeys/1.0/bin/io-example-hotkeys"
+          },
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": null,
+            "program": "/usr/local/Cellar/io-example-keys/2.0/bin/io-example-keys"
+          },
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": null,
+            "program": "/usr/local/opt/io-example-remap/bin/io-example-remap"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "process",
+            "evidence": {
+              "how": "认得就留着；不认得的先退出它，再在 系统设置 → 隐私与安全性 → 输入监控、辅助功能 里关掉它的权限，把程序移到废纸篓",
+              "program": "/opt/homebrew/Cellar/io-example-hotkeys/1.0/bin/io-example-hotkeys",
+              "signature": "不存在",
+              "why": "键盘记录器就是这样偷密码的；自己编的小工具、Homebrew 装的快捷键工具也可能这样"
+            },
+            "key": "keyboard//opt/homebrew/Cellar/io-example-hotkeys/1.0/bin/io-example-hotkeys",
+            "path": "/opt/homebrew/Cellar/io-example-hotkeys/1.0/bin/io-example-hotkeys",
+            "rule": "keyboard.unvouched",
+            "severity": "medium",
+            "title": "没有开发者担保的程序 io-example-hotkeys 在看你在所有应用里按的每一个键",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "how": "认得就留着；不认得的先退出它，再在 系统设置 → 隐私与安全性 → 输入监控、辅助功能 里关掉它的权限，把程序移到废纸篓",
+              "program": "/usr/local/Cellar/io-example-keys/2.0/bin/io-example-keys",
+              "signature": "不存在",
+              "why": "键盘记录器就是这样偷密码的；自己编的小工具、Homebrew 装的快捷键工具也可能这样"
+            },
+            "key": "keyboard//usr/local/Cellar/io-example-keys/2.0/bin/io-example-keys",
+            "path": "/usr/local/Cellar/io-example-keys/2.0/bin/io-example-keys",
+            "rule": "keyboard.unvouched",
+            "severity": "medium",
+            "title": "没有开发者担保的程序 io-example-keys 在看你在所有应用里按的每一个键",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "how": "认得就留着；不认得的先退出它，再在 系统设置 → 隐私与安全性 → 输入监控、辅助功能 里关掉它的权限，把程序移到废纸篓",
+              "program": "/usr/local/opt/io-example-remap/bin/io-example-remap",
+              "signature": "不存在",
+              "why": "键盘记录器就是这样偷密码的；自己编的小工具、Homebrew 装的快捷键工具也可能这样"
+            },
+            "key": "keyboard//usr/local/opt/io-example-remap/bin/io-example-remap",
+            "path": "/usr/local/opt/io-example-remap/bin/io-example-remap",
+            "rule": "keyboard.unvouched",
+            "severity": "medium",
+            "title": "没有开发者担保的程序 io-example-remap 在看你在所有应用里按的每一个键",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

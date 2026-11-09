@@ -1,0 +1,205 @@
+{
+  "about": "没有完全磁盘访问：桌面、文稿、下载里的不报（记成没看全），影片里的照报",
+  "case": "rules/stale.large-file/no-full-disk-access",
+  "steps": [
+    {
+      "fakes": {
+        "staleFiles": [
+          {
+            "changed": null,
+            "path": "~/Downloads/disk.iso",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Documents/old.zip",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Desktop/clip.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/trip.mov",
+            "used": "2024-08-11T12:00:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Desktop/clip.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "clip.mov（2.1 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Documents/old.zip",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old.zip（2.1 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Downloads/disk.iso",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "disk.iso（2.1 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/trip.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "trip.mov（2.1 MB）2 年多没打开过",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "没有完全磁盘访问"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/trip.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "trip.mov（2.1 MB）2 年多没打开过",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents 里散落的密钥没看（看了 macOS 会弹框问你）",
+            "rule": "secrets"
+          },
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents、Music 里的重复文件没看（看了 macOS 会弹框问你）",
+            "rule": "space.duplicates"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载、桌面、文稿里的系统恢复镜像没看（看了 macOS 会弹框问你）",
+            "rule": "space.system"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里新来的文件有没有病毒没看（看了 macOS 会弹框问你）",
+            "rule": "malware"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里的安装包和没下完的下载没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.installer"
+          },
+          {
+            "reason": "没有完全磁盘访问，别的应用的容器里留下的数据没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.app-data"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载和别的应用的数据占多大没看（看了 macOS 会弹框问你）",
+            "rule": "space"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载里很久没打开的大文件没看（看了 macOS 会弹框问你）",
+            "rule": "stale.large-file"
+          }
+        ],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json",
+        "--no-full-disk-access"
+      ]
+    }
+  ]
+}

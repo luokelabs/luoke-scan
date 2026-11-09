@@ -1,0 +1,106 @@
+{
+  "about": "authorized_keys 里有 2 把钥匙（注释、空行不算）：报一条；后来加了一把，是新的一条（编号跟着钥匙变）",
+  "case": "rules/exposure/ssh-authorized",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "认得每一把就留着；不认得的从 ~/.ssh/authorized_keys 里删掉那一行",
+              "keys": "2"
+            },
+            "key": "~/.ssh|ssh-ed25519 AAAAexample1 laptop|ssh-rsa AAAAexample2 work",
+            "path": "~/.ssh/authorized_keys",
+            "rule": "exposure.ssh-authorized",
+            "severity": "low",
+            "title": "有 2 把钥匙能用 SSH 登录这台 Mac（「远程登录」开着时）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "authorized_keys 里加了一把"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "认得每一把就留着；不认得的从 ~/.ssh/authorized_keys 里删掉那一行",
+              "keys": "3"
+            },
+            "key": "~/.ssh|ssh-ed25519 AAAAexample1 laptop|ssh-ed25519 AAAAexample3 new|ssh-rsa AAAAexample2 work",
+            "path": "~/.ssh/authorized_keys",
+            "rule": "exposure.ssh-authorized",
+            "severity": "low",
+            "title": "有 3 把钥匙能用 SSH 登录这台 Mac（「远程登录」开着时）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-21T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-21T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-21T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

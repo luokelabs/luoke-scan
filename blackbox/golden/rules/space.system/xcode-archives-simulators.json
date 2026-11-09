@@ -1,0 +1,77 @@
+{
+  "about": "Xcode 的归档 1 GiB、模拟器 5 GiB：只说占了多少",
+  "case": "rules/space.system/xcode-archives-simulators",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 1073741824,
+            "category": "space",
+            "evidence": {
+              "count": "2",
+              "how": "在 Xcode 的 Organizer 里删掉不再需要的归档；发布过的版本留着它的归档，才能看懂那个版本的崩溃报告",
+              "oldest": "2025-03-01"
+            },
+            "path": "~/Library/Developer/Xcode/Archives",
+            "rule": "space.xcode-archives",
+            "severity": "low",
+            "title": "Xcode 的归档有 2 个，占了 1.07 GB",
+            "verdict": "info"
+          },
+          {
+            "bytes": 5368709120,
+            "category": "space",
+            "evidence": {
+              "count": "2",
+              "how": "在终端运行 xcrun simctl delete unavailable，删掉系统已经不在了的模拟器；用不到的模拟器系统在 Xcode 的设置里「Components」（旧版叫 Platforms）删",
+              "why": "每个模拟器里有装进去的应用和它们的数据"
+            },
+            "path": "~/Library/Developer/CoreSimulator/Devices",
+            "rule": "space.simulators",
+            "severity": "low",
+            "title": "2 个模拟器占了 5.37 GB",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

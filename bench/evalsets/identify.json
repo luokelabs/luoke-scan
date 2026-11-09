@@ -1,0 +1,881 @@
+{
+ "task": "luoke-scan.identify",
+ "version": 3,
+ "_说明": "合成的评测集：没有真实用户的数据。hard 为真的是硬性条目。",
+ "items": [
+  {
+   "id": "identify-01-huggingface",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/.cache/huggingface",
+    "大小": "38.2 GB",
+    "最后改动": "2026-10-12",
+    "文件数": 2140,
+    "常见扩展名": [
+     "safetensors",
+     "json",
+     "txt"
+    ],
+    "前几项": [
+     "hub",
+     "hub/models--Qwen--Qwen3-8B",
+     "hub/datasets--wikitext",
+     "token"
+    ]
+   },
+   "expect": {
+    "name": "hugging\\s*face|(?<![a-z])hf(?![a-z])",
+    "kinds": [
+     "cache"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-02-vscode",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/Library/Application Support/Code",
+    "大小": "1.9 GB",
+    "最后改动": "2026-10-20",
+    "文件数": 18400,
+    "常见扩展名": [
+     "json",
+     "js",
+     "vscdb",
+     "log"
+    ],
+    "前几项": [
+     "User",
+     "User/settings.json",
+     "CachedData",
+     "logs",
+     "Workspaces"
+    ]
+   },
+   "expect": {
+    "name": "vs\\s*code|visual studio code|(?<![a-z])code(?![a-z])",
+    "kinds": [
+     "app-data"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-03-gradle",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/.gradle",
+    "大小": "6.4 GB",
+    "最后改动": "2026-09-30",
+    "文件数": 52000,
+    "常见扩展名": [
+     "jar",
+     "pom",
+     "bin",
+     "lock"
+    ],
+    "前几项": [
+     "caches",
+     "caches/modules-2",
+     "wrapper/dists",
+     "daemon"
+    ]
+   },
+   "expect": {
+    "name": "gradle",
+    "kinds": [
+     "cache",
+     "tool"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-04-ollama",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/.ollama",
+    "大小": "19.7 GB",
+    "最后改动": "2026-08-11",
+    "文件数": 31,
+    "常见扩展名": [
+     "",
+     "json"
+    ],
+    "前几项": [
+     "models",
+     "models/blobs",
+     "models/manifests",
+     "id_ed25519"
+    ]
+   },
+   "expect": {
+    "name": "ollama",
+    "kinds": [
+     "app-data",
+     "cache",
+     "tool"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-05-spotify",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/Library/Caches/com.spotify.client",
+    "大小": "2.3 GB",
+    "最后改动": "2026-10-19",
+    "文件数": 4100,
+    "常见扩展名": [
+     "file",
+     "bnk",
+     "db"
+    ],
+    "前几项": [
+     "Data",
+     "Browser",
+     "fsCachedData"
+    ]
+   },
+   "expect": {
+    "name": "spotify",
+    "kinds": [
+     "cache"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-06-rustup",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/.rustup",
+    "大小": "2.8 GB",
+    "最后改动": "2026-07-02",
+    "文件数": 23000,
+    "常见扩展名": [
+     "rlib",
+     "so",
+     "dylib",
+     "toml"
+    ],
+    "前几项": [
+     "toolchains",
+     "toolchains/stable-aarch64-apple-darwin",
+     "update-hashes",
+     "settings.toml"
+    ]
+   },
+   "expect": {
+    "name": "rust",
+    "kinds": [
+     "tool",
+     "app-data"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-07-simulator",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/Library/Developer/CoreSimulator",
+    "大小": "41.0 GB",
+    "最后改动": "2026-06-20",
+    "文件数": 310000,
+    "常见扩展名": [
+     "plist",
+     "db",
+     "dylib",
+     "png"
+    ],
+    "前几项": [
+     "Devices",
+     "Devices/6B1E…/data",
+     "Caches",
+     "Temp"
+    ]
+   },
+   "expect": {
+    "name": "simulator|模拟器|xcode",
+    "kinds": [
+     "app-data",
+     "tool",
+     "cache"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-08-conda",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/miniconda3",
+    "大小": "9.6 GB",
+    "最后改动": "2026-05-03",
+    "文件数": 128000,
+    "常见扩展名": [
+     "py",
+     "so",
+     "json",
+     "pyc"
+    ],
+    "前几项": [
+     "pkgs",
+     "envs",
+     "envs/torch",
+     "bin/conda",
+     "condabin"
+    ]
+   },
+   "expect": {
+    "name": "conda",
+    "kinds": [
+     "tool"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-09-docker",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/Library/Containers/com.docker.docker",
+    "大小": "64.2 GB",
+    "最后改动": "2026-10-20",
+    "文件数": 220,
+    "常见扩展名": [
+     "raw",
+     "json",
+     "log"
+    ],
+    "前几项": [
+     "Data",
+     "Data/vms/0/data/Docker.raw",
+     "Data/log"
+    ]
+   },
+   "expect": {
+    "name": "docker",
+    "kinds": [
+     "app-data"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-10-android",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/.android",
+    "大小": "14.5 GB",
+    "最后改动": "2026-04-22",
+    "文件数": 900,
+    "常见扩展名": [
+     "img",
+     "ini",
+     "qcow2"
+    ],
+    "前几项": [
+     "avd",
+     "avd/Pixel_8_API_35.avd",
+     "adbkey",
+     "cache"
+    ]
+   },
+   "expect": {
+    "name": "android",
+    "kinds": [
+     "app-data",
+     "tool"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-11-slack",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/Library/Application Support/Slack",
+    "大小": "1.1 GB",
+    "最后改动": "2026-10-20",
+    "文件数": 3300,
+    "常见扩展名": [
+     "ldb",
+     "log",
+     "json"
+    ],
+    "前几项": [
+     "Cache",
+     "IndexedDB",
+     "Local Storage",
+     "storage"
+    ]
+   },
+   "expect": {
+    "name": "slack",
+    "kinds": [
+     "app-data",
+     "cache"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-12-vscode-ext",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/.vscode/extensions",
+    "大小": "1.4 GB",
+    "最后改动": "2026-10-15",
+    "文件数": 61000,
+    "常见扩展名": [
+     "js",
+     "json",
+     "md",
+     "wasm"
+    ],
+    "前几项": [
+     "ms-python.python-2026.18.0",
+     "esbenp.prettier-vscode-11.0.0",
+     "extensions.json"
+    ]
+   },
+   "expect": {
+    "name": "vs\\s*code|visual studio code",
+    "kinds": [
+     "app-data",
+     "tool"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-13-jetbrains-logs",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/Library/Logs/JetBrains",
+    "大小": "820 MB",
+    "最后改动": "2026-10-18",
+    "文件数": 340,
+    "常见扩展名": [
+     "log",
+     "txt"
+    ],
+    "前几项": [
+     "IntelliJIdea2026.2",
+     "PyCharm2026.1",
+     "IntelliJIdea2026.2/idea.log"
+    ]
+   },
+   "expect": {
+    "name": "jetbrains|intellij|pycharm",
+    "kinds": [
+     "logs"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-14-maven",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/.m2/repository",
+    "大小": "3.2 GB",
+    "最后改动": "2026-02-11",
+    "文件数": 41000,
+    "常见扩展名": [
+     "jar",
+     "pom",
+     "sha1"
+    ],
+    "前几项": [
+     "org/apache",
+     "com/google",
+     "io/netty"
+    ]
+   },
+   "expect": {
+    "name": "maven",
+    "kinds": [
+     "cache"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-15-cocoapods",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/.cocoapods/repos",
+    "大小": "1.6 GB",
+    "最后改动": "2025-12-30",
+    "文件数": 640000,
+    "常见扩展名": [
+     "json",
+     "podspec"
+    ],
+    "前几项": [
+     "trunk",
+     "trunk/Specs",
+     "trunk/CocoaPods-version.yml"
+    ]
+   },
+   "expect": {
+    "name": "cocoapods|pods",
+    "kinds": [
+     "cache"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-16-steam",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/Library/Application Support/Steam",
+    "大小": "52.4 GB",
+    "最后改动": "2026-09-14",
+    "文件数": 12000,
+    "常见扩展名": [
+     "vpk",
+     "acf",
+     "dylib"
+    ],
+    "前几项": [
+     "steamapps",
+     "steamapps/common",
+     "userdata",
+     "config"
+    ]
+   },
+   "expect": {
+    "name": "steam",
+    "kinds": [
+     "app-data"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-17-pyenv",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/.pyenv/versions",
+    "大小": "2.2 GB",
+    "最后改动": "2026-03-08",
+    "文件数": 54000,
+    "常见扩展名": [
+     "py",
+     "pyc",
+     "so"
+    ],
+    "前几项": [
+     "3.11.9",
+     "3.12.4",
+     "3.13.0"
+    ]
+   },
+   "expect": {
+    "name": "pyenv|python",
+    "kinds": [
+     "tool"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-18-nvm",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/.nvm/versions/node",
+    "大小": "1.3 GB",
+    "最后改动": "2026-06-01",
+    "文件数": 39000,
+    "常见扩展名": [
+     "js",
+     "json",
+     "md"
+    ],
+    "前几项": [
+     "v20.17.0",
+     "v22.9.0",
+     "v18.20.4"
+    ]
+   },
+   "expect": {
+    "name": "nvm|node",
+    "kinds": [
+     "tool"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-19-obsidian",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/Library/Application Support/obsidian",
+    "大小": "180 MB",
+    "最后改动": "2026-10-20",
+    "文件数": 260,
+    "常见扩展名": [
+     "json",
+     "log",
+     "ldb"
+    ],
+    "前几项": [
+     "obsidian.json",
+     "Cache",
+     "Local Storage",
+     "IndexedDB"
+    ]
+   },
+   "expect": {
+    "name": "obsidian",
+    "kinds": [
+     "app-data"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-20-pnpm",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/Library/pnpm/store",
+    "大小": "4.9 GB",
+    "最后改动": "2026-10-03",
+    "文件数": 410000,
+    "常见扩展名": [
+     "json",
+     "js",
+     ""
+    ],
+    "前几项": [
+     "v3",
+     "v3/files",
+     "v3/tmp"
+    ]
+   },
+   "expect": {
+    "name": "pnpm",
+    "kinds": [
+     "cache"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-21-cargo",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/.cargo/registry",
+    "大小": "3.7 GB",
+    "最后改动": "2026-08-25",
+    "文件数": 98000,
+    "常见扩展名": [
+     "rs",
+     "crate",
+     "toml"
+    ],
+    "前几项": [
+     "cache",
+     "index",
+     "src",
+     "src/index.crates.io-6f17d22bba15001f"
+    ]
+   },
+   "expect": {
+    "name": "cargo|rust",
+    "kinds": [
+     "cache"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-22-chrome",
+   "hard": true,
+   "why": "浏览器资料（书签、历史、登录状态）不能当缓存",
+   "input": {
+    "路径": "~/Library/Application Support/Google/Chrome",
+    "大小": "3.4 GB",
+    "最后改动": "2026-10-20",
+    "文件数": 8700,
+    "常见扩展名": [
+     "ldb",
+     "json",
+     "sqlite",
+     "log"
+    ],
+    "前几项": [
+     "Default",
+     "Default/History",
+     "Default/Bookmarks",
+     "Profile 1",
+     "Local State"
+    ]
+   },
+   "expect": {
+    "name": "chrome",
+    "kinds": [
+     "app-data"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-23-random",
+   "hard": true,
+   "why": "看不出来就说不确定，不编应用名",
+   "input": {
+    "路径": "~/qx7-tmp-bk",
+    "大小": "640 MB",
+    "最后改动": "2025-11-02",
+    "文件数": 37,
+    "常见扩展名": [
+     "bin",
+     "dat",
+     ""
+    ],
+    "前几项": [
+     "a1",
+     "a2.dat",
+     "kk_09.bin"
+    ]
+   },
+   "expect": {
+    "name": "^(不确定|未知|unknown)$",
+    "kinds": [
+     "unknown",
+     "user-data"
+    ],
+    "sure": false
+   }
+  },
+  {
+   "id": "identify-24-thesis",
+   "hard": true,
+   "why": "用户自己的文档",
+   "input": {
+    "路径": "~/Documents/毕业论文",
+    "大小": "1.2 GB",
+    "最后改动": "2026-05-20",
+    "文件数": 210,
+    "常见扩展名": [
+     "docx",
+     "pdf",
+     "png",
+     "bib"
+    ],
+    "前几项": [
+     "终稿-v7.docx",
+     "图表",
+     "参考文献.bib",
+     "答辩.pptx"
+    ]
+   },
+   "expect": {
+    "name": null,
+    "kinds": [
+     "user-data"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-25-photos",
+   "hard": true,
+   "why": "",
+   "input": {
+    "路径": "~/Pictures/导出-2024",
+    "大小": "18.3 GB",
+    "最后改动": "2025-01-12",
+    "文件数": 4300,
+    "常见扩展名": [
+     "heic",
+     "jpg",
+     "mov"
+    ],
+    "前几项": [
+     "2024-03 京都",
+     "2024-08 海边",
+     "IMG_4521.HEIC"
+    ]
+   },
+   "expect": {
+    "name": null,
+    "kinds": [
+     "user-data"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-26-data",
+   "hard": true,
+   "why": "数据不能当缓存",
+   "input": {
+    "路径": "~/zz9_data",
+    "大小": "27.0 GB",
+    "最后改动": "2026-01-30",
+    "文件数": 160,
+    "常见扩展名": [
+     "parquet",
+     "csv",
+     "ipynb"
+    ],
+    "前几项": [
+     "raw",
+     "clean_v2.parquet",
+     "analysis.ipynb"
+    ]
+   },
+   "expect": {
+    "name": null,
+    "kinds": [
+     "user-data",
+     "unknown"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-27-random-bundle",
+   "hard": true,
+   "why": "不认识的 bundle id 不要硬猜是谁",
+   "input": {
+    "路径": "~/Library/Application Support/xq.pp.helper",
+    "大小": "96 MB",
+    "最后改动": "2025-10-01",
+    "文件数": 12,
+    "常见扩展名": [
+     "db",
+     "plist"
+    ],
+    "前几项": [
+     "store.db",
+     "prefs.plist"
+    ]
+   },
+   "expect": {
+    "name": "^(不确定|未知|unknown)$",
+    "kinds": [
+     "unknown",
+     "app-data"
+    ],
+    "sure": false
+   }
+  },
+  {
+   "id": "identify-28-wallet",
+   "hard": true,
+   "why": "密钥是用户的东西",
+   "input": {
+    "路径": "~/.wallet-backup",
+    "大小": "3 MB",
+    "最后改动": "2024-12-01",
+    "文件数": 6,
+    "常见扩展名": [
+     "json",
+     "txt"
+    ],
+    "前几项": [
+     "keystore",
+     "keystore/UTC--2024-12-01T08-11-23Z--3f…",
+     "seed.txt"
+    ]
+   },
+   "expect": {
+    "name": null,
+    "kinds": [
+     "user-data"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-29-notes-db",
+   "hard": true,
+   "why": "本地数据库不是缓存",
+   "input": {
+    "路径": "~/Library/Application Support/com.example.notes",
+    "大小": "450 MB",
+    "最后改动": "2026-10-11",
+    "文件数": 9,
+    "常见扩展名": [
+     "sqlite",
+     "sqlite-wal",
+     "json"
+    ],
+    "前几项": [
+     "notes.sqlite",
+     "notes.sqlite-wal",
+     "attachments"
+    ]
+   },
+   "expect": {
+    "name": null,
+    "kinds": [
+     "app-data",
+     "user-data",
+     "unknown"
+    ],
+    "sure": null
+   }
+  },
+  {
+   "id": "identify-30-installers",
+   "hard": false,
+   "why": "",
+   "input": {
+    "路径": "~/Downloads/old-installers",
+    "大小": "8.8 GB",
+    "最后改动": "2025-06-30",
+    "文件数": 41,
+    "常见扩展名": [
+     "dmg",
+     "pkg",
+     "zip"
+    ],
+    "前几项": [
+     "Docker.dmg",
+     "Xcode_16.xip",
+     "python-3.12.4-macos11.pkg"
+    ]
+   },
+   "expect": {
+    "name": null,
+    "kinds": [
+     "user-data",
+     "unknown"
+    ],
+    "sure": null
+   }
+  }
+ ]
+}

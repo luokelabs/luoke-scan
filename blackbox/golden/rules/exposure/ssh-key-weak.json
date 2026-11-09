@@ -1,0 +1,110 @@
+{
+  "about": "太弱的私钥：1024 位的 RSA（有口令的只报弱，没口令的两条都报）、DSA（OpenSSH 和老格式）；3072 位的 RSA 不报",
+  "case": "rules/exposure/ssh-key-weak",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "ssh-keygen -p -f ~/.ssh/id_rsa_old_plain 加一个口令；~/.ssh/config 里写 UseKeychain yes 和 AddKeysToAgent yes，平时用时不用每次输",
+              "type": "ssh-rsa",
+              "why": "备份、同步盘、被偷走的电脑里的这个文件，都能直接拿去用"
+            },
+            "path": "~/.ssh/id_rsa_old_plain",
+            "rule": "exposure.ssh-key-plain",
+            "severity": "low",
+            "title": "SSH 私钥 id_rsa_old_plain 没设口令：谁拿到这个文件就能用它登录",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "换一把新的：ssh-keygen -t ed25519，把新公钥加到用它的服务器上，再删掉旧的",
+              "type": "DSA"
+            },
+            "path": "~/.ssh/id_dsa_pem",
+            "rule": "exposure.ssh-key-weak",
+            "severity": "medium",
+            "title": "SSH 私钥 id_dsa_pem 是 DSA 的，现在已经不够安全",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "换一把新的：ssh-keygen -t ed25519，把新公钥加到用它的服务器上，再删掉旧的",
+              "type": "ssh-dss"
+            },
+            "path": "~/.ssh/id_dsa",
+            "rule": "exposure.ssh-key-weak",
+            "severity": "medium",
+            "title": "SSH 私钥 id_dsa 是 DSA 的，现在已经不够安全",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "换一把新的：ssh-keygen -t ed25519，把新公钥加到用它的服务器上，再删掉旧的",
+              "type": "ssh-rsa"
+            },
+            "path": "~/.ssh/id_rsa_old",
+            "rule": "exposure.ssh-key-weak",
+            "severity": "medium",
+            "title": "SSH 私钥 id_rsa_old 是 1024 位的 RSA，现在已经不够安全",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "换一把新的：ssh-keygen -t ed25519，把新公钥加到用它的服务器上，再删掉旧的",
+              "type": "ssh-rsa"
+            },
+            "path": "~/.ssh/id_rsa_old_plain",
+            "rule": "exposure.ssh-key-weak",
+            "severity": "medium",
+            "title": "SSH 私钥 id_rsa_old_plain 是 1024 位的 RSA，现在已经不够安全",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

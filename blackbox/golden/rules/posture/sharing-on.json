@@ -1,0 +1,173 @@
+{
+  "about": "远程登录、屏幕共享、文件共享、互联网共享都开着：各一条",
+  "case": "rules/posture/sharing-on",
+  "steps": [
+    {
+      "fakes": {
+        "commands": [
+          {
+            "args": [
+              "print-disabled"
+            ],
+            "output": "disabled services = {\n\t\"com.openssh.sshd\" => enabled\n\t\"com.apple.screensharing\" => enabled\n\t\"com.apple.smbd\" => enabled\n\t\"com.apple.NetworkSharing\" => enabled\n\t\"io.example.other\" => enabled\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "autoLoginUser"
+            ],
+            "output": "",
+            "status": 1,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "GuestEnabled"
+            ],
+            "output": "0\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "DiscoverableMode"
+            ],
+            "output": "Contacts Only\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [],
+            "output": "disabled services = {\n\t\"com.openssh.sshd\" => disabled\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [],
+            "output": "SecTrustSettings: No Trust Settings were found.\n",
+            "status": 1,
+            "tool": "/usr/bin/security"
+          },
+          {
+            "args": [],
+            "output": "FileVault is On.\n",
+            "status": 0,
+            "tool": "/usr/bin/fdesetup"
+          },
+          {
+            "args": [],
+            "output": "Firewall is enabled. (State = 1)\n",
+            "status": 0,
+            "tool": "/usr/libexec/ApplicationFirewall/socketfilterfw"
+          },
+          {
+            "args": [],
+            "output": "System Integrity Protection status: enabled.\n",
+            "status": 0,
+            "tool": "/usr/bin/csrutil"
+          },
+          {
+            "args": [],
+            "output": "assessments enabled\n",
+            "status": 0,
+            "tool": "/usr/sbin/spctl"
+          },
+          {
+            "args": [],
+            "output": "sysadminctl[1:2] screenLock delay is immediate\n",
+            "status": 0,
+            "tool": "/bin/sh"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "不用的话：系统设置 → 通用 → 共享，关掉「互联网共享」"
+            },
+            "path": "",
+            "rule": "posture.internet-sharing",
+            "severity": "low",
+            "title": "「互联网共享」开着：这台 Mac 在把网络分给别的设备",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "不用的话：系统设置 → 通用 → 共享，关掉「屏幕共享」和「远程管理」"
+            },
+            "path": "",
+            "rule": "posture.screen-sharing",
+            "severity": "medium",
+            "title": "「屏幕共享」或「远程管理」开着：别人能从网络上看到、操作这台 Mac",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "不用的话：系统设置 → 通用 → 共享，关掉「文件共享」"
+            },
+            "path": "",
+            "rule": "posture.file-sharing",
+            "severity": "low",
+            "title": "「文件共享」开着：同一个网络里的人能看到共享出来的文件夹",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "不用的话：系统设置 → 通用 → 共享，关掉「远程登录」"
+            },
+            "path": "",
+            "rule": "posture.remote-login",
+            "severity": "medium",
+            "title": "「远程登录」（SSH）开着：知道密码或有钥匙的人能从网络上登录这台 Mac",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

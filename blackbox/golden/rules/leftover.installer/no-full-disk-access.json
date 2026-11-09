@@ -1,0 +1,170 @@
+{
+  "about": "没有完全磁盘访问：下载文件夹里的安装包和没下完的不看（记成没看全），共享文件夹（Shared）里的照报；有了访问再看",
+  "case": "rules/leftover.installer/no-full-disk-access",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 1048576,
+            "category": "leftover",
+            "evidence": {
+              "folders": "Relocated Items",
+              "how": "看过里面没有你要的，在访达里把这些文件夹移到废纸篓（要管理员密码）",
+              "oldest": "2026-04-03",
+              "why": "升级时 macOS 把认不出的旧配置文件挪到这里，升级以后系统不再用它们"
+            },
+            "path": "$FIXTURE/Shared",
+            "rule": "leftover.relocated-items",
+            "severity": "low",
+            "title": "macOS 升级时挪出来的旧配置：1 个文件夹（1 MB）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents 里散落的密钥没看（看了 macOS 会弹框问你）",
+            "rule": "secrets"
+          },
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents、Music 里的重复文件没看（看了 macOS 会弹框问你）",
+            "rule": "space.duplicates"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载、桌面、文稿里的系统恢复镜像没看（看了 macOS 会弹框问你）",
+            "rule": "space.system"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里新来的文件有没有病毒没看（看了 macOS 会弹框问你）",
+            "rule": "malware"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里的安装包和没下完的下载没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.installer"
+          },
+          {
+            "reason": "没有完全磁盘访问，别的应用的容器里留下的数据没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.app-data"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载和别的应用的数据占多大没看（看了 macOS 会弹框问你）",
+            "rule": "space"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载里很久没打开的大文件没看（看了 macOS 会弹框问你）",
+            "rule": "stale.large-file"
+          }
+        ],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json",
+        "--no-full-disk-access"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 1048576,
+            "category": "leftover",
+            "evidence": {
+              "folders": "Relocated Items",
+              "how": "看过里面没有你要的，在访达里把这些文件夹移到废纸篓（要管理员密码）",
+              "oldest": "2026-04-03",
+              "why": "升级时 macOS 把认不出的旧配置文件挪到这里，升级以后系统不再用它们"
+            },
+            "path": "$FIXTURE/Shared",
+            "rule": "leftover.relocated-items",
+            "severity": "low",
+            "title": "macOS 升级时挪出来的旧配置：1 个文件夹（1 MB）",
+            "verdict": "info"
+          },
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "how": "浏览器下到一半停了（暂停或失败）；还要的话重新下载，不要就删掉",
+              "last_changed": "2026-10-10"
+            },
+            "path": "~/Downloads/clip.mov.crdownload",
+            "rule": "leftover.partial-download",
+            "severity": "low",
+            "title": "没下完的下载 clip.mov（2.1 MB），10 天没动了",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 6291456,
+            "category": "leftover",
+            "evidence": {
+              "added": "2026-09-10",
+              "days": "40",
+              "how": "装好了就用不到安装包了；想留着这个版本以后重装的，就留着",
+              "installer_version": "1.0"
+            },
+            "path": "~/Downloads/Tool-1.0.dmg",
+            "rule": "leftover.installer",
+            "severity": "low",
+            "title": "下载文件夹里 40 天前的安装包 Tool-1.0.dmg",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "有了完全磁盘访问",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "about": "三份一样的：留一份，另外两份都算多占",
+  "case": "rules/space.duplicates/three-copies",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 4194304,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Desktop/report.pdf；~/Downloads/report (2).pdf",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/report.pdf",
+              "sha256": "5ee88279941e4b2f",
+              "targets": "~/Desktop/report.pdf\n~/Downloads/report (2).pdf"
+            },
+            "key": "space.duplicates:5ee88279941e4b2fba2790723077e7ba00f23679af8de027c667ea976848ae2c",
+            "path": "~/Documents/report.pdf",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "3 份一样的 report.pdf（每份 2.1 MB），多占了 4.2 MB",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

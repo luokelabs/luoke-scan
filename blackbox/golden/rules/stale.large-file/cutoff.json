@@ -1,0 +1,83 @@
+{
+  "about": "正好 365 天前打开过：不报；再早一小时：报；索引落后、其实十天前打开过：不报",
+  "case": "rules/stale.large-file/cutoff",
+  "steps": [
+    {
+      "fakes": {
+        "staleFiles": [
+          {
+            "changed": null,
+            "path": "~/Movies/edge.mov",
+            "used": "2025-10-20T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/past.mov",
+            "used": "2025-10-20T11:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/recent.mov",
+            "used": "2026-10-10T12:00:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2025-10-20"
+            },
+            "path": "~/Movies/past.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "past.mov（2.1 MB）一年多没打开过",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

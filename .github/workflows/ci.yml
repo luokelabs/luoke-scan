@@ -1,0 +1,71 @@
+# PR 说明里勾上「- [x] 跑 CI」才跑：macOS 的机器贵，不是每个 PR 都要跑。
+# 勾上的那一刻跑一次（改说明也会触发，没勾就什么都不做），之后每推一次新提交都跑；说明里没有这一行也不跑。
+#
+# 跑的是 CONTRIBUTING「提交之前」里能在 GitHub 的机器上跑的：go vet、go test、从外面测（blackbox）、
+# AI skill 检查的评测、给 AI 看的说明文件检查的评测、自动清理的评测、bench/test_checks.py。
+# 不跑的：agent 自测（要 luoke-agent 的代码，还没公开）、发布前的泄漏检查（本机词表不进仓库）、模型评测（要本机模型服务）。
+name: 测试
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  bench:
+    name: bench 的检查
+    if: contains(github.event.pull_request.body, '- [x] 跑 CI')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - run: python -I bench/test_checks.py
+
+  go:
+    name: Go 测试和评测
+    if: contains(github.event.pull_request.body, '- [x] 跑 CI')
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      CC: /usr/bin/clang
+    steps:
+      - uses: actions/checkout@v7
+      - name: 工具链
+        # go.mod 钉着 toolchain，机器上的 go 会自己换成那一版
+        run: |
+          sw_vers
+          go version
+      - name: 检查
+        run: go vet ./...
+      - name: 测试
+        run: go test ./...
+      - name: 编译
+        run: go build -o .build/go/luoke-scan ./cmd/luoke-scan
+      - name: AI skill 检查的评测
+        if: ${{ !cancelled() }}
+        run: .build/go/luoke-scan eval-skills | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: 自动清理的评测
+        if: ${{ !cancelled() }}
+        run: .build/go/luoke-scan eval-cleanup | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: 给 AI 看的说明文件检查的评测
+        if: ${{ !cancelled() }}
+        run: .build/go/luoke-scan eval-agentfiles | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: 从外面测（blackbox）
+        if: ${{ !cancelled() }}
+        run: LUOKE_SCAN_BIN=$PWD/.build/go/luoke-scan python3 -I blackbox/run.py
+      - name: 给 agent 的样例（fixtures/agent）重录比对
+        if: ${{ !cancelled() }}
+        run: python3 -I scripts/record_agent_fixtures.py --check

@@ -1,0 +1,235 @@
+{
+  "about": "每个 AI 工具设的 MCP 服务器一条：程序名、包名；npx/uvx 没写版本号的标出来；项目里的也算；键名不对、不是 JSON、链接、没有服务器的不报",
+  "case": "rules/mcp/servers",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "fetched": "desk",
+              "how": "只留认得、还在用的；desk 每次启动都从网上取最新版，写上版本号（例如 包名@1.2.3）更稳",
+              "servers": "desk（uvx x）",
+              "tool": "Claude 桌面版",
+              "why": "每个都是一个程序，Claude 桌面版 开着时以你的身份运行，能读你能读的文件"
+            },
+            "key": "~/Library/Application Support/Claude/claude_desktop_config.json|desk uvx x",
+            "path": "~/Library/Application Support/Claude/claude_desktop_config.json",
+            "rule": "mcp.servers",
+            "severity": "low",
+            "title": "Claude 桌面版 设了 1 个 MCP 服务器，用它时会启动",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "fetched": "plain、proj、py2、search",
+              "how": "只留认得、还在用的；plain、proj、py2、search 每次启动都从网上取最新版，写上版本号（例如 包名@1.2.3）更稳",
+              "servers": "bun（bunx bun-mcp@0.1.0）；fs（fs-mcp）；kv（npx）；odd（?）；pinned（npx @acme/pinned-mcp@1.2.3）；plain（npx plain-mcp）；proj（pnpx proj-mcp）；py（uvx）；py2（uvx fetch-mcp）；search（npx @acme/search-mcp）；web（（网址））",
+              "tool": "Claude Code",
+              "why": "每个都是一个程序，Claude Code 开着时以你的身份运行，能读你能读的文件"
+            },
+            "key": "~/.claude.json|bun bunx bun-mcp@0.1.0|fs fs-mcp|kv npx|odd ?|pinned npx @acme/pinned-mcp@1.2.3|plain npx plain-mcp|proj pnpx proj-mcp|py uvx|py2 uvx fetch-mcp|search npx @acme/search-mcp|web （网址）",
+            "path": "~/.claude.json",
+            "rule": "mcp.servers",
+            "severity": "low",
+            "title": "Claude Code 设了 11 个 MCP 服务器，用它时会启动",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "只留认得、还在用的",
+              "servers": "cursor-fs（node）",
+              "tool": "Cursor",
+              "why": "每个都是一个程序，Cursor 开着时以你的身份运行，能读你能读的文件"
+            },
+            "key": "~/.cursor/mcp.json|cursor-fs node",
+            "path": "~/.cursor/mcp.json",
+            "rule": "mcp.servers",
+            "severity": "low",
+            "title": "Cursor 设了 1 个 MCP 服务器，用它时会启动",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "只留认得、还在用的",
+              "servers": "wind（docker）",
+              "tool": "Windsurf",
+              "why": "每个都是一个程序，Windsurf 开着时以你的身份运行，能读你能读的文件"
+            },
+            "key": "~/.codeium/windsurf/mcp_config.json|wind docker",
+            "path": "~/.codeium/windsurf/mcp_config.json",
+            "rule": "mcp.servers",
+            "severity": "low",
+            "title": "Windsurf 设了 1 个 MCP 服务器，用它时会启动",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "VS Code 的 mcp.json 改用 servers 这个键；LM Studio 的换成真的文件；Gemini 的设置坏了"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "fetched": "desk",
+              "how": "只留认得、还在用的；desk 每次启动都从网上取最新版，写上版本号（例如 包名@1.2.3）更稳",
+              "servers": "desk（uvx x）",
+              "tool": "Claude 桌面版",
+              "why": "每个都是一个程序，Claude 桌面版 开着时以你的身份运行，能读你能读的文件"
+            },
+            "key": "~/Library/Application Support/Claude/claude_desktop_config.json|desk uvx x",
+            "path": "~/Library/Application Support/Claude/claude_desktop_config.json",
+            "rule": "mcp.servers",
+            "severity": "low",
+            "title": "Claude 桌面版 设了 1 个 MCP 服务器，用它时会启动",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "fetched": "plain、proj、py2、search",
+              "how": "只留认得、还在用的；plain、proj、py2、search 每次启动都从网上取最新版，写上版本号（例如 包名@1.2.3）更稳",
+              "servers": "bun（bunx bun-mcp@0.1.0）；fs（fs-mcp）；kv（npx）；odd（?）；pinned（npx @acme/pinned-mcp@1.2.3）；plain（npx plain-mcp）；proj（pnpx proj-mcp）；py（uvx）；py2（uvx fetch-mcp）；search（npx @acme/search-mcp）；web（（网址））",
+              "tool": "Claude Code",
+              "why": "每个都是一个程序，Claude Code 开着时以你的身份运行，能读你能读的文件"
+            },
+            "key": "~/.claude.json|bun bunx bun-mcp@0.1.0|fs fs-mcp|kv npx|odd ?|pinned npx @acme/pinned-mcp@1.2.3|plain npx plain-mcp|proj pnpx proj-mcp|py uvx|py2 uvx fetch-mcp|search npx @acme/search-mcp|web （网址）",
+            "path": "~/.claude.json",
+            "rule": "mcp.servers",
+            "severity": "low",
+            "title": "Claude Code 设了 11 个 MCP 服务器，用它时会启动",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "fetched": "vs",
+              "how": "只留认得、还在用的；vs 每次启动都从网上取最新版，写上版本号（例如 包名@1.2.3）更稳",
+              "servers": "vs（npx vs-mcp）",
+              "tool": "VS Code",
+              "why": "每个都是一个程序，VS Code 开着时以你的身份运行，能读你能读的文件"
+            },
+            "key": "~/Library/Application Support/Code/User/mcp.json|vs npx vs-mcp",
+            "path": "~/Library/Application Support/Code/User/mcp.json",
+            "rule": "mcp.servers",
+            "severity": "low",
+            "title": "VS Code 设了 1 个 MCP 服务器，用它时会启动",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "只留认得、还在用的",
+              "servers": "cursor-fs（node）",
+              "tool": "Cursor",
+              "why": "每个都是一个程序，Cursor 开着时以你的身份运行，能读你能读的文件"
+            },
+            "key": "~/.cursor/mcp.json|cursor-fs node",
+            "path": "~/.cursor/mcp.json",
+            "rule": "mcp.servers",
+            "severity": "low",
+            "title": "Cursor 设了 1 个 MCP 服务器，用它时会启动",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "只留认得、还在用的",
+              "servers": "lm（python3）",
+              "tool": "LM Studio",
+              "why": "每个都是一个程序，LM Studio 开着时以你的身份运行，能读你能读的文件"
+            },
+            "key": "~/.lmstudio/mcp.json|lm python3",
+            "path": "~/.lmstudio/mcp.json",
+            "rule": "mcp.servers",
+            "severity": "low",
+            "title": "LM Studio 设了 1 个 MCP 服务器，用它时会启动",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "只留认得、还在用的",
+              "servers": "wind（docker）",
+              "tool": "Windsurf",
+              "why": "每个都是一个程序，Windsurf 开着时以你的身份运行，能读你能读的文件"
+            },
+            "key": "~/.codeium/windsurf/mcp_config.json|wind docker",
+            "path": "~/.codeium/windsurf/mcp_config.json",
+            "rule": "mcp.servers",
+            "severity": "low",
+            "title": "Windsurf 设了 1 个 MCP 服务器，用它时会启动",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

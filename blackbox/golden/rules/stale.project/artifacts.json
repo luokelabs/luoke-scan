@@ -1,0 +1,105 @@
+{
+  "about": "老项目里能重新生成的（带 package.json 的 node_modules、带 Cargo.toml 的 target）100 MiB 以上：另报一条，只删这些",
+  "case": "rules/stale.project/artifacts",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 115343360,
+            "category": "stale-project",
+            "evidence": {
+              "artifacts": "target（115.3 MB）",
+              "how": "只删这些，项目本身留着；要再开发时照常装依赖、构建一遍就回来：cargo build",
+              "targets": "~/Projects/rust/target"
+            },
+            "path": "~/Projects/rust",
+            "rule": "stale.artifacts",
+            "severity": "low",
+            "title": "rust 半年多没动过，里面能重新生成的依赖和构建产物占 115.3 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 115347456,
+            "category": "stale-project",
+            "evidence": {
+              "count": "1",
+              "folders": "rust（115.3 MB）",
+              "size": "115.3 MB"
+            },
+            "path": "~/Projects",
+            "rule": "stale.folders",
+            "severity": "low",
+            "title": "Projects 里有 1 个文件夹半年多没动过（不在 git 里，无法确认别处有没有副本）",
+            "verdict": "info"
+          },
+          {
+            "bytes": 125829120,
+            "category": "stale-project",
+            "evidence": {
+              "artifacts": "node_modules（125.8 MB）",
+              "how": "只删这些，项目本身留着；要再开发时照常装依赖、构建一遍就回来：npm install（或 yarn、pnpm）",
+              "targets": "~/Projects/web/node_modules"
+            },
+            "path": "~/Projects/web",
+            "rule": "stale.artifacts",
+            "severity": "low",
+            "title": "web 半年多没动过，里面能重新生成的依赖和构建产物占 125.8 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 125984768,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:web": "2025-09-15",
+              "repos": "1",
+              "size": "126 MB"
+            },
+            "path": "~/Projects/web",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "web 半年多没动过，都已推送，删了能从远程找回",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

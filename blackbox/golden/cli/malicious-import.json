@@ -1,0 +1,222 @@
+{
+  "about": "导入恶意包名单：一个文件、一个 .zip（osv.dev 的导出）、文件夹；只留 MAL-，撤回的、别的生态的、没法比对的不留；每次导入加进原有的名单（同一编号的换新），各生态记各自的日期；出错时原来的名单保留",
+  "case": "cli/malicious-import",
+  "steps": [
+    {
+      "exit": 64,
+      "run": [
+        "luoke-scan",
+        "malicious-import",
+        "--data",
+        "$FIXTURE/data"
+      ],
+      "stderr": [
+        "要给一个 OSV 的 JSON 文件、放着它们的文件夹或 .zip",
+        "",
+        "用法：",
+        "  luoke-scan scan --home <目录> --data <目录> [--tmp <目录>] [--projects <目录>]… [--tool-dir <目录>] [--json]",
+        "  luoke-scan scan --this-mac [--autoclean] [--projects <目录>]… [--json]   查这台 Mac（主控的空闲任务带 --autoclean 起）",
+        "  luoke-scan scan --fixture <假目录> [--json]     查假目录（外部测试 blackbox/ 用）",
+        "      [--clock <时间>] [--no-full-disk-access]   假目录的时钟停在这个 ISO 8601 时间；当作没有完全磁盘访问（录 fixtures/agent 用）",
+        "  luoke-scan scan --this-mac --quick             两轮之间看一眼新下载的（下载、桌面有动静才扫，只扫病毒；用电池、低电量模式、内存紧张时不看）",
+        "  luoke-scan report [--data <目录>]              上一轮的结果，按放心删、要确认、仅供参考分开列",
+        "  luoke-scan findings --data <目录> [--json]     上一轮的发现，每条的全部细节",
+        "  luoke-scan status --data <目录> [--json]       上一轮什么时候查的、多少条、病毒库日期、哪些项没扫描",
+        "  luoke-scan update --data <目录> [--tool-dir <目录>] [--force]   更新病毒库（每天最多一次，--force 不管这条）",
+        "  luoke-scan malicious-import --data <目录> <路径>   从本机的 OSV 文件（JSON、文件夹或 .zip）导入已知恶意包的名单，只留 MAL- 开头的；加进原有的名单（同一编号的换新），不联网",
+        "  luoke-scan cleaned --this-mac [--json]         清理记录：移进废纸篓的、直接删的（缓存），哪些还能放回",
+        "  luoke-scan restore --this-mac <编号>…          放回：记录里的编号（c-…），或一次清理的整批（p-… / auto-…）；原位置有同名的就放在旁边",
+        "  luoke-scan system --this-mac                   上一轮查到的要密码才能删的：系统目录里的卸载残留、旧的 Intel 版 Homebrew",
+        "  luoke-scan system --this-mac --trash a0,a1     把这几项移到废纸篓：sudo 在这个终端里问密码，每次都问。不要加 sudo 跑本程序",
+        "  luoke-scan eval-cleanup [--cases <文件>] [--json]   清理规则评测（默认 evals/cleanup/cases.json）：挑错一个就退出码 1；--json 逐条的结果",
+        "  luoke-scan eval-skills [--cases <文件>]        skill 静态检查评测（默认 evals/skills/cases.json）：漏报恶意的、正常的报成高的，退出码 1",
+        "  luoke-scan eval-agentfiles [--cases <文件>]    给 AI 看的说明文件检查评测（默认 evals/agentfiles/cases.json）：同上",
+        "  luoke-scan make-skill-evalset                 用扫描拼输入的代码生成 skill 语义检查的评测集和提示词示范（bench/evalsets/skills.json、prompts/skills.examples.json）",
+        "  luoke-scan mcp --this-mac                      给 agent 的 MCP：标准输入一条 JSON-RPC（或一行一条），标准输出答复",
+        "  luoke-scan version",
+        "",
+        "给 agent 的 MCP 由螺壳本体每个请求起一次 luoke-scan mcp --this-mac，经它的标准输入输出说话；要密码的那一步经本体弹框",
+        "（LUOKE_HOST_FD）。完全磁盘访问授给螺壳本身，由螺壳起的 luoke-scan 跟着它用；luoke-scan 从不开 socket。",
+        "",
+        "查的时候只读。唯一的例外是带 --autoclean（主控的空闲任务这样起）：查完把不用点就清的四类清掉（会重建的缓存直接删；",
+        "装好了的应用的安装包、下载文件夹里的重复文件、测试工具留下的临时文件夹移进废纸篓，能放回），每次都报给你。默认关：",
+        "你在卡片或设置里点了「以后自动清」才清。--autoclean 只和 --this-mac、--fixture 一起用；agent 叫的那一轮（--for-agent）不清。一个数据目录同时只跑一轮。",
+        "开发和测试时 --home 指向假目录（外部测试造的，见 blackbox/README.md），--data 指向 .dev/ 下的目录。",
+        "--this-mac：家目录、本用户的临时目录、常见的项目目录（~/Developer、~/Projects、~/Documents/GitHub、~/code、~/src、",
+        "~/repos、~/workspace 里有的），数据放在 ~/.luoke-scan；findings、status、update、malicious-import 也认它（只换数据目录）。",
+        "report 不给 --data 就看这台 Mac 的（~/.luoke-scan）。",
+        ""
+      ],
+      "stdout": []
+    },
+    {
+      "exit": 1,
+      "run": [
+        "luoke-scan",
+        "malicious-import",
+        "--data",
+        "$FIXTURE/data",
+        "$FIXTURE/nowhere"
+      ],
+      "stderr": [
+        "恶意包名单没导入，原来的名单保留：找不到或读不了 $FIXTURE/nowhere"
+      ],
+      "stdout": []
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "malicious-import",
+        "--data",
+        "$FIXTURE/data",
+        "$FIXTURE/import/list.json"
+      ],
+      "stdout": [
+        "恶意包名单导入好了：这次 1 条（换掉原有的 0 条），名单里现在共 1 条，日期 2026-10-01（读了 1 份 OSV 记录）",
+        "没留：不是 MAL- 的 0 条、撤回的 1 条、别的生态的 1 个包、没法比对版本的 1 个包、读不了的 0 份"
+      ]
+    },
+    {
+      "exit": 0,
+      "note": "加进原有的名单：one-file 还在",
+      "run": [
+        "luoke-scan",
+        "malicious-import",
+        "--data",
+        "$FIXTURE/data",
+        "$FIXTURE/import/npm-all.zip"
+      ],
+      "stdout": [
+        "恶意包名单导入好了：这次 1 条（换掉原有的 0 条），名单里现在共 2 条，日期 2026-10-18（读了 2 份 OSV 记录）",
+        "没留：不是 MAL- 的 1 条、撤回的 0 条、别的生态的 0 个包、没法比对版本的 0 个包、读不了的 0 份"
+      ]
+    },
+    {
+      "exit": 0,
+      "note": "同一份再导一次：换掉同编号的那一条，不重复",
+      "run": [
+        "luoke-scan",
+        "malicious-import",
+        "--data",
+        "$FIXTURE/data",
+        "$FIXTURE/import/list.json"
+      ],
+      "stdout": [
+        "恶意包名单导入好了：这次 1 条（换掉原有的 1 条），名单里现在共 2 条，日期 2026-10-18（读了 1 份 OSV 记录）",
+        "没留：不是 MAL- 的 0 条、撤回的 1 条、别的生态的 1 个包、没法比对版本的 1 个包、读不了的 0 份"
+      ]
+    },
+    {
+      "exit": 0,
+      "note": "再导 PyPI：npm 的还在；名单日期取最旧的生态",
+      "run": [
+        "luoke-scan",
+        "malicious-import",
+        "--data",
+        "$FIXTURE/data",
+        "$FIXTURE/import/pypi"
+      ],
+      "stdout": [
+        "恶意包名单导入好了：这次 1 条（换掉原有的 0 条），名单里现在共 3 条，日期 2026-10-05（读了 1 份 OSV 记录）",
+        "各生态的日期：npm 2026-10-18、PyPI 2026-10-05（名单的日期取最旧的那个）"
+      ]
+    },
+    {
+      "exit": 1,
+      "note": "没有能用的：报错，原来的名单还在",
+      "run": [
+        "luoke-scan",
+        "malicious-import",
+        "--data",
+        "$FIXTURE/data",
+        "$FIXTURE/import/only-ghsa"
+      ],
+      "stderr": [
+        "恶意包名单没导入，原来的名单保留：没找到能用的 MAL- 条目"
+      ],
+      "stdout": []
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 one-file 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9100",
+              "list": "恶意包名单 2026-10-05（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/web-app/package-lock.json",
+              "package": "one-file@1.0.0",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/web-app/package-lock.json\u0000npm\u0000one-file@1.0.0",
+            "path": "~/Projects/web-app/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 web-app 用了已知恶意的 one-file@1.0.0",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 zipped 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9200",
+              "list": "恶意包名单 2026-10-05（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/web-app/package-lock.json",
+              "package": "zipped@0.1.0",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/web-app/package-lock.json\u0000npm\u0000zipped@0.1.0",
+            "path": "~/Projects/web-app/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 web-app 用了已知恶意的 zipped@0.1.0",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "malicious_list_date": "2026-10-05",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "名单是几次导入合起来的：zipped、one-file 都报",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

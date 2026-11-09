@@ -1,0 +1,94 @@
+{
+  "about": "能读写每个网页的扩展：Chrome 两个用户的、Edge 的、Firefox 的各一条；名字从 _locales 里取；取版本号最大的那份；只认得具体网站的、系统自带的、停用的、主题、不是用户文件夹的不算",
+  "case": "rules/browser/extensions",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "browser": "Chrome",
+              "extensions": "Page Grabber；Reader Mode；Tab Keeper；__MSG_gone__",
+              "how": "只留认得、还在用的；在 Chrome 的扩展管理页里删掉其余的，或把「网站访问权限」改成「点击时」",
+              "why": "它们能看到你在网页上输入的密码和看的内容"
+            },
+            "key": "~/Library/Application Support/Google/Chrome|all|Page Grabber|Reader Mode|Tab Keeper|__MSG_gone__",
+            "path": "~/Library/Application Support/Google/Chrome",
+            "rule": "browser.extensions",
+            "severity": "low",
+            "title": "Chrome 里有 4 个扩展能读、能改你打开的每一个网页",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "browser": "Edge",
+              "extensions": "Edge Clipper",
+              "how": "只留认得、还在用的；在 Edge 的扩展管理页里删掉其余的，或把「网站访问权限」改成「点击时」",
+              "why": "它们能看到你在网页上输入的密码和看的内容"
+            },
+            "key": "~/Library/Application Support/Microsoft Edge|all|Edge Clipper",
+            "path": "~/Library/Application Support/Microsoft Edge",
+            "rule": "browser.extensions",
+            "severity": "low",
+            "title": "Edge 里有 1 个扩展能读、能改你打开的每一个网页",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "browser": "Firefox",
+              "extensions": "Fox Reader；helper@example.invalid",
+              "how": "只留认得、还在用的；在 Firefox 的「附加组件」里删掉其余的",
+              "why": "它们能看到你在网页上输入的密码和看的内容"
+            },
+            "key": "~/Library/Application Support/Firefox/Profiles|all|Fox Reader|helper@example.invalid",
+            "path": "~/Library/Application Support/Firefox/Profiles",
+            "rule": "browser.extensions",
+            "severity": "low",
+            "title": "Firefox 里有 2 个扩展能读、能改你打开的每一个网页",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

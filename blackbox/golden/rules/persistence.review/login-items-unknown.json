@@ -1,0 +1,522 @@
+{
+  "about": "launchctl 有一轮没答复：那一轮说登录项没查成、沿用上次见过的，再答复时不算新出现的",
+  "case": "rules/persistence.review/login-items-unknown",
+  "steps": [
+    {
+      "fakes": {
+        "commands": [
+          {
+            "args": [
+              "print",
+              "gui/$UID/io.example.noapp"
+            ],
+            "output": "io.example = {\n\tparent bundle identifier = io.example.notinstalled\n\tinherited environment = {\n\t\tpath = /should/not/count\n\t}\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "print",
+              "gui/$UID/io.example.vanished"
+            ],
+            "output": "Could not find service",
+            "status": 113,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "print",
+              "gui/$UID/io.example.loaded"
+            ],
+            "output": "io.example = {\n\tprogram = ~/.local/bin/unsigned-loader\n\tinherited environment = {\n\t\tpath = /should/not/count\n\t}\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "print",
+              "gui/$UID/io.example.syncer.helper"
+            ],
+            "output": "io.example = {\n\tpath = ~/Library/BTM/io.example.syncer.helper.plist\n\tparent bundle identifier = io.example.syncer\n\tinherited environment = {\n\t\tpath = /should/not/count\n\t}\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "print",
+              "gui/$UID"
+            ],
+            "output": "gui/$UID = {\n\ttype = login\n\tservices = {\n\t\t501\t0\tio.example.syncer.helper\n\t\t-\t0\tio.example.loaded\n\t\t-\t0\tio.example.fromplist\n\t\t77\t0\tapplication.com.example.App.1234\n\t\t-\t0\tio.example.vanished\n\t\t-\t0\tio.example.noapp\n\t}\n\tother = 1\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "autoLoginUser"
+            ],
+            "output": "",
+            "status": 1,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "GuestEnabled"
+            ],
+            "output": "0\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "DiscoverableMode"
+            ],
+            "output": "Contacts Only\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [],
+            "output": "disabled services = {\n\t\"com.openssh.sshd\" => disabled\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [],
+            "output": "SecTrustSettings: No Trust Settings were found.\n",
+            "status": 1,
+            "tool": "/usr/bin/security"
+          },
+          {
+            "args": [],
+            "output": "FileVault is On.\n",
+            "status": 0,
+            "tool": "/usr/bin/fdesetup"
+          },
+          {
+            "args": [],
+            "output": "Firewall is enabled. (State = 1)\n",
+            "status": 0,
+            "tool": "/usr/libexec/ApplicationFirewall/socketfilterfw"
+          },
+          {
+            "args": [],
+            "output": "System Integrity Protection status: enabled.\n",
+            "status": 0,
+            "tool": "/usr/bin/csrutil"
+          },
+          {
+            "args": [],
+            "output": "assessments enabled\n",
+            "status": 0,
+            "tool": "/usr/sbin/spctl"
+          },
+          {
+            "args": [],
+            "output": "sysadminctl[1:2] screenLock delay is immediate\n",
+            "status": 0,
+            "tool": "/bin/sh"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "Homebrew 和自己编的程序通常就是这样，不一定有问题；不认识的值得看一眼",
+              "items": "io.example.loaded：登录项（应用登记的后台程序），没签名"
+            },
+            "path": "",
+            "rule": "persistence.unvouched",
+            "severity": "low",
+            "title": "1 个会自己启动的程序没有开发者签名",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "不需要的在 系统设置 → 通用 → 登录项与扩展 里关掉",
+              "items": "io.example.loaded（没签名）；io.example.noapp（不知道是哪个程序）；Syncer（开发者签名（FIXTURE000））"
+            },
+            "path": "",
+            "rule": "persistence.login-items",
+            "severity": "low",
+            "title": "有 3 个应用登记的后台程序（登录项）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-10T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-10T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-10T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "launchctl print gui/<uid> 没答复"
+    },
+    {
+      "fakes": {
+        "commands": [
+          {
+            "args": [
+              "print",
+              "gui/$UID/io.example.noapp"
+            ],
+            "output": "io.example = {\n\tparent bundle identifier = io.example.notinstalled\n\tinherited environment = {\n\t\tpath = /should/not/count\n\t}\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "print",
+              "gui/$UID/io.example.vanished"
+            ],
+            "output": "Could not find service",
+            "status": 113,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "print",
+              "gui/$UID/io.example.loaded"
+            ],
+            "output": "io.example = {\n\tprogram = ~/.local/bin/unsigned-loader\n\tinherited environment = {\n\t\tpath = /should/not/count\n\t}\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "print",
+              "gui/$UID/io.example.syncer.helper"
+            ],
+            "output": "io.example = {\n\tpath = ~/Library/BTM/io.example.syncer.helper.plist\n\tparent bundle identifier = io.example.syncer\n\tinherited environment = {\n\t\tpath = /should/not/count\n\t}\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "print",
+              "gui/$UID"
+            ],
+            "output": "",
+            "status": 5,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "autoLoginUser"
+            ],
+            "output": "",
+            "status": 1,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "GuestEnabled"
+            ],
+            "output": "0\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "DiscoverableMode"
+            ],
+            "output": "Contacts Only\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [],
+            "output": "disabled services = {\n\t\"com.openssh.sshd\" => disabled\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [],
+            "output": "SecTrustSettings: No Trust Settings were found.\n",
+            "status": 1,
+            "tool": "/usr/bin/security"
+          },
+          {
+            "args": [],
+            "output": "FileVault is On.\n",
+            "status": 0,
+            "tool": "/usr/bin/fdesetup"
+          },
+          {
+            "args": [],
+            "output": "Firewall is enabled. (State = 1)\n",
+            "status": 0,
+            "tool": "/usr/libexec/ApplicationFirewall/socketfilterfw"
+          },
+          {
+            "args": [],
+            "output": "System Integrity Protection status: enabled.\n",
+            "status": 0,
+            "tool": "/usr/bin/csrutil"
+          },
+          {
+            "args": [],
+            "output": "assessments enabled\n",
+            "status": 0,
+            "tool": "/usr/sbin/spctl"
+          },
+          {
+            "args": [],
+            "output": "sysadminctl[1:2] screenLock delay is immediate\n",
+            "status": 0,
+            "tool": "/bin/sh"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "上次查到的照旧记着，下一轮再查",
+              "skipped": "登录项（launchctl 没答复）"
+            },
+            "path": "",
+            "rule": "persistence.partial",
+            "severity": "low",
+            "title": "这一轮有几类会自己启动的没查成：登录项（launchctl 没答复）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-15T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-15T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-15T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "又答复了"
+    },
+    {
+      "fakes": {
+        "commands": [
+          {
+            "args": [
+              "print",
+              "gui/$UID/io.example.noapp"
+            ],
+            "output": "io.example = {\n\tparent bundle identifier = io.example.notinstalled\n\tinherited environment = {\n\t\tpath = /should/not/count\n\t}\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "print",
+              "gui/$UID/io.example.vanished"
+            ],
+            "output": "Could not find service",
+            "status": 113,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "print",
+              "gui/$UID/io.example.loaded"
+            ],
+            "output": "io.example = {\n\tprogram = ~/.local/bin/unsigned-loader\n\tinherited environment = {\n\t\tpath = /should/not/count\n\t}\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "print",
+              "gui/$UID/io.example.syncer.helper"
+            ],
+            "output": "io.example = {\n\tpath = ~/Library/BTM/io.example.syncer.helper.plist\n\tparent bundle identifier = io.example.syncer\n\tinherited environment = {\n\t\tpath = /should/not/count\n\t}\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "print",
+              "gui/$UID"
+            ],
+            "output": "gui/$UID = {\n\ttype = login\n\tservices = {\n\t\t501\t0\tio.example.syncer.helper\n\t\t-\t0\tio.example.loaded\n\t\t-\t0\tio.example.fromplist\n\t\t77\t0\tapplication.com.example.App.1234\n\t\t-\t0\tio.example.vanished\n\t\t-\t0\tio.example.noapp\n\t}\n\tother = 1\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [
+              "autoLoginUser"
+            ],
+            "output": "",
+            "status": 1,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "GuestEnabled"
+            ],
+            "output": "0\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "DiscoverableMode"
+            ],
+            "output": "Contacts Only\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [],
+            "output": "disabled services = {\n\t\"com.openssh.sshd\" => disabled\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [],
+            "output": "SecTrustSettings: No Trust Settings were found.\n",
+            "status": 1,
+            "tool": "/usr/bin/security"
+          },
+          {
+            "args": [],
+            "output": "FileVault is On.\n",
+            "status": 0,
+            "tool": "/usr/bin/fdesetup"
+          },
+          {
+            "args": [],
+            "output": "Firewall is enabled. (State = 1)\n",
+            "status": 0,
+            "tool": "/usr/libexec/ApplicationFirewall/socketfilterfw"
+          },
+          {
+            "args": [],
+            "output": "System Integrity Protection status: enabled.\n",
+            "status": 0,
+            "tool": "/usr/bin/csrutil"
+          },
+          {
+            "args": [],
+            "output": "assessments enabled\n",
+            "status": 0,
+            "tool": "/usr/sbin/spctl"
+          },
+          {
+            "args": [],
+            "output": "sysadminctl[1:2] screenLock delay is immediate\n",
+            "status": 0,
+            "tool": "/bin/sh"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "Homebrew 和自己编的程序通常就是这样，不一定有问题；不认识的值得看一眼",
+              "items": "io.example.loaded：登录项（应用登记的后台程序），没签名"
+            },
+            "path": "",
+            "rule": "persistence.unvouched",
+            "severity": "low",
+            "title": "1 个会自己启动的程序没有开发者签名",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "不需要的在 系统设置 → 通用 → 登录项与扩展 里关掉",
+              "items": "io.example.loaded（没签名）；io.example.noapp（不知道是哪个程序）；Syncer（开发者签名（FIXTURE000））"
+            },
+            "path": "",
+            "rule": "persistence.login-items",
+            "severity": "low",
+            "title": "有 3 个应用登记的后台程序（登录项）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

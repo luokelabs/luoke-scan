@@ -1,0 +1,115 @@
+{
+  "about": "浏览器把网页做成的应用（Chrome Apps.localized 里、Chrome 有它的记录、临时签名）不报；只是像的（没有记录、拖到别处的、没签名的）照报",
+  "case": "rules/apps.new/web-app",
+  "steps": [
+    {
+      "fakes": {
+        "appsAdded": {
+          "~/Applications/Chrome Apps.localized/Fake.app": "2026-10-19T12:00:00Z",
+          "~/Applications/Chrome Apps.localized/Music.app": "2026-10-19T12:00:00Z",
+          "~/Applications/Chrome Apps.localized/Unsigned.app": "2026-10-19T12:00:00Z",
+          "~/Applications/Dropped.app": "2026-10-19T12:00:00Z"
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-10-19",
+              "how": "确认是你自己要装、来源可信的；不认识就在访达里把它移到废纸篓",
+              "quarantine": "没有下载标记：自己编译、从 App Store 或安装包装的，也可能下载后被人去掉了",
+              "why": "只有临时签名"
+            },
+            "path": "~/Applications/Chrome Apps.localized/Fake.app",
+            "rule": "apps.unsigned",
+            "severity": "medium",
+            "title": "最近装的 Fake 只有临时签名：谁做的、改没改过，没人担保",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-10-19",
+              "how": "确认是你自己要装、来源可信的；不认识就在访达里把它移到废纸篓",
+              "quarantine": "没有下载标记：自己编译、从 App Store 或安装包装的，也可能下载后被人去掉了",
+              "why": "只有临时签名"
+            },
+            "path": "~/Applications/Chrome Apps.localized/Music.app",
+            "rule": "apps.unsigned",
+            "severity": "medium",
+            "title": "最近装的 Music 只有临时签名：谁做的、改没改过，没人担保",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-10-19",
+              "how": "确认是你自己要装、来源可信的；不认识就在访达里把它移到废纸篓",
+              "quarantine": "没有下载标记：自己编译、从 App Store 或安装包装的，也可能下载后被人去掉了",
+              "why": "只有临时签名"
+            },
+            "path": "~/Applications/Dropped.app",
+            "rule": "apps.unsigned",
+            "severity": "medium",
+            "title": "最近装的 Dropped 只有临时签名：谁做的、改没改过，没人担保",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-10-19",
+              "how": "确认是你自己要装、来源可信的；不认识就在访达里把它移到废纸篓",
+              "quarantine": "没有下载标记：自己编译、从 App Store 或安装包装的，也可能下载后被人去掉了",
+              "why": "没有签名"
+            },
+            "path": "~/Applications/Chrome Apps.localized/Unsigned.app",
+            "rule": "apps.unsigned",
+            "severity": "medium",
+            "title": "最近装的 Unsigned 没有签名：谁做的、改没改过，没人担保",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

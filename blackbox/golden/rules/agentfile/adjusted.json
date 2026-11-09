@@ -1,0 +1,134 @@
+{
+  "about": "说明文件本来就会说怎么维护自己：叫它同步 CLAUDE.md、往 skills 里加东西的不算；改项目的 AI 设置、跳过确认的降成低；危险的照报",
+  "case": "rules/agentfile/adjusted",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "AI 打开这个项目时会照着这个文件做；不是你写的，先别让 AI 在这个项目里干活，看清楚那几行再说",
+              "kinds": "agent-tamper,download-exec",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：从网上下载代码直接运行（AGENTS.md 第 2 行）；改 AI 工具的设置（钩子、MCP 服务器、权限）（AGENTS.md 第 1 行）"
+            },
+            "key": "~/Projects/adj-still-high/AGENTS.md|337a4bf153e6bcf0",
+            "path": "~/Projects/adj-still-high/AGENTS.md",
+            "rule": "agentfile.download-exec",
+            "severity": "high",
+            "title": "项目 adj-still-high 里 多个 AI 工具共用 读的 AGENTS.md：从网上下载代码直接运行，另有 1 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "用文本编辑器打开那个文件看看那几行；认得、是你自己写的就不用管",
+              "kinds": "agent-tamper",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：改 AI 工具的设置（钩子、MCP 服务器、权限）（AGENTS.md 第 1 行）"
+            },
+            "key": "~/Projects/adj-mcp/AGENTS.md|1cad6a8ddf55ffee",
+            "path": "~/Projects/adj-mcp/AGENTS.md",
+            "rule": "agentfile.agent-tamper",
+            "severity": "low",
+            "title": "项目 adj-mcp 里 多个 AI 工具共用 读的 AGENTS.md：改 AI 工具的设置（钩子、MCP 服务器、权限）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "用文本编辑器打开那个文件看看那几行；认得、是你自己写的就不用管",
+              "kinds": "agent-tamper",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：改 AI 工具的设置（钩子、MCP 服务器、权限）（AGENTS.md 第 1 行）"
+            },
+            "key": "~/Projects/adj-settings/AGENTS.md|25c20ac8a6edb267",
+            "path": "~/Projects/adj-settings/AGENTS.md",
+            "rule": "agentfile.agent-tamper",
+            "severity": "low",
+            "title": "项目 adj-settings 里 多个 AI 工具共用 读的 AGENTS.md：改 AI 工具的设置（钩子、MCP 服务器、权限）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "用文本编辑器打开那个文件看看那几行；认得、是你自己写的就不用管",
+              "kinds": "agent-tamper",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：让 AI 工具跳过确认直接做（AGENTS.md 第 1 行）"
+            },
+            "key": "~/Projects/adj-yolo/AGENTS.md|03d8b424ff94af80",
+            "path": "~/Projects/adj-yolo/AGENTS.md",
+            "rule": "agentfile.agent-tamper",
+            "severity": "low",
+            "title": "项目 adj-yolo 里 多个 AI 工具共用 读的 AGENTS.md：让 AI 工具跳过确认直接做",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "用文本编辑器打开那个文件看看那几行；认得、是你自己写的就不用管",
+              "kinds": "supply-chain",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：运行官方网站上的安装脚本（AGENTS.md 第 6 行）"
+            },
+            "key": "~/Projects/adj-ordinary/AGENTS.md|009c119653792eaf",
+            "path": "~/Projects/adj-ordinary/AGENTS.md",
+            "rule": "agentfile.supply-chain",
+            "severity": "low",
+            "title": "项目 adj-ordinary 里 多个 AI 工具共用 读的 AGENTS.md：运行官方网站上的安装脚本",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

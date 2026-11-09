@@ -1,0 +1,274 @@
+{
+  "about": "给人看的文字：查一轮、上一轮的发现、状态（文字和 JSON）、按放心删/要确认/仅供参考分开的报告",
+  "case": "cli/text",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 131072000,
+            "category": "leak",
+            "evidence": {
+              "count": "25",
+              "first": "2026-10-15",
+              "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+              "last": "2026-10-18",
+              "per_day": "43.7 MB",
+              "prefix": "wings",
+              "size": "131.1 MB"
+            },
+            "path": "$TMPDIR/wings-*",
+            "rule": "leak.temp-prefix",
+            "severity": "low",
+            "title": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 4096,
+            "category": "malware",
+            "evidence": {
+              "database": "daily 27000，2026-10-20",
+              "how": "移到废纸篓；如果是你刚下载的，别打开它",
+              "signature": "Eicar-Test-Signature"
+            },
+            "path": "~/Downloads/eicar-test.com",
+            "rule": "malware.clamav",
+            "severity": "high",
+            "title": "病毒库认出 eicar-test.com 是 Eicar-Test-Signature",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 62914560,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "62.9 MB",
+              "tool": "pip"
+            },
+            "path": "~/Library/Caches/pip",
+            "rule": "cache.rebuildable.pip",
+            "severity": "low",
+            "title": "pip 的缓存，删了会自动重建",
+            "verdict": "safe"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:10:00Z"
+      ],
+      "stdout": [
+        "[要确认] 病毒库认出 eicar-test.com 是 Eicar-Test-Signature",
+        "    ~/Downloads/eicar-test.com",
+        "    database: daily 27000，2026-10-20",
+        "    how: 移到废纸篓；如果是你刚下载的，别打开它",
+        "    signature: Eicar-Test-Signature",
+        "[要确认] 临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+        "    $TMPDIR/wings-*",
+        "    count: 25",
+        "    first: 2026-10-15",
+        "    hint: 多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+        "    last: 2026-10-18",
+        "    per_day: 43.7 MB",
+        "    prefix: wings",
+        "    size: 131.1 MB",
+        "[放心删] pip 的缓存，删了会自动重建",
+        "    ~/Library/Caches/pip",
+        "    clean: 删除这个文件夹",
+        "    size: 62.9 MB",
+        "    tool: pip",
+        "共 3 条发现，0 项没扫描（规则 0.1.0）"
+      ]
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "findings",
+        "--data",
+        "$FIXTURE/data"
+      ],
+      "stdout": [
+        "[要确认] 病毒库认出 eicar-test.com 是 Eicar-Test-Signature",
+        "    ~/Downloads/eicar-test.com",
+        "    database: daily 27000，2026-10-20",
+        "    how: 移到废纸篓；如果是你刚下载的，别打开它",
+        "    signature: Eicar-Test-Signature",
+        "[要确认] 临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+        "    $TMPDIR/wings-*",
+        "    count: 25",
+        "    first: 2026-10-15",
+        "    hint: 多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+        "    last: 2026-10-18",
+        "    per_day: 43.7 MB",
+        "    prefix: wings",
+        "    size: 131.1 MB",
+        "[放心删] pip 的缓存，删了会自动重建",
+        "    ~/Library/Caches/pip",
+        "    clean: 删除这个文件夹",
+        "    size: 62.9 MB",
+        "    tool: pip"
+      ]
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "status",
+        "--data",
+        "$FIXTURE/data"
+      ],
+      "stdout": [
+        "上一轮：2026-10-20T12:10:00Z，用了 0 秒",
+        "发现：放心删 1、要确认 2、仅供参考 0",
+        "放心删的能腾出：62.9 MB",
+        "clamav_db_date：2026-10-20",
+        "clamav_db_version：27000",
+        "clamscan：ClamAV 1.4.3/fixture",
+        "rule_pack：0.1.0",
+        "yara：4.5.2"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 131072000,
+            "category": "leak",
+            "evidence": {
+              "count": "25",
+              "first": "2026-10-15",
+              "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+              "last": "2026-10-18",
+              "per_day": "43.7 MB",
+              "prefix": "wings",
+              "size": "131.1 MB"
+            },
+            "path": "$TMPDIR/wings-*",
+            "rule": "leak.temp-prefix",
+            "severity": "low",
+            "title": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 4096,
+            "category": "malware",
+            "evidence": {
+              "database": "daily 27000，2026-10-20",
+              "how": "移到废纸篓；如果是你刚下载的，别打开它",
+              "signature": "Eicar-Test-Signature"
+            },
+            "path": "~/Downloads/eicar-test.com",
+            "rule": "malware.clamav",
+            "severity": "high",
+            "title": "病毒库认出 eicar-test.com 是 Eicar-Test-Signature",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 62914560,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "62.9 MB",
+              "tool": "pip"
+            },
+            "path": "~/Library/Caches/pip",
+            "rule": "cache.rebuildable.pip",
+            "severity": "low",
+            "title": "pip 的缓存，删了会自动重建",
+            "verdict": "safe"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:10:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:10:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "status",
+        "--data",
+        "$FIXTURE/data",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "report",
+        "--data",
+        "$FIXTURE/data"
+      ],
+      "stdout": [
+        "螺壳扫描 · 2026-10-20 20:10 查的（用了 1 秒）",
+        "",
+        "放心删（1 项，共 62.9 MB）——会重建的缓存，删了用到时会重新下载",
+        "  62.9 MB  pip 的缓存，删了会自动重建",
+        "           ~/Library/Caches/pip",
+        "",
+        "要确认（2 项，共 131.1 MB）——多半用不到了，一项项看过再决定",
+        "  4 KB     ！病毒库认出 eicar-test.com 是 Eicar-Test-Signature",
+        "           ~/Downloads/eicar-test.com",
+        "           怎么办：移到废纸篓；如果是你刚下载的，别打开它",
+        "  131.1 MB 临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+        "           $TMPDIR/wings-*",
+        "",
+        "每一条的全部细节：luoke-scan findings"
+      ]
+    }
+  ]
+}

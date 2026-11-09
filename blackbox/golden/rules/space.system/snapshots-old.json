@@ -1,0 +1,72 @@
+{
+  "about": "3 个 Time Machine 本地快照，两个留了两天以上：报 2 个、留了 5 天",
+  "case": "rules/space.system/snapshots-old",
+  "steps": [
+    {
+      "fakes": {
+        "snapshots": [
+          "2026-10-15T12:00:00Z",
+          "2026-10-17T12:00:00Z",
+          "2026-10-20T11:00:00Z"
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "space",
+            "evidence": {
+              "count": "3",
+              "how": "打开 系统设置 → 通用 → 时间机器，看最近一次备份是不是失败了",
+              "oldest": "2026-10-15",
+              "why": "备份成功后系统一天内会自己删掉本地快照；留得久了多半是最近的备份没成功，它们占着的空间要等删了才回来"
+            },
+            "path": "",
+            "rule": "space.tm-snapshots",
+            "severity": "low",
+            "title": "2 个 Time Machine 本地快照留了 5 天还没删",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

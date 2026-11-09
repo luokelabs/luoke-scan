@@ -1,0 +1,160 @@
+{
+  "about": "没有完全磁盘访问：程序在下载里的不去看它在不在，不报；别处不在的照报；有了访问再报",
+  "case": "rules/permission.stale-grant/no-full-disk-access",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "录屏",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 录屏，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"
+            },
+            "path": "$FIXTURE/opt/gone/tool",
+            "rule": "permission.stale-grant",
+            "severity": "medium",
+            "title": "$FIXTURE/opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "辅助功能",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 辅助功能，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
+            },
+            "path": "~/Downloads/gone-helper",
+            "rule": "permission.stale-grant",
+            "severity": "medium",
+            "title": "~/Downloads/gone-helper 已经不在这台 Mac 上，还拿着「辅助功能」",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents 里散落的密钥没看（看了 macOS 会弹框问你）",
+            "rule": "secrets"
+          },
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents、Music 里的重复文件没看（看了 macOS 会弹框问你）",
+            "rule": "space.duplicates"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里新来的文件有没有病毒没看（看了 macOS 会弹框问你）",
+            "rule": "malware"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里的安装包和没下完的下载没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.installer"
+          },
+          {
+            "reason": "没有完全磁盘访问，别的应用的容器里留下的数据没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.app-data"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载里很久没打开的大文件没看（看了 macOS 会弹框问你）",
+            "rule": "stale.large-file"
+          }
+        ],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json",
+        "--no-full-disk-access"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "录屏",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 录屏，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"
+            },
+            "path": "$FIXTURE/opt/gone/tool",
+            "rule": "permission.stale-grant",
+            "severity": "medium",
+            "title": "$FIXTURE/opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "辅助功能",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 辅助功能，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
+            },
+            "path": "~/Downloads/gone-helper",
+            "rule": "permission.stale-grant",
+            "severity": "medium",
+            "title": "~/Downloads/gone-helper 已经不在这台 Mac 上，还拿着「辅助功能」",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "有了完全磁盘访问",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

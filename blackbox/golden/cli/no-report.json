@@ -1,0 +1,57 @@
+{
+  "about": "还没查过：findings、status、report 退出码 1，说先查一轮；system 说还没查过",
+  "case": "cli/no-report",
+  "steps": [
+    {
+      "exit": 1,
+      "run": [
+        "luoke-scan",
+        "findings",
+        "--data",
+        "$FIXTURE/data"
+      ],
+      "stderr": [
+        "还没查过（先跑 luoke-scan scan）"
+      ],
+      "stdout": []
+    },
+    {
+      "exit": 1,
+      "run": [
+        "luoke-scan",
+        "status",
+        "--data",
+        "$FIXTURE/data"
+      ],
+      "stderr": [
+        "还没查过（先跑 luoke-scan scan）"
+      ],
+      "stdout": []
+    },
+    {
+      "exit": 1,
+      "run": [
+        "luoke-scan",
+        "report",
+        "--data",
+        "$FIXTURE/data"
+      ],
+      "stderr": [
+        "还没查过（先跑 luoke-scan scan --this-mac）"
+      ],
+      "stdout": []
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "system",
+        "--fixture",
+        "$FIXTURE"
+      ],
+      "stdout": [
+        "还没查过这台 Mac。"
+      ]
+    }
+  ]
+}

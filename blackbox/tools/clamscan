@@ -1,0 +1,24 @@
+#!/bin/sh
+# 假的 clamscan（照真的那一版的输出和退出码）。有 record-args 时，每次的参数记进 args.clamscan。
+d=$(dirname "$0"); [ -e "$d/record-args" ] && echo "$*" >> "$d/args.$(basename "$0")"
+[ "$1" = "--version" ] && { echo "ClamAV 1.4.3/fixture"; exit 0; }
+list=""; quick=""
+for a in "$@"; do case "$a" in
+  --file-list=*) list="${a#--file-list=}";;
+  --database=*) db="${a#--database=}"; [ -e "$db/broken" ] && { echo "ERROR: Malformed database" >&2; exit 2; }; [ -e "$db/source.txt" ] && quick=1;;
+esac; done
+# As the real one (1.5.4): a line per file, and 1 (found something) wins over 2 (could not scan some).
+infected=0; errors=0
+while IFS= read -r p; do
+  [ -r "$p" ] || { echo "$p: Access denied"; errors=1; continue; }
+  [ -s "$p" ] || { echo "$p: Empty file"; continue; }
+  case "$p" in
+    *huge*) echo "$p: Heuristics.Limits.Exceeded.MaxFileSize FOUND"; echo "$p: Virus(es) detected ERROR"; errors=1;;
+    *eicar*) if [ -n "$quick" ]; then echo "$p: Eicar-Test-Signature.UNOFFICIAL FOUND"; else echo "$p: Eicar-Test-Signature FOUND"; fi; infected=1;;
+    *unreadable*) echo "$p: Can't open file or directory ERROR"; errors=1;;
+    *) echo "$p: OK";;
+  esac
+done < "$list"
+[ $infected = 1 ] && exit 1
+[ $errors = 1 ] && exit 2
+exit 0

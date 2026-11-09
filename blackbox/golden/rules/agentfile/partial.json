@@ -1,0 +1,78 @@
+{
+  "about": "说明文件超过 400 个：只看前 400 个（按项目、按表里的顺序），多的报一条低的；第 401 个里的问题不报",
+  "case": "rules/agentfile/partial",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Cursor",
+              "file": ".cursor/rules/r00.mdc",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（.cursor/rules/r00.mdc 第 4 行）"
+            },
+            "key": "~/Projects/p00/.cursor/rules/r00.mdc|887a01c414710f7e",
+            "path": "~/Projects/p00/.cursor/rules/r00.mdc",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 p00 里 Cursor 读的 .cursor/rules/r00.mdc：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "how": "下一轮还是先查前面这些",
+              "more": "1"
+            },
+            "path": "",
+            "rule": "agentfile.partial",
+            "severity": "low",
+            "title": "给 AI 看的说明文件超过 400 个，这一轮只查了前 400 个",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

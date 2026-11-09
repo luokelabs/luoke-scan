@@ -1,0 +1,168 @@
+{
+  "about": "改 AI 自己：写它的设置（高）、说明里叫它改 AGENTS.md（中）、改别的 skill（高）、写 MCP 设置（高）、跳过确认（中）；说自己就是做这个的降成低；装自己、只读 CLAUDE.md 的不报",
+  "case": "rules/skill/agent-tamper",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
+              "kinds": "agent-tamper",
+              "scope": "personal",
+              "skill": "at-append-said",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 AI 的记忆或长期指令（CLAUDE.md 之类）（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/at-append-said|741fc5940c2407f9",
+            "path": "~/.claude/skills/at-append-said",
+            "rule": "skill.agent-tamper",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「at-append-said」：改 AI 的记忆或长期指令（CLAUDE.md 之类）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
+              "kinds": "agent-tamper",
+              "scope": "personal",
+              "skill": "at-cat-redirect",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 AI 工具的设置（钩子、MCP 服务器、权限）（scripts/x.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/at-cat-redirect|71dc352045281818",
+            "path": "~/.claude/skills/at-cat-redirect",
+            "rule": "skill.agent-tamper",
+            "severity": "high",
+            "title": "Claude Code 的 skill「at-cat-redirect」：改 AI 工具的设置（钩子、MCP 服务器、权限）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
+              "kinds": "agent-tamper",
+              "scope": "personal",
+              "skill": "at-glob",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改别的 skill（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/at-glob|bda469c3b1334260",
+            "path": "~/.claude/skills/at-glob",
+            "rule": "skill.agent-tamper",
+            "severity": "high",
+            "title": "Claude Code 的 skill「at-glob」：改别的 skill",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
+              "kinds": "agent-tamper",
+              "scope": "personal",
+              "skill": "at-js-write",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改别的 skill（a.js 第 2 行）"
+            },
+            "key": "~/.claude/skills/at-js-write|50c21ec45ef63cb8",
+            "path": "~/.claude/skills/at-js-write",
+            "rule": "skill.agent-tamper",
+            "severity": "high",
+            "title": "Claude Code 的 skill「at-js-write」：改别的 skill",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
+              "kinds": "agent-tamper",
+              "scope": "personal",
+              "skill": "at-py-dump",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 AI 工具的设置（钩子、MCP 服务器、权限）（a.py 第 2 行）"
+            },
+            "key": "~/.claude/skills/at-py-dump|8205f2605fbaf151",
+            "path": "~/.claude/skills/at-py-dump",
+            "rule": "skill.agent-tamper",
+            "severity": "high",
+            "title": "Claude Code 的 skill「at-py-dump」：改 AI 工具的设置（钩子、MCP 服务器、权限）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
+              "kinds": "agent-tamper",
+              "scope": "personal",
+              "skill": "at-yolo",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 工具跳过确认直接做（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/at-yolo|3dd11e973236577f",
+            "path": "~/.claude/skills/at-yolo",
+            "rule": "skill.agent-tamper",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「at-yolo」：让 AI 工具跳过确认直接做",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "它会改 AI 工具自己的东西；认得、用得着就留着，不认识就移到废纸篓",
+              "kinds": "agent-tamper",
+              "scope": "personal",
+              "skill": "hooks-setup",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 AI 工具的设置（钩子、MCP 服务器、权限）（它说自己就是做这个的）（x.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/hooks-setup|d95724e2468e324e",
+            "path": "~/.claude/skills/hooks-setup",
+            "rule": "skill.agent-tamper",
+            "severity": "low",
+            "title": "Claude Code 的 skill「hooks-setup」：改 AI 工具的设置（钩子、MCP 服务器、权限）（它说自己就是做这个的）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

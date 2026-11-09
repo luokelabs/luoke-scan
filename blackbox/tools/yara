@@ -1,0 +1,14 @@
+#!/bin/sh
+# 假的 yara（照真的那一版的输出和退出码）。有 record-args 时，每次的参数记进 args.yara。
+d=$(dirname "$0"); [ -e "$d/record-args" ] && echo "$*" >> "$d/args.$(basename "$0")"
+[ "$1" = "--version" ] && { echo "4.5.2"; exit 0; }
+for a in "$@"; do list="$a"; done
+xp=""; case "$*" in *xprotect:*) xp=1;; esac
+# As the real one (4.5): a file it cannot open is reported on stderr, and it still exits 0.
+while IFS= read -r p; do
+  case "$p" in *yara-error*) echo "error scanning $p: could not open file" >&2; continue;; esac
+  [ -r "$p" ] || { echo "error scanning $p: could not open file" >&2; continue; }
+  grep -q "hidden answer" "$p" 2>/dev/null && echo "default:luoke_fake_password_dialog $p"
+  [ -n "$xp" ] && grep -q "apple knows" "$p" 2>/dev/null && echo "xprotect:XProtect_MACOS_FAKE $p"
+done < "$list"
+exit 0

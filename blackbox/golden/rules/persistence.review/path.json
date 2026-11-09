@@ -1,0 +1,162 @@
+{
+  "about": "shell 启动文件里的 PATH：下载、临时、谁都能写的文件夹和当前文件夹要改，不存在的只说；带别的变量的不猜；没有完全磁盘访问时下载里的照样算，文稿里的不看",
+  "case": "rules/persistence.review/path",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "dirs": "~/.local/bin（~/.zshrc 第 1 行）；~/no-such-dir（~/.zshrc 第 3 行）；~/Documents/missing（~/.profile 第 1 行）",
+              "hint": "以后有人建了这个文件夹，里面的程序就会被当成命令；用不到就从配置里去掉"
+            },
+            "path": "",
+            "rule": "persistence.path-missing",
+            "severity": "low",
+            "title": "PATH 里有 3 个已经不存在的文件夹",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "dirs": "~/Downloads/bin（~/.zshrc 第 1 行）；$FIXTURE/open-dir（~/.zshrc 第 3 行）；~/tools/bin（~/.zshrc 第 4 行）；当前所在的文件夹（. 或空的一项，~/.zshrc 第 5 行）；$TMPDIR/bin（~/.bash_profile 第 1 行）；当前所在的文件夹（. 或空的一项，~/.bash_profile 第 2 行）；~/Documents/bin（~/.profile 第 1 行）",
+              "how": "从这几行里去掉这些文件夹",
+              "why": "临时文件夹、下载文件夹或谁都能写的文件夹放在 PATH 里，别人放一个同名程序进去，你敲的命令就会运行它"
+            },
+            "path": "",
+            "rule": "persistence.path-risky",
+            "severity": "medium",
+            "title": "PATH 里有 7 个谁都能放东西进去的文件夹",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "dirs": "~/.local/bin（~/.zshrc 第 1 行）；~/no-such-dir（~/.zshrc 第 3 行）",
+              "hint": "以后有人建了这个文件夹，里面的程序就会被当成命令；用不到就从配置里去掉"
+            },
+            "path": "",
+            "rule": "persistence.path-missing",
+            "severity": "low",
+            "title": "PATH 里有 2 个已经不存在的文件夹",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "dirs": "~/Downloads/bin（~/.zshrc 第 1 行）；$FIXTURE/open-dir（~/.zshrc 第 3 行）；~/tools/bin（~/.zshrc 第 4 行）；当前所在的文件夹（. 或空的一项，~/.zshrc 第 5 行）；$TMPDIR/bin（~/.bash_profile 第 1 行）；当前所在的文件夹（. 或空的一项，~/.bash_profile 第 2 行）",
+              "how": "从这几行里去掉这些文件夹",
+              "why": "临时文件夹、下载文件夹或谁都能写的文件夹放在 PATH 里，别人放一个同名程序进去，你敲的命令就会运行它"
+            },
+            "path": "",
+            "rule": "persistence.path-risky",
+            "severity": "medium",
+            "title": "PATH 里有 6 个谁都能放东西进去的文件夹",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents 里散落的密钥没看（看了 macOS 会弹框问你）",
+            "rule": "secrets"
+          },
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents、Music 里的重复文件没看（看了 macOS 会弹框问你）",
+            "rule": "space.duplicates"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载、桌面、文稿里的系统恢复镜像没看（看了 macOS 会弹框问你）",
+            "rule": "space.system"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里新来的文件有没有病毒没看（看了 macOS 会弹框问你）",
+            "rule": "malware"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里的安装包和没下完的下载没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.installer"
+          },
+          {
+            "reason": "没有完全磁盘访问，别的应用的容器里留下的数据没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.app-data"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载和别的应用的数据占多大没看（看了 macOS 会弹框问你）",
+            "rule": "space"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载里很久没打开的大文件没看（看了 macOS 会弹框问你）",
+            "rule": "stale.large-file"
+          }
+        ],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "没有完全磁盘访问",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json",
+        "--no-full-disk-access"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "about": "开机自动登录（高）、客人用户开着（低）：各一条",
+  "case": "rules/posture/auto-login-and-guest",
+  "steps": [
+    {
+      "fakes": {
+        "commands": [
+          {
+            "args": [
+              "GuestEnabled"
+            ],
+            "output": "1\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "autoLoginUser"
+            ],
+            "output": "example-user\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "autoLoginUser"
+            ],
+            "output": "",
+            "status": 1,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "GuestEnabled"
+            ],
+            "output": "0\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "DiscoverableMode"
+            ],
+            "output": "Contacts Only\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [],
+            "output": "disabled services = {\n\t\"com.openssh.sshd\" => disabled\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [],
+            "output": "SecTrustSettings: No Trust Settings were found.\n",
+            "status": 1,
+            "tool": "/usr/bin/security"
+          },
+          {
+            "args": [],
+            "output": "FileVault is On.\n",
+            "status": 0,
+            "tool": "/usr/bin/fdesetup"
+          },
+          {
+            "args": [],
+            "output": "Firewall is enabled. (State = 1)\n",
+            "status": 0,
+            "tool": "/usr/libexec/ApplicationFirewall/socketfilterfw"
+          },
+          {
+            "args": [],
+            "output": "System Integrity Protection status: enabled.\n",
+            "status": 0,
+            "tool": "/usr/bin/csrutil"
+          },
+          {
+            "args": [],
+            "output": "assessments enabled\n",
+            "status": 0,
+            "tool": "/usr/sbin/spctl"
+          },
+          {
+            "args": [],
+            "output": "sysadminctl[1:2] screenLock delay is immediate\n",
+            "status": 0,
+            "tool": "/bin/sh"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "不用的话：系统设置 → 用户与群组 → 客人用户，关掉"
+            },
+            "path": "",
+            "rule": "posture.guest",
+            "severity": "low",
+            "title": "客人用户开着：不用密码就能登录这台 Mac",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "系统设置 → 用户与群组，「自动以此身份登录」选「关闭」"
+            },
+            "path": "",
+            "rule": "posture.auto-login",
+            "severity": "high",
+            "title": "开机自动登录：谁打开这台 Mac 都直接进到你的账户",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,687 @@
+{
+  "about": "eval-cleanup：汇总的分数和每条用例的结果",
+  "case": "evals/cleanup",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "eval-cleanup",
+        "--cases",
+        "$REPO/evals/cleanup/cases.json"
+      ],
+      "stdout": [
+        "清理规则评测：72 个用例",
+        "",
+        "| 类 | 用例 | 该清 | 挑中 | 漏了 | 不该清 | 挑错 |",
+        "|---|---|---|---|---|---|---|",
+        "| cache | 18 | 19 | 19 | 0 | 26 | 0 |",
+        "| installer | 27 | 8 | 8 | 0 | 25 | 0 |",
+        "| duplicate | 17 | 4 | 4 | 0 | 26 | 0 |",
+        "| temp | 10 | 133 | 133 | 0 | 94 | 0 |",
+        "",
+        "不该清的一个都没挑：过"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": [
+        {
+          "auto": 1,
+          "id": "cache-pip",
+          "keep": 0,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 3,
+          "id": "cache-tools-with-commands",
+          "keep": 0,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 1,
+          "id": "cache-xcode",
+          "keep": 0,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 3,
+          "id": "cache-rust-bun-swiftpm",
+          "keep": 0,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-pip-running",
+          "keep": 1,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-xcode-running",
+          "keep": 1,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-npm-running",
+          "keep": 1,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-is-a-link",
+          "keep": 2,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-look-alikes",
+          "keep": 7,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-turned-off",
+          "keep": 1,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 5,
+          "id": "cache-package-managers",
+          "keep": 0,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 4,
+          "id": "cache-gradle-poetry",
+          "keep": 0,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 2,
+          "id": "cache-xcode-more",
+          "keep": 0,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-brew-running",
+          "keep": 1,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-gradle-daemon",
+          "keep": 1,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-simulator-running",
+          "keep": 1,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-look-alikes-2",
+          "keep": 9,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 1,
+          "id": "installer-same-version",
+          "keep": 0,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 1,
+          "id": "installer-older-version",
+          "keep": 0,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 1,
+          "id": "installer-name-without-version",
+          "keep": 0,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 1,
+          "id": "installer-chip-in-name",
+          "keep": 0,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 1,
+          "id": "installer-words-in-name",
+          "keep": 0,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 1,
+          "id": "installer-one-folder-down",
+          "keep": 0,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 1,
+          "id": "installer-pkg",
+          "keep": 0,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 1,
+          "id": "installer-xcode-xip",
+          "keep": 0,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-newer-than-installed",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-too-recent",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-another-product",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-another-edition",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-another-product-no-version",
+          "keep": 2,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-app-not-installed",
+          "keep": 2,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-attached",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-is-a-link",
+          "keep": 2,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-app-says-no-version",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-user-made-image",
+          "keep": 2,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-not-signed",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-not-downloaded",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-apple-app",
+          "keep": 2,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-web-app-shim",
+          "keep": 2,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-pre-release",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-release-candidate",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-ignored",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-short-name",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "installer-turned-off",
+          "keep": 1,
+          "kind": "installer",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 1,
+          "id": "dup-kept-in-documents",
+          "keep": 0,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 1,
+          "id": "dup-kept-on-desktop",
+          "keep": 0,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 2,
+          "id": "dup-two-in-downloads",
+          "keep": 0,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-only-in-downloads",
+          "keep": 2,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-just-downloaded",
+          "keep": 2,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-edited-lately",
+          "keep": 2,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-same-ends-different-middle",
+          "keep": 2,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-same-size-different",
+          "keep": 2,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-hard-link",
+          "keep": 2,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-clone",
+          "keep": 2,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-symlink",
+          "keep": 2,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-tool-managed",
+          "keep": 3,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-other-copy-not-looked-at",
+          "keep": 1,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-turned-off",
+          "keep": 1,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-ignored",
+          "keep": 1,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-in-a-project",
+          "keep": 2,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "dup-kept-in-build-output",
+          "keep": 2,
+          "kind": "duplicate",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 22,
+          "id": "temp-puppeteer",
+          "keep": 0,
+          "kind": "temp",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 22,
+          "id": "temp-lighthouse",
+          "keep": 0,
+          "kind": "temp",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 22,
+          "id": "temp-playwright",
+          "keep": 0,
+          "kind": "temp",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 22,
+          "id": "temp-some-in-use",
+          "keep": 3,
+          "kind": "temp",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "temp-not-quiet-long-enough",
+          "keep": 22,
+          "kind": "temp",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "temp-unknown-tool",
+          "keep": 22,
+          "kind": "temp",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "temp-an-apps-own",
+          "keep": 22,
+          "kind": "temp",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 22,
+          "id": "temp-link-among-them",
+          "keep": 2,
+          "kind": "temp",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 23,
+          "id": "temp-browser-still-open",
+          "keep": 1,
+          "kind": "temp",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "temp-turned-off",
+          "keep": 22,
+          "kind": "temp",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-yarn-running",
+          "keep": 1,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        }
+      ],
+      "run": [
+        "luoke-scan",
+        "eval-cleanup",
+        "--cases",
+        "$REPO/evals/cleanup/cases.json",
+        "--json"
+      ]
+    }
+  ]
+}

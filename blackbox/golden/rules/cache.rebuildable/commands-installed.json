@@ -1,0 +1,100 @@
+{
+  "about": "go、uv、npm 装着：它们的缓存用工具自己的清理命令",
+  "case": "rules/cache.rebuildable/commands-installed",
+  "steps": [
+    {
+      "fakes": {
+        "installedCommands": [
+          "go",
+          "uv",
+          "npm"
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 62914560,
+            "category": "cache",
+            "evidence": {
+              "clean": "go clean -cache",
+              "size": "62.9 MB",
+              "tool": "Go"
+            },
+            "path": "~/Library/Caches/go-build",
+            "rule": "cache.rebuildable.go-build",
+            "severity": "low",
+            "title": "Go 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 62914560,
+            "category": "cache",
+            "evidence": {
+              "clean": "npm cache clean --force",
+              "size": "62.9 MB",
+              "tool": "npm"
+            },
+            "path": "~/.npm/_cacache",
+            "rule": "cache.rebuildable.npm",
+            "severity": "low",
+            "title": "npm 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 62914560,
+            "category": "cache",
+            "evidence": {
+              "clean": "uv cache clean",
+              "size": "62.9 MB",
+              "tool": "uv"
+            },
+            "path": "~/.cache/uv",
+            "rule": "cache.rebuildable.uv",
+            "severity": "low",
+            "title": "uv 的缓存，删了会自动重建",
+            "verdict": "safe"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

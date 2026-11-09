@@ -1,0 +1,223 @@
+{
+  "about": "Library、.cache、.local 拆开量：每处报在自己那一层（Group Containers 整个算一处）",
+  "case": "rules/space/split-folders",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-13T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-13T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-13T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "每处各涨 7×N MiB：~/Library/Caches/SomeTool 14 MiB、~/Library/Application Support/SomeTool 21 MiB、~/Library/Containers/SomeBox 28 MiB、~/Library/Developer/Toolchains 35 MiB、~/Library/Group Containers/SomeGroup 42 MiB、~/.cache/sometool 49 MiB、~/.local/share/sometool 56 MiB、~/.local/bin 63 MiB、~/VMs/disk 70 MiB"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 15728640,
+            "category": "space",
+            "evidence": {
+              "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满",
+              "now": "15.7 MB",
+              "per_day": "2.1 MB",
+              "since": "2026-10-13",
+              "then": "1 MB"
+            },
+            "path": "~/Library/Caches/SomeTool",
+            "rule": "space.growth",
+            "severity": "medium",
+            "title": "SomeTool 每天涨 2.1 MB",
+            "verdict": "info"
+          },
+          {
+            "bytes": 23068672,
+            "category": "space",
+            "evidence": {
+              "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满",
+              "now": "23.1 MB",
+              "per_day": "3.1 MB",
+              "since": "2026-10-13",
+              "then": "1 MB"
+            },
+            "path": "~/Library/Application Support/SomeTool",
+            "rule": "space.growth",
+            "severity": "medium",
+            "title": "SomeTool 每天涨 3.1 MB",
+            "verdict": "info"
+          },
+          {
+            "bytes": 30408704,
+            "category": "space",
+            "evidence": {
+              "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满",
+              "now": "30.4 MB",
+              "per_day": "4.2 MB",
+              "since": "2026-10-13",
+              "then": "1 MB"
+            },
+            "path": "~/Library/Containers/SomeBox",
+            "rule": "space.growth",
+            "severity": "medium",
+            "title": "SomeBox 每天涨 4.2 MB",
+            "verdict": "info"
+          },
+          {
+            "bytes": 37748736,
+            "category": "space",
+            "evidence": {
+              "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满",
+              "now": "37.7 MB",
+              "per_day": "5.2 MB",
+              "since": "2026-10-13",
+              "then": "1 MB"
+            },
+            "path": "~/Library/Developer/Toolchains",
+            "rule": "space.growth",
+            "severity": "medium",
+            "title": "Toolchains 每天涨 5.2 MB",
+            "verdict": "info"
+          },
+          {
+            "bytes": 45088768,
+            "category": "space",
+            "evidence": {
+              "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满",
+              "now": "45.1 MB",
+              "per_day": "6.3 MB",
+              "since": "2026-10-13",
+              "then": "1 MB"
+            },
+            "path": "~/Library/Group Containers",
+            "rule": "space.growth",
+            "severity": "medium",
+            "title": "Group Containers 每天涨 6.3 MB",
+            "verdict": "info"
+          },
+          {
+            "bytes": 52428800,
+            "category": "space",
+            "evidence": {
+              "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满",
+              "now": "52.4 MB",
+              "per_day": "7.3 MB",
+              "since": "2026-10-13",
+              "then": "1 MB"
+            },
+            "path": "~/.cache/sometool",
+            "rule": "space.growth",
+            "severity": "medium",
+            "title": "sometool 每天涨 7.3 MB",
+            "verdict": "info"
+          },
+          {
+            "bytes": 59768832,
+            "category": "space",
+            "evidence": {
+              "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满",
+              "now": "59.8 MB",
+              "per_day": "8.4 MB",
+              "since": "2026-10-13",
+              "then": "1 MB"
+            },
+            "path": "~/.local/share/sometool",
+            "rule": "space.growth",
+            "severity": "medium",
+            "title": "sometool 每天涨 8.4 MB",
+            "verdict": "info"
+          },
+          {
+            "bytes": 67108864,
+            "category": "space",
+            "evidence": {
+              "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满",
+              "now": "67.1 MB",
+              "per_day": "9.4 MB",
+              "since": "2026-10-13",
+              "then": "1 MB"
+            },
+            "path": "~/.local/bin",
+            "rule": "space.growth",
+            "severity": "medium",
+            "title": "bin 每天涨 9.4 MB",
+            "verdict": "info"
+          },
+          {
+            "bytes": 74448896,
+            "category": "space",
+            "evidence": {
+              "hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满",
+              "now": "74.4 MB",
+              "per_day": "10.5 MB",
+              "since": "2026-10-13",
+              "then": "1 MB"
+            },
+            "path": "~/VMs",
+            "rule": "space.growth",
+            "severity": "medium",
+            "title": "VMs 每天涨 10.5 MB",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

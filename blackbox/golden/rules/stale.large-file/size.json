@@ -1,0 +1,78 @@
+{
+  "about": "按占的磁盘算：差 1 字节到 1 MiB 的照报（占满 1 MiB），差 8 KiB 的不报",
+  "case": "rules/stale.large-file/size",
+  "steps": [
+    {
+      "fakes": {
+        "staleFiles": [
+          {
+            "changed": null,
+            "path": "~/Movies/almost.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/small.mov",
+            "used": "2024-08-11T12:00:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 1048576,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Movies/almost.mov",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "almost.mov（1 MB）2 年多没打开过",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

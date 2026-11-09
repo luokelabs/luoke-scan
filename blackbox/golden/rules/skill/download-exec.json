@@ -1,0 +1,253 @@
+{
+  "about": "从网上下代码直接跑（高）：管道给 shell、进程替换、eval、解码后运行、Python/JS 的 exec/eval、下载后加执行权限；核对了校验和的降成中、官方安装脚本是低；交给 jq、python -c、shasum、sh -c 的，说别这样做的，加执行权限的是别的文件的，不报",
+  "case": "rules/skill/download-exec",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
+              "kinds": "supply-chain",
+              "scope": "personal",
+              "skill": "dl-chmod-verified",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：下载程序来运行（核对了校验和）（install.sh 第 2、4 行）"
+            },
+            "key": "~/.claude/skills/dl-chmod-verified|674b4171f559dff8",
+            "path": "~/.claude/skills/dl-chmod-verified",
+            "rule": "skill.supply-chain",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「dl-chmod-verified」：下载程序来运行（核对了校验和）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "dl-base64",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把编码过的内容解开直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/dl-base64|960ffe806ed42ef7",
+            "path": "~/.claude/skills/dl-base64",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「dl-base64」：把编码过的内容解开直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "dl-bash-s",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/dl-bash-s|7b96ffaebddc207f",
+            "path": "~/.claude/skills/dl-bash-s",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「dl-bash-s」：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "dl-chmod",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：下载程序、加上执行权限再运行（install.sh 第 2、3 行）"
+            },
+            "key": "~/.claude/skills/dl-chmod|9b527538c2f81890",
+            "path": "~/.claude/skills/dl-chmod",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「dl-chmod」：下载程序、加上执行权限再运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "dl-eval",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/dl-eval|b84671c846ec867d",
+            "path": "~/.claude/skills/dl-eval",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「dl-eval」：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "dl-js-atob",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把编码过的内容解开直接运行（index.js 第 2 行）"
+            },
+            "key": "~/.claude/skills/dl-js-atob|c7c372d33243dcc7",
+            "path": "~/.claude/skills/dl-js-atob",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「dl-js-atob」：把编码过的内容解开直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "dl-procsub",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/dl-procsub|5265a5c9e4f302ed",
+            "path": "~/.claude/skills/dl-procsub",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「dl-procsub」：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "dl-py-b64",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把编码过的内容解开直接运行（run.py 第 2 行）"
+            },
+            "key": "~/.claude/skills/dl-py-b64|a3d21211e09caecc",
+            "path": "~/.claude/skills/dl-py-b64",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「dl-py-b64」：把编码过的内容解开直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "dl-py-url",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（run.py 第 2 行）"
+            },
+            "key": "~/.claude/skills/dl-py-url|9700086ecc6fc246",
+            "path": "~/.claude/skills/dl-py-url",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「dl-py-url」：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "dl-wget-py",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/dl-wget-py|d94d6457a50db55b",
+            "path": "~/.claude/skills/dl-wget-py",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「dl-wget-py」：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec,escalation",
+              "scope": "personal",
+              "skill": "dl-pipe-sudo",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）；要管理员权限（sudo）（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/dl-pipe-sudo|bf1abc24b6cf7279",
+            "path": "~/.claude/skills/dl-pipe-sudo",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「dl-pipe-sudo」：从网上下载代码直接运行，另有 1 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "认得的话，让它装包时写上版本号（例如 包名==1.2.3、包名@1.2.3）；不认识就移到废纸篓",
+              "kinds": "supply-chain",
+              "scope": "personal",
+              "skill": "dl-official",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：运行官方网站上的安装脚本（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/dl-official|dbfc58685ea3b94c",
+            "path": "~/.claude/skills/dl-official",
+            "rule": "skill.supply-chain",
+            "severity": "low",
+            "title": "Claude Code 的 skill「dl-official」：运行官方网站上的安装脚本",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

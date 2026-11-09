@@ -1,0 +1,95 @@
+{
+  "about": "Hugging Face 的共用存储：文件在 hub/blobs，模型文件夹里只有链接；照文件真正占的算，共用的只算一次；删文件夹腾不出空间，说用 hf cache rm、hf cache prune",
+  "case": "rules/space.system/ai-models-shared-store",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2281705472,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-20",
+              "how": "在终端里用 `hf cache rm org/big` 删掉它，再 `hf cache prune` 清掉没人用的共用文件；再用时会重新下载。别直接删这个文件夹：文件在共用存储（hub/blobs）里，删了文件夹腾不出空间",
+              "model": "org/big",
+              "store": "shared",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--big",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/big（2.28 GB），30 天前下载",
+            "verdict": "info"
+          },
+          {
+            "bytes": 2415923200,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-30",
+              "how": "在终端里用 `hf cache rm org/also-big` 删掉它，再 `hf cache prune` 清掉没人用的共用文件；再用时会重新下载。别直接删这个文件夹：文件在共用存储（hub/blobs）里，删了文件夹腾不出空间",
+              "model": "org/also-big",
+              "store": "shared",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--also-big",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/also-big（2.42 GB），20 天前下载",
+            "verdict": "info"
+          },
+          {
+            "bytes": 6308466688,
+            "category": "space",
+            "evidence": {
+              "how": "大的模型单独列出来了；用不到的删掉，再用时会重新下载",
+              "tools": "Hugging Face 6.31 GB",
+              "unused": "Hugging Face 的共用存储里有 2.68 GB 没有模型在用（`hf cache prune` 清掉）"
+            },
+            "path": "",
+            "rule": "space.ai-models",
+            "severity": "low",
+            "title": "AI 工具下载的模型一共占了 6.31 GB",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

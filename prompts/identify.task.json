@@ -1,0 +1,11 @@
+{
+  "_说明": "生成任务 luoke-scan.identify（顶层 ADR 0019）。给一个认不出来的目录起名：输入是这个目录的元信息（路径、大小、最后改动、文件数、常见扩展名、前几项的名字），不含文件内容。发给模型的是：identify.system.txt（{{kinds}} 由 identify.schema.json 里 kind 的 x-describe 按顺序填成「- 值：说明」一行一个；枚举只写在 schema 里），identify.examples.json 里每条一问一答，最后 user 是这个目录的 JSON（identify.user.txt）；输出照 identify.schema.json（发给主控时去掉 x- 开头的键）。答错不重试，没有 retry.txt。params 是建议的任务参数。能不能删由规则定，模型不说。例子不能取自评测集，也不能和评测集里的条目只差几个名字（第 4 版换掉了三个太像硬性条目的）。",
+  "task": "luoke-scan.identify",
+  "version": 5,
+  "max_tokens": 200,
+  "params": {
+    "temperature": 0,
+    "top_p": 1,
+    "thinking": false
+  }
+}

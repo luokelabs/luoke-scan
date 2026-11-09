@@ -1,0 +1,151 @@
+{
+  "about": "检查看不到的内容：编译过的程序（中）、压缩包、认不出的文件、太大的、链接到外面的、依赖文件夹、太深的、压缩过的代码、文件太多（低）；图片字体、有源文件的 .pyc、链接到里面的不报",
+  "case": "rules/skill/unreadable",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
+              "kinds": "unreadable",
+              "scope": "personal",
+              "skill": "un-all",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：带着编译过的程序，看不到里面写了什么（bin/x）；带着压缩过的代码，读不出它做什么（lib.min.js）；带着压缩包，里面没看（data.zip）；带着认不出格式的文件（blob.dat）；有文件太大或读不了，没看（notes.md）；有链接指向 skill 文件夹外面，没跟过去（shared）；带着依赖文件夹，里面没逐个看（node_modules/）"
+            },
+            "key": "~/.claude/skills/un-all|d5586b9ee0964abe",
+            "path": "~/.claude/skills/un-all",
+            "rule": "skill.unreadable",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「un-all」：带着编译过的程序，看不到里面写了什么，另有 6 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
+              "kinds": "unreadable",
+              "scope": "personal",
+              "skill": "un-archive",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：带着压缩包，里面没看（bundle.tgz）"
+            },
+            "key": "~/.claude/skills/un-archive|cf1ae95f84cff97b",
+            "path": "~/.claude/skills/un-archive",
+            "rule": "skill.unreadable",
+            "severity": "low",
+            "title": "Claude Code 的 skill「un-archive」：带着压缩包，里面没看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
+              "kinds": "unreadable",
+              "scope": "personal",
+              "skill": "un-deep",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：带着依赖文件夹，里面没逐个看（a/b/c/d/e/f/g/h/i/）"
+            },
+            "key": "~/.claude/skills/un-deep|85946c28ea5cdb4f",
+            "path": "~/.claude/skills/un-deep",
+            "rule": "skill.unreadable",
+            "severity": "low",
+            "title": "Claude Code 的 skill「un-deep」：带着依赖文件夹，里面没逐个看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
+              "kinds": "unreadable",
+              "scope": "personal",
+              "skill": "un-many",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：文件太多，有 1 个没看"
+            },
+            "key": "~/.claude/skills/un-many|0b592b64491b4d4d",
+            "path": "~/.claude/skills/un-many",
+            "rule": "skill.unreadable",
+            "severity": "low",
+            "title": "Claude Code 的 skill「un-many」：文件太多，有 1 个没看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
+              "kinds": "unreadable",
+              "scope": "personal",
+              "skill": "un-orphan-pyc",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：带着编译过的程序，看不到里面写了什么（__pycache__/b.cpython-312.pyc）"
+            },
+            "key": "~/.claude/skills/un-orphan-pyc|c4a561d408ed8185",
+            "path": "~/.claude/skills/un-orphan-pyc",
+            "rule": "skill.unreadable",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「un-orphan-pyc」：带着编译过的程序，看不到里面写了什么",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
+              "kinds": "unreadable",
+              "scope": "personal",
+              "skill": "un-venv",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：带着依赖文件夹，里面没逐个看（env/）"
+            },
+            "key": "~/.claude/skills/un-venv|81ff32ef172d77ba",
+            "path": "~/.claude/skills/un-venv",
+            "rule": "skill.unreadable",
+            "severity": "low",
+            "title": "Claude Code 的 skill「un-venv」：带着依赖文件夹，里面没逐个看",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

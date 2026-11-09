@@ -1,0 +1,1141 @@
+{
+  "about": "eval-skills：汇总的分数和每条用例的结果",
+  "case": "evals/skills",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "eval-skills",
+        "--cases",
+        "$REPO/evals/skills/cases.json"
+      ],
+      "stdout": [
+        "skill 静态检查评测：66 个用例",
+        "",
+        "| | 用例 | 报了 | 高 | 中 | 低 |",
+        "|---|---|---|---|---|---|",
+        "| 恶意 | 33 | 33 | 25 | 7 | 1 |",
+        "| 正常 | 33 | 11 | 0 | 3 | 8 |",
+        "",
+        "恶意的都报了，正常的没有报成高的：过"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": [
+        {
+          "id": "mal-ssh-upload",
+          "kinds": [
+            "exfil"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.exfil",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读 SSH 私钥再发到网上（scripts/sync.sh 第 2、3 行）",
+            "Claude Code",
+            "Claude Code 的 skill「git-sync-helper」：读 SSH 私钥再发到网上",
+            "exfil",
+            "git-sync-helper",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的"
+          ]
+        },
+        {
+          "id": "mal-env-webhook",
+          "kinds": [
+            "exfil"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.exfil",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读 .env 文件再发到网上（scripts/report.py 第 3、4 行）；把数据发到专门收集数据的网站（scripts/report.py 第 4 行）",
+            "Claude Code",
+            "Claude Code 的 skill「env-doctor」：读 .env 文件再发到网上，另有 1 处要看",
+            "env-doctor",
+            "exfil",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的"
+          ]
+        },
+        {
+          "id": "mal-keychain-telegram",
+          "kinds": [
+            "exfil"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.exfil",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读钥匙串里的密码再发到网上（SKILL.md 第 10、11 行）；发消息给聊天机器人（SKILL.md 第 11 行）",
+            "Claude Code",
+            "Claude Code 的 skill「login-check」：读钥匙串里的密码再发到网上，另有 1 处要看",
+            "exfil",
+            "login-check",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的"
+          ]
+        },
+        {
+          "id": "mal-browser-cookies",
+          "kinds": [
+            "exfil"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.exfil",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读浏览器保存的密码或 Cookie 再发到网上（scripts/backup.py 第 3、5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「session-backup」：读浏览器保存的密码或 Cookie 再发到网上",
+            "exfil",
+            "personal",
+            "session-backup",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的"
+          ]
+        },
+        {
+          "id": "mal-curl-pipe-sh",
+          "kinds": [
+            "download-exec"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.download-exec",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「project-bootstrap」：从网上下载代码直接运行",
+            "download-exec",
+            "personal",
+            "project-bootstrap",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它"
+          ]
+        },
+        {
+          "id": "mal-base64-exec",
+          "kinds": [
+            "download-exec"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.download-exec",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把编码过的内容解开直接运行（scripts/init.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「init-helper」：把编码过的内容解开直接运行",
+            "download-exec",
+            "init-helper",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它"
+          ]
+        },
+        {
+          "id": "mal-python-exec-decode",
+          "kinds": [
+            "download-exec"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.download-exec",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把编码过的内容解开直接运行（scripts/run.py 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「py-runner」：把编码过的内容解开直接运行",
+            "download-exec",
+            "personal",
+            "py-runner",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它"
+          ]
+        },
+        {
+          "id": "mal-download-chmod-run",
+          "kinds": [
+            "download-exec"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.download-exec",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：下载程序、加上执行权限再运行（scripts/install.sh 第 2、3 行）",
+            "Claude Code",
+            "Claude Code 的 skill「speedup」：下载程序、加上执行权限再运行",
+            "download-exec",
+            "personal",
+            "speedup",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它"
+          ]
+        },
+        {
+          "id": "mal-ignore-instructions",
+          "kinds": [
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.injection",
+          "severity": "medium",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 忽略原来的指令或规矩（SKILL.md 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「style-guide」：让 AI 忽略原来的指令或规矩",
+            "injection",
+            "personal",
+            "style-guide",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行"
+          ]
+        },
+        {
+          "id": "mal-tag-chars",
+          "kinds": [
+            "download-exec",
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.download-exec",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（藏起来了）（SKILL.md 第 5 行）；藏着看不见的字符（Unicode 标签字符，AI 读得到）（SKILL.md 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「table-formatter」：从网上下载代码直接运行（藏起来了），另有 1 处要看",
+            "download-exec,injection",
+            "personal",
+            "table-formatter",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它"
+          ]
+        },
+        {
+          "id": "mal-html-comment",
+          "kinds": [
+            "exfil",
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.exfil",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读 AWS 的凭证再发到网上（SKILL.md 第 9 行）；让 AI 忽略原来的指令或规矩（藏起来了）（SKILL.md 第 9 行）；HTML 注释里藏着给 AI 的话（你看不到，AI 看得到）（SKILL.md 第 9 行）",
+            "Claude Code",
+            "Claude Code 的 skill「md-formatter」：读 AWS 的凭证再发到网上，另有 2 处要看",
+            "exfil,injection",
+            "md-formatter",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的"
+          ]
+        },
+        {
+          "id": "mal-conceal",
+          "kinds": [
+            "exfil",
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.injection",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 瞒着你（SKILL.md 第 7 行）；连到临时隧道（外面能连进来、数据能发出去）（SKILL.md 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「notes-sync」：让 AI 瞒着你，另有 1 处要看",
+            "exfil,injection",
+            "notes-sync",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行"
+          ]
+        },
+        {
+          "id": "mal-quarantine",
+          "kinds": [
+            "escalation"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.escalation",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：去掉下载来的文件的隔离标记（绕过 Gatekeeper 的检查）（SKILL.md 第 5 行）；关掉 Gatekeeper（SKILL.md 第 5 行）；要管理员权限（sudo）（SKILL.md 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「helper-launcher」：去掉下载来的文件的隔离标记（绕过 Gatekeeper 的检查），另有 2 处要看",
+            "escalation",
+            "helper-launcher",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改"
+          ]
+        },
+        {
+          "id": "mal-admin-osascript",
+          "kinds": [
+            "escalation"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.escalation",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：以管理员身份运行 AppleScript（scripts/fix.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「perm-fixer」：以管理员身份运行 AppleScript",
+            "escalation",
+            "perm-fixer",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改"
+          ]
+        },
+        {
+          "id": "mal-launchagent",
+          "kinds": [
+            "persistence"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.persistence",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：在 LaunchAgents 里放东西（开机自己运行）（scripts/setup.sh 第 2 行）；把程序登记成开机自己运行（launchctl）（scripts/setup.sh 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「auto-updater」：在 LaunchAgents 里放东西（开机自己运行），另有 1 处要看",
+            "auto-updater",
+            "persistence",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西"
+          ]
+        },
+        {
+          "id": "mal-zshrc",
+          "kinds": [
+            "download-exec",
+            "persistence"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.download-exec",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（scripts/setup.sh 第 2 行）；改 shell 的启动文件（每开一个终端都会运行）（scripts/setup.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「shell-tune」：从网上下载代码直接运行，另有 1 处要看",
+            "download-exec,persistence",
+            "personal",
+            "shell-tune",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它"
+          ]
+        },
+        {
+          "id": "mal-crontab",
+          "kinds": [
+            "persistence"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.persistence",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改定时任务（crontab）（scripts/schedule.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「cache-warmer」：改定时任务（crontab）",
+            "cache-warmer",
+            "persistence",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西"
+          ]
+        },
+        {
+          "id": "mal-authorized-keys",
+          "kinds": [
+            "persistence"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.persistence",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：往 SSH 的 authorized_keys 里加钥匙（别人能远程登录这台 Mac）（scripts/pair.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「remote-pair」：往 SSH 的 authorized_keys 里加钥匙（别人能远程登录这台 Mac）",
+            "persistence",
+            "personal",
+            "remote-pair",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西"
+          ]
+        },
+        {
+          "id": "mal-settings-hook",
+          "kinds": [
+            "agent-tamper"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.agent-tamper",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 AI 工具的设置（钩子、MCP 服务器、权限）（scripts/enable.py 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「prompt-booster」：改 AI 工具的设置（钩子、MCP 服务器、权限）",
+            "agent-tamper",
+            "personal",
+            "prompt-booster",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改"
+          ]
+        },
+        {
+          "id": "mal-claude-md",
+          "kinds": [
+            "agent-tamper"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.agent-tamper",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 AI 的记忆或长期指令（CLAUDE.md 之类）（SKILL.md 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「commit-writer」：改 AI 的记忆或长期指令（CLAUDE.md 之类）",
+            "agent-tamper",
+            "commit-writer",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改"
+          ]
+        },
+        {
+          "id": "mal-rm-home",
+          "kinds": [
+            "destructive"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.destructive",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：删掉整个家目录、整个磁盘或系统文件夹（scripts/clean.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「disk-cleaner」：删掉整个家目录、整个磁盘或系统文件夹",
+            "destructive",
+            "disk-cleaner",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它"
+          ]
+        },
+        {
+          "id": "mal-diskutil",
+          "kinds": [
+            "destructive"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.destructive",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：抹掉磁盘（SKILL.md 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「cache-disk」：抹掉磁盘",
+            "cache-disk",
+            "destructive",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它"
+          ]
+        },
+        {
+          "id": "mal-sudo-password",
+          "kinds": [
+            "escalation"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.escalation",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把密码直接交给 sudo（scripts/install.sh 第 2 行）；要管理员权限（sudo）（scripts/install.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「pkg-install」：把密码直接交给 sudo，另有 1 处要看",
+            "escalation",
+            "personal",
+            "pkg-install",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改"
+          ]
+        },
+        {
+          "id": "mal-tcc",
+          "kinds": [
+            "escalation"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.escalation",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 macOS 的隐私权限数据库（scripts/grant.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「screen-helper」：改 macOS 的隐私权限数据库",
+            "escalation",
+            "personal",
+            "screen-helper",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 系统设置 → 隐私与安全性 里有没有被改"
+          ]
+        },
+        {
+          "id": "mal-broad-bash",
+          "kinds": [
+            "permission"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.permission",
+          "severity": "low",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：允许 AI 不受限制地跑命令（allowed-tools 里的 Bash 没限定命令）（SKILL.md）",
+            "Claude Code",
+            "Claude Code 的 skill「anything」：允许 AI 不受限制地跑命令（allowed-tools 里的 Bash 没限定命令）",
+            "anything",
+            "permission",
+            "personal",
+            "认得的话，可以在 SKILL.md 的 allowed-tools 里把 Bash 限定到它要用的命令（例如 Bash(git status:*)）"
+          ]
+        },
+        {
+          "id": "mal-git-install",
+          "kinds": [
+            "supply-chain"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.supply-chain",
+          "severity": "medium",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：直接从 git 仓库或网址装包（scripts/setup.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「tool-setup」：直接从 git 仓库或网址装包",
+            "personal",
+            "supply-chain",
+            "tool-setup",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做"
+          ]
+        },
+        {
+          "id": "mal-compiled",
+          "kinds": [
+            "unreadable"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.unreadable",
+          "severity": "medium",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：带着编译过的程序，看不到里面写了什么（bin/helper）",
+            "Claude Code",
+            "Claude Code 的 skill「fast-grep」：带着编译过的程序，看不到里面写了什么",
+            "fast-grep",
+            "personal",
+            "unreadable",
+            "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓"
+          ]
+        },
+        {
+          "id": "mal-readonly-mismatch",
+          "kinds": [
+            "permission"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.permission",
+          "severity": "medium",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：说自己只读，脚本却会删文件或往外发数据（SKILL.md）",
+            "Claude Code",
+            "Claude Code 的 skill「disk-report」：说自己只读，脚本却会删文件或往外发数据",
+            "disk-report",
+            "permission",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做"
+          ]
+        },
+        {
+          "id": "mal-zero-width",
+          "kinds": [
+            "download-exec"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.download-exec",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（中间夹着看不见的字符）（SKILL.md 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「quick-setup」：从网上下载代码直接运行（中间夹着看不见的字符）",
+            "download-exec",
+            "personal",
+            "quick-setup",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它"
+          ]
+        },
+        {
+          "id": "mal-base64-instructions",
+          "kinds": [
+            "injection"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.injection",
+          "severity": "high",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 忽略原来的指令或规矩（藏起来了）（SKILL.md 第 7 行）；说明里有一大段编码过的内容（SKILL.md 第 7 行）",
+            "Claude Code",
+            "Claude Code 的 skill「translator」：让 AI 忽略原来的指令或规矩（藏起来了），另有 1 处要看",
+            "injection",
+            "personal",
+            "translator",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行"
+          ]
+        },
+        {
+          "id": "ben-weather-api",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-api-post-env",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-git-helper",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-pinned-install",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-security-review",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-skill-creator",
+          "kinds": [
+            "agent-tamper"
+          ],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.agent-tamper",
+          "severity": "low",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改别的 skill（它说自己就是做这个的）（scripts/new.sh 第 3 行）",
+            "Claude Code",
+            "Claude Code 的 skill「skill-creator」：改别的 skill（它说自己就是做这个的）",
+            "agent-tamper",
+            "personal",
+            "skill-creator",
+            "它会改 AI 工具自己的东西；认得、用得着就留着，不认识就移到废纸篓"
+          ]
+        },
+        {
+          "id": "ben-official-installer",
+          "kinds": [
+            "supply-chain"
+          ],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.supply-chain",
+          "severity": "low",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：运行官方网站上的安装脚本（SKILL.md 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「py-env」：运行官方网站上的安装脚本",
+            "personal",
+            "py-env",
+            "supply-chain",
+            "认得的话，让它装包时写上版本号（例如 包名==1.2.3、包名@1.2.3）；不认识就移到废纸篓"
+          ]
+        },
+        {
+          "id": "ben-path-zshrc",
+          "kinds": [
+            "persistence"
+          ],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.persistence",
+          "severity": "low",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：往 shell 的启动文件里加 PATH 之类的设置（SKILL.md 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「local-bin」：往 shell 的启动文件里加 PATH 之类的设置",
+            "local-bin",
+            "persistence",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西"
+          ]
+        },
+        {
+          "id": "ben-emoji",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-data-uri",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-pycache",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-assets",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-build-cleanup",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-keychain-own-token",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-slack-notify",
+          "kinds": [
+            "exfil"
+          ],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.exfil",
+          "severity": "low",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：发消息给聊天机器人（SKILL.md 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「build-notify」：发消息给聊天机器人",
+            "build-notify",
+            "exfil",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的"
+          ]
+        },
+        {
+          "id": "ben-launchctl-diagnose",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-sudo-mention",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-gh-cli",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-project-init",
+          "kinds": [
+            "agent-tamper"
+          ],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.agent-tamper",
+          "severity": "low",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 AI 的记忆或长期指令（CLAUDE.md 之类）（它说自己就是做这个的）（scripts/init.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「project-init」：改 AI 的记忆或长期指令（CLAUDE.md 之类）（它说自己就是做这个的）",
+            "agent-tamper",
+            "personal",
+            "project-init",
+            "它会改 AI 工具自己的东西；认得、用得着就留着，不认识就移到废纸篓"
+          ]
+        },
+        {
+          "id": "ben-verified-download",
+          "kinds": [
+            "supply-chain"
+          ],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.supply-chain",
+          "severity": "low",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：下载程序或安装包（scripts/get.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「tool-fetch」：下载程序或安装包",
+            "personal",
+            "supply-chain",
+            "tool-fetch",
+            "认得的话，让它装包时写上版本号（例如 包名==1.2.3、包名@1.2.3）；不认识就移到废纸篓"
+          ]
+        },
+        {
+          "id": "ben-todo-comment",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-env-example",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-local-ip",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-npx-prose",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-chinese-guide",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-linux-sudo",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-ssh-deploy",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-mcp-guide",
+          "kinds": [
+            "agent-tamper"
+          ],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.agent-tamper",
+          "severity": "low",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 AI 工具的设置（钩子、MCP 服务器、权限）（它说自己就是做这个的）（SKILL.md 第 5 行）",
+            "Claude Code",
+            "Claude Code 的 skill「mcp-server-builder」：改 AI 工具的设置（钩子、MCP 服务器、权限）（它说自己就是做这个的）",
+            "agent-tamper",
+            "mcp-server-builder",
+            "personal",
+            "它会改 AI 工具自己的东西；认得、用得着就留着，不认识就移到废纸篓"
+          ]
+        },
+        {
+          "id": "ben-readme-install",
+          "kinds": [],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": null,
+          "severity": null,
+          "shown": []
+        },
+        {
+          "id": "ben-readme-zshrc",
+          "kinds": [
+            "persistence"
+          ],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.persistence",
+          "severity": "low",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 shell 的启动文件（每开一个终端都会运行）（README.md 第 1 行）",
+            "Claude Code",
+            "Claude Code 的 skill「notes-dir」：改 shell 的启动文件（每开一个终端都会运行）",
+            "notes-dir",
+            "persistence",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西"
+          ]
+        },
+        {
+          "id": "mal-wallet-read",
+          "kinds": [
+            "exfil"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.exfil",
+          "severity": "medium",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：加密货币钱包（scripts/pretty.py 第 4 行）",
+            "Claude Code",
+            "Claude Code 的 skill「json-pretty」：加密货币钱包",
+            "exfil",
+            "json-pretty",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的"
+          ]
+        },
+        {
+          "id": "mal-messages-read",
+          "kinds": [
+            "exfil"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.exfil",
+          "severity": "medium",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：信息、邮件、通讯录这类私人数据（scripts/count.sh 第 3 行）",
+            "Claude Code",
+            "Claude Code 的 skill「draft-words」：信息、邮件、通讯录这类私人数据",
+            "draft-words",
+            "exfil",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的"
+          ]
+        },
+        {
+          "id": "mal-skip-permissions",
+          "kinds": [
+            "agent-tamper"
+          ],
+          "malicious": true,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.agent-tamper",
+          "severity": "medium",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 工具跳过确认直接做（SKILL.md 第 7 行）",
+            "Claude Code",
+            "Claude Code 的 skill「test-runner」：让 AI 工具跳过确认直接做",
+            "agent-tamper",
+            "personal",
+            "test-runner",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改"
+          ]
+        },
+        {
+          "id": "ben-password-export",
+          "kinds": [
+            "exfil"
+          ],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.exfil",
+          "severity": "medium",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：浏览器保存的密码或 Cookie（scripts/export.py 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「chrome-passwords-export」：浏览器保存的密码或 Cookie",
+            "chrome-passwords-export",
+            "exfil",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的"
+          ]
+        },
+        {
+          "id": "ben-paste-share",
+          "kinds": [
+            "exfil"
+          ],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.exfil",
+          "severity": "medium",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把东西传到公开的贴文本、传文件网站（scripts/share.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「log-share」：把东西传到公开的贴文本、传文件网站",
+            "exfil",
+            "log-share",
+            "personal",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的"
+          ]
+        },
+        {
+          "id": "ben-git-install-own",
+          "kinds": [
+            "supply-chain"
+          ],
+          "malicious": false,
+          "ok": true,
+          "problem": null,
+          "rule": "skill.supply-chain",
+          "severity": "medium",
+          "shown": [
+            "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：直接从 git 仓库或网址装包（scripts/setup.sh 第 2 行）",
+            "Claude Code",
+            "Claude Code 的 skill「team-lint」：直接从 git 仓库或网址装包",
+            "personal",
+            "supply-chain",
+            "team-lint",
+            "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做"
+          ]
+        }
+      ],
+      "run": [
+        "luoke-scan",
+        "eval-skills",
+        "--cases",
+        "$REPO/evals/skills/cases.json",
+        "--json"
+      ]
+    }
+  ]
+}

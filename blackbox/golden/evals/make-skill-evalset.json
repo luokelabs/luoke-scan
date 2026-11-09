@@ -1,0 +1,27 @@
+{
+  "about": "用 skill 的用例生成语义检查的评测集和提示词示范：和仓库里的 bench/evalsets/skills.json、prompts/skills.examples.json 一字不差",
+  "case": "evals/make-skill-evalset",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "make-skill-evalset",
+        "--cases",
+        "$REPO/evals/skills/cases.json",
+        "--examples",
+        "$REPO/evals/skills/examples.json",
+        "--evalset",
+        "$FIXTURE/skills.json",
+        "--prompt-examples",
+        "$FIXTURE/skills.examples.json"
+      ],
+      "stdout": [
+        "写好了：$FIXTURE/skills.json、$FIXTURE/skills.examples.json"
+      ]
+    },
+    {
+      "do": "和仓库里的一样：bench/evalsets/skills.json 是、prompts/skills.examples.json 是"
+    }
+  ]
+}

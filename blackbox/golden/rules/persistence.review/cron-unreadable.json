@@ -1,0 +1,253 @@
+{
+  "about": "读不出 crontab 的那一轮沿用上次见过的、说定时任务没查成，读得出了不算新；读出来是空的就忘了，之后再出现就算新",
+  "case": "rules/persistence.review/cron-unreadable",
+  "steps": [
+    {
+      "fakes": {
+        "crontab": "0 3 * * * /usr/bin/true\n"
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "entries": "0 3 * * * true",
+              "how": "在终端里运行 crontab -l 查看，crontab -e 修改"
+            },
+            "path": "",
+            "rule": "persistence.cron",
+            "severity": "low",
+            "title": "有 1 个定时任务（crontab）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-15T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-15T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "第一轮只记下来",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-15T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "crontab": null
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "上次查到的照旧记着，下一轮再查",
+              "skipped": "定时任务（读不出 crontab）"
+            },
+            "path": "",
+            "rule": "persistence.partial",
+            "severity": "low",
+            "title": "这一轮有几类会自己启动的没查成：定时任务（读不出 crontab）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-16T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-16T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "读不出 crontab",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-16T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "crontab": "0 3 * * * /usr/bin/true\n"
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "entries": "0 3 * * * true",
+              "how": "在终端里运行 crontab -l 查看，crontab -e 修改"
+            },
+            "path": "",
+            "rule": "persistence.cron",
+            "severity": "low",
+            "title": "有 1 个定时任务（crontab）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-17T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-17T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "又读得出了",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-17T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "crontab": ""
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-18T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-18T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "crontab 是空的",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-18T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "crontab": "0 3 * * * /usr/bin/true\n"
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "entries": "0 3 * * * true",
+              "how": "在终端里运行 crontab -l 查看，crontab -e 修改"
+            },
+            "path": "",
+            "rule": "persistence.cron",
+            "severity": "low",
+            "title": "有 1 个定时任务（crontab）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你加的就不用管；不认识的话，在终端里运行 crontab -e 删掉这一行",
+              "name": "true",
+              "program": "/usr/bin/true",
+              "scope": "cron",
+              "why": "是 crontab 里新加的一行"
+            },
+            "path": "/usr/bin/true",
+            "rule": "persistence.new",
+            "severity": "medium",
+            "title": "新加了一个定时任务：true",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-19T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-19T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "那一行又回来了",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-19T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

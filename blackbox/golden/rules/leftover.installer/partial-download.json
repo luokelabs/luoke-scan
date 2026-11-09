@@ -1,0 +1,101 @@
+{
+  "about": "没下完的下载（.crdownload、.part、Safari 的 .download 文件夹……）一周没动才报；还在下的、太小的、下完了的不报",
+  "case": "rules/leftover.installer/partial-download",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "how": "浏览器下到一半停了（暂停或失败）；还要的话重新下载，不要就删掉",
+              "last_changed": "2026-09-20"
+            },
+            "path": "~/Downloads/sub/thing.bin.opdownload",
+            "rule": "leftover.partial-download",
+            "severity": "low",
+            "title": "没下完的下载 thing.bin（2.1 MB），30 天没动了",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "how": "浏览器下到一半停了（暂停或失败）；还要的话重新下载，不要就删掉",
+              "last_changed": "2026-10-10"
+            },
+            "path": "~/Downloads/big-video.mp4.crdownload",
+            "rule": "leftover.partial-download",
+            "severity": "low",
+            "title": "没下完的下载 big-video.mp4（2.1 MB），10 天没动了",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "how": "浏览器下到一半停了（暂停或失败）；还要的话重新下载，不要就删掉",
+              "last_changed": "2026-10-12"
+            },
+            "path": "~/Downloads/archive.zip.part",
+            "rule": "leftover.partial-download",
+            "severity": "low",
+            "title": "没下完的下载 archive.zip（2.1 MB），8 天没动了",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2101248,
+            "category": "leftover",
+            "evidence": {
+              "how": "浏览器下到一半停了（暂停或失败）；还要的话重新下载，不要就删掉",
+              "last_changed": "2026-10-11"
+            },
+            "path": "~/Downloads/Movie.mov.download",
+            "rule": "leftover.partial-download",
+            "severity": "low",
+            "title": "没下完的下载 Movie.mov（2.1 MB），9 天没动了",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,454 @@
+{
+  "about": "之后新出现的、没人担保的后台任务：七天里每轮都报，过了七天不再算新；签名好的不报；签名坏的只按签名报；删了又回来的再报",
+  "case": "rules/persistence.review/new",
+  "steps": [
+    {
+      "fakes": {
+        "signatures": [
+          {
+            "pathContains": "adhoc",
+            "signature": "adhoc"
+          },
+          {
+            "pathContains": "invalid",
+            "signature": "invalid"
+          },
+          {
+            "pathContains": "script",
+            "signature": "script"
+          },
+          {
+            "pathContains": "apple",
+            "signature": "apple"
+          },
+          {
+            "pathContains": "weird",
+            "signature": "unknown"
+          },
+          {
+            "pathContains": "unsigned",
+            "signature": "unsigned"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "Homebrew 和自己编的程序通常就是这样，不一定有问题；不认识的值得看一眼",
+              "items": "io.example.old：临时签名（没有开发者担保）"
+            },
+            "path": "",
+            "rule": "persistence.unvouched",
+            "severity": "low",
+            "title": "1 个会自己启动的程序没有开发者签名",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-08T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-08T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "第一轮只记下来",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-08T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "加了四个后台任务：临时签名的、开发者签名的、用 sh 跑的脚本、签名对不上的"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "Homebrew 和自己编的程序通常就是这样，不一定有问题；不认识的值得看一眼",
+              "items": "io.example.old：临时签名（没有开发者担保）；io.example.sneaky：脚本；io.example.fresh：临时签名（没有开发者担保）"
+            },
+            "path": "",
+            "rule": "persistence.unvouched",
+            "severity": "low",
+            "title": "3 个会自己启动的程序没有开发者签名",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你装的就不用管；不认识的话可以停掉它，配置会移到废纸篓，随时能放回",
+              "label": "io.example.fresh",
+              "name": "io.example.fresh",
+              "program": "~/bin/adhoc-fresh",
+              "scope": "user-agent",
+              "why": "程序没有开发者签名"
+            },
+            "path": "~/Library/LaunchAgents/io.example.fresh.plist",
+            "rule": "persistence.new",
+            "severity": "medium",
+            "title": "新加了一个开机自动运行的任务：io.example.fresh",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你装的就不用管；不认识的话可以停掉它，配置会移到废纸篓，随时能放回",
+              "label": "io.example.sneaky",
+              "name": "io.example.sneaky",
+              "program": "~/.cache/script-sneaky.sh",
+              "scope": "user-agent",
+              "why": "它运行的是一个脚本，程序放在缓存文件夹里，装好的程序很少放在那儿"
+            },
+            "path": "~/Library/LaunchAgents/io.example.sneaky.plist",
+            "rule": "persistence.new",
+            "severity": "high",
+            "title": "新加了一个开机自动运行的任务：io.example.sneaky",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "label": "io.example.tampered",
+              "program": "~/bin/invalid-new",
+              "scope": "user-agent",
+              "why": "签名以后文件被改过：可能是更新到一半，也可能被换过"
+            },
+            "path": "~/Library/LaunchAgents/io.example.tampered.plist",
+            "rule": "persistence.bad-signature",
+            "severity": "medium",
+            "title": "你的后台任务 io.example.tampered 的程序签名和文件对不上",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-09T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-09T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "第二天",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-09T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "Homebrew 和自己编的程序通常就是这样，不一定有问题；不认识的值得看一眼",
+              "items": "io.example.old：临时签名（没有开发者担保）；io.example.sneaky：脚本；io.example.fresh：临时签名（没有开发者担保）"
+            },
+            "path": "",
+            "rule": "persistence.unvouched",
+            "severity": "low",
+            "title": "3 个会自己启动的程序没有开发者签名",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你装的就不用管；不认识的话可以停掉它，配置会移到废纸篓，随时能放回",
+              "label": "io.example.fresh",
+              "name": "io.example.fresh",
+              "program": "~/bin/adhoc-fresh",
+              "scope": "user-agent",
+              "why": "程序没有开发者签名"
+            },
+            "path": "~/Library/LaunchAgents/io.example.fresh.plist",
+            "rule": "persistence.new",
+            "severity": "medium",
+            "title": "新加了一个开机自动运行的任务：io.example.fresh",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你装的就不用管；不认识的话可以停掉它，配置会移到废纸篓，随时能放回",
+              "label": "io.example.sneaky",
+              "name": "io.example.sneaky",
+              "program": "~/.cache/script-sneaky.sh",
+              "scope": "user-agent",
+              "why": "它运行的是一个脚本，程序放在缓存文件夹里，装好的程序很少放在那儿"
+            },
+            "path": "~/Library/LaunchAgents/io.example.sneaky.plist",
+            "rule": "persistence.new",
+            "severity": "high",
+            "title": "新加了一个开机自动运行的任务：io.example.sneaky",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "label": "io.example.tampered",
+              "program": "~/bin/invalid-new",
+              "scope": "user-agent",
+              "why": "签名以后文件被改过：可能是更新到一半，也可能被换过"
+            },
+            "path": "~/Library/LaunchAgents/io.example.tampered.plist",
+            "rule": "persistence.bad-signature",
+            "severity": "medium",
+            "title": "你的后台任务 io.example.tampered 的程序签名和文件对不上",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-14T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-14T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "又过了五天",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-14T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "Homebrew 和自己编的程序通常就是这样，不一定有问题；不认识的值得看一眼",
+              "items": "io.example.old：临时签名（没有开发者担保）；io.example.sneaky：脚本；io.example.fresh：临时签名（没有开发者担保）"
+            },
+            "path": "",
+            "rule": "persistence.unvouched",
+            "severity": "low",
+            "title": "3 个会自己启动的程序没有开发者签名",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "label": "io.example.tampered",
+              "program": "~/bin/invalid-new",
+              "scope": "user-agent",
+              "why": "签名以后文件被改过：可能是更新到一半，也可能被换过"
+            },
+            "path": "~/Library/LaunchAgents/io.example.tampered.plist",
+            "rule": "persistence.bad-signature",
+            "severity": "medium",
+            "title": "你的后台任务 io.example.tampered 的程序签名和文件对不上",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-17T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-17T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "过了八天",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-17T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "删了 io.example.fresh"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "Homebrew 和自己编的程序通常就是这样，不一定有问题；不认识的值得看一眼",
+              "items": "io.example.old：临时签名（没有开发者担保）；io.example.sneaky：脚本"
+            },
+            "path": "",
+            "rule": "persistence.unvouched",
+            "severity": "low",
+            "title": "2 个会自己启动的程序没有开发者签名",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "label": "io.example.tampered",
+              "program": "~/bin/invalid-new",
+              "scope": "user-agent",
+              "why": "签名以后文件被改过：可能是更新到一半，也可能被换过"
+            },
+            "path": "~/Library/LaunchAgents/io.example.tampered.plist",
+            "rule": "persistence.bad-signature",
+            "severity": "medium",
+            "title": "你的后台任务 io.example.tampered 的程序签名和文件对不上",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-18T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-18T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-18T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "io.example.fresh 又回来了"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "Homebrew 和自己编的程序通常就是这样，不一定有问题；不认识的值得看一眼",
+              "items": "io.example.old：临时签名（没有开发者担保）；io.example.sneaky：脚本；io.example.fresh：临时签名（没有开发者担保）"
+            },
+            "path": "",
+            "rule": "persistence.unvouched",
+            "severity": "low",
+            "title": "3 个会自己启动的程序没有开发者签名",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你装的就不用管；不认识的话可以停掉它，配置会移到废纸篓，随时能放回",
+              "label": "io.example.fresh",
+              "name": "io.example.fresh",
+              "program": "~/bin/adhoc-fresh",
+              "scope": "user-agent",
+              "why": "程序没有开发者签名"
+            },
+            "path": "~/Library/LaunchAgents/io.example.fresh.plist",
+            "rule": "persistence.new",
+            "severity": "medium",
+            "title": "新加了一个开机自动运行的任务：io.example.fresh",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "label": "io.example.tampered",
+              "program": "~/bin/invalid-new",
+              "scope": "user-agent",
+              "why": "签名以后文件被改过：可能是更新到一半，也可能被换过"
+            },
+            "path": "~/Library/LaunchAgents/io.example.tampered.plist",
+            "rule": "persistence.bad-signature",
+            "severity": "medium",
+            "title": "你的后台任务 io.example.tampered 的程序签名和文件对不上",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-19T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-19T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-19T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,273 @@
+{
+  "about": "两轮之间看一眼新下载的：用电池、低电量、内存紧张时不看；下载里有新文件才扫，只扫病毒，只换报告里病毒那部分",
+  "case": "cli/quick",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 131072000,
+            "category": "leak",
+            "evidence": {
+              "count": "25",
+              "first": "2026-10-15",
+              "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+              "last": "2026-10-18",
+              "per_day": "43.7 MB",
+              "prefix": "wings",
+              "size": "131.1 MB"
+            },
+            "path": "$TMPDIR/wings-*",
+            "rule": "leak.temp-prefix",
+            "severity": "low",
+            "title": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 62914560,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "62.9 MB",
+              "tool": "pip"
+            },
+            "path": "~/Library/Caches/pip",
+            "rule": "cache.rebuildable.pip",
+            "severity": "low",
+            "title": "pip 的缓存，删了会自动重建",
+            "verdict": "safe"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:05:00Z",
+        "--quick"
+      ],
+      "stdout": [
+        "没有新下载的"
+      ]
+    },
+    {
+      "do": "下载里来了一个报毒的文件"
+    },
+    {
+      "fakes": {
+        "onBattery": true
+      }
+    },
+    {
+      "exit": 0,
+      "note": "用电池",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:10:00Z",
+        "--quick"
+      ],
+      "stdout": [
+        "先不看新下载的：在用电池，接上电源再看"
+      ]
+    },
+    {
+      "fakes": {
+        "lowPower": true,
+        "onBattery": false
+      }
+    },
+    {
+      "exit": 0,
+      "note": "低电量模式",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:10:00Z",
+        "--quick"
+      ],
+      "stdout": [
+        "先不看新下载的：开着低电量模式"
+      ]
+    },
+    {
+      "fakes": {
+        "lowPower": false,
+        "memoryPressure": 4
+      }
+    },
+    {
+      "exit": 0,
+      "note": "内存紧张",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:10:00Z",
+        "--quick"
+      ],
+      "stdout": [
+        "先不看新下载的：内存紧张"
+      ]
+    },
+    {
+      "fakes": {
+        "memoryPressure": 1
+      }
+    },
+    {
+      "exit": 0,
+      "note": "接着电源",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:10:00Z",
+        "--quick"
+      ],
+      "stdout": [
+        "看了新下载的：病毒发现 1 条"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 131072000,
+            "category": "leak",
+            "evidence": {
+              "count": "25",
+              "first": "2026-10-15",
+              "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+              "last": "2026-10-18",
+              "per_day": "43.7 MB",
+              "prefix": "wings",
+              "size": "131.1 MB"
+            },
+            "path": "$TMPDIR/wings-*",
+            "rule": "leak.temp-prefix",
+            "severity": "low",
+            "title": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 4096,
+            "category": "malware",
+            "evidence": {
+              "database": "精简库（不含只对 Windows 程序的特征），daily 27000，2026-10-20",
+              "how": "移到废纸篓；如果是你刚下载的，别打开它",
+              "signature": "Eicar-Test-Signature"
+            },
+            "path": "~/Downloads/eicar-quick.com",
+            "rule": "malware.clamav",
+            "severity": "high",
+            "title": "病毒库认出 eicar-quick.com 是 Eicar-Test-Signature",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 62914560,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "62.9 MB",
+              "tool": "pip"
+            },
+            "path": "~/Library/Caches/pip",
+            "rule": "cache.rebuildable.pip",
+            "severity": "low",
+            "title": "pip 的缓存，删了会自动重建",
+            "verdict": "safe"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "findings",
+        "--data",
+        "$FIXTURE/data",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "note": "没有新的了",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:15:00Z",
+        "--quick"
+      ],
+      "stdout": [
+        "没有新下载的"
+      ]
+    }
+  ]
+}

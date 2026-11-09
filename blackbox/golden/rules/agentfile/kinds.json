@@ -1,0 +1,236 @@
+{
+  "about": "说明文件里查到的各种：冒充系统（中）、标签字符（高）、注释里叫 AI 瞒着你上传（高）、下载直接跑、往外发、自启动、提权、大面积删除、官方安装脚本（低）、太大或不是 UTF-8 读不了（低）；标题说哪个项目、哪个工具读的，怎么办按种类说",
+  "case": "rules/agentfile/kinds",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "file": "CLAUDE.local.md",
+              "how": "AI 打开这个项目时会照着这个文件做；不是你写的，先别让 AI 在这个项目里干活，看清楚那几行再说",
+              "kinds": "destructive",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：删掉整个家目录、整个磁盘或系统文件夹（CLAUDE.local.md 第 1 行）"
+            },
+            "key": "~/Projects/k-destructive/CLAUDE.local.md|15e222507b9c2e80",
+            "path": "~/Projects/k-destructive/CLAUDE.local.md",
+            "rule": "agentfile.destructive",
+            "severity": "high",
+            "title": "项目 k-destructive 里 Claude Code 读的 CLAUDE.local.md：删掉整个家目录、整个磁盘或系统文件夹",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "file": "CLAUDE.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：藏着看不见的字符（Unicode 标签字符，AI 读得到）（CLAUDE.md 第 3 行）"
+            },
+            "key": "~/Projects/k-tags/CLAUDE.md|2e23da7b9a08509e",
+            "path": "~/Projects/k-tags/CLAUDE.md",
+            "rule": "agentfile.injection",
+            "severity": "high",
+            "title": "项目 k-tags 里 Claude Code 读的 CLAUDE.md：藏着看不见的字符（Unicode 标签字符，AI 读得到）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Cursor",
+              "file": ".cursorrules",
+              "how": "AI 打开这个项目时会照着这个文件做；不是你写的，先别让 AI 在这个项目里干活，看清楚那几行再说",
+              "kinds": "persistence",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：把程序登记成开机自己运行（launchctl）（.cursorrules 第 1 行）"
+            },
+            "key": "~/Projects/k-persistence/.cursorrules|27b7bdfe562eb370",
+            "path": "~/Projects/k-persistence/.cursorrules",
+            "rule": "agentfile.persistence",
+            "severity": "high",
+            "title": "项目 k-persistence 里 Cursor 读的 .cursorrules：把程序登记成开机自己运行（launchctl）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Gemini CLI",
+              "file": "GEMINI.md",
+              "how": "AI 打开这个项目时会照着这个文件做；不是你写的，先别让 AI 在这个项目里干活，看清楚那几行再说",
+              "kinds": "exfil",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：把东西传到公开的贴文本、传文件网站（GEMINI.md 第 3 行）"
+            },
+            "key": "~/Projects/k-exfil/GEMINI.md|7cd794836444a6c9",
+            "path": "~/Projects/k-exfil/GEMINI.md",
+            "rule": "agentfile.exfil",
+            "severity": "medium",
+            "title": "项目 k-exfil 里 Gemini CLI 读的 GEMINI.md：把东西传到公开的贴文本、传文件网站",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Windsurf",
+              "file": ".windsurfrules",
+              "how": "AI 打开这个项目时会照着这个文件做；不是你写的，先别让 AI 在这个项目里干活，看清楚那几行再说",
+              "kinds": "escalation",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：把密码直接交给 sudo（.windsurfrules 第 1 行）；要管理员权限（sudo）（.windsurfrules 第 1 行）"
+            },
+            "key": "~/Projects/k-escalation/.windsurfrules|4552dfb0490246f4",
+            "path": "~/Projects/k-escalation/.windsurfrules",
+            "rule": "agentfile.escalation",
+            "severity": "high",
+            "title": "项目 k-escalation 里 Windsurf 读的 .windsurfrules：把密码直接交给 sudo，另有 1 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "AI 打开这个项目时会照着这个文件做；不是你写的，先别让 AI 在这个项目里干活，看清楚那几行再说",
+              "kinds": "download-exec",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：从网上下载代码直接运行（AGENTS.md 第 3 行）"
+            },
+            "key": "~/Projects/k-download/AGENTS.md|d9011943ea401728",
+            "path": "~/Projects/k-download/AGENTS.md",
+            "rule": "agentfile.download-exec",
+            "severity": "high",
+            "title": "项目 k-download 里 多个 AI 工具共用 读的 AGENTS.md：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：冒充系统或开发者说话（AGENTS.md 第 4 行）"
+            },
+            "key": "~/Projects/k-injection/AGENTS.md|203a8f006c3b003a",
+            "path": "~/Projects/k-injection/AGENTS.md",
+            "rule": "agentfile.injection",
+            "severity": "medium",
+            "title": "项目 k-injection 里 多个 AI 工具共用 读的 AGENTS.md：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "用文本编辑器打开那个文件看看那几行；不是你写的，AI 就先别在这个项目里用，或者删掉那几行",
+              "kinds": "injection",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：让 AI 瞒着你（藏起来了）（AGENTS.md 第 3 行）；HTML 注释里藏着给 AI 的话（你看不到，AI 看得到）（AGENTS.md 第 3 行）"
+            },
+            "key": "~/Projects/k-comment/AGENTS.md|4b8ded17b5350e4f",
+            "path": "~/Projects/k-comment/AGENTS.md",
+            "rule": "agentfile.injection",
+            "severity": "high",
+            "title": "项目 k-comment 里 多个 AI 工具共用 读的 AGENTS.md：让 AI 瞒着你（藏起来了），另有 1 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "用文本编辑器打开那个文件看看那几行；认得、是你自己写的就不用管",
+              "kinds": "supply-chain",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：运行官方网站上的安装脚本（AGENTS.md 第 6 行）"
+            },
+            "key": "~/Projects/k-ordinary/AGENTS.md|cb6398499e72f5a3",
+            "path": "~/Projects/k-ordinary/AGENTS.md",
+            "rule": "agentfile.supply-chain",
+            "severity": "low",
+            "title": "项目 k-ordinary 里 多个 AI 工具共用 读的 AGENTS.md：运行官方网站上的安装脚本",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "用文本编辑器打开那个文件看看那几行；认得、是你自己写的就不用管",
+              "kinds": "unreadable",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：有文件太大或读不了，没看（AGENTS.md）"
+            },
+            "key": "~/Projects/k-large/AGENTS.md|9b08367d524757e9",
+            "path": "~/Projects/k-large/AGENTS.md",
+            "rule": "agentfile.unreadable",
+            "severity": "low",
+            "title": "项目 k-large 里 多个 AI 工具共用 读的 AGENTS.md：有文件太大或读不了，没看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "多个 AI 工具共用",
+              "file": "AGENTS.md",
+              "how": "用文本编辑器打开那个文件看看那几行；认得、是你自己写的就不用管",
+              "kinds": "unreadable",
+              "scope": "project",
+              "why": "AI 写代码的工具打开这个项目会自动读这个文件、照着做，用的是你的权限。查到：有文件太大或读不了，没看（AGENTS.md）"
+            },
+            "key": "~/Projects/k-not-utf8/AGENTS.md|4280a5270d8a976a",
+            "path": "~/Projects/k-not-utf8/AGENTS.md",
+            "rule": "agentfile.unreadable",
+            "severity": "low",
+            "title": "项目 k-not-utf8 里 多个 AI 工具共用 读的 AGENTS.md：有文件太大或读不了，没看",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

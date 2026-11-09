@@ -1,0 +1,119 @@
+{
+  "about": "不在了的应用、程序还拿着的权限：一个应用的几项合成一条，厉害的（完全磁盘访问、录屏…）中等；装着的、它的辅助程序、程序还在的、拒绝的、不认得的权限不报",
+  "case": "rules/permission.stale-grant/stale",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "下载、文稿、桌面",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 下载、文稿、桌面，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_FilesAndFolders"
+            },
+            "path": "io.gone.docs",
+            "rule": "permission.stale-grant",
+            "severity": "low",
+            "title": "io.gone.docs 已经不在这台 Mac 上，还拿着「下载、文稿、桌面」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "完全磁盘访问",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 完全磁盘访问，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+            },
+            "path": "io.gone.backup",
+            "rule": "permission.stale-grant",
+            "severity": "medium",
+            "title": "io.gone.backup 已经不在这台 Mac 上，还拿着「完全磁盘访问」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "录屏",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 录屏，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"
+            },
+            "path": "$FIXTURE/opt/gone/tool",
+            "rule": "permission.stale-grant",
+            "severity": "medium",
+            "title": "$FIXTURE/opt/gone/tool 已经不在这台 Mac 上，还拿着「录屏」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "控制电脑、自动化",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 控制电脑、自动化，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility x-apple.systempreferences:com.apple.preference.security?Privacy_Automation"
+            },
+            "path": "io.gone.remote",
+            "rule": "permission.stale-grant",
+            "severity": "low",
+            "title": "io.gone.remote 已经不在这台 Mac 上，还拿着「控制电脑、自动化」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "摄像头、麦克风",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 摄像头、麦克风，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone"
+            },
+            "path": "io.gone.meet",
+            "rule": "permission.stale-grant",
+            "severity": "low",
+            "title": "io.gone.meet 已经不在这台 Mac 上，还拿着「摄像头、麦克风」",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

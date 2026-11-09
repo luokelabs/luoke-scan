@@ -1,0 +1,160 @@
+{
+  "about": "12 个孤儿：还是一条，进程号全列，「跑得最久的」只列前 10 个",
+  "case": "rules/process/orphans-many",
+  "steps": [
+    {
+      "fakes": {
+        "processes": [
+          {
+            "path": "/Applications/Safari.app/Contents/MacOS/Safari",
+            "pid": 400,
+            "ppid": 1,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/worker-00",
+            "pid": 8200,
+            "ppid": 1,
+            "started": "2026-10-07T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/worker-01",
+            "pid": 8201,
+            "ppid": 1,
+            "started": "2026-10-08T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/worker-02",
+            "pid": 8202,
+            "ppid": 1,
+            "started": "2026-10-09T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/worker-03",
+            "pid": 8203,
+            "ppid": 1,
+            "started": "2026-10-10T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/worker-04",
+            "pid": 8204,
+            "ppid": 1,
+            "started": "2026-10-11T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/worker-05",
+            "pid": 8205,
+            "ppid": 1,
+            "started": "2026-10-12T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/worker-06",
+            "pid": 8206,
+            "ppid": 1,
+            "started": "2026-10-13T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/worker-07",
+            "pid": 8207,
+            "ppid": 1,
+            "started": "2026-10-14T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/worker-08",
+            "pid": 8208,
+            "ppid": 1,
+            "started": "2026-10-15T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/worker-09",
+            "pid": 8209,
+            "ppid": 1,
+            "started": "2026-10-16T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/worker-10",
+            "pid": 8210,
+            "ppid": 1,
+            "started": "2026-10-17T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/worker-11",
+            "pid": 8211,
+            "ppid": 1,
+            "started": "2026-10-18T12:00:00Z",
+            "uid": "$UID"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "process",
+            "evidence": {
+              "count": "12",
+              "hint": "启动它们的程序已经退出了；不是你自己放在后台的任务的话，多半是没收拾干净",
+              "oldest": "worker-00（8200，312 小时）；worker-01（8201，288 小时）；worker-02（8202，264 小时）；worker-03（8203，240 小时）；worker-04（8204，216 小时）；worker-05（8205，192 小时）；worker-06（8206，168 小时）；worker-07（8207，144 小时）；worker-08（8208，120 小时）；worker-09（8209，96 小时）",
+              "pids": "8200,8201,8202,8203,8204,8205,8206,8207,8208,8209,8210,8211"
+            },
+            "path": "",
+            "rule": "process.orphan",
+            "severity": "low",
+            "title": "12 个后台进程的父进程已经退出，还在跑",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

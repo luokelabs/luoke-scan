@@ -1,0 +1,260 @@
+{
+  "about": "同一个恶意包用在 30 个项目里：只报一条，列出前 10 处和总数；名单上的包再多，单列 10 个，其余并成一条",
+  "case": "rules/supplychain.malicious/many-projects",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "malicious-import",
+        "--data",
+        "$FIXTURE/data",
+        "$FIXTURE/osv"
+      ],
+      "stdout": [
+        "恶意包名单导入好了：这次 13 条（换掉原有的 0 条），名单里现在共 13 条，日期 2026-10-15（读了 13 份 OSV 记录）"
+      ]
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "count": "3",
+              "how": "项目里用到的：删掉依赖目录（node_modules、.venv、target），改到名单外的版本再重新装；全局装的：卸掉；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。重新查一遍会逐个列出",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "packages": "fixture-bad-09@1.0.0：1 处；fixture-bad-10@1.0.0：1 处；fixture-bad-11@1.0.0：1 处",
+              "why": "这些版本在公开的恶意包名单上：装的时候它们的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "more\u0000npm\u0000fixture-bad-09\u00001.0.0\u0000\u0001npm\u0000fixture-bad-10\u00001.0.0\u0000\u0001npm\u0000fixture-bad-11\u00001.0.0\u0000",
+            "path": "",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "另外还有 3 个已知恶意的包，在 3 处用到",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "count": "30",
+              "ecosystem": "npm",
+              "how": "用到它的每个项目都删掉 node_modules，把 evil-stealer 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9001",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "package": "evil-stealer@3.2.1",
+              "places": "项目 app100（~/Projects/app100/package-lock.json）；项目 app101（~/Projects/app101/package-lock.json）；项目 app102（~/Projects/app102/package-lock.json）；项目 app103（~/Projects/app103/package-lock.json）；项目 app104（~/Projects/app104/package-lock.json）；项目 app105（~/Projects/app105/package-lock.json）；项目 app106（~/Projects/app106/package-lock.json）；项目 app107（~/Projects/app107/package-lock.json）；项目 app108（~/Projects/app108/package-lock.json）；项目 app109（~/Projects/app109/package-lock.json）；等 30 处",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "npm\u0000evil-stealer@3.2.1\u0000\u0000~/Projects/app100/package-lock.json\u0000~/Projects/app101/package-lock.json\u0000~/Projects/app102/package-lock.json\u0000~/Projects/app103/package-lock.json\u0000~/Projects/app104/package-lock.json\u0000~/Projects/app105/package-lock.json\u0000~/Projects/app106/package-lock.json\u0000~/Projects/app107/package-lock.json\u0000~/Projects/app108/package-lock.json\u0000~/Projects/app109/package-lock.json\u0000~/Projects/app110/package-lock.json\u0000~/Projects/app111/package-lock.json\u0000~/Projects/app112/package-lock.json\u0000~/Projects/app113/package-lock.json\u0000~/Projects/app114/package-lock.json\u0000~/Projects/app115/package-lock.json\u0000~/Projects/app116/package-lock.json\u0000~/Projects/app117/package-lock.json\u0000~/Projects/app118/package-lock.json\u0000~/Projects/app119/package-lock.json\u0000~/Projects/app120/package-lock.json\u0000~/Projects/app121/package-lock.json\u0000~/Projects/app122/package-lock.json\u0000~/Projects/app123/package-lock.json\u0000~/Projects/app124/package-lock.json\u0000~/Projects/app125/package-lock.json\u0000~/Projects/app126/package-lock.json\u0000~/Projects/app127/package-lock.json\u0000~/Projects/app128/package-lock.json\u0000~/Projects/app129/package-lock.json",
+            "path": "~/Projects/app100/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "30 处用了已知恶意的 evil-stealer@3.2.1",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 fixture-bad-00 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9500",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/zz-many/package-lock.json",
+              "package": "fixture-bad-00@1.0.0",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/zz-many/package-lock.json\u0000npm\u0000fixture-bad-00@1.0.0",
+            "path": "~/Projects/zz-many/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 zz-many 用了已知恶意的 fixture-bad-00@1.0.0",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 fixture-bad-01 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9501",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/zz-many/package-lock.json",
+              "package": "fixture-bad-01@1.0.0",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/zz-many/package-lock.json\u0000npm\u0000fixture-bad-01@1.0.0",
+            "path": "~/Projects/zz-many/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 zz-many 用了已知恶意的 fixture-bad-01@1.0.0",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 fixture-bad-02 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9502",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/zz-many/package-lock.json",
+              "package": "fixture-bad-02@1.0.0",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/zz-many/package-lock.json\u0000npm\u0000fixture-bad-02@1.0.0",
+            "path": "~/Projects/zz-many/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 zz-many 用了已知恶意的 fixture-bad-02@1.0.0",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 fixture-bad-03 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9503",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/zz-many/package-lock.json",
+              "package": "fixture-bad-03@1.0.0",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/zz-many/package-lock.json\u0000npm\u0000fixture-bad-03@1.0.0",
+            "path": "~/Projects/zz-many/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 zz-many 用了已知恶意的 fixture-bad-03@1.0.0",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 fixture-bad-04 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9504",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/zz-many/package-lock.json",
+              "package": "fixture-bad-04@1.0.0",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/zz-many/package-lock.json\u0000npm\u0000fixture-bad-04@1.0.0",
+            "path": "~/Projects/zz-many/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 zz-many 用了已知恶意的 fixture-bad-04@1.0.0",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 fixture-bad-05 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9505",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/zz-many/package-lock.json",
+              "package": "fixture-bad-05@1.0.0",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/zz-many/package-lock.json\u0000npm\u0000fixture-bad-05@1.0.0",
+            "path": "~/Projects/zz-many/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 zz-many 用了已知恶意的 fixture-bad-05@1.0.0",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 fixture-bad-06 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9506",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/zz-many/package-lock.json",
+              "package": "fixture-bad-06@1.0.0",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/zz-many/package-lock.json\u0000npm\u0000fixture-bad-06@1.0.0",
+            "path": "~/Projects/zz-many/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 zz-many 用了已知恶意的 fixture-bad-06@1.0.0",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 fixture-bad-07 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9507",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/zz-many/package-lock.json",
+              "package": "fixture-bad-07@1.0.0",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/zz-many/package-lock.json\u0000npm\u0000fixture-bad-07@1.0.0",
+            "path": "~/Projects/zz-many/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 zz-many 用了已知恶意的 fixture-bad-07@1.0.0",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 fixture-bad-08 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9508",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/zz-many/package-lock.json",
+              "package": "fixture-bad-08@1.0.0",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/zz-many/package-lock.json\u0000npm\u0000fixture-bad-08@1.0.0",
+            "path": "~/Projects/zz-many/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 zz-many 用了已知恶意的 fixture-bad-08@1.0.0",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "malicious_list_date": "2026-10-15",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

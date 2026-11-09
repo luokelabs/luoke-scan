@@ -1,0 +1,118 @@
+{
+  "about": "临时签名的程序、临时签名的应用、签名后 Info.plist 又被改过的应用在看所有应用的按键：各一条，高",
+  "case": "rules/keyboard/adhoc-and-invalid",
+  "steps": [
+    {
+      "fakes": {
+        "eventTaps": [
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": null,
+            "program": "~/bin/keyd-adhoc"
+          },
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": null,
+            "program": "~/Applications/KeysAdhoc.app/Contents/MacOS/KeysAdhoc"
+          },
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": null,
+            "program": "~/Applications/KeysChanged.app/Contents/MacOS/KeysChanged"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "process",
+            "evidence": {
+              "how": "认得就留着；不认得的先退出它，再在 系统设置 → 隐私与安全性 → 输入监控、辅助功能 里关掉它的权限，把程序移到废纸篓",
+              "program": "~/Applications/KeysAdhoc.app/Contents/MacOS/KeysAdhoc",
+              "signature": "临时签名（没有开发者担保）",
+              "why": "键盘记录器就是这样偷密码的；自己编的小工具、Homebrew 装的快捷键工具也可能这样"
+            },
+            "key": "keyboard/~/Applications/KeysAdhoc.app/Contents/MacOS/KeysAdhoc",
+            "path": "~/Applications/KeysAdhoc.app/Contents/MacOS/KeysAdhoc",
+            "rule": "keyboard.unvouched",
+            "severity": "high",
+            "title": "没有开发者担保的程序 KeysAdhoc 在看你在所有应用里按的每一个键",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "how": "认得就留着；不认得的先退出它，再在 系统设置 → 隐私与安全性 → 输入监控、辅助功能 里关掉它的权限，把程序移到废纸篓",
+              "program": "~/Applications/KeysChanged.app/Contents/MacOS/KeysChanged",
+              "signature": "签名和文件对不上（签名后被改过）",
+              "why": "键盘记录器就是这样偷密码的；自己编的小工具、Homebrew 装的快捷键工具也可能这样"
+            },
+            "key": "keyboard/~/Applications/KeysChanged.app/Contents/MacOS/KeysChanged",
+            "path": "~/Applications/KeysChanged.app/Contents/MacOS/KeysChanged",
+            "rule": "keyboard.unvouched",
+            "severity": "high",
+            "title": "没有开发者担保的程序 KeysChanged 在看你在所有应用里按的每一个键",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "how": "认得就留着；不认得的先退出它，再在 系统设置 → 隐私与安全性 → 输入监控、辅助功能 里关掉它的权限，把程序移到废纸篓",
+              "program": "~/bin/keyd-adhoc",
+              "signature": "临时签名（没有开发者担保）",
+              "why": "键盘记录器就是这样偷密码的；自己编的小工具、Homebrew 装的快捷键工具也可能这样"
+            },
+            "key": "keyboard/~/bin/keyd-adhoc",
+            "path": "~/bin/keyd-adhoc",
+            "rule": "keyboard.unvouched",
+            "severity": "high",
+            "title": "没有开发者担保的程序 keyd-adhoc 在看你在所有应用里按的每一个键",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

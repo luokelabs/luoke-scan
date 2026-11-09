@@ -1,0 +1,116 @@
+{
+  "about": "最近一个月来的应用：没签名、临时签名、签名坏了的报，带着是谁下载的；往下一层也看；一个月前来的、不知道什么时候来的、往下两层的不看",
+  "case": "rules/apps.new/signatures",
+  "steps": [
+    {
+      "fakes": {
+        "appsAdded": {
+          "~/Applications/Ancient.app": "2026-09-10T12:00:00Z",
+          "~/Applications/Broken.app": "2026-10-19T12:00:00Z",
+          "~/Applications/Homemade.app": "2026-10-17T12:00:00Z",
+          "~/Applications/Plain.app": "2026-10-18T12:00:00Z",
+          "~/Applications/Utilities/Tool.app": "2026-10-15T12:00:00Z",
+          "~/Applications/Vendor/Sub/Deep.app": "2026-10-18T12:00:00Z"
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-10-15",
+              "downloaded_by": "下载的（不知道用什么下的）",
+              "how": "确认是你自己要装、来源可信的；不认识就在访达里把它移到废纸篓",
+              "why": "没有签名"
+            },
+            "path": "~/Applications/Utilities/Tool.app",
+            "rule": "apps.unsigned",
+            "severity": "medium",
+            "title": "最近装的 Tool 没有签名：谁做的、改没改过，没人担保",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-10-17",
+              "downloaded_by": "Safari",
+              "how": "确认是你自己要装、来源可信的；不认识就在访达里把它移到废纸篓",
+              "why": "只有临时签名"
+            },
+            "path": "~/Applications/Homemade.app",
+            "rule": "apps.unsigned",
+            "severity": "medium",
+            "title": "最近装的 Homemade 只有临时签名：谁做的、改没改过，没人担保",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-10-18",
+              "how": "确认是你自己要装、来源可信的；不认识就在访达里把它移到废纸篓",
+              "quarantine": "没有下载标记：自己编译、从 App Store 或安装包装的，也可能下载后被人去掉了",
+              "why": "没有签名"
+            },
+            "path": "~/Applications/Plain.app",
+            "rule": "apps.unsigned",
+            "severity": "medium",
+            "title": "最近装的 Plain 没有签名：谁做的、改没改过，没人担保",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "added": "2026-10-19",
+              "how": "别打开它；从开发者的官网重新下载",
+              "quarantine": "没有下载标记：自己编译、从 App Store 或安装包装的，也可能下载后被人去掉了"
+            },
+            "path": "~/Applications/Broken.app",
+            "rule": "apps.bad-signature",
+            "severity": "high",
+            "title": "最近装的 Broken 签名和程序对不上（签名以后被改过）",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

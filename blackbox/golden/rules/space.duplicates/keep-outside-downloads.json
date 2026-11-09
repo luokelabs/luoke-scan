@@ -1,0 +1,66 @@
+{
+  "about": "下载里那份更早：照样留下载外面的那份",
+  "case": "rules/space.duplicates/keep-outside-downloads",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Downloads/a.iso",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Movies/a.iso",
+              "sha256": "80e4f8bd46c3f535",
+              "targets": "~/Downloads/a.iso"
+            },
+            "key": "space.duplicates:80e4f8bd46c3f5355d3576cbfeb78b298868ef51d2f66cb48e6134a4f3edb67b",
+            "path": "~/Movies/a.iso",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 a.iso（每份 2.1 MB），多占了 2.1 MB",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

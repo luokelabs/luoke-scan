@@ -1,0 +1,97 @@
+{
+  "about": "父进程是 1、不是 launchd 的任务、跑了 6 小时以上的：合成一条，按跑得最久排；正好 6 小时的也算",
+  "case": "rules/process/orphans",
+  "steps": [
+    {
+      "fakes": {
+        "processes": [
+          {
+            "path": "/Applications/Safari.app/Contents/MacOS/Safari",
+            "pid": 400,
+            "ppid": 1,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/file-watcher",
+            "pid": 8001,
+            "ppid": 1,
+            "started": "2026-10-17T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/bin/tail",
+            "pid": 8002,
+            "ppid": 1,
+            "started": "2026-10-14T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/share/io.example/devserver",
+            "pid": 8003,
+            "ppid": 1,
+            "started": "2026-10-20T06:00:00Z",
+            "uid": "$UID"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "process",
+            "evidence": {
+              "count": "3",
+              "hint": "启动它们的程序已经退出了；不是你自己放在后台的任务的话，多半是没收拾干净",
+              "oldest": "tail（8002，144 小时）；file-watcher（8001，72 小时）；devserver（8003，6 小时）",
+              "pids": "8002,8001,8003"
+            },
+            "path": "",
+            "rule": "process.orphan",
+            "severity": "low",
+            "title": "3 个后台进程的父进程已经退出，还在跑",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

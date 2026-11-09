@@ -1,0 +1,66 @@
+{
+  "about": "正好 1 MiB 的两份：报；差 1 字节到 1 MiB 的两份：不报",
+  "case": "rules/space.duplicates/threshold",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 1048576,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/one.bin",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/one.bin",
+              "sha256": "19f6ea7aa48a0b18",
+              "targets": "~/Pictures/one.bin"
+            },
+            "key": "space.duplicates:19f6ea7aa48a0b18b78b74630cdac559d08e23bac61aed5018c72afa71c842bf",
+            "path": "~/Documents/one.bin",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 one.bin（每份 1 MB），多占了 1 MB",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

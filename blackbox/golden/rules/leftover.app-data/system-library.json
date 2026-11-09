@@ -1,0 +1,104 @@
+{
+  "about": "系统的 /Library 里删了的应用留下的（要密码才能移走）；macOS 自带的、VPN、装着组件的、后台任务用着的、最近写过的、太小的、链接、Preferences 都不算",
+  "case": "rules/leftover.app-data/system-library",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2097152,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "io.sysonly.tool",
+              "hint": "有的应用把文档、本地数据库放在这里；删之前确认里面没有你还要的东西，或者新版本已经导入过",
+              "last_changed": "2026-08-21",
+              "password": "系统目录里的要输入 Mac 的密码才能移走",
+              "places": "$FIXTURE/SystemLibrary/Caches/io.sysonly.tool",
+              "size": "2.1 MB",
+              "system": "1"
+            },
+            "key": "io.sysonly.tool",
+            "path": "$FIXTURE/SystemLibrary/Caches/io.sysonly.tool",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "io.sysonly.tool 的数据还在，但这台 Mac 上没有这个应用",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2228224,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "io.oldvendor.daemon",
+              "hint": "有的应用把文档、本地数据库放在这里；删之前确认里面没有你还要的东西，或者新版本已经导入过",
+              "last_changed": "2026-08-21",
+              "password": "系统目录里的要输入 Mac 的密码才能移走",
+              "places": "~/Library/Application Support/io.oldvendor.daemon；$FIXTURE/SystemLibrary/Application Support/io.oldvendor.daemon；$FIXTURE/SystemLibrary/Logs/io.oldvendor.daemon",
+              "size": "2.2 MB",
+              "system": "1"
+            },
+            "key": "io.oldvendor.daemon",
+            "path": "~/Library/Application Support/io.oldvendor.daemon",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "io.oldvendor.daemon 的数据还在，但这台 Mac 上没有这个应用",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "admin": "1",
+              "how": "Homebrew 的服务别用 sudo 起（`brew services start` 不加 sudo，就以你自己的身份运行）；用不到了就删掉这个系统级的后台任务",
+              "label": "io.otherco.sync",
+              "program": "$FIXTURE/SystemLibrary/Application Support/io.jobvendor.data/sync.sh",
+              "scope": "daemon",
+              "signature": "开发者签名（FIXTURE000）",
+              "why": "它以管理员（root）身份运行：任何以你身份运行的程序都能换掉它，下次启动就拿到管理员权限"
+            },
+            "path": "$FIXTURE/SystemLibrary/LaunchDaemons/io.otherco.sync.plist",
+            "rule": "persistence.daemon-writable",
+            "severity": "high",
+            "title": "系统后台任务（以管理员身份运行） io.otherco.sync 运行的程序你自己就能改",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

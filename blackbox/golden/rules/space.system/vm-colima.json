@@ -1,0 +1,63 @@
+{
+  "about": "colima 的 ~/.colima 3 GiB、~/.lima 2 GiB：合起来 5 GiB，报虚拟磁盘",
+  "case": "rules/space.system/vm-colima",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 5368709120,
+            "category": "space",
+            "evidence": {
+              "how": "`docker system prune` 清掉不用的；整台虚拟机都不要了用 `colima delete`（里面的东西都会没）",
+              "tool": "colima",
+              "why": "镜像、容器、数据卷和构建缓存都在这块虚拟磁盘里，删了的东西不一定会把空间还回来"
+            },
+            "path": "~/.colima",
+            "rule": "space.vm-disk",
+            "severity": "low",
+            "title": "colima 的虚拟磁盘占了 5.37 GB",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

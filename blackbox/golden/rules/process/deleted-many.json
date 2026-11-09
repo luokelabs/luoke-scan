@@ -1,0 +1,270 @@
+{
+  "about": "同一个被删掉的程序跑着 25 个：合成一条，进程号只列最早起的 20 个；另一个被删的程序单独一条",
+  "case": "rules/process/deleted-many",
+  "steps": [
+    {
+      "fakes": {
+        "processes": [
+          {
+            "path": "/Applications/Safari.app/Contents/MacOS/Safari",
+            "pid": 400,
+            "ppid": 1,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5000,
+            "ppid": 4999,
+            "started": "2026-10-20T07:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5001,
+            "ppid": 4999,
+            "started": "2026-10-20T06:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5002,
+            "ppid": 4999,
+            "started": "2026-10-20T05:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5003,
+            "ppid": 4999,
+            "started": "2026-10-20T04:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5004,
+            "ppid": 4999,
+            "started": "2026-10-20T03:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5005,
+            "ppid": 4999,
+            "started": "2026-10-20T02:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5006,
+            "ppid": 4999,
+            "started": "2026-10-20T01:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5007,
+            "ppid": 4999,
+            "started": "2026-10-20T00:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5008,
+            "ppid": 4999,
+            "started": "2026-10-19T23:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5009,
+            "ppid": 4999,
+            "started": "2026-10-19T22:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5010,
+            "ppid": 4999,
+            "started": "2026-10-19T21:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5011,
+            "ppid": 4999,
+            "started": "2026-10-19T20:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5012,
+            "ppid": 4999,
+            "started": "2026-10-19T19:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5013,
+            "ppid": 4999,
+            "started": "2026-10-19T18:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5014,
+            "ppid": 4999,
+            "started": "2026-10-19T17:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5015,
+            "ppid": 4999,
+            "started": "2026-10-19T16:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5016,
+            "ppid": 4999,
+            "started": "2026-10-19T15:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5017,
+            "ppid": 4999,
+            "started": "2026-10-19T14:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5018,
+            "ppid": 4999,
+            "started": "2026-10-19T13:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5019,
+            "ppid": 4999,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5020,
+            "ppid": 4999,
+            "started": "2026-10-19T11:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5021,
+            "ppid": 4999,
+            "started": "2026-10-19T10:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5022,
+            "ppid": 4999,
+            "started": "2026-10-19T09:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5023,
+            "ppid": 4999,
+            "started": "2026-10-19T08:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "pid": 5024,
+            "ppid": 4999,
+            "started": "2026-10-19T07:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/Old.app/Contents/MacOS/Old",
+            "pid": 4999,
+            "ppid": 1,
+            "started": "2026-10-17T12:00:00Z",
+            "uid": "$UID"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "process",
+            "evidence": {
+              "count": "1",
+              "pids": "4999",
+              "started": "2026-10-17"
+            },
+            "path": "~/Applications/Old.app/Contents/MacOS/Old",
+            "rule": "process.deleted-binary",
+            "severity": "medium",
+            "title": "进程 4999（Old）的程序已经被删掉了，它还在跑",
+            "verdict": "confirm"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "25",
+              "pids": "5024,5023,5022,5021,5020,5019,5018,5017,5016,5015,5014,5013,5012,5011,5010,5009,5008,5007,5006,5005",
+              "started": "2026-10-19"
+            },
+            "path": "~/Applications/Old.app/Contents/Frameworks/Old Helper.app/Contents/MacOS/Old Helper",
+            "rule": "process.deleted-binary",
+            "severity": "medium",
+            "title": "25 个 Old Helper 进程的程序已经被删掉了，还在跑",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

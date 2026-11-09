@@ -1,0 +1,96 @@
+{
+  "about": "Apple 芯片的 Mac 上唯一的一套 Homebrew 是 Intel 版的：只说，不提删；换成 Intel 的 Mac 就不报",
+  "case": "rules/leftover.installer/intel-homebrew-only",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 6295552,
+            "category": "leftover",
+            "evidence": {
+              "both": "0",
+              "how": "装一套 Apple 芯片版的 Homebrew（在 /opt/homebrew），把工具装过去，再用官方卸载脚本（加 --path=/usr/local）删掉这套",
+              "why": "Intel 版的工具要经 Rosetta 转译，慢；苹果已经说过以后的 macOS 会收回 Rosetta"
+            },
+            "path": "$FIXTURE/usr-local/Homebrew",
+            "rule": "leftover.intel-homebrew",
+            "severity": "low",
+            "title": "Homebrew 是 Intel 版的，靠 Rosetta 运行（6.3 MB）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "appleSilicon": false
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "这是一台 Intel 的 Mac",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

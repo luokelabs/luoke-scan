@@ -1,0 +1,329 @@
+{
+  "about": "认得的 20 个缓存各正好 50 MiB：都报，可以放心删；go、uv、npm 没装，就说删文件夹",
+  "case": "rules/cache.rebuildable/all-known",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "52.4 MB",
+              "tool": "Bun"
+            },
+            "path": "~/.bun/install/cache",
+            "rule": "cache.rebuildable.bun",
+            "severity": "low",
+            "title": "Bun 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "52.4 MB",
+              "tool": "Cargo"
+            },
+            "path": "~/.cargo/registry/cache",
+            "rule": "cache.rebuildable.cargo-registry-cache",
+            "severity": "low",
+            "title": "Cargo 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "52.4 MB",
+              "tool": "Cargo"
+            },
+            "path": "~/.cargo/registry/src",
+            "rule": "cache.rebuildable.cargo-registry-src",
+            "severity": "low",
+            "title": "Cargo 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "52.4 MB",
+              "tool": "CocoaPods"
+            },
+            "path": "~/Library/Caches/CocoaPods",
+            "rule": "cache.rebuildable.cocoapods",
+            "severity": "low",
+            "title": "CocoaPods 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "52.4 MB",
+              "tool": "Composer"
+            },
+            "path": "~/Library/Caches/composer",
+            "rule": "cache.rebuildable.composer",
+            "severity": "low",
+            "title": "Composer 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "52.4 MB",
+              "tool": "Homebrew"
+            },
+            "path": "~/Library/Caches/Homebrew",
+            "rule": "cache.rebuildable.homebrew",
+            "severity": "low",
+            "title": "Homebrew 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "52.4 MB",
+              "tool": "Poetry"
+            },
+            "path": "~/Library/Caches/pypoetry/artifacts",
+            "rule": "cache.rebuildable.poetry-artifacts",
+            "severity": "low",
+            "title": "Poetry 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "52.4 MB",
+              "tool": "Poetry"
+            },
+            "path": "~/Library/Caches/pypoetry/cache",
+            "rule": "cache.rebuildable.poetry-cache",
+            "severity": "low",
+            "title": "Poetry 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "52.4 MB",
+              "tool": "SwiftPM"
+            },
+            "path": "~/Library/Caches/org.swift.swiftpm",
+            "rule": "cache.rebuildable.swiftpm",
+            "severity": "low",
+            "title": "SwiftPM 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "52.4 MB",
+              "tool": "Yarn"
+            },
+            "path": "~/Library/Caches/Yarn",
+            "rule": "cache.rebuildable.yarn",
+            "severity": "low",
+            "title": "Yarn 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "52.4 MB",
+              "tool": "node-gyp"
+            },
+            "path": "~/Library/Caches/node-gyp",
+            "rule": "cache.rebuildable.node-gyp",
+            "severity": "low",
+            "title": "node-gyp 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "52.4 MB",
+              "tool": "pip"
+            },
+            "path": "~/Library/Caches/pip",
+            "rule": "cache.rebuildable.pip",
+            "severity": "low",
+            "title": "pip 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹（Go 已经不在这台 Mac 上了）",
+              "size": "52.4 MB",
+              "tool": "Go"
+            },
+            "path": "~/Library/Caches/go-build",
+            "rule": "cache.rebuildable.go-build",
+            "severity": "low",
+            "title": "Go 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹（Gradle 没在跑时）",
+              "size": "52.4 MB",
+              "tool": "Gradle"
+            },
+            "path": "~/.gradle/caches",
+            "rule": "cache.rebuildable.gradle-caches",
+            "severity": "low",
+            "title": "Gradle 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹（Xcode 没开着时）",
+              "size": "52.4 MB",
+              "tool": "Xcode"
+            },
+            "path": "~/Library/Developer/Xcode/DerivedData",
+            "rule": "cache.rebuildable.xcode-deriveddata",
+            "severity": "low",
+            "title": "Xcode 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹（Xcode 没开着时）",
+              "size": "52.4 MB",
+              "tool": "Xcode"
+            },
+            "path": "~/Library/Developer/Xcode/DocumentationCache",
+            "rule": "cache.rebuildable.xcode-documentation",
+            "severity": "low",
+            "title": "Xcode 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹（npm 已经不在这台 Mac 上了）",
+              "size": "52.4 MB",
+              "tool": "npm"
+            },
+            "path": "~/.npm/_cacache",
+            "rule": "cache.rebuildable.npm",
+            "severity": "low",
+            "title": "npm 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹（uv 已经不在这台 Mac 上了）",
+              "size": "52.4 MB",
+              "tool": "uv"
+            },
+            "path": "~/.cache/uv",
+            "rule": "cache.rebuildable.uv",
+            "severity": "low",
+            "title": "uv 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹（各项目的 gradlew 用到时会重新下载）",
+              "size": "52.4 MB",
+              "tool": "Gradle"
+            },
+            "path": "~/.gradle/wrapper/dists",
+            "rule": "cache.rebuildable.gradle-wrapper",
+            "severity": "low",
+            "title": "Gradle 的缓存，删了会自动重建",
+            "verdict": "safe"
+          },
+          {
+            "bytes": 52428800,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹（模拟器没开着时）",
+              "size": "52.4 MB",
+              "tool": "模拟器"
+            },
+            "path": "~/Library/Developer/CoreSimulator/Caches",
+            "rule": "cache.rebuildable.coresimulator-caches",
+            "severity": "low",
+            "title": "模拟器 的缓存，删了会自动重建",
+            "verdict": "safe"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

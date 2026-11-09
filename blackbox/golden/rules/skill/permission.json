@@ -1,0 +1,134 @@
+{
+  "about": "权限：allowed-tools 里不限命令的 Bash（列表、Bash(*)、allowed_tools 写成 *）是低；说自己只读、脚本却删文件或往外发是中；限定了命令的、只读又真的只读的、没说只读的删构建产物不报",
+  "case": "rules/skill/permission",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
+              "kinds": "permission",
+              "scope": "personal",
+              "skill": "pm-readonly-delete",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：说自己只读，脚本却会删文件或往外发数据（SKILL.md）"
+            },
+            "key": "~/.claude/skills/pm-readonly-delete|d31320a15527f0aa",
+            "path": "~/.claude/skills/pm-readonly-delete",
+            "rule": "skill.permission",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「pm-readonly-delete」：说自己只读，脚本却会删文件或往外发数据",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
+              "kinds": "permission",
+              "scope": "personal",
+              "skill": "pm-readonly-send",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：说自己只读，脚本却会删文件或往外发数据（SKILL.md）"
+            },
+            "key": "~/.claude/skills/pm-readonly-send|9a5046a383207b6c",
+            "path": "~/.claude/skills/pm-readonly-send",
+            "rule": "skill.permission",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「pm-readonly-send」：说自己只读，脚本却会删文件或往外发数据",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "认得的话，可以在 SKILL.md 的 allowed-tools 里把 Bash 限定到它要用的命令（例如 Bash(git status:*)）",
+              "kinds": "permission",
+              "scope": "personal",
+              "skill": "pm-bash-list",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：允许 AI 不受限制地跑命令（allowed-tools 里的 Bash 没限定命令）（SKILL.md）"
+            },
+            "key": "~/.claude/skills/pm-bash-list|a0b6295021b5ce85",
+            "path": "~/.claude/skills/pm-bash-list",
+            "rule": "skill.permission",
+            "severity": "low",
+            "title": "Claude Code 的 skill「pm-bash-list」：允许 AI 不受限制地跑命令（allowed-tools 里的 Bash 没限定命令）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "认得的话，可以在 SKILL.md 的 allowed-tools 里把 Bash 限定到它要用的命令（例如 Bash(git status:*)）",
+              "kinds": "permission",
+              "scope": "personal",
+              "skill": "pm-bash-star",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：允许 AI 不受限制地跑命令（allowed-tools 里的 Bash 没限定命令）（SKILL.md）"
+            },
+            "key": "~/.claude/skills/pm-bash-star|106dbc9659f4c512",
+            "path": "~/.claude/skills/pm-bash-star",
+            "rule": "skill.permission",
+            "severity": "low",
+            "title": "Claude Code 的 skill「pm-bash-star」：允许 AI 不受限制地跑命令（allowed-tools 里的 Bash 没限定命令）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "认得的话，可以在 SKILL.md 的 allowed-tools 里把 Bash 限定到它要用的命令（例如 Bash(git status:*)）",
+              "kinds": "permission",
+              "scope": "personal",
+              "skill": "pm-star-underscore",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：允许 AI 不受限制地跑命令（allowed-tools 里的 Bash 没限定命令）（SKILL.md）"
+            },
+            "key": "~/.claude/skills/pm-star-underscore|ef98f9a84b73d03c",
+            "path": "~/.claude/skills/pm-star-underscore",
+            "rule": "skill.permission",
+            "severity": "low",
+            "title": "Claude Code 的 skill「pm-star-underscore」：允许 AI 不受限制地跑命令（allowed-tools 里的 Bash 没限定命令）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

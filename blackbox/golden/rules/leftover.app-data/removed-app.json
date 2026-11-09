@@ -1,0 +1,66 @@
+{
+  "about": "删了的应用在家目录各处留下的老数据合成一条，要确认；名字前的团队 ID、group. 都认得",
+  "case": "rules/leftover.app-data/removed-app",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2039808,
+            "category": "leftover",
+            "evidence": {
+              "bundle_id": "io.gone.editor",
+              "hint": "有的应用把文档、本地数据库放在这里；删之前确认里面没有你还要的东西，或者新版本已经导入过",
+              "last_changed": "2026-08-21",
+              "places": "~/Library/Application Support/io.gone.editor；~/Library/Caches/io.gone.editor；~/Library/Containers/ABCDE12345.io.gone.editor；~/Library/Preferences/io.gone.editor.plist；~/Library/Saved Application State/io.gone.editor.savedState；~/Library/HTTPStorages/io.gone.editor.binarycookies；~/Library/Logs/io.gone.editor；~/Library/WebKit/io.gone.editor；~/Library/Group Containers/group.io.gone.editor；~/Library/Group Containers/ABCDE12345.io.gone.editor",
+              "size": "2 MB"
+            },
+            "key": "io.gone.editor",
+            "path": "~/Library/Application Support/io.gone.editor",
+            "rule": "leftover.app-data",
+            "severity": "low",
+            "title": "io.gone.editor 的数据还在，但这台 Mac 上没有这个应用",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

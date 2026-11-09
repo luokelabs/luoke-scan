@@ -1,0 +1,106 @@
+{
+  "about": "名单 40 天没更新：比对照做，另报一条名单旧了（仅供参考）",
+  "case": "rules/supplychain.malicious/stale-list",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "malicious-import",
+        "--data",
+        "$FIXTURE/data",
+        "$FIXTURE/osv"
+      ],
+      "stdout": [
+        "恶意包名单导入好了：这次 6 条（换掉原有的 0 条），名单里现在共 6 条，日期 2026-10-15（读了 7 份 OSV 记录）",
+        "没留：不是 MAL- 的 1 条、撤回的 0 条、别的生态的 0 个包、没法比对版本的 0 个包、读不了的 0 份"
+      ]
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "malware",
+            "evidence": {
+              "database": "daily 27000，2026-10-20",
+              "last_error": ""
+            },
+            "path": "$FIXTURE/data/clamav",
+            "rule": "malware.stale-db",
+            "severity": "medium",
+            "title": "病毒库 35 天没更新，病毒扫描的结果只能参考",
+            "verdict": "info"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "ecosystem": "npm",
+              "how": "删掉这个项目的 node_modules，把 evil-stealer 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
+              "ids": "MAL-2026-9001",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）",
+              "lockfile": "~/Projects/web-app/package-lock.json",
+              "package": "evil-stealer@3.2.1",
+              "why": "这个版本在公开的恶意包名单上：装的时候它的代码可能已经在这台 Mac 上运行过"
+            },
+            "key": "~/Projects/web-app/package-lock.json\u0000npm\u0000evil-stealer@3.2.1",
+            "path": "~/Projects/web-app/package-lock.json",
+            "rule": "supplychain.malicious",
+            "severity": "high",
+            "title": "项目 web-app 用了已知恶意的 evil-stealer@3.2.1",
+            "verdict": "confirm"
+          },
+          {
+            "category": "supply-chain",
+            "evidence": {
+              "how": "拿一份新的 OSV 名单重新导入（luoke-scan malicious-import）",
+              "list": "恶意包名单 2026-10-15（OSV 的 MAL- 条目）"
+            },
+            "path": "$FIXTURE/data/malicious-packages.txt",
+            "rule": "supplychain.stale-list",
+            "severity": "medium",
+            "title": "恶意包名单 40 天没更新，后来出的恶意包比对不出来",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-11-24T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-11-24T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "malicious_list_date": "2026-10-15",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-11-24T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

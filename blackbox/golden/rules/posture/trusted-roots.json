@@ -1,0 +1,293 @@
+{
+  "about": "加进来的根证书被设成信任（本用户的、管理员的）：合成一条；不信任的、只给一台主机用的不算；后来又加一个是新的一条",
+  "case": "rules/posture/trusted-roots",
+  "steps": [
+    {
+      "fakes": {
+        "commands": [
+          {
+            "args": [
+              "dump-trust-settings",
+              "-d"
+            ],
+            "output": "SecTrustSettings: No Trust Settings were found.\n",
+            "status": 1,
+            "tool": "/usr/bin/security"
+          },
+          {
+            "args": [
+              "dump-trust-settings"
+            ],
+            "output": "Number of trusted certs = 3\nCert 0: Example Debug Proxy CA\n   Number of trust settings : 0\nCert 1: Example Bad CA\n   Number of trust settings : 1\n   Trust Setting 0:\n      Result Type           : kSecTrustSettingsResultDeny\nCert 2: nas.example\n   Number of trust settings : 1\n   Trust Setting 0:\n      Policy OID            : SSL\n      Policy String         : nas.example\n      Result Type           : kSecTrustSettingsResultTrustRoot\n",
+            "status": 0,
+            "tool": "/usr/bin/security"
+          },
+          {
+            "args": [
+              "autoLoginUser"
+            ],
+            "output": "",
+            "status": 1,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "GuestEnabled"
+            ],
+            "output": "0\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "DiscoverableMode"
+            ],
+            "output": "Contacts Only\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [],
+            "output": "disabled services = {\n\t\"com.openssh.sshd\" => disabled\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [],
+            "output": "SecTrustSettings: No Trust Settings were found.\n",
+            "status": 1,
+            "tool": "/usr/bin/security"
+          },
+          {
+            "args": [],
+            "output": "FileVault is On.\n",
+            "status": 0,
+            "tool": "/usr/bin/fdesetup"
+          },
+          {
+            "args": [],
+            "output": "Firewall is enabled. (State = 1)\n",
+            "status": 0,
+            "tool": "/usr/libexec/ApplicationFirewall/socketfilterfw"
+          },
+          {
+            "args": [],
+            "output": "System Integrity Protection status: enabled.\n",
+            "status": 0,
+            "tool": "/usr/bin/csrutil"
+          },
+          {
+            "args": [],
+            "output": "assessments enabled\n",
+            "status": 0,
+            "tool": "/usr/sbin/spctl"
+          },
+          {
+            "args": [],
+            "output": "sysadminctl[1:2] screenLock delay is immediate\n",
+            "status": 0,
+            "tool": "/bin/sh"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "certs": "Example Debug Proxy CA",
+              "how": "认得的（公司的代理、自己开发用的 mkcert、抓包工具）就留着；不认得的在「钥匙串访问」里删掉，或把「信任」改回「使用系统默认」"
+            },
+            "key": "Example Debug Proxy CA",
+            "path": "",
+            "rule": "posture.trusted-roots",
+            "severity": "medium",
+            "title": "有 1 个加进来的根证书被设成信任：用它的人能看到你的 HTTPS 内容",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "管理员也加了一个根证书"
+    },
+    {
+      "fakes": {
+        "commands": [
+          {
+            "args": [
+              "dump-trust-settings",
+              "-d"
+            ],
+            "output": "Number of trusted certs = 1\nCert 0: Example Corp Root\n   Number of trust settings : 1\n   Trust Setting 0:\n      Policy OID            : SSL\n      Result Type           : kSecTrustSettingsResultTrustRoot\n",
+            "status": 0,
+            "tool": "/usr/bin/security"
+          },
+          {
+            "args": [
+              "dump-trust-settings",
+              "-d"
+            ],
+            "output": "SecTrustSettings: No Trust Settings were found.\n",
+            "status": 1,
+            "tool": "/usr/bin/security"
+          },
+          {
+            "args": [
+              "dump-trust-settings"
+            ],
+            "output": "Number of trusted certs = 3\nCert 0: Example Debug Proxy CA\n   Number of trust settings : 0\nCert 1: Example Bad CA\n   Number of trust settings : 1\n   Trust Setting 0:\n      Result Type           : kSecTrustSettingsResultDeny\nCert 2: nas.example\n   Number of trust settings : 1\n   Trust Setting 0:\n      Policy OID            : SSL\n      Policy String         : nas.example\n      Result Type           : kSecTrustSettingsResultTrustRoot\n",
+            "status": 0,
+            "tool": "/usr/bin/security"
+          },
+          {
+            "args": [
+              "autoLoginUser"
+            ],
+            "output": "",
+            "status": 1,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "GuestEnabled"
+            ],
+            "output": "0\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [
+              "DiscoverableMode"
+            ],
+            "output": "Contacts Only\n",
+            "status": 0,
+            "tool": "/usr/bin/defaults"
+          },
+          {
+            "args": [],
+            "output": "disabled services = {\n\t\"com.openssh.sshd\" => disabled\n}\n",
+            "status": 0,
+            "tool": "/bin/launchctl"
+          },
+          {
+            "args": [],
+            "output": "SecTrustSettings: No Trust Settings were found.\n",
+            "status": 1,
+            "tool": "/usr/bin/security"
+          },
+          {
+            "args": [],
+            "output": "FileVault is On.\n",
+            "status": 0,
+            "tool": "/usr/bin/fdesetup"
+          },
+          {
+            "args": [],
+            "output": "Firewall is enabled. (State = 1)\n",
+            "status": 0,
+            "tool": "/usr/libexec/ApplicationFirewall/socketfilterfw"
+          },
+          {
+            "args": [],
+            "output": "System Integrity Protection status: enabled.\n",
+            "status": 0,
+            "tool": "/usr/bin/csrutil"
+          },
+          {
+            "args": [],
+            "output": "assessments enabled\n",
+            "status": 0,
+            "tool": "/usr/sbin/spctl"
+          },
+          {
+            "args": [],
+            "output": "sysadminctl[1:2] screenLock delay is immediate\n",
+            "status": 0,
+            "tool": "/bin/sh"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "certs": "Example Debug Proxy CA；Example Corp Root",
+              "how": "认得的（公司的代理、自己开发用的 mkcert、抓包工具）就留着；不认得的在「钥匙串访问」里删掉，或把「信任」改回「使用系统默认」"
+            },
+            "key": "Example Corp Root|Example Debug Proxy CA",
+            "path": "",
+            "rule": "posture.trusted-roots",
+            "severity": "medium",
+            "title": "有 2 个加进来的根证书被设成信任：用它的人能看到你的 HTTPS 内容",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-21T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-21T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-21T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

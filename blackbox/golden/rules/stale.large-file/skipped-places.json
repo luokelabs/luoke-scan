@@ -1,0 +1,131 @@
+{
+  "about": "Library、废纸篓、包里的、.git 和 node_modules 里的、不在了的、文件夹、链接：都不报",
+  "case": "rules/stale.large-file/skipped-places",
+  "steps": [
+    {
+      "fakes": {
+        "staleFiles": [
+          {
+            "changed": null,
+            "path": "~/Library/Caches/big.db",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/.Trash/old.dmg",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Applications/X.app/Contents/big",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Movies/iMovie Library.imovielibrary/2024/clip.mov",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/VMs/Win.pvm/disk.hdd",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Code/repo/.git/objects/pack/x.pack",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Code/web/node_modules/x/big.bin",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Documents/link.iso",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Documents/folder",
+            "used": "2024-08-11T12:00:00Z"
+          },
+          {
+            "changed": null,
+            "path": "~/Documents/gone.iso",
+            "used": "2024-08-11T12:00:00Z"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/.Trash/old.dmg",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old.dmg（2.1 MB）2 年多没打开过",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_opened": "2024-08-11"
+            },
+            "path": "~/Library/Caches/big.db",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "big.db（2.1 MB）2 年多没打开过",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

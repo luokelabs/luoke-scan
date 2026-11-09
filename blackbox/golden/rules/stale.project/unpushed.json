@@ -1,0 +1,64 @@
+{
+  "about": "有一个提交没推：只说，列出会丢什么",
+  "case": "rules/stale.project/unpushed",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 147456,
+            "category": "stale-project",
+            "evidence": {
+              "last_commit:app": "2025-09-15",
+              "repos": "1",
+              "size": "147 KB",
+              "would_lose": "app 有 1 个提交没推送"
+            },
+            "path": "~/Projects/app",
+            "rule": "stale.project",
+            "severity": "low",
+            "title": "app 半年多没动过，但有只在这台 Mac 上的工作",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

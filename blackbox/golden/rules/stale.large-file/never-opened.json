@@ -1,0 +1,98 @@
+{
+  "about": "没打开过的看放进来的时间：Spotlight 记的、没记就看文件的；十天前放进来的不报",
+  "case": "rules/stale.large-file/never-opened",
+  "steps": [
+    {
+      "fakes": {
+        "staleFiles": [
+          {
+            "changed": "2025-09-15T12:00:00Z",
+            "path": "~/Downloads/disk.iso",
+            "used": null
+          },
+          {
+            "changed": null,
+            "path": "~/Documents/old.zip",
+            "used": null
+          },
+          {
+            "changed": null,
+            "path": "~/Documents/new.zip",
+            "used": null
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_changed": "2024-01-24",
+              "never_opened": "1"
+            },
+            "path": "~/Documents/old.zip",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "old.zip（2.1 MB）没打开过，2 年多前放进来的",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓",
+              "last_changed": "2025-09-15",
+              "never_opened": "1"
+            },
+            "path": "~/Downloads/disk.iso",
+            "rule": "stale.large-file",
+            "severity": "low",
+            "title": "disk.iso（2.1 MB）没打开过，一年多前放进来的",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

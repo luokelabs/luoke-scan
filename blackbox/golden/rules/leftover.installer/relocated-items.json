@@ -1,0 +1,64 @@
+{
+  "about": "共享文件夹（Shared）里 macOS 升级挪出来的旧配置：只说；别的文件夹、同名的文件不算",
+  "case": "rules/leftover.installer/relocated-items",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 3145728,
+            "category": "leftover",
+            "evidence": {
+              "folders": "Previously Relocated Items 3；Relocated Items",
+              "how": "看过里面没有你要的，在访达里把这些文件夹移到废纸篓（要管理员密码）",
+              "oldest": "2025-09-15",
+              "why": "升级时 macOS 把认不出的旧配置文件挪到这里，升级以后系统不再用它们"
+            },
+            "path": "$FIXTURE/Shared",
+            "rule": "leftover.relocated-items",
+            "severity": "low",
+            "title": "macOS 升级时挪出来的旧配置：2 个文件夹（3.1 MB）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

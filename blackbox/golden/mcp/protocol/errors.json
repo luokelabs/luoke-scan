@@ -1,0 +1,273 @@
+{
+  "about": "坏的 JSON、通知（不答）、协议版本不对、不认识的方法、工具、资源、参数不对：各答各的错，不动任何东西",
+  "case": "mcp/protocol/errors",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 131072000,
+            "category": "leak",
+            "evidence": {
+              "count": "25",
+              "first": "2026-10-15",
+              "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+              "last": "2026-10-18",
+              "per_day": "43.7 MB",
+              "prefix": "wings",
+              "size": "131.1 MB"
+            },
+            "path": "$TMPDIR/wings-*",
+            "rule": "leak.temp-prefix",
+            "severity": "low",
+            "title": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 62914560,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "62.9 MB",
+              "tool": "pip"
+            },
+            "path": "~/Library/Caches/pip",
+            "rule": "cache.rebuildable.pip",
+            "severity": "low",
+            "title": "pip 的缓存，删了会自动重建",
+            "verdict": "safe"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp-raw": "{not json",
+      "reply": {
+        "error": {
+          "code": -32700,
+          "message": "不是 JSON"
+        },
+        "id": null,
+        "jsonrpc": "2.0"
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp-raw": "{\"jsonrpc\": \"2.0\", \"method\": \"notifications/initialized\", \"params\": {}}",
+      "note": "通知：不答"
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/list",
+      "note": "协议版本不对",
+      "reply": {
+        "error": {
+          "code": -32602,
+          "data": {
+            "supportedVersions": [
+              "2026-07-28"
+            ]
+          },
+          "message": "不支持这个协议版本"
+        },
+        "id": 1,
+        "jsonrpc": "2.0"
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "no/such/method",
+      "reply": {
+        "error": {
+          "code": -32601,
+          "message": "没有这个方法：no/such/method"
+        },
+        "id": 2,
+        "jsonrpc": "2.0"
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {},
+        "name": "no_such_tool"
+      },
+      "reply": {
+        "error": {
+          "code": -32602,
+          "message": "没有这个工具：no_such_tool"
+        },
+        "id": 3,
+        "jsonrpc": "2.0"
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "page/nope"
+      },
+      "reply": {
+        "error": {
+          "code": -32002,
+          "data": {
+            "uri": "page/nope"
+          },
+          "message": "没有这个资源"
+        },
+        "id": 4,
+        "jsonrpc": "2.0"
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "verdict": "bogus"
+        },
+        "name": "scan_findings"
+      },
+      "reply": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "verdict 只能是 safe、confirm、info",
+              "type": "text"
+            }
+          ],
+          "isError": true,
+          "resultType": "complete",
+          "structuredContent": {
+            "code": "invalid"
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "limit": 0
+        },
+        "name": "scan_findings"
+      },
+      "reply": {
+        "id": 6,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "[要确认] 临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB\n另有 1 条",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "createSurface": {
+                  "catalogId": "ai.luoke/a2ui/agent/1",
+                  "surfaceId": "scan-000000000001"
+                },
+                "version": "v0.9"
+              },
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "h1",
+                        "t2",
+                        "t3",
+                        "t4"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "h1",
+                      "text": "发现 2 条",
+                      "variant": "h4"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t2",
+                      "text": "[要确认] 临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t3",
+                      "text": "$TMPDIR/wings-*\n多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t4",
+                      "text": "另有 1 条",
+                      "variant": "caption"
+                    }
+                  ],
+                  "surfaceId": "scan-000000000001"
+                },
+                "version": "v0.9"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

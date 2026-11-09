@@ -1,0 +1,3095 @@
+{
+ "label": "m3ultra-qwen3.5-9b-4bit-prompt1-r3",
+ "accessory": "luoke-audit",
+ "version": "0.1.0-dev",
+ "via": "endpoint",
+ "machine": "Apple M3 Ultra, 256 GB, macOS 26.4.1",
+ "date": "2026-10-22",
+ "tasks": {
+  "explain": {
+   "task": "luoke-audit.explain",
+   "prompt_version": 1,
+   "prompt_sha256": "143ff03cfb119ef9f729ed42bb9c1cfa22e64b8926d9b91b95db6af4b10eaa70",
+   "evalset_version": 1,
+   "evalset_sha256": "450c38833b74b4e466535c37d3e55d3216497b1f1dc6e953f1746e6f26575f39",
+   "repeat": 3,
+   "score": 16,
+   "total": 32,
+   "hard_passed": 5,
+   "hard_total": 13,
+   "seconds_median": 0.84,
+   "results": [
+    {
+     "id": "explain-01-pip",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "位置在用户库的 pip 缓存，占了 62.9 MB，是 Python 包管理工具临时存东西的地方。依据显示删除后会自动重建，所以放心删掉就能释放空间，放心去 Finder 里点那个文件夹删掉就行。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "要提到：重建/重新下载/重新生成/自动生成/再下载/重新编译": true
+       },
+       "pass": true,
+       "seconds": 4.48
+      },
+      {
+       "output": "放心删除 \"~/Library/Caches/pip\" 里的内容，这是 Python pip 工具的临时缓存，占 62.9 MB，删掉后下次用 pip 会自动重新生成，对电脑没影响。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "要提到：重建/重新下载/重新生成/自动生成/再下载/重新编译": true
+       },
+       "pass": true,
+       "seconds": 0.71
+      },
+      {
+       "output": "这是 pip 包的临时缓存，占用 62.9 MB，不会删除您已安装的软件。放心直接删除这个文件夹，系统下次需要时会自动重新下载生成新缓存，对电脑完全没有影响。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "要提到：重建/重新下载/重新生成/自动生成/再下载/重新编译": true
+       },
+       "pass": true,
+       "seconds": 0.7
+      }
+     ]
+    },
+    {
+     "id": "explain-02-deriveddata",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "这是 Xcode 留下的编译缓存，占用 12.4GB 但不影响运行。放心直接删除，只要保证 Xcode 没打开，删完后下次编译时会自动重建，完全不用担心。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "要提到：重建/重新下载/重新生成/自动生成/再下载/重新编译": true,
+        "要提到：Xcode": true
+       },
+       "pass": true,
+       "seconds": 0.69
+      },
+      {
+       "output": "这里是 12.4 GB 的 Xcode 缓存，只要确保 Xcode 软件没打开，直接清空这个文件夹就能删，软件会自动重新生成，完全不用担心没得用。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "要提到：重建/重新下载/重新生成/自动生成/再下载/重新编译": true,
+        "要提到：Xcode": true
+       },
+       "pass": true,
+       "seconds": 0.67
+      },
+      {
+       "output": "放心删除这个占用 12.4 GB 的 Xcode 缓存，因为它存储在 ~/Library/Developer/Xcode/DerivedData 里，只在 Xcode 没开着时清理，删了软件会自动重建，不会丢文件。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "要提到：重建/重新下载/重新生成/自动生成/再下载/重新编译": true,
+        "要提到：Xcode": true
+       },
+       "pass": true,
+       "seconds": 0.76
+      }
+     ]
+    },
+    {
+     "id": "explain-03-go-gone",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "这是 Go 语言留下的 3.1 GB 缓存，因为 Go 已卸载所以没用了，删了它会自动重新生成，放心删除即可。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "要提到：Go": true
+       },
+       "pass": true,
+       "seconds": 0.6
+      },
+      {
+       "output": "这里有个 3.1 GB 的 Go 语言缓存，位于用户库文件夹深处。由于 Go 开发工具已经卸载，这些缓存成了没用的垃圾，而且删了系统会自动重建，所以您可以放心地去手动删除这个文件夹来释放空间。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "要提到：Go": true
+       },
+       "pass": true,
+       "seconds": 0.79
+      },
+      {
+       "output": "这里是 Go 语言之前的编译缓存，占了 3.1 GB 空间。依据显示 Go 已经卸载了，里面的文件没用且占用太多，可以直接放心删。在 Finder 里把这个文件夹拖进废纸篓清空即可，不用担心数据丢失或影响运行。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "要提到：Go": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      }
+     ]
+    },
+    {
+     "id": "explain-04-npm",
+     "hard": true,
+     "pass": true,
+     "runs": [
+      {
+       "output": "这是 Node.js 包管理工具的缓存文件，占 1.2GB，存在你电脑家目录下。放心删，因为它删除后 npm 会自己在下次联网时自动重建缓存，重新下载需要的包，不影响你以后的编程使用，放心去清理释放空间即可。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "要提到：重建/重新下载/重新生成/自动生成/再下载/重新编译": true,
+        "不能出现：npm cache clean": true
+       },
+       "pass": true,
+       "seconds": 0.82
+      },
+      {
+       "output": "这是 npm 包管理器的缓存文件夹，占用 1.2 GB，删了会自动重建，不会影响软件使用，可以前往用户目录下的该路径手动删除。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "要提到：重建/重新下载/重新生成/自动生成/再下载/重新编译": true,
+        "不能出现：npm cache clean": true
+       },
+       "pass": true,
+       "seconds": 0.62
+      },
+      {
+       "output": "位置是用户缓存的 npm 安装包，大小 1.2 个 G，用了挺久的。这是开发时下载的临时文件，删了软件会自动重新下载，不会跑丢代码，不过要是你平时不用 npm 安装包，可以直接进文件夹把它删掉。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "要提到：重建/重新下载/重新生成/自动生成/再下载/重新编译": true,
+        "不能出现：npm cache clean": true
+       },
+       "pass": true,
+       "seconds": 0.81
+      }
+     ]
+    },
+    {
+     "id": "explain-05-leak-wings",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "临时目录里存着 25 个 wings-* 文件，占 131.1 MB，因为多半是某个程序用完不自动删。建议去找那个程序把自动清理功能修好，别直接清空文件夹，否则可能把正在用的数据给弄丢了。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：程序/工具/测试": true,
+        "要提到：临时": true
+       },
+       "pass": true,
+       "seconds": 0.91
+      },
+      {
+       "output": "临时目录里积压了 25 个 wings 开头的文件夹，共占用 131.1 MB，多半是某个程序用完没清理产生的垃圾。您得先找出是哪个程序在用，去设置里把它的临时缓存功能关掉，再手动去系统临时文件夹里把这一堆删掉，不然会越占越大。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：程序/工具/测试": true,
+        "要提到：临时": true
+       },
+       "pass": true,
+       "seconds": 1.02
+      },
+      {
+       "output": "临时文件夹里还留着 25 个翅膀安装程序的临时文件，共占了 131.1 MB 空间。这多半是某个软件每次运行都新建文件夹但用完后没自动清理，您可以在“最近删除”或手动查找该程序确认是否还能用，若想腾出空间请先备份再清理，否则稍后会占用不少电脑资源。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：程序/工具/测试": true,
+        "要提到：临时": true
+       },
+       "pass": false,
+       "seconds": 1.06
+      }
+     ]
+    },
+    {
+     "id": "explain-06-leak-puppeteer",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "临时文件夹里堆积了 340 个残留的 Chrome 运行记录，大小达 8.2 GB，因为某个程序自动创建却从不清理。这类文件会占用大量磁盘空间并拖慢系统，建议找到该程序设置自动清理，或在系统实用工具里手动删除这些残留项。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：340": true,
+        "要提到：每天/一直/持续/越来越/堆积/不断/从不清理/没清理/用完不删/增长/在涨": true
+       },
+       "pass": true,
+       "seconds": 0.97
+      },
+      {
+       "output": "临时目录里躺着 340 个占 8.2GB 的 Chrome 浏览器临时档案，多是某个程序用完没清理堆积的。这属于正常残留，不必恐慌，但长期占用磁盘空间，建议去 Finder 找到该临时目录手动删除，比反复跑清理软件更有效。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：340": true,
+        "要提到：每天/一直/持续/越来越/堆积/不断/从不清理/没清理/用完不删/增长/在涨": true
+       },
+       "pass": true,
+       "seconds": 0.96
+      },
+      {
+       "output": "临时文件夹里堆积了 340 个 Puppeteer 用过的浏览器档案，总共占 8.2 GB，都是这几天产生的。这说明有软件用完不留垃圾，建议去“系统设置”里定位并手动清空这个文件夹，不然硬盘会慢慢塞满。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：340": true,
+        "要提到：每天/一直/持续/越来越/堆积/不断/从不清理/没清理/用完不删/增长/在涨": true
+       },
+       "pass": true,
+       "seconds": 0.9
+      }
+     ]
+    },
+    {
+     "id": "explain-07-project-pushed",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "这是一个有 git 记录的旧项目文件夹，约 418 兆大，2025 年 11 月就再没改动过。系统提示可以删，因为早就上传到远程仓库了，删本地不会丢数据。但在动手前，您得确认一下远程服务器里确实有这个历史记录，核实无误后再去 Finder 里把文件夹移除即可。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：远程/推送": true,
+        "不能出现：只在这台 Mac 上": true,
+        "不能出现：本地独有": true
+       },
+       "pass": false,
+       "seconds": 1.02
+      },
+      {
+       "output": "这是\"/Projects/old-site\"文件夹，有 418 MB，依据是里面 1 个仓库最后一次提交时间是 2025 年 11 月 3 日，说明半年多没更新过。由于结论是要确认，删除前请一定记得先在远程仓库手动拉取更新，否则数据可能丢失。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：远程/推送": true,
+        "不能出现：只在这台 Mac 上": true,
+        "不能出现：本地独有": true
+       },
+       "pass": false,
+       "seconds": 0.96
+      },
+      {
+       "output": "这个位于 ~/Projects/old-site 的旧项目有 418 MB 且超过半年没更新，虽然只剩 1 个版本记录且已推送到远程，结论建议“要确认”。请勿随意删除，先去网页端确认云仓库里已有完整备份再操作，否则本地文件和 Git 历史记录将永久丢失无法找回。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：远程/推送": true,
+        "不能出现：只在这台 Mac 上": true,
+        "不能出现：本地独有": true
+       },
+       "pass": false,
+       "seconds": 0.95
+      }
+     ]
+    },
+    {
+     "id": "explain-08-project-unpushed",
+     "hard": true,
+     "pass": true,
+     "runs": [
+      {
+       "output": "这个 86 MB 的 thesis-code 项目有 3 个未推送提交，虽然半年没动静，但它是这台 Mac 上的唯一副本。由于删除会导致这些代码丢失，所以建议先确认是否真的不用了，千万别直接删。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：3 个提交/没推送/未推送": true
+       },
+       "pass": true,
+       "seconds": 0.78
+      },
+      {
+       "output": "这是一个只在这台电脑上的 Thesis 项目，总共 86 MB。因为里面有 3 个还没推送到外部的提交代码，如果把文件夹删了，本地这几版内容就找不回来了，建议先确认是不是要保留。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：3 个提交/没推送/未推送": true
+       },
+       "pass": true,
+       "seconds": 0.76
+      },
+      {
+       "output": "这是您本地没推送到云端的 Thesis 代码项目，有 3 个本地提交未同步，建议自行点 Git 面板去推送，直接删除会丢本地还没同步的修改记录。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：3 个提交/没推送/未推送": true
+       },
+       "pass": true,
+       "seconds": 0.69
+      }
+     ]
+    },
+    {
+     "id": "explain-09-project-stash",
+     "hard": true,
+     "pass": true,
+     "runs": [
+      {
+       "output": "项目 game-jam 占了 1.3GB，放那儿半年没动，但里面有个存着工作内容的仓库；依据显示这仓库有 2 个待合并暂存区，删了会丢这两个暂存内容，建议先手动确认要不要保留再决定删不删。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：stash/暂存": true
+       },
+       "pass": true,
+       "seconds": 0.86
+      },
+      {
+       "output": "这里是一个很久没动的游戏开发项目，虽然目前看着没更新，但老板明确说这台电脑上有相关工作，且仓库里还留着两个 stash，乱动会弄丢这些暂存代码，所以只建议您日常留意一下，不必非要清理。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：stash/暂存": true
+       },
+       "pass": true,
+       "seconds": 0.78
+      },
+      {
+       "output": "项目\"game-jam\"有 1.3GB 大且半年没动过，规则认为这只是旧数据仅供参考。虽然项目是工作相关的，但它包含 2 个本地暂存未同步，直接删掉会导致这 2 个暂存丢失。由于结论仅为参考，建议您先确认是否需要保留或同步这些暂存再决定。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：stash/暂存": true
+       },
+       "pass": true,
+       "seconds": 0.98
+      }
+     ]
+    },
+    {
+     "id": "explain-10-project-env",
+     "hard": true,
+     "pass": false,
+     "runs": [
+      {
+       "output": "这是你工作项目里半年没动过的接口代码，大小 240MB。既然只有这台电脑在用，文件本身留着再确认下，但里面的配置文件和缓存数据可没被版本记录，直接删了也没关系，不过得先确认这些本地数据是不是非删不可。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": false,
+        "要提到：.env/环境变量/配置": true,
+        "要提到：data/数据": true
+       },
+       "pass": false,
+       "seconds": 0.89
+      },
+      {
+       "output": "这是一个未修改过的项目代码，虽然对你的工作有用，但规则建议“仅供参考”。因为里面有本地专属的配置和文件如果被清理会丢失，所以不用删除，也不用担心理论上的安全或删库风险，可以放心保留在原处即可。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：.env/环境变量/配置": true,
+        "要提到：data/数据": false
+       },
+       "pass": false,
+       "seconds": 0.78
+      },
+      {
+       "output": "项目 shop-api 已半年未更新，目前只存于这台电脑且仅 240MB，可放心处理。请确认是否需要手动删除，因为 git 可能已忽略其中的.env 和 data 文件，误删会导致本地配置与数据丢失。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：.env/环境变量/配置": true,
+        "要提到：data/数据": true
+       },
+       "pass": true,
+       "seconds": 0.82
+      }
+     ]
+    },
+    {
+     "id": "explain-11-project-noremote",
+     "hard": true,
+     "pass": true,
+     "runs": [
+      {
+       "output": "这个 12 MB 的 Scratch 项目在本地静止半年，只在这台电脑，且没有联网同步的备份，建议仅供参考。因为依据显示它没远程仓库，若误删会直接丢失所有编辑好的内容，请务必确认是否还有用再处理。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：远程": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      },
+      {
+       "output": "这个位于~/Projects/scratch 的 12 MB 文件夹只动过半年多，属于一位在这台电脑上的同事，目前没连远程仓库，删了会丢失文件且可能影响同事工作，建议留作参考或确认归属后再处理。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：远程": true
+       },
+       "pass": true,
+       "seconds": 0.79
+      },
+      {
+       "output": "这是一个叫 scratch 的项目，有 12 MB 且半年没操作过，所在 Mac 是唯一一台工作电脑。因为没配远程仓库，如果手动删除文件夹，工作记录就会直接丢失，建议先在别的电脑检查一遍再决定。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：远程": true
+       },
+       "pass": true,
+       "seconds": 0.77
+      }
+     ]
+    },
+    {
+     "id": "explain-12-project-group",
+     "hard": true,
+     "pass": false,
+     "runs": [
+      {
+       "output": "这里的 clients 文件夹有 5.6 个数据，虽然有只在此 Mac 上的工作，但放了半年没变过，属于项目备份。因为里面有些设计图和合同没进版本库，直接动可能会弄丢这些重要文件，所以仅建议参考下是否该保留，千万别随便清理。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：designs/设计": true,
+        "要提到：contracts/合同": true,
+        "要提到：改动/没提交/未提交": false
+       },
+       "pass": false,
+       "seconds": 0.91
+      },
+      {
+       "output": "这是你家项目文件夹，代码提交得比较少了。虽然几个月没更新，但里面还有几个重要的设计图和合同没备份。要是直接删，这些没进 Git 的文件就找不回来了，建议保留或先备份好再操作。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：designs/设计": true,
+        "要提到：contracts/合同": true,
+        "要提到：改动/没提交/未提交": false
+       },
+       "pass": false,
+       "seconds": 0.78
+      },
+      {
+       "output": "这个客户端项目用了挺久，大概 5.6GB，虽然已有两个仓库，但里面有些设计稿和合同没放进 Git，删了会丢这些没备份的文件。另外网页端有一处改动还没提交。由于缺乏完整备份，建议暂缓操作，先确认这些未保存的文件是否重要再决定。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：designs/设计": true,
+        "要提到：contracts/合同": true,
+        "要提到：改动/没提交/未提交": true
+       },
+       "pass": true,
+       "seconds": 0.94
+      }
+     ]
+    },
+    {
+     "id": "explain-13-stale-folders",
+     "hard": true,
+     "pass": false,
+     "runs": [
+      {
+       "output": "你在 Downloads-old 目录发现 12 个文件夹共占 7.9GB，里面包含照片和渲染图等旧资料。因为不在版本控制里且拿不准其他地方有没有备份，所以只能仅供参考；若此时删除，这 7.9GB 的文件内容将无法找回，请先手动确认无需保留再处理。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：副本/备份/别处/只有这一份": true
+       },
+       "pass": false,
+       "seconds": 0.94
+      },
+      {
+       "output": "~Downloads-old 这个 7.9 GB 的老文件夹有 12 个没动过，因为不在版本管理里且未确认是否在其他地方有备份，所以暂时只作为参考建议，建议您先去别处确认是否有副本，不用担心它占空间直接删。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": false,
+        "要提到：副本/备份/别处/只有这一份": true
+       },
+       "pass": false,
+       "seconds": 0.85
+      },
+      {
+       "output": "Downloads-old 目录下有个 7.9  GB 的大文件夹，里面存着 12 个半年多没动的子文件夹，比如照片和渲染文件。因为不在代码仓库里，系统不知道外面有没有备份，所以只给您做个参考，建议您手动确认一下是否还需要保留。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：副本/备份/别处/只有这一份": true
+       },
+       "pass": true,
+       "seconds": 0.88
+      }
+     ]
+    },
+    {
+     "id": "explain-14-leftover",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "这里是光画 App（io.example.photoeditor）留下的缓存文件夹，删了也不会直接丢失照片。因为最近没再跑过这应用，这里只放着旧数据；如果现在删，里面用过的模板或本地备份可能没了，建议先点进去看看是不是还有你需要的资料。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：确认/看一下/检查/看看/核对": true,
+        "要提到：应用/app": true
+       },
+       "pass": true,
+       "seconds": 0.9
+      },
+      {
+       "output": "系统提示「要确认」，因为虽然这个 840 MB 的 PhotoEditor 支持文件夹里还有数据，但您这台 Mac 上根本找不到这个应用，可能是卸载后残留的。依据显示它会缓存文档和数据库，删除前务必手动点开确认里面没有您还需的相片或素材，否则删了就真的会丢掉，且请别点运行，以防系统未知病毒。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：确认/看一下/检查/看看/核对": true,
+        "要提到：应用/app": true
+       },
+       "pass": false,
+       "seconds": 1.11
+      },
+      {
+       "output": "你的电脑里有个 840 MB 的 PhotoEditor 应用数据，但没找到这个 App 了。要是直接删掉 ~/Library/Application Support/io.example.photoeditor，可能会丢掉里面的照片或缓存，建议先检查一下有没有重要文件再决定要不要保留或删除。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：确认/看一下/检查/看看/核对": true,
+        "要提到：应用/app": true
+       },
+       "pass": false,
+       "seconds": 0.87
+      }
+     ]
+    },
+    {
+     "id": "explain-15-leftover-wallet",
+     "hard": true,
+     "pass": false,
+     "runs": [
+      {
+       "output": "这个文件夹是以太坊钱包留下的数据，虽然应用已不在，但里面可能存着关键密码或密钥。既然结论是仅供参考，说明直接删风险不大，但建议先去确认是否在其他设备或备份里还保留着这钱包数据，以防万一。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": false,
+        "要提到：备份/迁移/唯一": true,
+        "不能出现：可以删": true
+       },
+       "pass": false,
+       "seconds": 0.81
+      },
+      {
+       "output": "这个 2.0 MB 的文件夹是以太坊钱包的剩余数据，虽然应用已卸载但关键密钥可能还在里面。因为直接删除会导致无法找回资产，所以仅供您参考，千万别手误删掉，除非您确定已安全迁移账户。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：备份/迁移/唯一": true,
+        "不能出现：可以删": true
+       },
+       "pass": true,
+       "seconds": 0.81
+      },
+      {
+       "output": "这个 2.0 MB 的数据是钱包或密码库，虽然应用没装但数据还在。依据提示它可能是唯一备份，万一删了就可能丢失资产。结论仅供参考，建议先确认是否已迁移或备份过再处理，别直接动。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：备份/迁移/唯一": true,
+        "不能出现：可以删": true
+       },
+       "pass": true,
+       "seconds": 0.82
+      }
+     ]
+    },
+    {
+     "id": "explain-16-leftover-vendor",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "这里有一些 310 MB 的密码管家旧数据，虽然开发商可能还有新 App，但您这台 Mac 上没装它。因为找不到对应软件，这些文件没法删，留着也不占数，就是顺便提醒您知道有这么点旧数据存在就行。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：开发商/同一家/新版/旧版/组件": true
+       },
+       "pass": true,
+       "seconds": 0.84
+      },
+      {
+       "output": "这是 1Password 旧版本留下的组件数据，因为原 App 已卸载，所以无需清理。系统依据同一家开发商的其他应用仍存在，判断这部分残留文件可能有用，建议你保留即可，删除或忽略都不会影响当前电脑运行，不用担心。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：开发商/同一家/新版/旧版/组件": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      },
+      {
+       "output": "建议您手动去“应用程序”里确认密码管理器是否安装，因为这只是旧应用留下的组件。文件还有 310 MB，虽然没危险但占用空间，是否清理取决于您是否还用它，没装过就不建议直接删。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：开发商/同一家/新版/旧版/组件": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      }
+     ]
+    },
+    {
+     "id": "explain-17-leftover-group",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "这是某聊天应用的数据文件夹，虽然 2.1GB 且最近改过动，但系统里没装这软件，删了可能丢本地聊天记录或头像等未同步的内容，建议先点进文件夹确认删了不会错过重要文件再动手操作。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：聊天记录/确认/要的东西/数据": true
+       },
+       "pass": true,
+       "seconds": 0.86
+      },
+      {
+       "output": "数据量达 2.1 GB 且最后改过动，但机器里没这个软件了，可能是旧聊天应用留下的备份；由于依据提示里面可能还有文档或数据库，直接删会丢掉这些内容，请在删之前在 Finder 里核对一下是否重要，没把握就别动。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：聊天记录/确认/要的东西/数据": true
+       },
+       "pass": true,
+       "seconds": 0.91
+      },
+      {
+       "output": "这台 Mac 上有个 2.1 GB 的聊天记录应用文件存在，虽然数据还在，但应用本身已卸载，说明是残留数据。你记得曾在这里存过重要记录吗？若确定无需保留，请进入“访达”找到该文件夹手动删除，否则无论现在是否安全，留着也不会占用有效空间。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：聊天记录/确认/要的东西/数据": true
+       },
+       "pass": true,
+       "seconds": 0.99
+      }
+     ]
+    },
+    {
+     "id": "explain-18-launchagent",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "这个配置让电脑每次登录都尝试启动一个名为 io.example.sync 的任务，但指定的启动位置已经不存在了，所以它会反复启动失败。因为系统保留了它，万一将来那个路径被重新创建，它就会自动运行，建议你去 LaunchAgents 文件夹里手动删掉这个 plist 文件。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：登录/启动": true,
+        "要提到：以你的身份/别人/有人/自动运行/重新创建/放回/放了东西": true
+       },
+       "pass": false,
+       "seconds": 0.89
+      },
+      {
+       "output": "这个文件是系统启动时自动运行的任务，但关联的启动位置已失效，导致你每次登录它都无法正常开启。如果直接删掉，以后若有人将该目录放回了原处，程序就会再次错误启动；如果该位置日后恢复，任务可能突然异常运行，所以请暂时保留或经授权修改路径后再删除。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：登录/启动": true,
+        "要提到：以你的身份/别人/有人/自动运行/重新创建/放回/放了东西": true
+       },
+       "pass": true,
+       "seconds": 0.97
+      },
+      {
+       "output": "这个后台任务指向了个不存在的文件夹，导致每次登录都启动失败。虽然当下只是任务挂起，但以后若有人在原位置放了文件，系统会误以为是你安装的程序而自动运行，可能误删你文件，建议去系统设置的手动管理里确认一下删不删。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：登录/启动": true,
+        "要提到：以你的身份/别人/有人/自动运行/重新创建/放回/放了东西": true
+       },
+       "pass": true,
+       "seconds": 0.9
+      }
+     ]
+    },
+    {
+     "id": "explain-19-launchagent-unreadable",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "在~/Library/LaunchAgents 目录下的 broken.plist 文件内容无法正常读取，这种情况只会影响相关软件启动，您可以不用管它，也不会导致数据丢失。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：读不出来/损坏/格式/无法读取/无法正常读取/读不了": true
+       },
+       "pass": true,
+       "seconds": 0.58
+      },
+      {
+       "output": "这大概是个损坏的配置文件，软件读取失败，一般不影响电脑运行。因为不确定删了会不会导致某个功能失效，建议直接在系统“_launchd_agents\"文件夹里把它拖到废纸篓确认一下，别直接运行里面的内容。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：读不出来/损坏/格式/无法读取/无法正常读取/读不了": true
+       },
+       "pass": true,
+       "seconds": 0.72
+      },
+      {
+       "output": "这个位于您用户目录下的配置文件读不出来，只是系统状态异常提示，不是病毒，不用急着删；因为只仅供参考，手动移除后若相关程序启动问题与它有关，才需要再找原因，现在可以直接忽略。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：读不出来/损坏/格式/无法读取/无法正常读取/读不了": true
+       },
+       "pass": true,
+       "seconds": 0.72
+      }
+     ]
+    },
+    {
+     "id": "explain-20-growth",
+     "hard": true,
+     "pass": false,
+     "runs": [
+      {
+       "output": "这个位于用户容器下的 Docker 软件包，近一个月从 45.6GB 涨到了 64.2GB，日均增加 3.1GB。这通常是因为软件自动更新或缓存堆积，建议去“系统设置”里的“存储”查看具体分类；直接删除会影响容器运行或下次启动报错。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：3.1 GB": true
+       },
+       "pass": true,
+       "seconds": 0.98
+      },
+      {
+       "output": "您看到的 com.docker.docker 每天涨 3.1 GB 是指 Docker 软件的数据文件夹，这是正常记录用来保存您的容器和镜像的。依据显示它近期每天以这个速度增长，属于软件的常规运行状态，仅供参考，无需担心也不需要手动清理，建议留意系统提示即可。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：3.1 GB": true
+       },
+       "pass": false,
+       "seconds": 0.9
+      },
+      {
+       "output": "这个文件每大 3.1 GB，主要装 Docker 的虚拟机快照。因为连不同时间点的备份都保留着，删文件虽然能腾空间，但可能会导致数据回溯失败或虚拟机异常。建议直接进 Finder 手动清理该文件夹里的历史快照文件。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：3.1 GB": true
+       },
+       "pass": true,
+       "seconds": 0.87
+      }
+     ]
+    },
+    {
+     "id": "explain-21-space-low",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "当前机器可用空间仅剩 12.3 GB，还有 18 GB 的虚拟内存，而系统提示低于 49.4 GB 阈值时会关注，所以这条信息只是提醒您关注容量而非立即删除。您可以查看“关于本机”里的储存条，若空间紧张再通过废纸篓清空无用文件或卸载大型应用来腾出位置。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：交换/swap/内存": true
+       },
+       "pass": false,
+       "seconds": 1.01
+      },
+      {
+       "output": "您的 Mac 可用空间只剩 12.3 GB，虽然低于默认预警线，但因为有 18 GB 虚拟内存顶着，暂时没风险。这主要是系统提示储备不足，您可以看着点，想清理再清理，不用着急处理。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：交换/swap/内存": true
+       },
+       "pass": true,
+       "seconds": 0.81
+      },
+      {
+       "output": "这只是表示你的硬盘剩余可用空间不多，因为系统规定红线是 49.4 GB，你现在只剩 12.3 GB，属于偏低预警但还不算紧急。不用担心立刻删除文件，建议检查一下最近下载或缓存的内容，手动整理一下即可，以免运行软件变慢或无法下载新东西。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：交换/swap/内存": false
+       },
+       "pass": false,
+       "seconds": 0.92
+      }
+     ]
+    },
+    {
+     "id": "explain-22-deleted-binary",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "有 12 个 Helper 进程所属的 Helper.app 已经被删掉但还在运行，这些进程从 2026 年 10 月 2 日开始活动。请务必确认它们是否必要，因为直接结束可能会丢失正在传输的数据或导致旧版应用功能异常，请先去活动监视器找到对应 PIDs 手动结束。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：退出/重启/结束/终止/关掉": true
+       },
+       "pass": false,
+       "seconds": 1.01
+      },
+      {
+       "output": "您的旧聊天软件里的 12 个辅助进程还在跑，源头文件已被删，这说明软件自己没跟着卸载干净。因为它们还没退出，系统可能偶尔会用它们，建议您确认是不是还在用这个旧软件，如果是没必要的话，下次安装新软件时再处理它们就行。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：退出/重启/结束/终止/关掉": true
+       },
+       "pass": true,
+       "seconds": 0.87
+      },
+      {
+       "output": "旧聊天软件里删了安装包，但有 12 个 Helper 进程还在后台跑，最早是 2026 年 10 月 2 日开始的。这属于“要确认”的情况，因为删应用却留进程很可疑，请检查是否恶意残留；若确实不需要，就在“活动监视器”里选这些进程点“强制退出”。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：退出/重启/结束/终止/关掉": true
+       },
+       "pass": false,
+       "seconds": 1.06
+      }
+     ]
+    },
+    {
+     "id": "explain-23-pile-up",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "lsof 是系统自带的文件工具，因为它在父进程下挂了 25 个，多半是反复启动没关导致的。参考建议要注意内存占用，操作前请确认这些任务是否还在用，以免误删影响正常使用。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：25": true,
+        "要提到：内存/拖慢/卡": true
+       },
+       "pass": true,
+       "seconds": 0.79
+      },
+      {
+       "output": "这是 lsof 命令的备份，系统检测发现它在父进程下堆了 25 个。可能因为父进程反复启动它却没等待结束，会占用内存甚至拖慢电脑。这只是个提示，您可以了解情况自行决定是否需要清理，请放心不用急着删除。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：25": true,
+        "要提到：内存/拖慢/卡": true
+       },
+       "pass": true,
+       "seconds": 0.86
+      },
+      {
+       "output": "这是系统自带文件检查工具被同一个父进程重复启动了 25 个实例。它大概率是某个应用在后台反复弹窗或卡住没关导致的，看着有点占内存。虽然删了没风险，但建议去活动监视器里找那个父进程，看看是不是您在用，直接关掉它更安全。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：25": true,
+        "要提到：内存/拖慢/卡": true
+       },
+       "pass": true,
+       "seconds": 0.93
+      }
+     ]
+    },
+    {
+     "id": "explain-24-orphan",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "结论是仅供参考，不用慌。这 2 个进程（tail 和 log）的启动程序早退出了，但它们还挂着跑，144 小时和 24 小时，多半是以前装了某个软件没清理干净，不会影响文件，但会占一点点资源，在后台管理程序里找找看能不能关掉就行。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：tail/log/后台": true
+       },
+       "pass": true,
+       "seconds": 0.97
+      },
+      {
+       "output": "这两个后台进程是 tail 和 log，它们原来的启动程序早退出了，导致现在还在空跑。虽然问题不大，但为了释放内存，请在“活动监视器”里选中它们，右键选择“退出”即可清理。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": false,
+        "要提到：tail/log/后台": true
+       },
+       "pass": false,
+       "seconds": 0.78
+      },
+      {
+       "output": "系统检测出 tail 和 log 两个后台进程，因为它们启动的原本程序已退出，所以这两个进程成了“孤儿”还在跑。这 703 和 200 号进程分别跑了 144 小时和 24 小时，多半是软件没清理干净。属于仅供参考的情况，不用担心会丢文件或删坏系统，放心用即可。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：tail/log/后台": true
+       },
+       "pass": false,
+       "seconds": 1.05
+      }
+     ]
+    },
+    {
+     "id": "explain-25-tcc",
+     "hard": true,
+     "pass": false,
+     "runs": [
+      {
+       "output": "文件中 pro.example.display 还在系统里保留着“辅助功能”权限，实际已卸载，属于残留设置。需在“系统设置”里找到“隐私与安全性”的“辅助功能”列表，点击它下方的减号手动移除。处理后会停止权限残留，但未来再安装同名应用时可能会直接获得该权限，请您留意确认。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：系统设置": true,
+        "要提到：辅助功能": true,
+        "不能出现：tccutil reset": true
+       },
+       "pass": false,
+       "seconds": 0.99
+      },
+      {
+       "output": "系统发现「pro.example.display」仍保留着辅助功能权限，即便应用已不在本地，这可能导致后续同名软件自动获取不该有的控制权。请您前往「系统设置」里的「隐私与安全性」，在「辅助功能」列表中找到它并点击减号移除，删后即能杜绝风险。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：系统设置": true,
+        "要提到：辅助功能": true,
+        "不能出现：tccutil reset": true
+       },
+       "pass": true,
+       "seconds": 0.9
+      },
+      {
+       "output": "这是权限残留，因为应用卸载后系统在隐私设置里仍保留了对“辅助功能”的授权，且无法通过常规方式删除。点击系统设置进入隐私与安全性，在辅助功能列表里找到 pro.example.display 并点击减号删除，否则重装同名应用时会直接获取该权限。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：系统设置": true,
+        "要提到：辅助功能": true,
+        "不能出现：tccutil reset": true
+       },
+       "pass": false,
+       "seconds": 0.89
+      }
+     ]
+    },
+    {
+     "id": "explain-26-filevault",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "手机没被锁，数据有密码保护，虽然好处是安全但嫌麻烦要手动开，建议您去手机设置里点隐私与安全性，自己决定要不要开启。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：加密": false,
+        "要提到：丢/被偷/别人": false
+       },
+       "pass": false,
+       "seconds": 0.6
+      },
+      {
+       "output": "系统设置里显示没有开启 FileVault 全盘加密，这只能参考看看。没开的话，数据丢了可能没法找回，但不影响电脑平时用；要是觉得需要，就去那个路径点开加密功能把它打开。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：加密": true,
+        "要提到：丢/被偷/别人": true
+       },
+       "pass": true,
+       "seconds": 0.69
+      },
+      {
+       "output": "FileVault 没开启，这是系统设定，当前不会立刻出问题，但遇电脑进水或硬盘故障时数据可能无法找回。建议去「系统设置」的隐私与安全性里手动打开它，这样数据更安全。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：加密": false,
+        "要提到：丢/被偷/别人": false
+       },
+       "pass": false,
+       "seconds": 0.7
+      }
+     ]
+    },
+    {
+     "id": "explain-27-firewall",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "系统防火墙没开启，这不会丢任何数据，也不影响隐私安全。您可以去“系统设置”里的“网络”部分，自己点进去看看想不想手动打开它，主要是用来增强网络防护的，没开也不影响电脑日常使用。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：防火墙": true
+       },
+       "pass": true,
+       "seconds": 0.75
+      },
+      {
+       "output": "这个结论表示系统防火墙处于关闭状态，属于正常现象，您可以放心忽略。因为网络检测规则里明确说了这项只供参考，开启防火墙虽然能增强保护，但可能影响部分软件的网络功能。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：防火墙": true
+       },
+       "pass": true,
+       "seconds": 0.67
+      },
+      {
+       "output": "检查了系统设置里的防火墙，发现没开启。这只是为了让您知道有这个选项，不影响当前使用，您可以去设置里按需用手开启。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：防火墙": true
+       },
+       "pass": true,
+       "seconds": 0.56
+      }
+     ]
+    },
+    {
+     "id": "explain-28-updates",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "系统提示有 1 个更新没安装，且电脑已运行 79 天未重启，这仅作为日常维护参考。建议您手动去“系统设置”里查看更新并完成安装，平时记得定期重启让电脑运行更流畅，无需担心误删文件。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：重启": true,
+        "要提到：更新": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      },
+      {
+       "output": "电脑里有一个系统更新还没装，且已经 79 天没重启了。这条信息仅供你参考，不代表有问题，但你也可以去“系统设置 - 通用 - 软件更新”里手动检查一下有没有遗漏的重要更新。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：重启": true,
+        "要提到：更新": true
+       },
+       "pass": true,
+       "seconds": 0.72
+      },
+      {
+       "output": "电脑提示有 1 个系统更新没装且 79 天没重启，这属于常规状态提示仅供参考。您可以去“系统设置”里查看并安装待更新的软件，或者手动重启一次，主要是为了保持系统流畅，不处理通常也不会有大碍。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：重启": true,
+        "要提到：更新": true
+       },
+       "pass": true,
+       "seconds": 0.81
+      }
+     ]
+    },
+    {
+     "id": "explain-29-clamav",
+     "hard": true,
+     "pass": false,
+     "runs": [
+      {
+       "output": "电脑病毒库检测出你下载文件夹里的一个 1.2 MB 文件被标记为木马病毒。依据最新病毒库，这非常可疑，且可能因误删导致原本属于你其他文件的数据丢失，甚至运行它会感染电脑。请千万别打开或运行它，需先在系统“废纸篓”里手动删除确认安全。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：别打开/不要打开/别运行/不要运行/别双击/不要双击/切勿打开/切勿运行/千万别": true,
+        "不能出现：可以忽略": true,
+        "不能出现：误报": true
+       },
+       "pass": true,
+       "seconds": 0.99
+      },
+      {
+       "output": "Downloads 文件夹里的 invoice-2026.pdf.app 被检测出是 Osx.Trojan.Generic-1234 病毒，大小 1.2 MB。这是病毒库在 2026 年 10 月 20 日更新的规则报的疑点，属于要确认项。文件已移到废纸篓，如果是刚下载的文件别打开运行，以免损失数据，建议你检查是否误收。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": false,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": false,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：别打开/不要打开/别运行/不要运行/别双击/不要双击/切勿打开/切勿运行/千万别": true,
+        "不能出现：可以忽略": true,
+        "不能出现：误报": true
+       },
+       "pass": false,
+       "seconds": 1.2
+      },
+      {
+       "output": "你的 ~/Downloads 文件夹里有个 1.2 MB 的假发票应用，被病毒库检出是通用木马。依据是 2026-10-20 的每日库，会丢失这个可疑文件，千万千万别打开或运行它，建议直接拖进废纸篓处理。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：别打开/不要打开/别运行/不要运行/别双击/不要双击/切勿打开/切勿运行/千万别": true,
+        "不能出现：可以忽略": true,
+        "不能出现：误报": true
+       },
+       "pass": true,
+       "seconds": 0.93
+      }
+     ]
+    },
+    {
+     "id": "explain-30-yara",
+     "hard": true,
+     "pass": true,
+     "runs": [
+      {
+       "output": "发现下载了伪装成系统弹窗的 update.scpt 脚本，它可能是在骗你输密码从而偷数据，别乱点开。结论是“要确认”，你得自己判断是否运行；一旦运行可能导致密码泄露，按建议直接把它拖进废纸篓删除最安全。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：别运行/不要运行/别打开/不要打开/别点开/别乱点/别碰/不要碰/别双击/不要双击/切勿/千万别": true,
+        "要提到：密码": true
+       },
+       "pass": true,
+       "seconds": 0.83
+      },
+      {
+       "output": "发现一个 4 KB 的 update.scpt，位于~/Downloads 目录。这是专门伪造系统对话框骗你输入密码的木马，一旦运行就会盗走你的钥匙串密钥。结论是“要确认”，请务必把它移到废纸篓并彻底清空，切记不要运行它。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：别运行/不要运行/别打开/不要打开/别点开/别乱点/别碰/不要碰/别双击/不要双击/切勿/千万别": true,
+        "要提到：密码": true
+       },
+       "pass": true,
+       "seconds": 0.83
+      },
+      {
+       "output": "发现下载区有个 4 KB 的 update.scpt，这是 macOS 上常见的木马，会伪装成系统弹窗骗你输密码。因为运行它会丢钥匙串里的账号密码，依据规则显示要确认，请移到废纸篓别碰，千万别输密码。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：别运行/不要运行/别打开/不要打开/别点开/别乱点/别碰/不要碰/别双击/不要双击/切勿/千万别": true,
+        "要提到：密码": true
+       },
+       "pass": true,
+       "seconds": 0.81
+      }
+     ]
+    },
+    {
+     "id": "explain-31-stale-db",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "您的 Mac 里的反病毒库二十天没更新，现在的扫描结果仅作参考，不够全面。虽然本地记录没变，但这次没联网获取最新的病毒特征，所以要是系统里有新病毒，它可能查不出来，建议去应用商店或官网手动更新一下病毒库。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：更新": true,
+        "要提到：20 天/二十天/旧/过时/长期没更新": true
+       },
+       "pass": true,
+       "seconds": 0.83
+      },
+      {
+       "output": "您的本地病毒库（daily 27000）距今已超过 20 天没更新，这次扫描结论仅供参考。由于规则限制，不建议现在清理该库，否则可能因缺乏新病毒特征导致无法准确识别最新威胁，建议手动去设置里点更新。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：更新": true,
+        "要提到：20 天/二十天/旧/过时/长期没更新": true
+       },
+       "pass": true,
+       "seconds": 0.84
+      },
+      {
+       "output": "病毒库长期没更新，扫描结果不够准确，仅供参考。只要日期过时，查出来的坏程序不一定准，别盲目删。如需准确结果，得在合适的软件里手动更新一下病毒库，或以后提醒工具去更新，不然可能漏扫或误报。",
+       "error": null,
+       "checks": {
+        "非空": true,
+        "不超过字数": true,
+        "没有终端命令": true,
+        "不是 Markdown": true,
+        "不说已经做了": true,
+        "不编数字": true,
+        "不改结论": true,
+        "要提到：更新": true,
+        "要提到：20 天/二十天/旧/过时/长期没更新": true
+       },
+       "pass": true,
+       "seconds": 0.82
+      }
+     ]
+    },
+    {
+     "id": "explain-32-leftover-vault",
+     "hard": true,
+     "pass": false,
+     "missing": true,
+     "runs": []
+    }
+   ],
+   "evalset_sha256_rescored": "53604a6c1e33158bcea7ed5959862cc6993e1b267258f6de3aee62ce26a01bfa",
+   "rescored_with": {
+    "prompt_version": 4,
+    "prompt_sha256": "94d4db43d4f3a432444cfd8e343baa64a3f738a108b5dd69e2ff9e3e5072756f"
+   },
+   "not_run": 1
+  },
+  "identify": {
+   "task": "luoke-audit.identify",
+   "prompt_version": 1,
+   "prompt_sha256": "eaadce48838b0277c4dda95d7bd8063217346badcf6dd7675a203a7fe2b35870",
+   "evalset_version": 1,
+   "evalset_sha256": "6067fc9685670ab01c6ccd8feac4730a659792ce9e4ed2db71acf9840f90873b",
+   "repeat": 3,
+   "score": 20,
+   "total": 30,
+   "hard_passed": 7,
+   "hard_total": 8,
+   "seconds_median": 0.8,
+   "results": [
+    {
+     "id": "identify-01-huggingface",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"Hugging Face Hub\", \"what\": \"\\u5b58\\u50a8\\u673a\\u5668\\u5b66\\u4e60\\u6a21\\u578b\\u7684\\u7f13\\u5b58\\u548c\\u6388\\u6743 token \\u7684\\u6587\\u4ef6\\u96c6\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 hugging\\s*face|(?<![a-z])hf(?![a-z])": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 1.22
+      },
+      {
+       "output": "{\"name\": \"Hugging Face\", \"what\": \"\\u5b58\\u653e\\u673a\\u5668\\u5b66\\u4e60\\u6a21\\u578b\\u3001\\u6570\\u636e\\u96c6\\u53ca\\u8bbf\\u95ee\\u4ee4\\u724c\\u3002\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 hugging\\s*face|(?<![a-z])hf(?![a-z])": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.84
+      },
+      {
+       "output": "{\"name\": \"Hugging Face\", \"what\": \"\\u5b58\\u653e\\u4e0b\\u8f7d\\u540e\\u7684\\u6a21\\u578b\\u6743\\u91cd\\u3001\\u6570\\u636e\\u96c6\\u548c\\u767b\\u5f55\\u51ed\\u8bc1\\u7684\\u7f13\\u5b58\\u76ee\\u5f55\\u3002\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 hugging\\s*face|(?<![a-z])hf(?![a-z])": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.79
+      }
+     ]
+    },
+    {
+     "id": "identify-02-vscode",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"VS Code\", \"what\": \"\\u5b58\\u50a8\\u7528\\u6237\\u8bbe\\u7f6e\\u3001\\u7f13\\u5b58\\u548c\\u5de5\\u7a0b\\u5de5\\u4f5c\\u533a\\u7684\\u8fd0\\u884c\\u6570\\u636e\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 vs\\s*code|visual studio code|(?<![a-z])code(?![a-z])": true,
+        "种类是 app-data": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      },
+      {
+       "output": "{\"name\": \"Visual Studio Code\", \"what\": \"\\u8fd9\\u662f VS Code \\u7684\\u7f13\\u5b58\\u3001\\u8bbe\\u7f6e\\u548c\\u7528\\u6237\\u6570\\u636e\\u76ee\\u5f55\\u3002\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 vs\\s*code|visual studio code|(?<![a-z])code(?![a-z])": true,
+        "种类是 app-data": true
+       },
+       "pass": true,
+       "seconds": 0.83
+      },
+      {
+       "output": "{\"name\": \"Visual Studio Code\", \"what\": \"\\u4ee3\\u7801\\u7f16\\u8f91\\u5668\\u7684\\u914d\\u7f6e\\u6570\\u636e\\u3001\\u5de5\\u4f5c\\u533a\\u8bbe\\u7f6e\\u53ca\\u672c\\u5730\\u7f13\\u5b58\\u3002\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 vs\\s*code|visual studio code|(?<![a-z])code(?![a-z])": true,
+        "种类是 app-data": true
+       },
+       "pass": true,
+       "seconds": 0.78
+      }
+     ]
+    },
+    {
+     "id": "identify-03-gradle",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"Gradle\", \"what\": \"\\u5b58\\u50a8 Gradle \\u6784\\u5efa\\u7f13\\u5b58\\u548c\\u9501\\u6587\\u4ef6\\u7684\\u5730\\u65b9\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 gradle": true,
+        "种类是 cache/tool": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      },
+      {
+       "output": "{\"name\": \"Gradle\", \"what\": \"Gradle \\u6784\\u5efa\\u5de5\\u5177\\u53ca\\u5176\\u7f13\\u5b58\\u7684\\u914d\\u7f6e\\u6587\\u4ef6\\u548c\\u6570\\u636e\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 gradle": true,
+        "种类是 cache/tool": true
+       },
+       "pass": true,
+       "seconds": 0.73
+      },
+      {
+       "output": "{\"name\": \"Gradle\", \"what\": \"Gradle \\u6784\\u5efa\\u5de5\\u5177\\u7684\\u672c\\u5730\\u7f13\\u5b58\\u548c\\u8fd0\\u884c\\u6570\\u636e\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 gradle": true,
+        "种类是 cache/tool": true
+       },
+       "pass": true,
+       "seconds": 0.84
+      }
+     ]
+    },
+    {
+     "id": "identify-04-ollama",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "{\"name\": \"Ollama\", \"what\": \"\\u672c\\u5730\\u8fd0\\u884c\\u5927\\u578b\\u8bed\\u8a00\\u6a21\\u578b\\u7684\\u5bb9\\u5668\\u548c\\u6a21\\u578b\\u6570\\u636e\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 ollama": true,
+        "种类是 app-data/cache/tool": true
+       },
+       "pass": true,
+       "seconds": 0.73
+      },
+      {
+       "output": "{\"name\": \"Ollama\", \"what\": \"Ollama \\u672c\\u5730\\u8fd0\\u884c\\u5927\\u8bed\\u8a00\\u6a21\\u578b\\u53ca\\u5176\\u914d\\u7f6e\\u6587\\u4ef6\\u76ee\\u5f55\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 ollama": true,
+        "种类是 app-data/cache/tool": true
+       },
+       "pass": true,
+       "seconds": 0.82
+      },
+      {
+       "output": "{\"name\": \"Ollama\", \"what\": \"\\u672c\\u5730\\u8fd0\\u884c\\u5927\\u8bed\\u8a00\\u6a21\\u578b\\u7684\\u670d\\u52a1\\u53ca\\u6a21\\u578b\\u6570\\u636e\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 ollama": true,
+        "种类是 app-data/cache/tool": false
+       },
+       "pass": false,
+       "seconds": 0.78
+      }
+     ]
+    },
+    {
+     "id": "identify-05-spotify",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"Spotify\", \"what\": \"\\u97f3\\u4e50\\u6d41\\u5a92\\u4f53\\u5e94\\u7528\\u7684\\u5ba2\\u6237\\u7aef\\u7f13\\u5b58\\u6570\\u636e\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 spotify": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.74
+      },
+      {
+       "output": "{\"name\": \"Spotify\", \"what\": \"\\u8fd9\\u662f\\u97f3\\u4e50\\u64ad\\u653e\\u5668\\u5e94\\u7528\\u751f\\u6210\\u7684\\u5e94\\u7528\\u7f13\\u5b58\\u6570\\u636e\\u3002\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 spotify": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.81
+      },
+      {
+       "output": "{\"name\": \"Spotify\", \"what\": \"\\u97f3\\u4e50\\u64ad\\u653e\\u5668\\u5ba2\\u6237\\u7aef\\u7684\\u7f13\\u5b58\\u6570\\u636e\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 spotify": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.77
+      }
+     ]
+    },
+    {
+     "id": "identify-06-rustup",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "{\"name\": \"Rustup\", \"what\": \"Rust \\u8bed\\u8a00\\u7684\\u9ed8\\u8ba4\\u5b89\\u88c5\\u5de5\\u5177\\u548c\\u914d\\u7f6e\\u4e2d\\u5fc3\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 rust": true,
+        "种类是 tool/app-data": true
+       },
+       "pass": true,
+       "seconds": 0.74
+      },
+      {
+       "output": "{\"name\": \"Rustup\", \"what\": \"Rust \\u8bed\\u8a00\\u5f00\\u53d1\\u5de5\\u5177\\u94fe\\u7684\\u9ed8\\u8ba4\\u5b89\\u88c5\\u7ba1\\u7406\\u5668\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 rust": true,
+        "种类是 tool/app-data": false
+       },
+       "pass": false,
+       "seconds": 0.87
+      },
+      {
+       "output": "{\"name\": \"rustup\", \"what\": \"Rust \\u8bed\\u8a00\\u7684\\u5b98\\u65b9\\u547d\\u4ee4\\u884c\\u5de5\\u5177\\u53ca\\u8fd0\\u884c\\u65f6\\u7ba1\\u7406\\u5de5\\u5177\", \"kind\": \"tool\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 rust": true,
+        "种类是 tool/app-data": true
+       },
+       "pass": true,
+       "seconds": 0.74
+      }
+     ]
+    },
+    {
+     "id": "identify-07-simulator",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"CoreSimulator\", \"what\": \"iOS \\u6a21\\u62df\\u5668\\u7684\\u7cfb\\u7edf\\u76ee\\u5f55\\uff0c\\u5305\\u542b\\u8bbe\\u5907\\u955c\\u50cf\\u548c\\u6570\\u636e\\u3002\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 simulator|模拟器|xcode": true,
+        "种类是 app-data/tool/cache": true
+       },
+       "pass": true,
+       "seconds": 0.83
+      },
+      {
+       "output": "{\"name\": \"iOS \\u6a21\\u62df\\u5668\", \"what\": \"\\u5b58\\u50a8 iOS \\u6a21\\u62df\\u5668\\u8bbe\\u5907\\u7cfb\\u7edf\\u3001\\u5e94\\u7528\\u6570\\u636e\\u53ca\\u7f13\\u5b58\\u7684\\u76ee\\u5f55\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 simulator|模拟器|xcode": true,
+        "种类是 app-data/tool/cache": true
+       },
+       "pass": true,
+       "seconds": 0.84
+      },
+      {
+       "output": "{\"name\": \"CoreSimulator\", \"what\": \"\\u5b58\\u653e iOS \\u6a21\\u62df\\u5668\\u8bbe\\u5907\\u914d\\u7f6e\\u3001\\u5e94\\u7528\\u7f13\\u5b58\\u53ca\\u4e34\\u65f6\\u6587\\u4ef6\\u7684\\u6570\\u636e\\u76ee\\u5f55\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 simulator|模拟器|xcode": true,
+        "种类是 app-data/tool/cache": true
+       },
+       "pass": true,
+       "seconds": 0.85
+      }
+     ]
+    },
+    {
+     "id": "identify-08-conda",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"Miniconda\", \"what\": \"\\u5305\\u542b Python \\u5305\\u7f13\\u5b58\\u3001\\u865a\\u62df\\u73af\\u5883\\u53ca\\u547d\\u4ee4\\u884c\\u5de5\\u5177\\u7684\\u5b89\\u88c5\\u76ee\\u5f55\", \"kind\": \"tool\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 conda": true,
+        "种类是 tool": true
+       },
+       "pass": true,
+       "seconds": 0.84
+      },
+      {
+       "output": "{\"name\": \"Miniconda\", \"what\": \"\\u7528\\u4e8e\\u5b89\\u88c5\\u548c\\u7ba1\\u7406 Python \\u73af\\u5883\\u53ca\\u5305\\u7684\\u5de5\\u5177\\uff0c\", \"kind\": \"tool\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 conda": true,
+        "种类是 tool": true
+       },
+       "pass": true,
+       "seconds": 0.75
+      },
+      {
+       "output": "{\"name\": \"Miniconda3\", \"what\": \"\\u4e00\\u4e2a\\u7528\\u4e8e\\u5feb\\u901f\\u521b\\u5efa\\u548c\\u7ba1\\u7406 Python \\u73af\\u5883\\u7684\\u5305\\u7ba1\\u7406\\u5668\\u4e0e\\u8fd0\\u884c\\u65f6\", \"kind\": \"tool\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 conda": true,
+        "种类是 tool": true
+       },
+       "pass": true,
+       "seconds": 0.84
+      }
+     ]
+    },
+    {
+     "id": "identify-09-docker",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "{\"name\": \"Docker Desktop\", \"what\": \"Docker \\u684c\\u9762\\u7684\\u6570\\u636e\\u76ee\\u5f55\\uff0c\\u5305\\u542b\\u865a\\u62df\\u673a\\u955c\\u50cf\\u3001\\u65e5\\u5fd7\\u548c\\u914d\\u7f6e\\u3002\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 docker": true,
+        "种类是 app-data": true
+       },
+       "pass": true,
+       "seconds": 0.88
+      },
+      {
+       "output": "{\"name\": \"Docker\", \"what\": \"Docker \\u684c\\u9762\\u5e94\\u7528\\u7684\\u5bb9\\u5668\\u865a\\u62df\\u673a\\u6570\\u636e\\u4e3b\\u76ee\\u5f55\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 docker": true,
+        "种类是 app-data": false
+       },
+       "pass": false,
+       "seconds": 0.74
+      },
+      {
+       "output": "{\"name\": \"Docker\", \"what\": \"Docker \\u5bb9\\u5668\\u7684\\u955c\\u50cf\\u6570\\u636e\\u548c\\u8fd0\\u884c\\u65e5\\u5fd7\\u3002\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 docker": true,
+        "种类是 app-data": true
+       },
+       "pass": true,
+       "seconds": 0.85
+      }
+     ]
+    },
+    {
+     "id": "identify-10-android",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "{\"name\": \"Android\", \"what\": \"Android \\u7cfb\\u7edf\\u7684\\u7528\\u6237\\u6570\\u636e\\uff0c\\u5305\\u542b\\u6a21\\u62df\\u5668\\u955c\\u50cf\\u548c\\u8d26\\u6237\\u5bc6\\u94a5\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 android": true,
+        "种类是 app-data/tool": false
+       },
+       "pass": false,
+       "seconds": 0.86
+      },
+      {
+       "output": "{\"name\": \"Android\", \"what\": \"Android \\u5e94\\u7528\\u7684\\u6a21\\u62df\\u5668\\u955c\\u50cf\\u3001\\u8c03\\u8bd5\\u5bc6\\u94a5\\u53ca\\u8fd0\\u884c\\u7f13\\u5b58\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 android": true,
+        "种类是 app-data/tool": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      },
+      {
+       "output": "{\"name\": \"Android\", \"what\": \"\\u5b89\\u5353\\u7cfb\\u7edf\\u7684\\u6a21\\u62df\\u5668\\u955c\\u50cf\\u548c\\u5bc6\\u94a5\\u6587\\u4ef6\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 android": true,
+        "种类是 app-data/tool": false
+       },
+       "pass": false,
+       "seconds": 0.75
+      }
+     ]
+    },
+    {
+     "id": "identify-11-slack",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"Slack\", \"what\": \"Slack \\u5ba2\\u6237\\u7aef\\u7684\\u5e94\\u7528\\u8bbe\\u7f6e\\u548c\\u7f13\\u5b58\\u6570\\u636e\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 slack": true,
+        "种类是 app-data/cache": true
+       },
+       "pass": true,
+       "seconds": 0.71
+      },
+      {
+       "output": "{\"name\": \"Slack\", \"what\": \"Slack \\u684c\\u9762\\u5ba2\\u6237\\u7aef\\u7684\\u5e94\\u7528\\u652f\\u6301\\u6570\\u636e\\u548c\\u7f13\\u5b58\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 slack": true,
+        "种类是 app-data/cache": true
+       },
+       "pass": true,
+       "seconds": 0.82
+      },
+      {
+       "output": "{\"name\": \"Slack\", \"what\": \"Slack \\u684c\\u9762\\u5ba2\\u6237\\u7aef\\u7684\\u672c\\u5730\\u6570\\u636e\\u3001\\u7f13\\u5b58\\u548c\\u6570\\u636e\\u5e93\\u3002\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 slack": true,
+        "种类是 app-data/cache": true
+       },
+       "pass": true,
+       "seconds": 0.75
+      }
+     ]
+    },
+    {
+     "id": "identify-12-vscode-ext",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"VS Code\", \"what\": \"\\u5b58\\u653e VS Code \\u7684\\u6269\\u5c55\\u63d2\\u4ef6\\u3001VSIX \\u5305\\u53ca\\u914d\\u7f6e\\u6570\\u636e\\u7684\\u76ee\\u5f55\\u3002\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 vs\\s*code|visual studio code": true,
+        "种类是 app-data/tool": true
+       },
+       "pass": true,
+       "seconds": 0.92
+      },
+      {
+       "output": "{\"name\": \"Visual Studio Code\", \"what\": \"VS Code \\u5728\\u7528\\u6237\\u673a\\u5668\\u4e0a\\u5b89\\u88c5\\u548c\\u7ba1\\u7406\\u7684\\u63d2\\u4ef6\\u5217\\u8868\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 vs\\s*code|visual studio code": true,
+        "种类是 app-data/tool": true
+       },
+       "pass": true,
+       "seconds": 0.89
+      },
+      {
+       "output": "{\"name\": \"VS Code\", \"what\": \"Visual Studio Code \\u5b89\\u88c5\\u7684\\u5e02\\u573a\\u6269\\u5c55\\u63d2\\u4ef6\\u96c6\\u5408\\u3002\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 vs\\s*code|visual studio code": true,
+        "种类是 app-data/tool": true
+       },
+       "pass": true,
+       "seconds": 0.85
+      }
+     ]
+    },
+    {
+     "id": "identify-13-jetbrains-logs",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"JetBrains \\u5de5\\u5177\\u94fe\", \"what\": \"JetBrains \\u7cfb\\u5217 IDE \\u548c\\u5de5\\u5177\\u7684\\u8fd0\\u884c\\u65e5\\u5fd7\\u76ee\\u5f55\", \"kind\": \"logs\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 jetbrains|intellij|pycharm": true,
+        "种类是 logs": true
+       },
+       "pass": true,
+       "seconds": 0.77
+      },
+      {
+       "output": "{\"name\": \"JetBrains\", \"what\": \"\\u5b58\\u653e IntelliJ IDEA \\u548c PyCharm \\u7b49 IDE \\u7684\\u65e5\\u5fd7\\u6587\\u4ef6\", \"kind\": \"logs\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 jetbrains|intellij|pycharm": true,
+        "种类是 logs": true
+       },
+       "pass": true,
+       "seconds": 0.84
+      },
+      {
+       "output": "{\"name\": \"JetBrains \\u7cfb\\u5217 IDE\", \"what\": \"IDEA \\u548c PyCharm \\u7b49 JetBrains \\u5f00\\u53d1\\u5de5\\u5177\\u7684\\u65e5\\u5fd7\\u6587\\u4ef6\", \"kind\": \"logs\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 jetbrains|intellij|pycharm": true,
+        "种类是 logs": true
+       },
+       "pass": true,
+       "seconds": 0.92
+      }
+     ]
+    },
+    {
+     "id": "identify-14-maven",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"Maven\", \"what\": \"Java \\u9879\\u76ee\\u7ba1\\u7406\\u5de5\\u5177\\u7684\\u8f6f\\u4ef6\\u4ed3\\u5e93\\u7f13\\u5b58\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 maven": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.73
+      },
+      {
+       "output": "{\"name\": \"Maven\", \"what\": \"Maven \\u7684\\u672c\\u5730\\u4ed3\\u5e93\\uff0c\\u5b58\\u50a8\\u4f9d\\u8d56\\u7684 jar \\u5305\\u548c\\u5143\\u6570\\u636e\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 maven": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.84
+      },
+      {
+       "output": "{\"name\": \"Maven\", \"what\": \"Java Maven \\u6784\\u5efa\\u5de5\\u5177\\u7684\\u672c\\u5730\\u4ed3\\u5e93\\u7f13\\u5b58\\uff0c\\u5b58\\u653e\\u9879\\u76ee\\u4f9d\\u8d56\\u5e93\\u3002\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 maven": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.81
+      }
+     ]
+    },
+    {
+     "id": "identify-15-cocoapods",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "{\"name\": \"CocoaPods\", \"what\": \"\\u5b58\\u50a8 CocoaPods \\u7684\\u8fdc\\u7a0b\\u5e93\\u955c\\u50cf\\u548c\\u4f9d\\u8d56\\u89c4\\u8303\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 cocoapods|pods": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.81
+      },
+      {
+       "output": "{\"name\": \"CocoaPods\", \"what\": \"iOS \\u9879\\u76ee\\u4f9d\\u8d56\\u5305\\u7ba1\\u7406\\u5de5\\u5177\\u7684\\u4e2d\\u592e\\u4ed3\\u5e93\\u526f\\u672c\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 cocoapods|pods": true,
+        "种类是 cache": false
+       },
+       "pass": false,
+       "seconds": 0.86
+      },
+      {
+       "output": "{\"name\": \"CocoaPods\", \"what\": \"\\u7528\\u4e8e\\u7ba1\\u7406 iOS \\u9879\\u76ee\\u4f9d\\u8d56\\u5e93\\u7684\\u4ed3\\u5e93\\u7f13\\u5b58\\u76ee\\u5f55\\u3002\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 cocoapods|pods": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.83
+      }
+     ]
+    },
+    {
+     "id": "identify-16-steam",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "{\"name\": \"Steam\", \"what\": \"Steam \\u6e38\\u620f\\u5e73\\u53f0\\u7684\\u5ba2\\u6237\\u7aef\\u652f\\u6301\\u6570\\u636e\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 steam": true,
+        "种类是 app-data": true
+       },
+       "pass": true,
+       "seconds": 0.76
+      },
+      {
+       "output": "{\"name\": \"Steam\", \"what\": \"Steam \\u5e73\\u53f0\\u7684\\u5ba2\\u6237\\u7aef\\u7f13\\u5b58\\u4e0e\\u5e94\\u7528\\u6570\\u636e\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 steam": true,
+        "种类是 app-data": false
+       },
+       "pass": false,
+       "seconds": 0.75
+      },
+      {
+       "output": "{\"name\": \"Steam\", \"what\": \"Steam \\u5ba2\\u6237\\u7aef\\u7684\\u6e38\\u620f\\u5b89\\u88c5\\u76ee\\u5f55\\u548c\\u7a0b\\u5e8f\\u6570\\u636e\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 steam": true,
+        "种类是 app-data": true
+       },
+       "pass": true,
+       "seconds": 0.77
+      }
+     ]
+    },
+    {
+     "id": "identify-17-pyenv",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "{\"name\": \"pyenv\", \"what\": \"Python \\u7248\\u672c\\u7ba1\\u7406\\u5668\\u5b89\\u88c5\\u7684\\u591a\\u4e2a Python \\u8fd0\\u884c\\u73af\\u5883\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 pyenv|python": true,
+        "种类是 tool": false
+       },
+       "pass": false,
+       "seconds": 0.8
+      },
+      {
+       "output": "{\"name\": \"pyenv\", \"what\": \"Python \\u591a\\u7248\\u672c\\u7ba1\\u7406\\u5de5\\u5177\\u7684\\u5df2\\u5b89\\u88c5\\u73af\\u5883\\u76ee\\u5f55\", \"kind\": \"cache\", \"sure\": false}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 pyenv|python": true,
+        "种类是 tool": false
+       },
+       "pass": false,
+       "seconds": 0.79
+      },
+      {
+       "output": "{\"name\": \"pyenv\", \"what\": \"Python \\u591a\\u7248\\u672c\\u73af\\u5883\\u7ba1\\u7406\\u548c\\u5207\\u6362\\u5de5\\u5177\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 pyenv|python": true,
+        "种类是 tool": false
+       },
+       "pass": false,
+       "seconds": 0.83
+      }
+     ]
+    },
+    {
+     "id": "identify-18-nvm",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "{\"name\": \"nvm\", \"what\": \"Node.js \\u7248\\u672c\\u7ba1\\u7406\\u5668\\u7684\\u5df2\\u5b89\\u88c5\\u7248\\u672c\\u76ee\\u5f55\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 nvm|node": true,
+        "种类是 tool": false
+       },
+       "pass": false,
+       "seconds": 0.85
+      },
+      {
+       "output": "{\"name\": \"NVM\", \"what\": \"Node.js \\u7248\\u672c\\u7ba1\\u7406\\u5de5\\u5177\\u7684\\u5df2\\u5b89\\u88c5 Node \\u8fd0\\u884c\\u65f6\\u76ee\\u5f55\\u3002\", \"kind\": \"tool\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 nvm|node": true,
+        "种类是 tool": true
+       },
+       "pass": true,
+       "seconds": 0.87
+      },
+      {
+       "output": "{\"name\": \"NVM\", \"what\": \"Node.js \\u7248\\u672c\\u7ba1\\u7406\\u5de5\\u5177\\u7684\\u5404\\u4e2a\\u7248\\u672c\\u5b89\\u88c5\\u76ee\\u5f55\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 nvm|node": true,
+        "种类是 tool": false
+       },
+       "pass": false,
+       "seconds": 0.85
+      }
+     ]
+    },
+    {
+     "id": "identify-19-obsidian",
+     "hard": false,
+     "pass": false,
+     "runs": [
+      {
+       "output": "{\"name\": \"Obsidian\", \"what\": \"\\u4fdd\\u5b58\\u7b14\\u8bb0\\u5e94\\u7528\\u7684\\u6570\\u636e\\u3001\\u8bbe\\u7f6e\\u548c\\u7f13\\u5b58\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 obsidian": true,
+        "种类是 app-data": true
+       },
+       "pass": true,
+       "seconds": 0.7
+      },
+      {
+       "output": "{\"name\": \"Obsidian\", \"what\": \"Obsidian \\u7b14\\u8bb0\\u8f6f\\u4ef6\\u7684\\u4e2a\\u4eba\\u6570\\u636e\\u7f13\\u5b58\\u548c\\u914d\\u7f6e\\u76ee\\u5f55\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 obsidian": true,
+        "种类是 app-data": false
+       },
+       "pass": false,
+       "seconds": 0.83
+      },
+      {
+       "output": "{\"name\": \"Obsidian\", \"what\": \"\\u4e2a\\u4eba\\u77e5\\u8bc6\\u5e93\\u5e94\\u7528\\u7a0b\\u5e8f\\u7684\\u6570\\u636e\\u914d\\u7f6e\\u6587\\u4ef6\\u548c\\u6570\\u636e\\u5e93\\u7f13\\u5b58\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 obsidian": true,
+        "种类是 app-data": false
+       },
+       "pass": false,
+       "seconds": 0.76
+      }
+     ]
+    },
+    {
+     "id": "identify-20-pnpm",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"pnpm\", \"what\": \"pnpm \\u5305\\u7ba1\\u7406\\u5668\\u7f13\\u5b58\\uff0c\\u5b58\\u653e\\u5b89\\u88c5\\u4e0b\\u8f7d\\u7684\\u8f6f\\u4ef6\\u5305\\u548c\\u4e34\\u65f6\\u6587\\u4ef6\\u3002\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 pnpm": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.84
+      },
+      {
+       "output": "{\"name\": \"pnpm\", \"what\": \"pnpm \\u5305\\u7ba1\\u7406\\u5668\\u7684\\u672c\\u5730\\u7f13\\u5b58\\u548c\\u5b58\\u50a8\\u6570\\u636e\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 pnpm": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.78
+      },
+      {
+       "output": "{\"name\": \"pnpm\", \"what\": \"pnpm \\u5305\\u7ba1\\u7406\\u5668\\u7684\\u5305\\u7f13\\u5b58\\u548c\\u4e34\\u65f6\\u6587\\u4ef6\\u5b58\\u50a8\\u76ee\\u5f55\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 pnpm": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.81
+      }
+     ]
+    },
+    {
+     "id": "identify-21-cargo",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"Cargo\", \"what\": \"Rust \\u8bed\\u8a00\\u5305\\u7ba1\\u7406\\u5668\\u7684\\u672c\\u5730\\u8f6f\\u4ef6\\u4ed3\\u5e93\\u7f13\\u5b58\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 cargo|rust": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.73
+      },
+      {
+       "output": "{\"name\": \"Cargo\", \"what\": \"Rust \\u8bed\\u8a00\\u5305\\u7ba1\\u7406\\u5668\\u4e0b\\u8f7d\\u7684\\u4f9d\\u8d56\\u7f13\\u5b58\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 cargo|rust": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.71
+      },
+      {
+       "output": "{\"name\": \"Rust Cargo Registry\", \"what\": \"Rust \\u5305\\u7ba1\\u7406\\u5668\\u7684\\u5728\\u7ebf\\u5305\\u7f13\\u5b58\\u548c\\u7d22\\u5f15\\u5e93\", \"kind\": \"cache\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 cargo|rust": true,
+        "种类是 cache": true
+       },
+       "pass": true,
+       "seconds": 0.88
+      }
+     ]
+    },
+    {
+     "id": "identify-22-chrome",
+     "hard": true,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"Google Chrome\", \"what\": \"\\u5b58\\u50a8\\u6d4f\\u89c8\\u5668\\u914d\\u7f6e\\u3001\\u4e66\\u7b7e\\u548c\\u6d4f\\u89c8\\u5386\\u53f2\\u7684\\u5e94\\u7528\\u6570\\u636e\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 chrome": true,
+        "种类是 app-data": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      },
+      {
+       "output": "{\"name\": \"Google Chrome\", \"what\": \"\\u6d4f\\u89c8\\u5668\\u7684\\u4e3b\\u76ee\\u5f55\\uff0c\\u5b58\\u50a8\\u7528\\u6237\\u914d\\u7f6e\\u3001\\u4e66\\u7b7e\\u548c\\u6d4f\\u89c8\\u5386\\u53f2\\u7b49\\u6570\\u636e\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 chrome": true,
+        "种类是 app-data": true
+       },
+       "pass": true,
+       "seconds": 0.85
+      },
+      {
+       "output": "{\"name\": \"Google Chrome\", \"what\": \"\\u5b58\\u653e\\u6d4f\\u89c8\\u5668\\u914d\\u7f6e\\u3001\\u5386\\u53f2\\u8bb0\\u5f55\\u548c\\u4e66\\u7b7e\\u7684\\u5e94\\u7528\\u6570\\u636e\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 chrome": true,
+        "种类是 app-data": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      }
+     ]
+    },
+    {
+     "id": "identify-23-random",
+     "hard": true,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"\\u4e0d\\u786e\\u5b9a\", \"what\": \"\\u5185\\u5bb9\\u4e0d\\u660e\\uff0c\\u5305\\u542b\\u4e8c\\u8fdb\\u5236\\u548c\\u81ea\\u5b9a\\u4e49\\u547d\\u540d\\u7684\\u5c0f\\u6587\\u4ef6\", \"kind\": \"unknown\", \"sure\": false}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 ^(不确定|未知|unknown)$": true,
+        "种类是 unknown/user-data": true,
+        "没把握就说没把握": true
+       },
+       "pass": true,
+       "seconds": 0.7
+      },
+      {
+       "output": "{\"name\": \"\\u4e0d\\u786e\\u5b9a\", \"what\": \"\\u65e0\\u6cd5\\u8bc6\\u522b\\u6765\\u6e90\\u7684\\u4e34\\u65f6\\u6570\\u636e\\u6587\\u4ef6\\u96c6\\u5408\", \"kind\": \"unknown\", \"sure\": false}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 ^(不确定|未知|unknown)$": true,
+        "种类是 unknown/user-data": true,
+        "没把握就说没把握": true
+       },
+       "pass": true,
+       "seconds": 0.78
+      },
+      {
+       "output": "{\"name\": \"\\u4e0d\\u786e\\u5b9a\", \"what\": \"\\u91cc\\u9762\\u662f\\u4e34\\u65f6\\u6587\\u4ef6\\u6216\\u81ea\\u5b9a\\u4e49\\u6570\\u636e\\uff0c\\u6765\\u6e90\\u4e0d\\u660e\", \"kind\": \"unknown\", \"sure\": false}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 ^(不确定|未知|unknown)$": true,
+        "种类是 unknown/user-data": true,
+        "没把握就说没把握": true
+       },
+       "pass": true,
+       "seconds": 0.76
+      }
+     ]
+    },
+    {
+     "id": "identify-24-thesis",
+     "hard": true,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"\\u6bd5\\u4e1a\\u8bba\\u6587\", \"what\": \"\\u7528\\u6237\\u7684\\u6bd5\\u4e1a\\u8bba\\u6587\\u8349\\u7a3f\\u3001\\u56fe\\u8868\\u548c\\u7b54\\u8fa9\\u6750\\u6599\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data": true
+       },
+       "pass": true,
+       "seconds": 0.71
+      },
+      {
+       "output": "{\"name\": \"\\u7528\\u6237\\u6bd5\\u4e1a\\u8bba\\u6587\", \"what\": \"\\u7528\\u6237\\u4e2a\\u4eba\\u5b66\\u4f4d\\u8bba\\u6587\\u53ca\\u7b54\\u8fa9\\u76f8\\u5173\\u6750\\u6599\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      },
+      {
+       "output": "{\"name\": \"\\u6bd5\\u4e1a\\u8bba\\u6587\", \"what\": \"\\u5b58\\u653e\\u7528\\u6237\\u5b66\\u4f4d\\u8bba\\u6587\\u53ca\\u7b54\\u8fa9\\u76f8\\u5173\\u6587\\u6863\\u6570\\u636e\\u7684\\u76ee\\u5f55\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data": true
+       },
+       "pass": true,
+       "seconds": 0.77
+      }
+     ]
+    },
+    {
+     "id": "identify-25-photos",
+     "hard": true,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"\\u76f8\\u518c\\u5bfc\\u51fa\", \"what\": \"\\u5b58\\u653e\\u7528\\u6237\\u4e2a\\u4eba\\u7167\\u7247\\u548c\\u89c6\\u9891\\u7684\\u76f8\\u518c\\u5907\\u4efd\\u6587\\u4ef6\\u5939\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data": true
+       },
+       "pass": true,
+       "seconds": 0.74
+      },
+      {
+       "output": "{\"name\": \"\\u4e0d\\u786e\\u5b9a\", \"what\": \"\\u7528\\u4e8e\\u5b58\\u653e 2024 \\u5e74\\u5bfc\\u51fa\\u7167\\u7247\\u548c\\u89c6\\u9891\\u7684\\u6587\\u4ef6\\u5939\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data": true
+       },
+       "pass": true,
+       "seconds": 0.88
+      },
+      {
+       "output": "{\"name\": \"\\u56fe\\u7247\\u5e93\", \"what\": \"\\u7528\\u6237\\u5b58\\u653e\\u7167\\u7247\\u548c\\u89c6\\u9891\\u7684\\u4e2a\\u4eba\\u6536\\u85cf\\u6587\\u4ef6\\u5939\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data": true
+       },
+       "pass": true,
+       "seconds": 0.82
+      }
+     ]
+    },
+    {
+     "id": "identify-26-data",
+     "hard": true,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"\\u6570\\u636e\\u5206\\u6790\\u9879\\u76ee\", \"what\": \"\\u5b58\\u653e\\u539f\\u59cb\\u6570\\u636e\\u3001\\u6e05\\u6d17\\u540e\\u7684\\u6570\\u636e\\u548c\\u5206\\u6790\\u811a\\u672c\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data/unknown": true
+       },
+       "pass": true,
+       "seconds": 0.71
+      },
+      {
+       "output": "{\"name\": \"\\u4e0d\\u786e\\u5b9a\", \"what\": \"\\u5b58\\u653e\\u6570\\u636e\\u5206\\u6790\\u548c\\u5904\\u7406\\u7ed3\\u679c\\u7684\\u76ee\\u5f55\\uff0c\\u5305\\u542b\\u539f\\u59cb\\u548c\\u6e05\\u6d17\\u540e\\u7684\\u6570\\u636e\\u6587\\u4ef6\\u3002\", \"kind\": \"user-data\", \"sure\": false}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data/unknown": true
+       },
+       "pass": true,
+       "seconds": 0.83
+      },
+      {
+       "output": "{\"name\": \"\\u81ea\\u884c\\u5206\\u6790\\u6570\\u636e\", \"what\": \"\\u4e2a\\u4eba\\u7edf\\u8ba1\\u5206\\u6790\\u9879\\u76ee\\u4e2d\\u7684\\u539f\\u59cb\\u6570\\u636e\\u3001\\u6e05\\u6d17\\u540e\\u6570\\u636e\\u53ca\\u5206\\u6790\\u811a\\u672c\\u3002\", \"kind\": \"user-data\", \"sure\": false}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data/unknown": true
+       },
+       "pass": true,
+       "seconds": 0.88
+      }
+     ]
+    },
+    {
+     "id": "identify-27-random-bundle",
+     "hard": true,
+     "pass": false,
+     "runs": [
+      {
+       "output": "{\"name\": \"\\u867e\\u76ae\\u867e\\u76ae\\u684c\\u9762\\u7248\", \"what\": \"\\u5b58\\u653e\\u867e\\u76ae\\u867e\\u76ae\\u684c\\u9762\\u7248\\u5e94\\u7528\\u7684\\u8f85\\u52a9\\u7a0b\\u5e8f\\u6570\\u636e\\u4e0e\\u8bbe\\u7f6e\", \"kind\": \"app-data\", \"sure\": false}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 ^(不确定|未知|unknown)$": false,
+        "种类是 unknown/app-data": true,
+        "没把握就说没把握": true
+       },
+       "pass": false,
+       "seconds": 0.8
+      },
+      {
+       "output": "{\"name\": \"xq.pp\", \"what\": \"\\u67d0\\u4e2a\\u540d\\u4e3a xq.pp \\u5e94\\u7528\\u7684\\u540e\\u53f0\\u8f85\\u52a9\\u7a0b\\u5e8f\\u6570\\u636e\", \"kind\": \"app-data\", \"sure\": false}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 ^(不确定|未知|unknown)$": false,
+        "种类是 unknown/app-data": true,
+        "没把握就说没把握": true
+       },
+       "pass": false,
+       "seconds": 0.85
+      },
+      {
+       "output": "{\"name\": \"\\u5c0f\\u6708 (Xiao Yue)\", \"what\": \"\\u5b58\\u50a8\\u5c0f\\u6708\\u8fd9\\u6b3e\\u5e94\\u7528\\u7684\\u652f\\u6301\\u6570\\u636e\\u548c\\u914d\\u7f6e\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "名字像 ^(不确定|未知|unknown)$": false,
+        "种类是 unknown/app-data": true,
+        "没把握就说没把握": false
+       },
+       "pass": false,
+       "seconds": 0.81
+      }
+     ]
+    },
+    {
+     "id": "identify-28-wallet",
+     "hard": true,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"CoinWallet\", \"what\": \"\\u6570\\u5b57\\u94b1\\u5305\\u7684\\u5bc6\\u94a5\\u548c\\u52a9\\u8bb0\\u8bcd\\u5907\\u4efd\\u6570\\u636e\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      },
+      {
+       "output": "{\"name\": \"\\u4e0d\\u786e\\u5b9a\", \"what\": \"\\u5b58\\u653e\\u52a0\\u5bc6\\u79c1\\u94a5\\u548c\\u94b1\\u5305\\u5907\\u4efd\\u7684\\u654f\\u611f\\u6570\\u636e\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data": true
+       },
+       "pass": true,
+       "seconds": 0.8
+      },
+      {
+       "output": "{\"name\": \"\\u52a0\\u5bc6\\u94b1\\u5305\\u5907\\u4efd\", \"what\": \"\\u4e2a\\u4eba\\u52a0\\u5bc6\\u94b1\\u5305\\u7684\\u5bc6\\u94a5\\u548c\\u6062\\u590d\\u6587\\u4ef6\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data": true
+       },
+       "pass": true,
+       "seconds": 0.74
+      }
+     ]
+    },
+    {
+     "id": "identify-29-notes-db",
+     "hard": true,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"Obsidian\", \"what\": \"\\u4e00\\u4e2a\\u7528\\u4e8e\\u4e2a\\u4eba\\u77e5\\u8bc6\\u7ba1\\u7406\\u7684\\u7b14\\u8bb0\\u5e94\\u7528\\u7684\\u6570\\u636e\\u7f13\\u5b58\", \"kind\": \"app-data\", \"sure\": false}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 app-data/user-data/unknown": true
+       },
+       "pass": true,
+       "seconds": 0.82
+      },
+      {
+       "output": "{\"name\": \"Notes \\u5e94\\u7528\", \"what\": \"\\u8fd9\\u662f\\u7b14\\u8bb0\\u5e94\\u7528\\u7684\\u6570\\u636e\\u548c\\u6570\\u636e\\u5e93\\u7f13\\u5b58\\u76ee\\u5f55\", \"kind\": \"app-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 app-data/user-data/unknown": true
+       },
+       "pass": true,
+       "seconds": 0.77
+      },
+      {
+       "output": "{\"name\": \"Notejar\", \"what\": \"\\u4e2a\\u4eba\\u7b14\\u8bb0\\u5e94\\u7528\\u7684\\u6570\\u636e\\u5e93\\u3001\\u9644\\u4ef6\\u53ca\\u4e34\\u65f6\\u6570\\u636e\", \"kind\": \"app-data\", \"sure\": false}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 app-data/user-data/unknown": true
+       },
+       "pass": true,
+       "seconds": 0.76
+      }
+     ]
+    },
+    {
+     "id": "identify-30-installers",
+     "hard": false,
+     "pass": true,
+     "runs": [
+      {
+       "output": "{\"name\": \"Downloads\", \"what\": \"\\u4e0b\\u8f7d\\u5386\\u53f2\\u4e2d\\u7684\\u65e7\\u5b89\\u88c5\\u5305\\u548c\\u538b\\u7f29\\u5305\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data/unknown": true
+       },
+       "pass": true,
+       "seconds": 0.7
+      },
+      {
+       "output": "{\"name\": \"Downloads\", \"what\": \"\\u7528\\u6237\\u624b\\u52a8\\u4e0b\\u8f7d\\u7684\\u5386\\u53f2\\u5b89\\u88c5\\u5305\\u96c6\\u5408\", \"kind\": \"user-data\", \"sure\": true}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data/unknown": true
+       },
+       "pass": true,
+       "seconds": 0.74
+      },
+      {
+       "output": "{\"name\": \"\\u4e0d\\u786e\\u5b9a\", \"what\": \"\\u5b58\\u653e\\u5df2\\u4e0b\\u8f7d\\u7684\\u65e7\\u7248\\u672c\\u8f6f\\u4ef6\\u5b89\\u88c5\\u5305\", \"kind\": \"unknown\", \"sure\": false}",
+       "error": null,
+       "checks": {
+        "照 schema": true,
+        "不说能不能删": true,
+        "种类是 user-data/unknown": true
+       },
+       "pass": true,
+       "seconds": 0.69
+      }
+     ]
+    }
+   ],
+   "evalset_sha256_rescored": "4200ee1e36222a0924e13e767e1671f2715b2b89bc79b68b05c5b99be2731f0b",
+   "rescored_with": {
+    "prompt_version": 5,
+    "prompt_sha256": "160f1d7fec3fabedd2b97c6efdf4854f035b3efd9c41eda051e5a71a5a938d38"
+   },
+   "not_run": 0
+  }
+ },
+ "model": "qwen3.5-9b-4bit",
+ "rescored": "2026-10-23 15:13"
+}

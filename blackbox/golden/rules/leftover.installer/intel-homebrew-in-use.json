@@ -1,0 +1,465 @@
+{
+  "about": "Intel 版 Homebrew 还在用的各种样子：程序正在跑、开机任务、crontab、读不出 crontab、shell 配置、JDK、一个月内 brew update 过；都只说不删",
+  "case": "rules/leftover.installer/intel-homebrew-in-use",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 6295552,
+            "category": "leftover",
+            "evidence": {
+              "both": "1",
+              "how": "Cellar、Caskroom 和 Homebrew 本身一起移进废纸篓；/usr/local 里指向它们的链接先留着，放回以后还是原来那套；倒掉废纸篓以后再删那些链接。Apple 芯片版里还没有的要先装过去。放回：在访达里把它们从废纸篓拖回 /usr/local（会要密码）",
+              "only_here": "python@3.9、oldapp",
+              "password": "/usr/local 归系统，要输入 Mac 的密码才能移走",
+              "system": "1",
+              "why": "Intel 版的工具要经 Rosetta 转译，慢；苹果已经说过以后的 macOS 会收回 Rosetta"
+            },
+            "path": "$FIXTURE/usr-local/Homebrew",
+            "rule": "leftover.intel-homebrew",
+            "severity": "low",
+            "title": "/usr/local 里还留着一套 Intel 版的 Homebrew（6.3 MB）",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "没人用：提议删",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "running": [
+          "$FIXTURE/usr-local/Cellar/wget/1.0/bin/wget"
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 6295552,
+            "category": "leftover",
+            "evidence": {
+              "both": "1",
+              "how": "Cellar、Caskroom 和 Homebrew 本身一起移进废纸篓；/usr/local 里指向它们的链接先留着，放回以后还是原来那套；倒掉废纸篓以后再删那些链接。Apple 芯片版里还没有的要先装过去。放回：在访达里把它们从废纸篓拖回 /usr/local（会要密码）",
+              "only_here": "python@3.9、oldapp",
+              "password": "/usr/local 归系统，要输入 Mac 的密码才能移走",
+              "system": "1",
+              "why": "Intel 版的工具要经 Rosetta 转译，慢；苹果已经说过以后的 macOS 会收回 Rosetta"
+            },
+            "path": "$FIXTURE/usr-local/Homebrew",
+            "rule": "leftover.intel-homebrew",
+            "severity": "low",
+            "title": "/usr/local 里还留着一套 Intel 版的 Homebrew（6.3 MB）",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "它的 wget 正在跑",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "running": []
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 6361088,
+            "category": "leftover",
+            "evidence": {
+              "both": "1",
+              "how": "先确认 /opt/homebrew 里装齐了你要的工具，再用 Homebrew 官方的卸载脚本（加 --path=/usr/local）删掉旧的这套",
+              "not_now": "有开机自己运行或定时运行的任务用着它（brew services、crontab 之类）",
+              "only_here": "python@3.9、redis、oldapp",
+              "why": "Intel 版的工具要经 Rosetta 转译，慢；苹果已经说过以后的 macOS 会收回 Rosetta"
+            },
+            "path": "$FIXTURE/usr-local/Homebrew",
+            "rule": "leftover.intel-homebrew",
+            "severity": "low",
+            "title": "/usr/local 里还留着一套 Intel 版的 Homebrew（6.4 MB）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你装的就不用管；不认识的话可以停掉它，配置会移到废纸篓，随时能放回",
+              "label": "homebrew.mxcl.redis",
+              "name": "homebrew.mxcl.redis",
+              "program": "$FIXTURE/usr-local/opt/redis/bin/redis-server",
+              "scope": "user-agent",
+              "why": "程序放在临时文件夹里，装好的程序很少放在那儿"
+            },
+            "path": "~/Library/LaunchAgents/homebrew.mxcl.redis.plist",
+            "rule": "persistence.new",
+            "severity": "high",
+            "title": "新加了一个开机自动运行的任务：homebrew.mxcl.redis",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "brew services 起的 redis 开机任务用着 /usr/local/opt 里的",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "crontab": "0 3 * * * /bin/sh -c \"$FIXTURE/usr-local/opt/wget/bin/wget -q https://example.invalid\"\n"
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 6361088,
+            "category": "leftover",
+            "evidence": {
+              "both": "1",
+              "how": "先确认 /opt/homebrew 里装齐了你要的工具，再用 Homebrew 官方的卸载脚本（加 --path=/usr/local）删掉旧的这套",
+              "not_now": "有开机自己运行或定时运行的任务用着它（brew services、crontab 之类）",
+              "only_here": "python@3.9、redis、oldapp",
+              "why": "Intel 版的工具要经 Rosetta 转译，慢；苹果已经说过以后的 macOS 会收回 Rosetta"
+            },
+            "path": "$FIXTURE/usr-local/Homebrew",
+            "rule": "leftover.intel-homebrew",
+            "severity": "low",
+            "title": "/usr/local 里还留着一套 Intel 版的 Homebrew（6.4 MB）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "entries": "0 3 * * * sh",
+              "how": "在终端里运行 crontab -l 查看，crontab -e 修改"
+            },
+            "path": "",
+            "rule": "persistence.cron",
+            "severity": "low",
+            "title": "有 1 个定时任务（crontab）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你加的就不用管；不认识的话，在终端里运行 crontab -e 删掉这一行",
+              "name": "sh",
+              "program": "/bin/sh",
+              "scope": "cron",
+              "why": "是 crontab 里新加的一行"
+            },
+            "path": "/bin/sh",
+            "rule": "persistence.new",
+            "severity": "medium",
+            "title": "新加了一个定时任务：sh",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "crontab 里有一行用着它",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "crontab": null
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 6361088,
+            "category": "leftover",
+            "evidence": {
+              "both": "1",
+              "how": "先确认 /opt/homebrew 里装齐了你要的工具，再用 Homebrew 官方的卸载脚本（加 --path=/usr/local）删掉旧的这套",
+              "not_now": "读不出你的 crontab，没法确认没有定时任务在用它",
+              "only_here": "python@3.9、redis、oldapp",
+              "why": "Intel 版的工具要经 Rosetta 转译，慢；苹果已经说过以后的 macOS 会收回 Rosetta"
+            },
+            "path": "$FIXTURE/usr-local/Homebrew",
+            "rule": "leftover.intel-homebrew",
+            "severity": "low",
+            "title": "/usr/local 里还留着一套 Intel 版的 Homebrew（6.4 MB）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "hint": "上次查到的照旧记着，下一轮再查",
+              "skipped": "定时任务（读不出 crontab）"
+            },
+            "path": "",
+            "rule": "persistence.partial",
+            "severity": "low",
+            "title": "这一轮有几类会自己启动的没查成：定时任务（读不出 crontab）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "读不出 crontab",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "crontab": ""
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 6361088,
+            "category": "leftover",
+            "evidence": {
+              "both": "1",
+              "how": "先确认 /opt/homebrew 里装齐了你要的工具，再用 Homebrew 官方的卸载脚本（加 --path=/usr/local）删掉旧的这套",
+              "not_now": "shell 的配置里还在用它（brew shellenv 之类）",
+              "only_here": "python@3.9、redis、oldapp",
+              "why": "Intel 版的工具要经 Rosetta 转译，慢；苹果已经说过以后的 macOS 会收回 Rosetta"
+            },
+            "path": "$FIXTURE/usr-local/Homebrew",
+            "rule": "leftover.intel-homebrew",
+            "severity": "low",
+            "title": "/usr/local 里还留着一套 Intel 版的 Homebrew（6.4 MB）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "~/.zprofile 里 brew shellenv 用的是它",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 6361088,
+            "category": "leftover",
+            "evidence": {
+              "both": "1",
+              "how": "先确认 /opt/homebrew 里装齐了你要的工具，再用 Homebrew 官方的卸载脚本（加 --path=/usr/local）删掉旧的这套",
+              "not_now": "Java 的 JDK 还指着它",
+              "only_here": "python@3.9、redis、oldapp",
+              "why": "Intel 版的工具要经 Rosetta 转译，慢；苹果已经说过以后的 macOS 会收回 Rosetta"
+            },
+            "path": "$FIXTURE/usr-local/Homebrew",
+            "rule": "leftover.intel-homebrew",
+            "severity": "low",
+            "title": "/usr/local 里还留着一套 Intel 版的 Homebrew（6.4 MB）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "登记的 JDK 指着它的包",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 6361088,
+            "category": "leftover",
+            "evidence": {
+              "both": "1",
+              "how": "先确认 /opt/homebrew 里装齐了你要的工具，再用 Homebrew 官方的卸载脚本（加 --path=/usr/local）删掉旧的这套",
+              "not_now": "最近一个月还在用（包括 brew update），或者里面有别的账户的东西",
+              "only_here": "python@3.9、redis、oldapp",
+              "why": "Intel 版的工具要经 Rosetta 转译，慢；苹果已经说过以后的 macOS 会收回 Rosetta"
+            },
+            "path": "$FIXTURE/usr-local/Homebrew",
+            "rule": "leftover.intel-homebrew",
+            "severity": "low",
+            "title": "/usr/local 里还留着一套 Intel 版的 Homebrew（6.4 MB）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "昨天 brew update 过（.git 里的时间也算）",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

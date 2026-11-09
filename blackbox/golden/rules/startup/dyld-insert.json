@@ -1,0 +1,147 @@
+{
+  "about": "后台任务、应用、shell 启动文件里设的 DYLD_*：注入库的急，改找库地方的次之；注释掉的、别的变量、启动文件里只看 DYLD_INSERT_LIBRARIES",
+  "case": "rules/startup/dyld-insert",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你自己调试时加的就删掉这一行（调完不该留着）；不认得的，删掉它所在的设置",
+              "variable": "DYLD_FALLBACK_LIBRARY_PATH",
+              "why": "恶意软件用它把自己的代码塞进别的程序；开发调试时也有人这样设"
+            },
+            "key": "~/Applications/Odd.app#DYLD_FALLBACK_LIBRARY_PATH",
+            "path": "~/Applications/Odd.app",
+            "rule": "startup.dyld-insert",
+            "severity": "medium",
+            "title": "应用 Odd 的设置里设了 DYLD_FALLBACK_LIBRARY_PATH：程序会先去别处找它要的库",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你自己调试时加的就删掉这一行（调完不该留着）；不认得的，删掉它所在的设置",
+              "variable": "DYLD_FRAMEWORK_PATH",
+              "why": "恶意软件用它把自己的代码塞进别的程序；开发调试时也有人这样设"
+            },
+            "key": "$FIXTURE/SystemLibrary/LaunchAgents/io.example.fw.plist#DYLD_FRAMEWORK_PATH",
+            "path": "$FIXTURE/SystemLibrary/LaunchAgents/io.example.fw.plist",
+            "rule": "startup.dyld-insert",
+            "severity": "medium",
+            "title": "后台任务 io.example.fw 设了 DYLD_FRAMEWORK_PATH：程序会先去别处找它要的库",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你自己调试时加的就删掉这一行（调完不该留着）；不认得的，删掉它所在的设置",
+              "variable": "DYLD_INSERT_LIBRARIES",
+              "why": "恶意软件用它把自己的代码塞进别的程序；开发调试时也有人这样设"
+            },
+            "key": "$FIXTURE/SystemLibrary/LaunchAgents/io.example.fw.plist#DYLD_INSERT_LIBRARIES",
+            "path": "$FIXTURE/SystemLibrary/LaunchAgents/io.example.fw.plist",
+            "rule": "startup.dyld-insert",
+            "severity": "high",
+            "title": "后台任务 io.example.fw 设了 DYLD_INSERT_LIBRARIES：启动的程序都会先载入另一个库",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你自己调试时加的就删掉这一行（调完不该留着）；不认得的，删掉它所在的设置",
+              "variable": "DYLD_INSERT_LIBRARIES",
+              "why": "恶意软件用它把自己的代码塞进别的程序；开发调试时也有人这样设"
+            },
+            "key": "~/Library/LaunchAgents/io.example.inject.plist#DYLD_INSERT_LIBRARIES",
+            "path": "~/Library/LaunchAgents/io.example.inject.plist",
+            "rule": "startup.dyld-insert",
+            "severity": "high",
+            "title": "后台任务 io.example.inject 设了 DYLD_INSERT_LIBRARIES：启动的程序都会先载入另一个库",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你自己调试时加的就删掉这一行（调完不该留着）；不认得的，删掉它所在的设置",
+              "variable": "DYLD_INSERT_LIBRARIES",
+              "why": "恶意软件用它把自己的代码塞进别的程序；开发调试时也有人这样设"
+            },
+            "key": "~/.profile#DYLD_INSERT_LIBRARIES",
+            "path": "~/.profile",
+            "rule": "startup.dyld-insert",
+            "severity": "high",
+            "title": "shell 的启动文件 ~/.profile 里设了 DYLD_INSERT_LIBRARIES：启动的程序都会先载入另一个库",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你自己调试时加的就删掉这一行（调完不该留着）；不认得的，删掉它所在的设置",
+              "variable": "DYLD_INSERT_LIBRARIES",
+              "why": "恶意软件用它把自己的代码塞进别的程序；开发调试时也有人这样设"
+            },
+            "key": "~/.zshrc#DYLD_INSERT_LIBRARIES",
+            "path": "~/.zshrc",
+            "rule": "startup.dyld-insert",
+            "severity": "high",
+            "title": "shell 的启动文件 ~/.zshrc 里设了 DYLD_INSERT_LIBRARIES：启动的程序都会先载入另一个库",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "是你自己调试时加的就删掉这一行（调完不该留着）；不认得的，删掉它所在的设置",
+              "variable": "DYLD_LIBRARY_PATH",
+              "why": "恶意软件用它把自己的代码塞进别的程序；开发调试时也有人这样设"
+            },
+            "key": "$FIXTURE/SystemLibrary/LaunchDaemons/io.example.daemon.plist#DYLD_LIBRARY_PATH",
+            "path": "$FIXTURE/SystemLibrary/LaunchDaemons/io.example.daemon.plist",
+            "rule": "startup.dyld-insert",
+            "severity": "medium",
+            "title": "后台任务 io.example.daemon 设了 DYLD_LIBRARY_PATH：程序会先去别处找它要的库",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

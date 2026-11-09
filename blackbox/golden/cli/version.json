@@ -1,0 +1,16 @@
+{
+  "about": "版本和规则包的版本",
+  "case": "cli/version",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "version"
+      ],
+      "stdout": [
+        "luoke-scan $VERSION · rules 0.1.0"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "about": "Hugging Face、LM Studio 的模型 2 GiB 以上的各报一条，所有 AI 工具合起来超过 5 GiB 再报一条总的",
+  "case": "rules/space.system/ai-models",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 11878268928,
+            "category": "space",
+            "evidence": {
+              "how": "大的模型单独列出来了；用不到的删掉，再用时会重新下载",
+              "tools": "Hugging Face 5.44 GB；LM Studio 3.22 GB；LM Studio 2.15 GB；Ollama 1.07 GB"
+            },
+            "path": "",
+            "rule": "space.ai-models",
+            "severity": "low",
+            "title": "AI 工具下载的模型一共占了 11.88 GB",
+            "verdict": "info"
+          },
+          {
+            "bytes": 2147483648,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-09-20",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "org/big",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/models--org--big",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 org/big（2.15 GB），30 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2147483648,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-10-10",
+              "how": "用不到了在 LM Studio 里删，或删这个文件夹；再用时会重新下载",
+              "model": "pub2/m2",
+              "tool": "LM Studio"
+            },
+            "path": "~/.cache/lm-studio/models/pub2/m2",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "LM Studio 的模型 pub2/m2（2.15 GB），10 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 2214592512,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-07-12",
+              "how": "用不到了就删；再用时会重新下载",
+              "model": "x/y",
+              "tool": "Hugging Face"
+            },
+            "path": "~/.cache/huggingface/hub/datasets--x--y",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "Hugging Face 的模型 x/y（2.21 GB），100 天前下载",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 3221225472,
+            "category": "cache",
+            "evidence": {
+              "downloaded": "2026-10-17",
+              "how": "用不到了在 LM Studio 里删，或删这个文件夹；再用时会重新下载",
+              "model": "pub/m1",
+              "tool": "LM Studio"
+            },
+            "path": "~/.lmstudio/models/pub/m1",
+            "rule": "space.ai-model",
+            "severity": "low",
+            "title": "LM Studio 的模型 pub/m1（3.22 GB），3 天前下载",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

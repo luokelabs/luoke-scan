@@ -1,0 +1,113 @@
+{
+  "about": "开发者签名的快捷键工具、启动器在看所有按键：合成一条低的、只列名字；没担保的另报",
+  "case": "rules/keyboard/vouched",
+  "steps": [
+    {
+      "fakes": {
+        "codesign": {
+          "~/.local/bin/keyhelper": "adhoc",
+          "~/Applications/Hotkeys.app/Contents/MacOS/Hotkeys": "developer:ABCDE12345",
+          "~/Applications/Launcher.app/Contents/MacOS/Launcher": "developer:FGHIJ67890"
+        },
+        "eventTaps": [
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": 901,
+            "program": "~/Applications/Hotkeys.app/Contents/MacOS/Hotkeys"
+          },
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": 902,
+            "program": "~/Applications/Hotkeys.app/Contents/MacOS/Hotkeys"
+          },
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": 903,
+            "program": "~/Applications/Launcher.app/Contents/MacOS/Launcher"
+          },
+          {
+            "allApps": true,
+            "listenOnly": true,
+            "pid": 904,
+            "program": "~/.local/bin/keyhelper"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "process",
+            "evidence": {
+              "how": "认得就留着；不认得的先退出它，再在 系统设置 → 隐私与安全性 → 输入监控、辅助功能 里关掉它的权限，把程序移到废纸篓",
+              "program": "~/.local/bin/keyhelper",
+              "signature": "临时签名（没有开发者担保）",
+              "why": "键盘记录器就是这样偷密码的；自己编的小工具、Homebrew 装的快捷键工具也可能这样"
+            },
+            "key": "keyboard/~/.local/bin/keyhelper",
+            "path": "~/.local/bin/keyhelper",
+            "rule": "keyboard.unvouched",
+            "severity": "high",
+            "title": "没有开发者担保的程序 keyhelper 在看你在所有应用里按的每一个键",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "how": "认得就留着；不认得的在 系统设置 → 隐私与安全性 → 输入监控、辅助功能 里关掉",
+              "programs": "Hotkeys；Launcher",
+              "why": "快捷键工具、启动器、输入增强和密码管理器要这个才能用"
+            },
+            "key": "Hotkeys|Launcher",
+            "path": "",
+            "rule": "keyboard.watchers",
+            "severity": "low",
+            "title": "2 个程序在看你在所有应用里按的键：Hotkeys、Launcher",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

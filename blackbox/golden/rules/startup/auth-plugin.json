@@ -1,0 +1,88 @@
+{
+  "about": "登录窗口的插件（系统的 /Library/Security/SecurityAgentPlugins）：没签名、临时签名、签名坏了的都急；不是 .bundle 的不算",
+  "case": "rules/startup/auth-plugin",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "不认得的话，这很可能是恶意软件：先别再登录别的账户，请懂行的人看一下",
+              "signature": "临时签名（没有开发者担保）",
+              "why": "它在你输入登录密码的地方运行，看得到这个密码"
+            },
+            "path": "$FIXTURE/SystemLibrary/Security/SecurityAgentPlugins/Adhoc.bundle",
+            "rule": "startup.auth-plugin",
+            "severity": "high",
+            "title": "登录窗口里装了插件 Adhoc（临时签名（没有开发者担保））",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "不认得的话，这很可能是恶意软件：先别再登录别的账户，请懂行的人看一下",
+              "signature": "没签名",
+              "why": "它在你输入登录密码的地方运行，看得到这个密码"
+            },
+            "path": "$FIXTURE/SystemLibrary/Security/SecurityAgentPlugins/Sneaky.bundle",
+            "rule": "startup.auth-plugin",
+            "severity": "high",
+            "title": "登录窗口里装了插件 Sneaky（没签名）",
+            "verdict": "info"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "how": "不认得的话，这很可能是恶意软件：先别再登录别的账户，请懂行的人看一下",
+              "signature": "签名和文件对不上（签名后被改过）",
+              "why": "它在你输入登录密码的地方运行，看得到这个密码"
+            },
+            "path": "$FIXTURE/SystemLibrary/Security/SecurityAgentPlugins/Tampered.bundle",
+            "rule": "startup.auth-plugin",
+            "severity": "high",
+            "title": "登录窗口里装了插件 Tampered（签名和文件对不上（签名后被改过））",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

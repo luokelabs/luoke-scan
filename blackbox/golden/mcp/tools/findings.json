@@ -1,0 +1,846 @@
+{
+  "about": "按结论、类别筛发现，限几条；scan_plan 出全部的和只出缓存的方案",
+  "case": "mcp/tools/findings",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 131072000,
+            "category": "leak",
+            "evidence": {
+              "count": "25",
+              "first": "2026-10-15",
+              "hint": "多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+              "last": "2026-10-18",
+              "per_day": "43.7 MB",
+              "prefix": "wings",
+              "size": "131.1 MB"
+            },
+            "path": "$TMPDIR/wings-*",
+            "rule": "leak.temp-prefix",
+            "severity": "low",
+            "title": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 4096,
+            "category": "malware",
+            "evidence": {
+              "database": "daily 27000，2026-10-20",
+              "how": "移到废纸篓；如果是你刚下载的，别打开它",
+              "signature": "Eicar-Test-Signature"
+            },
+            "path": "~/Downloads/eicar-test.com",
+            "rule": "malware.clamav",
+            "severity": "high",
+            "title": "病毒库认出 eicar-test.com 是 Eicar-Test-Signature",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 62914560,
+            "category": "cache",
+            "evidence": {
+              "clean": "删除这个文件夹",
+              "size": "62.9 MB",
+              "tool": "pip"
+            },
+            "path": "~/Library/Caches/pip",
+            "rule": "cache.rebuildable.pip",
+            "severity": "low",
+            "title": "pip 的缓存，删了会自动重建",
+            "verdict": "safe"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {},
+        "name": "scan_status"
+      },
+      "reply": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "上一轮：2026-10-20T12:00:00Z，用了 0 秒；发现：放心删 1、要确认 2、仅供参考 0；放心删的能腾出 62.9 MB；病毒库 daily 27000（2026-10-20）；自动清：关",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "createSurface": {
+                  "catalogId": "ai.luoke/a2ui/agent/1",
+                  "surfaceId": "scan-000000000001"
+                },
+                "version": "v0.9"
+              },
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "h1",
+                        "t2",
+                        "t3",
+                        "t4",
+                        "t5",
+                        "t6",
+                        "r8"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "h1",
+                      "text": "扫描",
+                      "variant": "h4"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t2",
+                      "text": "上一轮：2026-10-20T12:00:00Z，用了 0 秒"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t3",
+                      "text": "发现：放心删 1、要确认 2、仅供参考 0",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t4",
+                      "text": "放心删的能腾出 62.9 MB",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t5",
+                      "text": "病毒库 daily 27000（2026-10-20）",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t6",
+                      "text": "自动清：关",
+                      "variant": "caption"
+                    },
+                    {
+                      "action": {
+                        "event": {
+                          "context": {},
+                          "name": "scan_now"
+                        }
+                      },
+                      "child": "b7-text",
+                      "component": "Button",
+                      "id": "b7"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "b7-text",
+                      "text": "现在查一下"
+                    },
+                    {
+                      "children": [
+                        "b7"
+                      ],
+                      "component": "Row",
+                      "id": "r8"
+                    }
+                  ],
+                  "surfaceId": "scan-000000000001"
+                },
+                "version": "v0.9"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {},
+        "name": "scan_findings"
+      },
+      "reply": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "[要确认] 病毒库认出 eicar-test.com 是 Eicar-Test-Signature\n[要确认] 临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB\n[放心删] pip 的缓存，删了会自动重建",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "createSurface": {
+                  "catalogId": "ai.luoke/a2ui/agent/1",
+                  "surfaceId": "scan-000000000002"
+                },
+                "version": "v0.9"
+              },
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "h1",
+                        "t2",
+                        "t3",
+                        "t4",
+                        "t5",
+                        "t6",
+                        "t7"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "h1",
+                      "text": "发现 3 条",
+                      "variant": "h4"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t2",
+                      "text": "[要确认] 病毒库认出 eicar-test.com 是 Eicar-Test-Signature"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t3",
+                      "text": "~/Downloads/eicar-test.com\n移到废纸篓；如果是你刚下载的，别打开它",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t4",
+                      "text": "[要确认] 临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t5",
+                      "text": "$TMPDIR/wings-*\n多半是某个程序每次运行都建一个临时目录、用完不删；找到它修掉，比反复清理更管用",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t6",
+                      "text": "[放心删] pip 的缓存，删了会自动重建"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t7",
+                      "text": "~/Library/Caches/pip",
+                      "variant": "caption"
+                    }
+                  ],
+                  "surfaceId": "scan-000000000002"
+                },
+                "version": "v0.9"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "verdict": "safe"
+        },
+        "name": "scan_findings"
+      },
+      "reply": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "[放心删] pip 的缓存，删了会自动重建",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "createSurface": {
+                  "catalogId": "ai.luoke/a2ui/agent/1",
+                  "surfaceId": "scan-000000000003"
+                },
+                "version": "v0.9"
+              },
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "h1",
+                        "t2",
+                        "t3"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "h1",
+                      "text": "发现 1 条",
+                      "variant": "h4"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t2",
+                      "text": "[放心删] pip 的缓存，删了会自动重建"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t3",
+                      "text": "~/Library/Caches/pip",
+                      "variant": "caption"
+                    }
+                  ],
+                  "surfaceId": "scan-000000000003"
+                },
+                "version": "v0.9"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "limit": 1,
+          "verdict": "confirm"
+        },
+        "name": "scan_findings"
+      },
+      "reply": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "[要确认] 病毒库认出 eicar-test.com 是 Eicar-Test-Signature\n另有 1 条",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "createSurface": {
+                  "catalogId": "ai.luoke/a2ui/agent/1",
+                  "surfaceId": "scan-000000000004"
+                },
+                "version": "v0.9"
+              },
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "h1",
+                        "t2",
+                        "t3",
+                        "t4"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "h1",
+                      "text": "发现 2 条",
+                      "variant": "h4"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t2",
+                      "text": "[要确认] 病毒库认出 eicar-test.com 是 Eicar-Test-Signature"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t3",
+                      "text": "~/Downloads/eicar-test.com\n移到废纸篓；如果是你刚下载的，别打开它",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t4",
+                      "text": "另有 1 条",
+                      "variant": "caption"
+                    }
+                  ],
+                  "surfaceId": "scan-000000000004"
+                },
+                "version": "v0.9"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "category": "malware"
+        },
+        "name": "scan_findings"
+      },
+      "reply": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "[要确认] 病毒库认出 eicar-test.com 是 Eicar-Test-Signature",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "createSurface": {
+                  "catalogId": "ai.luoke/a2ui/agent/1",
+                  "surfaceId": "scan-000000000005"
+                },
+                "version": "v0.9"
+              },
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "h1",
+                        "t2",
+                        "t3"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "h1",
+                      "text": "发现 1 条",
+                      "variant": "h4"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t2",
+                      "text": "[要确认] 病毒库认出 eicar-test.com 是 Eicar-Test-Signature"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t3",
+                      "text": "~/Downloads/eicar-test.com\n移到废纸篓；如果是你刚下载的，别打开它",
+                      "variant": "caption"
+                    }
+                  ],
+                  "surfaceId": "scan-000000000005"
+                },
+                "version": "v0.9"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {},
+        "name": "scan_plan"
+      },
+      "reply": {
+        "id": 6,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "3 项可以处理，建议清掉的 1 项能腾出 62.9 MB；要确认的默认先不动，你选了才动。",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "createSurface": {
+                  "catalogId": "ai.luoke/a2ui/agent/1",
+                  "surfaceId": "plan-p-000000000006"
+                },
+                "version": "v0.9"
+              },
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "h1",
+                        "c-i0",
+                        "t2",
+                        "c-i1",
+                        "t3",
+                        "c-i2",
+                        "t4",
+                        "r6"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "h1",
+                      "text": "这几项可以这样处理",
+                      "variant": "h4"
+                    },
+                    {
+                      "component": "ChoicePicker",
+                      "id": "c-i0",
+                      "label": "病毒库认出 eicar-test.com 是 Eicar-Test-Signature（4 KB）",
+                      "options": [
+                        {
+                          "label": "移到废纸篓",
+                          "value": "trash"
+                        },
+                        {
+                          "label": "先不动",
+                          "value": "keep"
+                        },
+                        {
+                          "label": "以后别提",
+                          "value": "ignore"
+                        }
+                      ],
+                      "value": {
+                        "path": "/choices/i0"
+                      }
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t2",
+                      "text": "~/Downloads/eicar-test.com",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "ChoicePicker",
+                      "id": "c-i1",
+                      "label": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                      "options": [
+                        {
+                          "label": "移到废纸篓",
+                          "value": "trash"
+                        },
+                        {
+                          "label": "先不动",
+                          "value": "keep"
+                        },
+                        {
+                          "label": "以后别提",
+                          "value": "ignore"
+                        }
+                      ],
+                      "value": {
+                        "path": "/choices/i1"
+                      }
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t3",
+                      "text": "$TMPDIR 里的 25 项",
+                      "variant": "caption"
+                    },
+                    {
+                      "component": "ChoicePicker",
+                      "id": "c-i2",
+                      "label": "pip 的缓存，删了会自动重建（62.9 MB）",
+                      "options": [
+                        {
+                          "label": "删掉（会自动重建）",
+                          "value": "remove"
+                        },
+                        {
+                          "label": "先不动",
+                          "value": "keep"
+                        },
+                        {
+                          "label": "以后别提",
+                          "value": "ignore"
+                        }
+                      ],
+                      "value": {
+                        "path": "/choices/i2"
+                      }
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t4",
+                      "text": "~/Library/Caches/pip",
+                      "variant": "caption"
+                    },
+                    {
+                      "action": {
+                        "event": {
+                          "context": {
+                            "choices": {
+                              "path": "/choices"
+                            },
+                            "plan_id": "p-000000000006"
+                          },
+                          "name": "scan_apply"
+                        }
+                      },
+                      "child": "b5-text",
+                      "component": "Button",
+                      "id": "b5",
+                      "variant": "primary"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "b5-text",
+                      "text": "按这个处理"
+                    },
+                    {
+                      "children": [
+                        "b5"
+                      ],
+                      "component": "Row",
+                      "id": "r6"
+                    }
+                  ],
+                  "surfaceId": "plan-p-000000000006"
+                },
+                "version": "v0.9"
+              },
+              {
+                "updateDataModel": {
+                  "path": "/",
+                  "surfaceId": "plan-p-000000000006",
+                  "value": {
+                    "choices": {
+                      "i0": [
+                        "keep"
+                      ],
+                      "i1": [
+                        "keep"
+                      ],
+                      "i2": [
+                        "remove"
+                      ]
+                    }
+                  }
+                },
+                "version": "v0.9"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "scope": "cache"
+        },
+        "name": "scan_plan"
+      },
+      "reply": {
+        "id": 7,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "1 项可以处理，建议清掉的 1 项能腾出 62.9 MB；要确认的默认先不动，你选了才动。",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "createSurface": {
+                  "catalogId": "ai.luoke/a2ui/agent/1",
+                  "surfaceId": "plan-p-000000000007"
+                },
+                "version": "v0.9"
+              },
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "h1",
+                        "c-i0",
+                        "t2",
+                        "r4"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "h1",
+                      "text": "这几项可以这样处理",
+                      "variant": "h4"
+                    },
+                    {
+                      "component": "ChoicePicker",
+                      "id": "c-i0",
+                      "label": "pip 的缓存，删了会自动重建（62.9 MB）",
+                      "options": [
+                        {
+                          "label": "删掉（会自动重建）",
+                          "value": "remove"
+                        },
+                        {
+                          "label": "先不动",
+                          "value": "keep"
+                        },
+                        {
+                          "label": "以后别提",
+                          "value": "ignore"
+                        }
+                      ],
+                      "value": {
+                        "path": "/choices/i0"
+                      }
+                    },
+                    {
+                      "component": "Text",
+                      "id": "t2",
+                      "text": "~/Library/Caches/pip",
+                      "variant": "caption"
+                    },
+                    {
+                      "action": {
+                        "event": {
+                          "context": {
+                            "choices": {
+                              "path": "/choices"
+                            },
+                            "plan_id": "p-000000000007"
+                          },
+                          "name": "scan_apply"
+                        }
+                      },
+                      "child": "b3-text",
+                      "component": "Button",
+                      "id": "b3",
+                      "variant": "primary"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "b3-text",
+                      "text": "按这个处理"
+                    },
+                    {
+                      "children": [
+                        "b3"
+                      ],
+                      "component": "Row",
+                      "id": "r4"
+                    }
+                  ],
+                  "surfaceId": "plan-p-000000000007"
+                },
+                "version": "v0.9"
+              },
+              {
+                "updateDataModel": {
+                  "path": "/",
+                  "surfaceId": "plan-p-000000000007",
+                  "value": {
+                    "choices": {
+                      "i0": [
+                        "remove"
+                      ]
+                    }
+                  }
+                },
+                "version": "v0.9"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

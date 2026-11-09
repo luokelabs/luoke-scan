@@ -1,0 +1,321 @@
+{
+  "about": "读密钥再发出去（高）：脚本里读 AWS 凭证再 POST、打包 ~/.ssh 再上传、说明里相邻几行读再发、.env 发到收数据的网站、全部环境变量发出去；收数据的网站、隧道、贴文本网站（中）、聊天机器人、写死的公网 IP（低）；单独读到的 AI 凭证、钥匙串、浏览器密码、钱包、私人数据（中）。只读或只发、自己的钥匙、检查有没有、离得远、内网 IP、说别这样做的不报",
+  "case": "rules/skill/exfil",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-ai-creds",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：AI 工具的登录凭证（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/ex-ai-creds|142052774e991d16",
+            "path": "~/.claude/skills/ex-ai-creds",
+            "rule": "skill.exfil",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「ex-ai-creds」：AI 工具的登录凭证",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-aws-post",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读 AWS 的凭证再发到网上（scripts/b.py 第 2、4 行）"
+            },
+            "key": "~/.claude/skills/ex-aws-post|9478af7962cb0ced",
+            "path": "~/.claude/skills/ex-aws-post",
+            "rule": "skill.exfil",
+            "severity": "high",
+            "title": "Claude Code 的 skill「ex-aws-post」：读 AWS 的凭证再发到网上",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-browser",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：浏览器保存的密码或 Cookie（a.py 第 2 行）"
+            },
+            "key": "~/.claude/skills/ex-browser|56e3b2cde51c988d",
+            "path": "~/.claude/skills/ex-browser",
+            "rule": "skill.exfil",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「ex-browser」：浏览器保存的密码或 Cookie",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-chatbot",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：发消息给聊天机器人（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/ex-chatbot|f98dba34fa4d91ef",
+            "path": "~/.claude/skills/ex-chatbot",
+            "rule": "skill.exfil",
+            "severity": "low",
+            "title": "Claude Code 的 skill「ex-chatbot」：发消息给聊天机器人",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-env-drop",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读 .env 文件再发到网上（r.py 第 2、3 行）；把数据发到专门收集数据的网站（r.py 第 3 行）"
+            },
+            "key": "~/.claude/skills/ex-env-drop|74b18f32fd71f507",
+            "path": "~/.claude/skills/ex-env-drop",
+            "rule": "skill.exfil",
+            "severity": "high",
+            "title": "Claude Code 的 skill「ex-env-drop」：读 .env 文件再发到网上，另有 1 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-env-example-drop",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把东西传到公开的贴文本、传文件网站（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/ex-env-example-drop|e2105fe64b6df07f",
+            "path": "~/.claude/skills/ex-env-example-drop",
+            "rule": "skill.exfil",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「ex-env-example-drop」：把东西传到公开的贴文本、传文件网站",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-env-pipe",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把全部环境变量直接发出去（里面常有密钥）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/ex-env-pipe|5967676d6a5ae165",
+            "path": "~/.claude/skills/ex-env-pipe",
+            "rule": "skill.exfil",
+            "severity": "high",
+            "title": "Claude Code 的 skill「ex-env-pipe」：把全部环境变量直接发出去（里面常有密钥）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-environ-json",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读全部环境变量（里面常有密钥）再发到网上（a.py 第 2 行）"
+            },
+            "key": "~/.claude/skills/ex-environ-json|fd41c850138aa5da",
+            "path": "~/.claude/skills/ex-environ-json",
+            "rule": "skill.exfil",
+            "severity": "high",
+            "title": "Claude Code 的 skill「ex-environ-json」：读全部环境变量（里面常有密钥）再发到网上",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-gh-prose",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读 GitHub CLI 的令牌再发到网上（SKILL.md 第 5、6 行）"
+            },
+            "key": "~/.claude/skills/ex-gh-prose|df4a96fdd1ad76df",
+            "path": "~/.claude/skills/ex-gh-prose",
+            "rule": "skill.exfil",
+            "severity": "high",
+            "title": "Claude Code 的 skill「ex-gh-prose」：读 GitHub CLI 的令牌再发到网上",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-keychain-fence",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读钥匙串里的密码再发到网上（SKILL.md 第 8、9 行）；发消息给聊天机器人（SKILL.md 第 9 行）"
+            },
+            "key": "~/.claude/skills/ex-keychain-fence|3843c4f2fb7e2e55",
+            "path": "~/.claude/skills/ex-keychain-fence",
+            "rule": "skill.exfil",
+            "severity": "high",
+            "title": "Claude Code 的 skill「ex-keychain-fence」：读钥匙串里的密码再发到网上，另有 1 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-messages",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：信息、邮件、通讯录这类私人数据（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/ex-messages|886720457d93a232",
+            "path": "~/.claude/skills/ex-messages",
+            "rule": "skill.exfil",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「ex-messages」：信息、邮件、通讯录这类私人数据",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-pastebin",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把东西传到公开的贴文本、传文件网站（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/ex-pastebin|c12b3ad640978e6e",
+            "path": "~/.claude/skills/ex-pastebin",
+            "rule": "skill.exfil",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「ex-pastebin」：把东西传到公开的贴文本、传文件网站",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-public-ip",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：连到直接写 IP 地址的服务器（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/ex-public-ip|28ec2ebaddb75516",
+            "path": "~/.claude/skills/ex-public-ip",
+            "rule": "skill.exfil",
+            "severity": "low",
+            "title": "Claude Code 的 skill「ex-public-ip」：连到直接写 IP 地址的服务器",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-ssh-zip",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：读 SSH 私钥再发到网上（a.sh 第 2、3 行）"
+            },
+            "key": "~/.claude/skills/ex-ssh-zip|62a71f06db532da1",
+            "path": "~/.claude/skills/ex-ssh-zip",
+            "rule": "skill.exfil",
+            "severity": "high",
+            "title": "Claude Code 的 skill「ex-ssh-zip」：读 SSH 私钥再发到网上",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-tunnel",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：连到临时隧道（外面能连进来、数据能发出去）（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/ex-tunnel|567dbeed15bed1c3",
+            "path": "~/.claude/skills/ex-tunnel",
+            "rule": "skill.exfil",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「ex-tunnel」：连到临时隧道（外面能连进来、数据能发出去）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
+              "kinds": "exfil",
+              "scope": "personal",
+              "skill": "ex-wallet",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：加密货币钱包（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/ex-wallet|ff20e50af7052448",
+            "path": "~/.claude/skills/ex-wallet",
+            "rule": "skill.exfil",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「ex-wallet」：加密货币钱包",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

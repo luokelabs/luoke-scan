@@ -1,0 +1,83 @@
+{
+  "about": "都不在下载里：留最早的；一样早就留路径最短的",
+  "case": "rules/space.duplicates/keep-order",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 2097152,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Pictures/x.jpg",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Documents/x.jpg",
+              "sha256": "90ddf113285fb791",
+              "targets": "~/Pictures/x.jpg"
+            },
+            "key": "space.duplicates:90ddf113285fb791bf0729d64464e6b8d743d2b4991b31bebccc5bff88933991",
+            "path": "~/Documents/x.jpg",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 x.jpg（每份 2.1 MB），多占了 2.1 MB",
+            "verdict": "confirm"
+          },
+          {
+            "bytes": 3145728,
+            "category": "space",
+            "evidence": {
+              "copies": "~/Music/albums/live/y.wav",
+              "how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响",
+              "keep": "~/Music/y.wav",
+              "sha256": "31914dbfe4053130",
+              "targets": "~/Music/albums/live/y.wav"
+            },
+            "key": "space.duplicates:31914dbfe4053130bcf4df80eb7e1a43a27abe601b81053eeced601a205ebf2a",
+            "path": "~/Music/y.wav",
+            "rule": "space.duplicates",
+            "severity": "low",
+            "title": "2 份一样的 y.wav（每份 3.1 MB），多占了 3.1 MB",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

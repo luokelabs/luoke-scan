@@ -1,0 +1,1723 @@
+{
+ "version": 1,
+ "cases": [
+  {
+   "id": "cache-pip",
+   "kind": "cache",
+   "why": "pip 的缓存",
+   "setup": [
+    {
+     "cache": "pip",
+     "mb": 60
+    }
+   ],
+   "auto": [
+    "Library/Caches/pip"
+   ]
+  },
+  {
+   "id": "cache-tools-with-commands",
+   "kind": "cache",
+   "why": "Go、npm、uv 的缓存（各有自己的清理命令）",
+   "setup": [
+    {
+     "cache": "go-build",
+     "mb": 60
+    },
+    {
+     "cache": "npm",
+     "mb": 60
+    },
+    {
+     "cache": "uv",
+     "mb": 60
+    }
+   ],
+   "auto": [
+    "Library/Caches/go-build",
+    ".npm/_cacache",
+    ".cache/uv"
+   ]
+  },
+  {
+   "id": "cache-xcode",
+   "kind": "cache",
+   "why": "Xcode 的 DerivedData，Xcode 没开着",
+   "setup": [
+    {
+     "cache": "xcode-deriveddata",
+     "mb": 60
+    }
+   ],
+   "auto": [
+    "Library/Developer/Xcode/DerivedData"
+   ]
+  },
+  {
+   "id": "cache-rust-bun-swiftpm",
+   "kind": "cache",
+   "why": "Cargo、Bun、SwiftPM 的缓存",
+   "setup": [
+    {
+     "cache": "cargo-registry-cache",
+     "mb": 60
+    },
+    {
+     "cache": "bun",
+     "mb": 60
+    },
+    {
+     "cache": "swiftpm",
+     "mb": 60
+    }
+   ],
+   "auto": [
+    ".cargo/registry/cache",
+    ".bun/install/cache",
+    "Library/Caches/org.swift.swiftpm"
+   ]
+  },
+  {
+   "id": "cache-pip-running",
+   "kind": "cache",
+   "why": "pip 正在跑：这一轮不清",
+   "setup": [
+    {
+     "cache": "pip",
+     "mb": 60
+    }
+   ],
+   "running": [
+    "pip3"
+   ],
+   "keep": [
+    "Library/Caches/pip"
+   ]
+  },
+  {
+   "id": "cache-xcode-running",
+   "kind": "cache",
+   "why": "Xcode 开着：DerivedData 不清",
+   "setup": [
+    {
+     "cache": "xcode-deriveddata",
+     "mb": 60
+    }
+   ],
+   "running": [
+    "Xcode"
+   ],
+   "keep": [
+    "Library/Developer/Xcode/DerivedData"
+   ]
+  },
+  {
+   "id": "cache-npm-running",
+   "kind": "cache",
+   "why": "npm 正在跑（一个 MCP 服务器经 npx 起着）",
+   "setup": [
+    {
+     "cache": "npm",
+     "mb": 60
+    }
+   ],
+   "running": [
+    "npx"
+   ],
+   "keep": [
+    ".npm/_cacache"
+   ]
+  },
+  {
+   "id": "cache-is-a-link",
+   "kind": "cache",
+   "why": "pip 缓存的位置是个链接，指着用户自己的文件夹",
+   "setup": [
+    {
+     "file": "Documents/work/blob",
+     "mb": 60
+    },
+    {
+     "link": "Library/Caches/pip",
+     "to": "Documents/work"
+    }
+   ],
+   "keep": [
+    "Library/Caches/pip",
+    "Documents/work"
+   ]
+  },
+  {
+   "id": "cache-look-alikes",
+   "kind": "cache",
+   "why": "像缓存、其实是用户要的：npx 装的工具、下载的模型、Xcode 归档、模拟器、Cargo 索引",
+   "setup": [
+    {
+     "file": ".npm/_npx/4f2a/node_modules/mcp/blob",
+     "mb": 60
+    },
+    {
+     "file": ".cache/huggingface/hub/models--Qwen--Qwen3.5-9B/blobs/abc",
+     "mb": 60
+    },
+    {
+     "file": ".ollama/models/blobs/sha256-abc",
+     "mb": 60
+    },
+    {
+     "file": "Library/Developer/Xcode/Archives/2026-10-01/App.xcarchive/blob",
+     "mb": 60
+    },
+    {
+     "file": "Library/Developer/CoreSimulator/Devices/ABC/data/blob",
+     "mb": 60
+    },
+    {
+     "file": ".cargo/registry/index/blob",
+     "mb": 60
+    },
+    {
+     "file": "Library/Caches/com.apple.Safari/blob",
+     "mb": 60
+    }
+   ],
+   "keep": [
+    ".npm/_npx",
+    ".cache/huggingface",
+    ".ollama/models",
+    "Library/Developer/Xcode/Archives",
+    "Library/Developer/CoreSimulator/Devices",
+    ".cargo/registry/index",
+    "Library/Caches/com.apple.Safari"
+   ]
+  },
+  {
+   "id": "cache-turned-off",
+   "kind": "cache",
+   "why": "用户放回过缓存这一类（或在规则里关了）",
+   "setup": [
+    {
+     "cache": "pip",
+     "mb": 60
+    }
+   ],
+   "off": [
+    "cache"
+   ],
+   "keep": [
+    "Library/Caches/pip"
+   ]
+  },
+  {
+   "id": "cache-package-managers",
+   "kind": "cache",
+   "why": "Homebrew、Yarn 1、CocoaPods、Composer、node-gyp 下载的东西，用到时会重新下载",
+   "setup": [
+    {
+     "cache": "homebrew",
+     "mb": 60
+    },
+    {
+     "cache": "yarn",
+     "mb": 60
+    },
+    {
+     "cache": "cocoapods",
+     "mb": 60
+    },
+    {
+     "cache": "composer",
+     "mb": 60
+    },
+    {
+     "cache": "node-gyp",
+     "mb": 60
+    }
+   ],
+   "auto": [
+    "Library/Caches/Homebrew",
+    "Library/Caches/Yarn",
+    "Library/Caches/CocoaPods",
+    "Library/Caches/composer",
+    "Library/Caches/node-gyp"
+   ]
+  },
+  {
+   "id": "cache-gradle-poetry",
+   "kind": "cache",
+   "why": "Gradle 的缓存和 wrapper 下载的发行版、Poetry 的下载缓存",
+   "setup": [
+    {
+     "cache": "gradle-caches",
+     "mb": 60
+    },
+    {
+     "cache": "gradle-wrapper",
+     "mb": 60
+    },
+    {
+     "cache": "poetry-cache",
+     "mb": 60
+    },
+    {
+     "cache": "poetry-artifacts",
+     "mb": 60
+    }
+   ],
+   "auto": [
+    ".gradle/caches",
+    ".gradle/wrapper/dists",
+    "Library/Caches/pypoetry/cache",
+    "Library/Caches/pypoetry/artifacts"
+   ]
+  },
+  {
+   "id": "cache-xcode-more",
+   "kind": "cache",
+   "why": "Xcode 的文档缓存、模拟器的共享缓存，Xcode 和模拟器都没开着",
+   "setup": [
+    {
+     "cache": "xcode-documentation",
+     "mb": 60
+    },
+    {
+     "cache": "coresimulator-caches",
+     "mb": 60
+    }
+   ],
+   "auto": [
+    "Library/Developer/Xcode/DocumentationCache",
+    "Library/Developer/CoreSimulator/Caches"
+   ]
+  },
+  {
+   "id": "cache-brew-running",
+   "kind": "cache",
+   "why": "brew 正在装东西（它跑起来是 Homebrew 自带的 ruby）",
+   "setup": [
+    {
+     "cache": "homebrew",
+     "mb": 60
+    }
+   ],
+   "running": [
+    "ruby"
+   ],
+   "keep": [
+    "Library/Caches/Homebrew"
+   ]
+  },
+  {
+   "id": "cache-gradle-daemon",
+   "kind": "cache",
+   "why": "Gradle 的守护进程开着（是个 java 进程）",
+   "setup": [
+    {
+     "cache": "gradle-caches",
+     "mb": 60
+    }
+   ],
+   "running": [
+    "java"
+   ],
+   "keep": [
+    ".gradle/caches"
+   ]
+  },
+  {
+   "id": "cache-simulator-running",
+   "kind": "cache",
+   "why": "模拟器的后台服务还在跑",
+   "setup": [
+    {
+     "cache": "coresimulator-caches",
+     "mb": 60
+    }
+   ],
+   "running": [
+    "com.apple.CoreSimulator.CoreSimulatorService"
+   ],
+   "keep": [
+    "Library/Developer/CoreSimulator/Caches"
+   ]
+  },
+  {
+   "id": "cache-look-alikes-2",
+   "kind": "cache",
+   "why": "像缓存、其实是用户要的：Poetry 给项目建的虚拟环境、JetBrains 的缓存（里面有本地历史）、Gradle 的设置、Yarn 2+ 的全局缓存（PnP 项目直接从这里载入）、Deno 的文件夹（里面有应用的本地数据库）、pre-commit 的文件夹（跑 hook 时暂存的没提交的改动）、模拟器设备",
+   "setup": [
+    {
+     "file": "Library/Caches/pypoetry/virtualenvs/app-x1-py3.12/lib/blob",
+     "mb": 60
+    },
+    {
+     "file": "Library/Caches/JetBrains/PyCharm2026.2/LocalHistory/blob",
+     "mb": 60
+    },
+    {
+     "file": ".gradle/gradle.properties",
+     "mb": 1
+    },
+    {
+     "file": ".gradle/init.d/blob",
+     "mb": 60
+    },
+    {
+     "file": "Library/Developer/CoreSimulator/Devices/ABC/data/blob",
+     "mb": 60
+    },
+    {
+     "file": "Library/Caches/Homebrew-backup/blob",
+     "mb": 60
+    },
+    {
+     "file": ".yarn/berry/cache/react-npm-18.3.1-abc.zip",
+     "mb": 60
+    },
+    {
+     "file": "Library/Caches/deno/location_data/abc123/kv.sqlite3",
+     "mb": 60
+    },
+    {
+     "file": ".cache/pre-commit/patch1761650000-4242",
+     "mb": 60
+    }
+   ],
+   "keep": [
+    "Library/Caches/pypoetry/virtualenvs",
+    "Library/Caches/JetBrains",
+    ".gradle/gradle.properties",
+    ".gradle/init.d",
+    "Library/Developer/CoreSimulator/Devices",
+    "Library/Caches/Homebrew-backup",
+    ".yarn/berry/cache",
+    "Library/Caches/deno",
+    ".cache/pre-commit"
+   ]
+  },
+  {
+   "id": "installer-same-version",
+   "kind": "installer",
+   "why": "安装包和已装的 Firefox 同一版，放了 30 天",
+   "setup": [
+    {
+     "app": "Firefox",
+     "version": "131.0"
+    },
+    {
+     "file": "Downloads/Firefox 131.0.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "auto": [
+    "Downloads/Firefox 131.0.dmg"
+   ]
+  },
+  {
+   "id": "installer-older-version",
+   "kind": "installer",
+   "why": "安装包比已装的旧",
+   "setup": [
+    {
+     "app": "Firefox",
+     "version": "131.0.3"
+    },
+    {
+     "file": "Downloads/Firefox 130.0.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "auto": [
+    "Downloads/Firefox 130.0.dmg"
+   ]
+  },
+  {
+   "id": "installer-name-without-version",
+   "kind": "installer",
+   "why": "名字里没有版本号（googlechrome.dmg）",
+   "setup": [
+    {
+     "app": "Google Chrome",
+     "version": "130.0.6723.70"
+    },
+    {
+     "file": "Downloads/googlechrome.dmg",
+     "mb": 6,
+     "added_days": 20,
+     "modified_days": 20,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "auto": [
+    "Downloads/googlechrome.dmg"
+   ]
+  },
+  {
+   "id": "installer-chip-in-name",
+   "kind": "installer",
+   "why": "名字带芯片（Docker-arm64.dmg）",
+   "setup": [
+    {
+     "app": "Docker",
+     "version": "4.37.1"
+    },
+    {
+     "file": "Downloads/Docker-arm64.dmg",
+     "mb": 6,
+     "added_days": 15,
+     "modified_days": 15,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "auto": [
+    "Downloads/Docker-arm64.dmg"
+   ]
+  },
+  {
+   "id": "installer-words-in-name",
+   "kind": "installer",
+   "why": "名字带版本和系统（Slack-4.41.105-macOS.dmg）",
+   "setup": [
+    {
+     "app": "Slack",
+     "version": "4.41.105"
+    },
+    {
+     "file": "Downloads/Slack-4.41.105-macOS.dmg",
+     "mb": 6,
+     "added_days": 40,
+     "modified_days": 40,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "auto": [
+    "Downloads/Slack-4.41.105-macOS.dmg"
+   ]
+  },
+  {
+   "id": "installer-one-folder-down",
+   "kind": "installer",
+   "why": "在下载文件夹的子文件夹里",
+   "setup": [
+    {
+     "app": "Figma",
+     "version": "124.5.4"
+    },
+    {
+     "file": "Downloads/installers/Figma-124.5.dmg",
+     "mb": 6,
+     "added_days": 20,
+     "modified_days": 20,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "auto": [
+    "Downloads/installers/Figma-124.5.dmg"
+   ]
+  },
+  {
+   "id": "installer-pkg",
+   "kind": "installer",
+   "why": "pkg 安装包",
+   "setup": [
+    {
+     "app": "Tailscale",
+     "version": "1.76.1"
+    },
+    {
+     "file": "Downloads/Tailscale-1.76.1-macos.pkg",
+     "mb": 6,
+     "added_days": 25,
+     "modified_days": 25,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "auto": [
+    "Downloads/Tailscale-1.76.1-macos.pkg"
+   ]
+  },
+  {
+   "id": "installer-xcode-xip",
+   "kind": "installer",
+   "why": "Xcode 的 xip（苹果的应用只认 xip）",
+   "setup": [
+    {
+     "app": "Xcode",
+     "version": "16.1",
+     "bundle_id": "com.apple.dt.Xcode"
+    },
+    {
+     "file": "Downloads/Xcode_16.1.xip",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "auto": [
+    "Downloads/Xcode_16.1.xip"
+   ]
+  },
+  {
+   "id": "installer-newer-than-installed",
+   "kind": "installer",
+   "why": "安装包比已装的新：多半还没装（提案 9.4）",
+   "setup": [
+    {
+     "app": "Firefox",
+     "version": "131.0"
+    },
+    {
+     "file": "Downloads/Firefox 132.0.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/Firefox 132.0.dmg"
+   ]
+  },
+  {
+   "id": "installer-too-recent",
+   "kind": "installer",
+   "why": "才放了 10 天",
+   "setup": [
+    {
+     "app": "Firefox",
+     "version": "131.0"
+    },
+    {
+     "file": "Downloads/Firefox 131.0.dmg",
+     "mb": 6,
+     "added_days": 10,
+     "modified_days": 10,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/Firefox 131.0.dmg"
+   ]
+  },
+  {
+   "id": "installer-another-product",
+   "kind": "installer",
+   "why": "NotionCalendar 不是 Notion 的安装包",
+   "setup": [
+    {
+     "app": "Notion",
+     "version": "3.18.0"
+    },
+    {
+     "file": "Downloads/NotionCalendar-1.2.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/NotionCalendar-1.2.dmg"
+   ]
+  },
+  {
+   "id": "installer-another-edition",
+   "kind": "installer",
+   "why": "Firefox Developer Edition 不是 Firefox 的安装包",
+   "setup": [
+    {
+     "app": "Firefox",
+     "version": "131.0"
+    },
+    {
+     "file": "Downloads/Firefox Developer Edition 132.0b5.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/Firefox Developer Edition 132.0b5.dmg"
+   ]
+  },
+  {
+   "id": "installer-another-product-no-version",
+   "kind": "installer",
+   "why": "名字里没有版本号的别家产品：NotionCalendar.dmg、Firefox Developer Edition.dmg（只靠名字认）",
+   "setup": [
+    {
+     "app": "Notion",
+     "version": "3.18.0"
+    },
+    {
+     "app": "Firefox",
+     "version": "131.0"
+    },
+    {
+     "file": "Downloads/NotionCalendar.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    },
+    {
+     "file": "Downloads/Firefox Developer Edition.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/NotionCalendar.dmg",
+    "Downloads/Firefox Developer Edition.dmg"
+   ]
+  },
+  {
+   "id": "installer-app-not-installed",
+   "kind": "installer",
+   "why": "对应的应用没装",
+   "setup": [
+    {
+     "file": "Downloads/Zoom.pkg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    },
+    {
+     "file": "Downloads/Arc-1.70.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/Zoom.pkg",
+    "Downloads/Arc-1.70.dmg"
+   ]
+  },
+  {
+   "id": "installer-attached",
+   "kind": "installer",
+   "why": "安装包正挂着（打开着）",
+   "setup": [
+    {
+     "app": "Firefox",
+     "version": "131.0"
+    },
+    {
+     "file": "Downloads/Firefox 131.0.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    },
+    {
+     "attached": "Downloads/Firefox 131.0.dmg"
+    }
+   ],
+   "keep": [
+    "Downloads/Firefox 131.0.dmg"
+   ]
+  },
+  {
+   "id": "installer-is-a-link",
+   "kind": "installer",
+   "why": "下载文件夹里的是个链接，真的放在文稿里",
+   "setup": [
+    {
+     "app": "Firefox",
+     "version": "131.0"
+    },
+    {
+     "file": "Documents/keep/Firefox 131.0.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    },
+    {
+     "link": "Downloads/Firefox 131.0.dmg",
+     "to": "Documents/keep/Firefox 131.0.dmg"
+    }
+   ],
+   "keep": [
+    "Downloads/Firefox 131.0.dmg",
+    "Documents/keep/Firefox 131.0.dmg"
+   ]
+  },
+  {
+   "id": "installer-app-says-no-version",
+   "kind": "installer",
+   "why": "已装的应用不说版本号，安装包有版本：比不了",
+   "setup": [
+    {
+     "app": "Firefox"
+    },
+    {
+     "file": "Downloads/Firefox 131.0.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/Firefox 131.0.dmg"
+   ]
+  },
+  {
+   "id": "installer-user-made-image",
+   "kind": "installer",
+   "why": "用户自己做的磁盘映像，名字和应用一样（没有下载标记）",
+   "setup": [
+    {
+     "app": "Keynote",
+     "version": "14.2"
+    },
+    {
+     "file": "Downloads/Keynote.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": false,
+     "signed": false
+    },
+    {
+     "app": "Photos",
+     "version": "10.0"
+    },
+    {
+     "file": "Downloads/Photos 2024.dmg",
+     "mb": 6,
+     "added_days": 60,
+     "modified_days": 60,
+     "quarantine": false,
+     "signed": false
+    }
+   ],
+   "keep": [
+    "Downloads/Keynote.dmg",
+    "Downloads/Photos 2024.dmg"
+   ]
+  },
+  {
+   "id": "installer-not-signed",
+   "kind": "installer",
+   "why": "没签名：隔空投送或信息收到的、和应用同名的磁盘映像（比如加密的 Obsidian 库）",
+   "setup": [
+    {
+     "app": "Obsidian",
+     "version": "1.7.4",
+     "bundle_id": "md.obsidian"
+    },
+    {
+     "file": "Downloads/Obsidian.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": false
+    }
+   ],
+   "keep": [
+    "Downloads/Obsidian.dmg"
+   ]
+  },
+  {
+   "id": "installer-not-downloaded",
+   "kind": "installer",
+   "why": "签了名但没有下载标记（从 U 盘拷来的）：不算从网上下的",
+   "setup": [
+    {
+     "app": "Firefox",
+     "version": "131.0"
+    },
+    {
+     "file": "Downloads/Firefox 131.0.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": false,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/Firefox 131.0.dmg"
+   ]
+  },
+  {
+   "id": "installer-apple-app",
+   "kind": "installer",
+   "why": "苹果自家的应用（Keynote、Final Cut Pro）不拿来比：同名的映像多半是用户自己的",
+   "setup": [
+    {
+     "app": "Keynote",
+     "version": "14.2",
+     "bundle_id": "com.apple.iWork.Keynote"
+    },
+    {
+     "app": "Final Cut Pro",
+     "version": "11.0",
+     "bundle_id": "com.apple.FinalCut"
+    },
+    {
+     "file": "Downloads/Keynote.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    },
+    {
+     "file": "Downloads/Final Cut Pro.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/Keynote.dmg",
+    "Downloads/Final Cut Pro.dmg"
+   ]
+  },
+  {
+   "id": "installer-web-app-shim",
+   "kind": "installer",
+   "why": "「应用程序」里的只是网页应用的壳（Chrome、Safari 加到程序坞的）：不算装过",
+   "setup": [
+    {
+     "app": "Claude",
+     "bundle_id": "com.google.Chrome.app.fmpnliohjhemenmnlpbfagaolkdacoja",
+     "web_shim": true
+    },
+    {
+     "app": "Discord",
+     "bundle_id": "com.apple.Safari.WebApp.1B2C3D4E"
+    },
+    {
+     "file": "Downloads/Claude.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    },
+    {
+     "file": "Downloads/Discord.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/Claude.dmg",
+    "Downloads/Discord.dmg"
+   ]
+  },
+  {
+   "id": "installer-pre-release",
+   "kind": "installer",
+   "why": "测试版：132.0b5 比装着的 132.0b3 新，带字母的版本号不比",
+   "setup": [
+    {
+     "app": "Firefox",
+     "version": "132.0b3"
+    },
+    {
+     "file": "Downloads/Firefox 132.0b5.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/Firefox 132.0b5.dmg"
+   ]
+  },
+  {
+   "id": "installer-release-candidate",
+   "kind": "installer",
+   "why": "rc1 比装着的 b10 新，只比数字会当成更旧（1 < 10）：带字母的版本号不比",
+   "setup": [
+    {
+     "app": "Firefox",
+     "version": "132.0b10"
+    },
+    {
+     "file": "Downloads/Firefox 132.0rc1.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/Firefox 132.0rc1.dmg"
+   ]
+  },
+  {
+   "id": "installer-ignored",
+   "kind": "installer",
+   "why": "用户对这一条说过「以后别提」",
+   "setup": [
+    {
+     "app": "Firefox",
+     "version": "131.0"
+    },
+    {
+     "file": "Downloads/Firefox 131.0.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "ignore": [
+    "Downloads/Firefox 131.0.dmg"
+   ],
+   "keep": [
+    "Downloads/Firefox 131.0.dmg"
+   ]
+  },
+  {
+   "id": "installer-short-name",
+   "kind": "installer",
+   "why": "三个字母以下的应用名不比（Go、Arc）",
+   "setup": [
+    {
+     "app": "Go",
+     "version": "1.23"
+    },
+    {
+     "file": "Downloads/Go-1.22.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "keep": [
+    "Downloads/Go-1.22.dmg"
+   ]
+  },
+  {
+   "id": "installer-turned-off",
+   "kind": "installer",
+   "why": "用户放回过安装包这一类",
+   "setup": [
+    {
+     "app": "Firefox",
+     "version": "131.0"
+    },
+    {
+     "file": "Downloads/Firefox 131.0.dmg",
+     "mb": 6,
+     "added_days": 30,
+     "modified_days": 30,
+     "quarantine": true,
+     "signed": true
+    }
+   ],
+   "off": [
+    "installer"
+   ],
+   "keep": [
+    "Downloads/Firefox 131.0.dmg"
+   ]
+  },
+  {
+   "id": "dup-kept-in-documents",
+   "kind": "duplicate",
+   "why": "文稿里有一份，下载里那份是多的",
+   "setup": [
+    {
+     "file": "Documents/report.pdf",
+     "mb": 52,
+     "content": "A",
+     "modified_days": 40
+    },
+    {
+     "file": "Downloads/report.pdf",
+     "mb": 52,
+     "content": "A",
+     "modified_days": 10
+    }
+   ],
+   "auto": [
+    "Downloads/report.pdf"
+   ]
+  },
+  {
+   "id": "dup-kept-on-desktop",
+   "kind": "duplicate",
+   "why": "桌面上有一份",
+   "setup": [
+    {
+     "file": "Desktop/models/model.bin",
+     "mb": 52,
+     "content": "B",
+     "modified_days": 60
+    },
+    {
+     "file": "Downloads/model.bin",
+     "mb": 52,
+     "content": "B",
+     "modified_days": 30
+    }
+   ],
+   "auto": [
+    "Downloads/model.bin"
+   ]
+  },
+  {
+   "id": "dup-two-in-downloads",
+   "kind": "duplicate",
+   "why": "文稿里一份，下载里两份：下载里的两份都多",
+   "setup": [
+    {
+     "file": "Documents/a.mov",
+     "mb": 52,
+     "content": "C",
+     "modified_days": 50
+    },
+    {
+     "file": "Downloads/a.mov",
+     "mb": 52,
+     "content": "C",
+     "modified_days": 20
+    },
+    {
+     "file": "Downloads/old/a (1).mov",
+     "mb": 52,
+     "content": "C",
+     "modified_days": 20
+    }
+   ],
+   "auto": [
+    "Downloads/a.mov",
+    "Downloads/old/a (1).mov"
+   ]
+  },
+  {
+   "id": "dup-only-in-downloads",
+   "kind": "duplicate",
+   "why": "几份都在下载里：别处没有，不知道要留哪份",
+   "setup": [
+    {
+     "file": "Downloads/x.zip",
+     "mb": 52,
+     "content": "D",
+     "modified_days": 30
+    },
+    {
+     "file": "Downloads/copy/x.zip",
+     "mb": 52,
+     "content": "D",
+     "modified_days": 30
+    }
+   ],
+   "keep": [
+    "Downloads/x.zip",
+    "Downloads/copy/x.zip"
+   ]
+  },
+  {
+   "id": "dup-just-downloaded",
+   "kind": "duplicate",
+   "why": "下载里那份才来两天，可能马上要用",
+   "setup": [
+    {
+     "file": "Documents/y.pdf",
+     "mb": 52,
+     "content": "E",
+     "modified_days": 40
+    },
+    {
+     "file": "Downloads/y.pdf",
+     "mb": 52,
+     "content": "E",
+     "modified_days": 2
+    }
+   ],
+   "keep": [
+    "Downloads/y.pdf",
+    "Documents/y.pdf"
+   ]
+  },
+  {
+   "id": "dup-edited-lately",
+   "kind": "duplicate",
+   "why": "下载里那份 30 天前来的，3 天前改过",
+   "setup": [
+    {
+     "file": "Documents/z.key",
+     "mb": 52,
+     "content": "F",
+     "modified_days": 40
+    },
+    {
+     "file": "Downloads/z.key",
+     "mb": 52,
+     "content": "F",
+     "modified_days": 3,
+     "added_days": 30
+    }
+   ],
+   "keep": [
+    "Downloads/z.key",
+    "Documents/z.key"
+   ]
+  },
+  {
+   "id": "dup-same-ends-different-middle",
+   "kind": "duplicate",
+   "why": "大小一样、首尾 64 KB 一样、中间不同：不是重复（提案 9.4）",
+   "setup": [
+    {
+     "file": "Documents/w.bin",
+     "mb": 52,
+     "content": "G",
+     "modified_days": 40
+    },
+    {
+     "file": "Downloads/w.bin",
+     "mb": 52,
+     "content": "G",
+     "modified_days": 30,
+     "variant": "middle"
+    }
+   ],
+   "keep": [
+    "Downloads/w.bin",
+    "Documents/w.bin"
+   ]
+  },
+  {
+   "id": "dup-same-size-different",
+   "kind": "duplicate",
+   "why": "大小一样、内容不同（提案 9.4）",
+   "setup": [
+    {
+     "file": "Documents/v.bin",
+     "mb": 52,
+     "content": "H",
+     "modified_days": 40
+    },
+    {
+     "file": "Downloads/v.bin",
+     "mb": 52,
+     "content": "I",
+     "modified_days": 30
+    }
+   ],
+   "keep": [
+    "Downloads/v.bin",
+    "Documents/v.bin"
+   ]
+  },
+  {
+   "id": "dup-hard-link",
+   "kind": "duplicate",
+   "why": "下载里那个是文稿里那份的硬链接：删了不腾空间（提案 9.4）",
+   "setup": [
+    {
+     "file": "Documents/h.bin",
+     "mb": 52,
+     "content": "J",
+     "modified_days": 40
+    },
+    {
+     "hardlink": "Downloads/h.bin",
+     "to": "Documents/h.bin"
+    }
+   ],
+   "keep": [
+    "Downloads/h.bin",
+    "Documents/h.bin"
+   ]
+  },
+  {
+   "id": "dup-clone",
+   "kind": "duplicate",
+   "why": "下载里那份是克隆：不多占空间（提案 9.4）",
+   "setup": [
+    {
+     "file": "Documents/k.bin",
+     "mb": 52,
+     "content": "K",
+     "modified_days": 40
+    },
+    {
+     "clone": "Downloads/k.bin",
+     "to": "Documents/k.bin",
+     "modified_days": 30
+    }
+   ],
+   "keep": [
+    "Downloads/k.bin",
+    "Documents/k.bin"
+   ]
+  },
+  {
+   "id": "dup-symlink",
+   "kind": "duplicate",
+   "why": "下载里那个是链接（提案 9.4）",
+   "setup": [
+    {
+     "file": "Documents/l.bin",
+     "mb": 52,
+     "content": "L",
+     "modified_days": 40
+    },
+    {
+     "link": "Downloads/l.bin",
+     "to": "Documents/l.bin"
+    }
+   ],
+   "keep": [
+    "Downloads/l.bin",
+    "Documents/l.bin"
+   ]
+  },
+  {
+   "id": "dup-tool-managed",
+   "kind": "duplicate",
+   "why": "在隐藏文件夹和 node_modules 里的：归工具管",
+   "setup": [
+    {
+     "file": "Documents/m.bin",
+     "mb": 52,
+     "content": "M",
+     "modified_days": 40
+    },
+    {
+     "file": "Downloads/.cache/m.bin",
+     "mb": 52,
+     "content": "M",
+     "modified_days": 30
+    },
+    {
+     "file": "Downloads/proj/node_modules/pkg/m.bin",
+     "mb": 52,
+     "content": "M",
+     "modified_days": 30
+    }
+   ],
+   "keep": [
+    "Downloads/.cache/m.bin",
+    "Downloads/proj/node_modules/pkg/m.bin",
+    "Documents/m.bin"
+   ]
+  },
+  {
+   "id": "dup-other-copy-not-looked-at",
+   "kind": "duplicate",
+   "why": "另一份在资源库里（不在用户放文件的地方）：当它不在",
+   "setup": [
+    {
+     "file": "Library/Application Support/Tool/data.bin",
+     "mb": 52,
+     "content": "N",
+     "modified_days": 40
+    },
+    {
+     "file": "Downloads/data.bin",
+     "mb": 52,
+     "content": "N",
+     "modified_days": 30
+    }
+   ],
+   "keep": [
+    "Downloads/data.bin"
+   ]
+  },
+  {
+   "id": "dup-turned-off",
+   "kind": "duplicate",
+   "why": "用户放回过重复文件这一类",
+   "setup": [
+    {
+     "file": "Documents/report.pdf",
+     "mb": 52,
+     "content": "O",
+     "modified_days": 40
+    },
+    {
+     "file": "Downloads/report.pdf",
+     "mb": 52,
+     "content": "O",
+     "modified_days": 10
+    }
+   ],
+   "off": [
+    "duplicate"
+   ],
+   "keep": [
+    "Downloads/report.pdf"
+   ]
+  },
+  {
+   "id": "dup-ignored",
+   "kind": "duplicate",
+   "why": "用户对这一组说过「以后别提」",
+   "setup": [
+    {
+     "file": "Documents/report.pdf",
+     "mb": 52,
+     "content": "R",
+     "modified_days": 40
+    },
+    {
+     "file": "Downloads/report.pdf",
+     "mb": 52,
+     "content": "R",
+     "modified_days": 10
+    }
+   ],
+   "ignore": [
+    "Documents/report.pdf"
+   ],
+   "keep": [
+    "Downloads/report.pdf"
+   ]
+  },
+  {
+   "id": "dup-in-a-project",
+   "kind": "duplicate",
+   "why": "下载里那份在一个项目里（克隆的仓库、解压的工程）：清了项目就坏了",
+   "setup": [
+    {
+     "file": "Documents/logo.png",
+     "mb": 52,
+     "content": "S",
+     "modified_days": 40
+    },
+    {
+     "file": "Downloads/site/.git/HEAD",
+     "mb": 1
+    },
+    {
+     "file": "Downloads/site/assets/logo.png",
+     "mb": 52,
+     "content": "S",
+     "modified_days": 30
+    },
+    {
+     "file": "Documents/hero.jpg",
+     "mb": 52,
+     "content": "T",
+     "modified_days": 40
+    },
+    {
+     "file": "Downloads/app2/package.json",
+     "mb": 1
+    },
+    {
+     "file": "Downloads/app2/public/img/hero.jpg",
+     "mb": 52,
+     "content": "T",
+     "modified_days": 30
+    }
+   ],
+   "keep": [
+    "Downloads/site/assets/logo.png",
+    "Downloads/app2/public/img/hero.jpg"
+   ]
+  },
+  {
+   "id": "dup-kept-in-build-output",
+   "kind": "duplicate",
+   "why": "留的那份在 build 文件夹里：下次构建可能就没了",
+   "setup": [
+    {
+     "file": "Documents/proj/build/out.bin",
+     "mb": 52,
+     "content": "U",
+     "modified_days": 40
+    },
+    {
+     "file": "Downloads/out.bin",
+     "mb": 52,
+     "content": "U",
+     "modified_days": 30
+    }
+   ],
+   "keep": [
+    "Downloads/out.bin",
+    "Documents/proj/build/out.bin"
+   ]
+  },
+  {
+   "id": "temp-puppeteer",
+   "kind": "temp",
+   "why": "Puppeteer 每次测试留下的浏览器配置，5 天没动",
+   "setup": [
+    {
+     "temp_group": "puppeteer_dev_chrome_profile",
+     "count": 22,
+     "mb_each": 5,
+     "idle_days": 5,
+     "tag": "a"
+    }
+   ],
+   "auto": [
+    "$TMP/puppeteer_dev_chrome_profile-a*"
+   ]
+  },
+  {
+   "id": "temp-lighthouse",
+   "kind": "temp",
+   "why": "Lighthouse 留下的浏览器配置",
+   "setup": [
+    {
+     "temp_group": "lighthouse",
+     "count": 22,
+     "mb_each": 5,
+     "idle_days": 4,
+     "tag": "a"
+    }
+   ],
+   "auto": [
+    "$TMP/lighthouse.a*"
+   ]
+  },
+  {
+   "id": "temp-playwright",
+   "kind": "temp",
+   "why": "Playwright 的录像和截图",
+   "setup": [
+    {
+     "temp_group": "playwright-artifacts",
+     "count": 22,
+     "mb_each": 5,
+     "idle_days": 6,
+     "tag": "a"
+    }
+   ],
+   "auto": [
+    "$TMP/playwright-artifacts-a*"
+   ]
+  },
+  {
+   "id": "temp-some-in-use",
+   "kind": "temp",
+   "why": "同一种里有 3 个今天还在写：只清 5 天没动的",
+   "setup": [
+    {
+     "temp_group": "puppeteer_dev_chrome_profile",
+     "count": 22,
+     "mb_each": 5,
+     "idle_days": 5,
+     "tag": "old"
+    },
+    {
+     "temp_group": "puppeteer_dev_chrome_profile",
+     "count": 3,
+     "mb_each": 5,
+     "idle_days": 0,
+     "tag": "new"
+    }
+   ],
+   "auto": [
+    "$TMP/puppeteer_dev_chrome_profile-old*"
+   ],
+   "keep": [
+    "$TMP/puppeteer_dev_chrome_profile-new*"
+   ]
+  },
+  {
+   "id": "temp-not-quiet-long-enough",
+   "kind": "temp",
+   "why": "两天没动：规则会报，自动清要等三天",
+   "setup": [
+    {
+     "temp_group": "puppeteer_dev_chrome_profile",
+     "count": 22,
+     "mb_each": 5,
+     "idle_days": 2,
+     "tag": "a"
+    }
+   ],
+   "keep": [
+    "$TMP/puppeteer_dev_chrome_profile-a*"
+   ]
+  },
+  {
+   "id": "temp-unknown-tool",
+   "kind": "temp",
+   "why": "认不出是哪个工具的（自己的测试套件）：要用户点",
+   "setup": [
+    {
+     "temp_group": "wings",
+     "count": 22,
+     "mb_each": 5,
+     "idle_days": 5,
+     "tag": "a"
+    }
+   ],
+   "keep": [
+    "$TMP/wings-a*"
+   ]
+  },
+  {
+   "id": "temp-an-apps-own",
+   "kind": "temp",
+   "why": "应用自己的临时文件夹（Chrome）：要用户点",
+   "setup": [
+    {
+     "temp_group": "com.google.Chrome",
+     "count": 22,
+     "mb_each": 5,
+     "idle_days": 5,
+     "tag": "a",
+     "sep": "."
+    }
+   ],
+   "keep": [
+    "$TMP/com.google.Chrome.a*"
+   ]
+  },
+  {
+   "id": "temp-link-among-them",
+   "kind": "temp",
+   "why": "混进一个同名的链接，指着文稿",
+   "setup": [
+    {
+     "temp_group": "puppeteer_dev_chrome_profile",
+     "count": 22,
+     "mb_each": 5,
+     "idle_days": 5,
+     "tag": "a"
+    },
+    {
+     "file": "Documents/keep/notes.txt",
+     "mb": 1
+    },
+    {
+     "link": "$TMP/puppeteer_dev_chrome_profile-link0000zz",
+     "to": "Documents/keep"
+    }
+   ],
+   "auto": [
+    "$TMP/puppeteer_dev_chrome_profile-a*"
+   ],
+   "keep": [
+    "$TMP/puppeteer_dev_chrome_profile-link*",
+    "Documents/keep"
+   ]
+  },
+  {
+   "id": "temp-browser-still-open",
+   "kind": "temp",
+   "why": "浏览器还开着这个配置（锁指着活着的进程）：闲了五天也不清；锁指着已经没了的进程的照清",
+   "setup": [
+    {
+     "temp_group": "puppeteer_dev_chrome_profile",
+     "count": 22,
+     "mb_each": 5,
+     "idle_days": 5,
+     "tag": "old"
+    },
+    {
+     "temp_group": "puppeteer_dev_chrome_profile",
+     "count": 1,
+     "mb_each": 5,
+     "idle_days": 5,
+     "tag": "lck",
+     "locked": true
+    },
+    {
+     "temp_group": "puppeteer_dev_chrome_profile",
+     "count": 1,
+     "mb_each": 5,
+     "idle_days": 5,
+     "tag": "stl",
+     "stale_lock": true
+    }
+   ],
+   "auto": [
+    "$TMP/puppeteer_dev_chrome_profile-old*",
+    "$TMP/puppeteer_dev_chrome_profile-stl*"
+   ],
+   "keep": [
+    "$TMP/puppeteer_dev_chrome_profile-lck*"
+   ]
+  },
+  {
+   "id": "temp-turned-off",
+   "kind": "temp",
+   "why": "用户放回过临时文件夹这一类",
+   "setup": [
+    {
+     "temp_group": "puppeteer_dev_chrome_profile",
+     "count": 22,
+     "mb_each": 5,
+     "idle_days": 5,
+     "tag": "a"
+    }
+   ],
+   "off": [
+    "temp"
+   ],
+   "keep": [
+    "$TMP/puppeteer_dev_chrome_profile-a*"
+   ]
+  },
+  {
+   "id": "cache-yarn-running",
+   "kind": "cache",
+   "why": "Homebrew 装的 yarn 正在装依赖（它跑起来叫 yarn.js）",
+   "setup": [
+    {
+     "cache": "yarn",
+     "mb": 60
+    }
+   ],
+   "running": [
+    "yarn.js"
+   ],
+   "keep": [
+    "Library/Caches/Yarn"
+   ]
+  }
+ ]
+}
