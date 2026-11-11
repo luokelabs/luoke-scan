@@ -19,6 +19,9 @@ import (
 
 var args []string
 
+// freeToRun are the commands the installed luoke-scan runs for anyone: they only read the last report it wrote.
+var freeToRun = map[string]bool{"version": true, "report": true, "findings": true, "status": true}
+
 func fail(msg string, code ...int) {
 	os.Stderr.WriteString(msg + "\n")
 	c := 64
@@ -250,7 +253,7 @@ func setup(fixture string, fx fixtureMode, data string, haveData bool, toolDir s
 		}
 		l := core.Layout{Root: fixture}
 		if !core.Exists(l.Home()) {
-			fail(fixture + " 不是假用户目录（先跑 luoke-scan fixture " + fixture + "）")
+			fail(fixture + " 不是假用户目录（假目录由 blackbox/fx.py 造，见 blackbox/README.md）")
 		}
 		fakes, _, err := l.LoadFakes()
 		if err != nil {
@@ -316,8 +319,15 @@ func main() {
 			}
 		}
 		switch command {
-		case "fixture", "eval-cleanup", "eval-skills", "eval-agentfiles", "make-skill-evalset":
+		case "eval-cleanup", "eval-skills", "eval-agentfiles", "make-skill-evalset":
 			fail(command + " 只给开发版用")
+		}
+		// Everything else reads this Mac under 螺壳's Full Disk Access or changes something: only 螺壳 starts it
+		// (service/fromapp_darwin.go). A round the agent asked for is started by `luoke-scan mcp`.
+		if !freeToRun[command] {
+			if why := service.FromApp(command == "scan" && indexOf(args, "--for-agent") >= 0); why != "" {
+				fail("螺壳扫描："+why+"。\n装好的螺壳扫描只由螺壳起，请在螺壳里用；终端里能看的是 report、findings、status、version。", 77)
+			}
 		}
 	}
 	thisMac = flag("--this-mac")
@@ -346,6 +356,7 @@ func main() {
 		autoclean := flag("--autoclean")
 		ifNone := flag("--if-none")
 		quick := flag("--quick")
+		updateFirst := flag("--update-first")
 		var s *core.Store
 		var cfg service.Config
 		if thisMac && (haveHome || haveTmp) {
@@ -394,6 +405,8 @@ func main() {
 		if ifNone && s.LastReport() != nil {
 			os.Exit(0)
 		}
+		// Nobody waits on a round (luoke-core's idle job, the one scan_now starts) or the quick look: the user's apps first.
+		core.LowerPriority()
 		if quick {
 			if why := cfg.QuickWaits(); why != "" {
 				fmt.Println("先不看新下载的：" + why)
@@ -426,6 +439,14 @@ func main() {
 			os.Exit(0)
 		}
 		cfg.Context.Cancelled = stopOnTerm()
+		// No virus database yet (the first round, which luoke-core starts as soon as the user turns the app on, while the
+		// daily update waits for its next quiet moment): download it first, so that the round checks for viruses too
+		// (luoke-scan#122). Once a day at most, as the update job; a failure leaves the check to say why it did not run.
+		if thisMac || updateFirst {
+			if db := core.NewVirusDB(s, cfg.Context.Tools); len(db.Files()) == 0 {
+				db.Update(s, cfg.Clock(), false, 10*time.Minute)
+			}
+		}
 		report := service.New(s, cfg).RunRound(autoclean)
 		lock.Release()
 		if jsonOut {
@@ -477,8 +498,10 @@ func main() {
 		toolDir, haveTools := last(take("--tool-dir"))
 		t := toolsIn(toolDir, haveTools)
 		force := flag("--force")
+		core.LowerPriority() // luoke-core's idle job: freshclam and sigtool inherit it
 		noExtra()
-		o := core.NewVirusDB(s, t).Update(s, time.Now(), force, 1200*time.Second)
+		db := core.NewVirusDB(s, t)
+		o := db.Update(s, time.Now(), force, 1200*time.Second)
 		switch o.Kind {
 		case "updated":
 			v := o.Version
@@ -491,6 +514,9 @@ func main() {
 		case "notDue":
 			fmt.Printf("今天已经检查过，下次：%s（要现在查就加 --force）\n", core.ISOTime(o.Next))
 		default:
+			if len(db.Files()) == 0 { // 一个旧库都没有时不说「旧库保留」（luoke-scan#103）
+				fail("病毒库没下载成："+o.Why, 1)
+			}
 			fail("病毒库没更新，旧库保留："+o.Why, 1)
 		}
 
@@ -580,8 +606,8 @@ func main() {
 		s, cfg := setup(fixture, fixtureMode{}, data, haveData, "", false)
 		var outcome *service.Elevated
 		if fixture == "" && !haveData {
-			cfg.Elevate = func(a []string, prompt string) service.Elevated {
-				r := service.SudoElevate(a, prompt)
+			cfg.Elevate = func(a []string, prompt string, wait time.Duration) service.Elevated {
+				r := service.SudoElevate(a, prompt, wait)
 				outcome = &r
 				return r
 			}

@@ -166,15 +166,18 @@ class Run:
 
     def mcp(self, method: str, params: Optional[Dict[str, Any]] = None, *, clock: datetime.datetime,
             user_action: Optional[Dict[str, Any]] = None, no_fda: bool = False, note: str = "",
-            protocol: str = PROTOCOL) -> Any:
+            protocol: str = PROTOCOL, progress_token: Any = None) -> Any:
         """agent 的一个请求：`luoke-scan mcp --fixture … --clock …`，标准输入一条 JSON-RPC，标准输出是答复。
-        记下方法、参数（不记每次都一样的 _meta）、点按、答复（资源里那段 JSON 文字解开）。返回 result。"""
+        记下方法、参数（不记每次都一样的 _meta）、点按、答复（资源里那段 JSON 文字解开）。返回 result。
+        给了 `progress_token`：请求带上它，答复之前的进度通知（notifications/progress）一条条记在 `progress` 里。"""
         self.rid += 1
         meta: Dict[str, Any] = {"io.modelcontextprotocol/protocolVersion": protocol,
                                 "io.modelcontextprotocol/clientInfo": {"name": "luoke-agent", "version": "blackbox"},
                                 "io.modelcontextprotocol/clientCapabilities": {}}
         if user_action:
             meta[USER_ACTION] = user_action
+        if progress_token is not None:
+            meta["progressToken"] = progress_token
         req = {"jsonrpc": "2.0", "id": self.rid, "method": method, "params": {**(params or {}), "_meta": meta}}
         args = ["mcp", "--fixture", self.fx.root, "--clock", iso(clock)] + (["--no-full-disk-access"] if no_fda else [])
         step: Dict[str, Any] = {}
@@ -188,6 +191,20 @@ class Run:
             step["no-full-disk-access"] = True
         if note:
             step["note"] = note
+        if progress_token is not None:
+            step["progress-token"] = progress_token
+            lines = out.strip().splitlines()
+            notes = []
+            for line in lines[:-1]:
+                try:
+                    n = json.loads(line)
+                except ValueError:
+                    raise Failed(f"mcp {method} 答复之前的一行不是 JSON：{line[:300]}")
+                if "id" in n or n.get("method") != "notifications/progress":
+                    raise Failed(f"mcp {method} 答复之前的一行不是进度通知：{line[:300]}")
+                notes.append(n.get("params"))
+            step["progress"] = notes
+            out = lines[-1] if lines else ""
         reply: Any = None
         if out.strip():
             try:

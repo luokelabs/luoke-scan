@@ -172,7 +172,7 @@ func (r *ProcessRule) Run(ctx *Context) ([]Finding, error) {
 			}
 		}
 		out = append(out, Finding{Rule: "process.pile-up", Category: CatProcess, Severity: Medium, Verdict: Info, Path: g[0].Path,
-			Title: filepath.Base(g[0].Path) + " 在同一个父进程下堆了 " + strconv.Itoa(len(g)) + " 个",
+			Title: DisplayName(g[0].Path) + " 在同一个父进程下堆了 " + strconv.Itoa(len(g)) + " 个",
 			Evidence: map[string]string{"count": strconv.Itoa(len(g)), "parent_pid": strconv.Itoa(int(g[0].PPID)), "parent": parent,
 				"hint": "多半是父进程反复启动它、却没等它结束；占内存，也可能拖慢系统"},
 			Key: parent + "\x00" + g[0].Path}) // one finding per parent

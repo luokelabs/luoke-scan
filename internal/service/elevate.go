@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/luokelabs/luoke-scan/internal/core"
 )
@@ -62,8 +63,9 @@ func AdminCommand(helper string, args []string) string {
 	}, "; ")
 }
 
-// SudoElevate: from a terminal, sudo asks for the password there, every time (-k), and root runs AdminCommand.
-func SudoElevate(args []string, prompt string) Elevated {
+// SudoElevate: from a terminal, sudo asks for the password there, every time (-k), and root runs AdminCommand. No time
+// limit: nothing ends a terminal's command (wait is not used).
+func SudoElevate(args []string, prompt string, _ time.Duration) Elevated {
 	if fi, err := os.Stdin.Stat(); err != nil || fi.Mode()&os.ModeCharDevice == 0 {
 		return Elevated{Kind: "failed", Why: "要在终端里跑：sudo 在终端里问密码"}
 	}

@@ -291,6 +291,69 @@
    ]
   },
   {
+   "id": "cache-xcode-tests-corepack",
+   "kind": "cache",
+   "why": "Xcode 跑测试时克隆的模拟器、Xcode 自己的缓存、Corepack 下载的包管理器，用它们的程序都没在跑",
+   "setup": [
+    {
+     "cache": "xctest-devices",
+     "mb": 60
+    },
+    {
+     "cache": "xcode-cache",
+     "mb": 60
+    },
+    {
+     "cache": "corepack",
+     "mb": 60
+    }
+   ],
+   "auto": [
+    "Library/Developer/XCTestDevices",
+    "Library/Caches/com.apple.dt.Xcode",
+    ".cache/node/corepack"
+   ]
+  },
+  {
+   "id": "cache-xcode-tests-running",
+   "kind": "cache",
+   "why": "xcodebuild 正在跑测试：它克隆的模拟器和 Xcode 的缓存都在用",
+   "setup": [
+    {
+     "cache": "xctest-devices",
+     "mb": 60
+    },
+    {
+     "cache": "xcode-cache",
+     "mb": 60
+    }
+   ],
+   "running": [
+    "xcodebuild"
+   ],
+   "keep": [
+    "Library/Developer/XCTestDevices",
+    "Library/Caches/com.apple.dt.Xcode"
+   ]
+  },
+  {
+   "id": "cache-corepack-running",
+   "kind": "cache",
+   "why": "pnpm 正在跑（Corepack 下载的就是它）",
+   "setup": [
+    {
+     "cache": "corepack",
+     "mb": 60
+    }
+   ],
+   "running": [
+    "pnpm"
+   ],
+   "keep": [
+    ".cache/node/corepack"
+   ]
+  },
+  {
    "id": "cache-brew-running",
    "kind": "cache",
    "why": "brew 正在装东西（它跑起来是 Homebrew 自带的 ruby）",

@@ -1,0 +1,111 @@
+{
+  "about": "pnpm 9 的仓库、Yarn 4.5 的项目、pip 和 uv 编译过源码包：各一条；uv.toml 里有 [表]、pnpm 只能升级：不给「改成不跑」",
+  "case": "rules/pkg.install-scripts/tools",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "append": "enableScripts: false",
+              "how": "点「关闭自动运行」会在 ~/.yarnrc.yml 末尾加一行 enableScripts: false；原来那份移到废纸篓，能放回。以后有包真要跑脚本，单独放行：在项目的 package.json 里写 \"dependenciesMeta\": {\"<包名>\": {\"built\": true}}。也可以让新版本晚一天再装：Yarn 4.10 起在 ~/.yarnrc.yml 加一行 npmMinimalAgeGate: \"1d\"。",
+              "tool": "yarn",
+              "used": "~/.yarnrc.yml",
+              "why": "用着的 Yarn 4.5.0（~/Projects/web）默认会跑依赖的安装脚本，~/.yarnrc.yml 里没有关掉"
+            },
+            "key": "yarn",
+            "path": "~/.yarnrc.yml",
+            "rule": "pkg.install-scripts",
+            "severity": "medium",
+            "title": "Yarn 允许依赖在安装时跑脚本",
+            "verdict": "confirm"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "append": "only-binary = :all:",
+              "how": "点「关闭自动运行」会新建 ~/.config/pip/pip.conf，写上 only-binary = :all:；放回时把它移走。改了以后，没有现成安装包（wheel）的包会装不上，本地的项目（pip install .）也可能装不上；要装时单独放行：pip install --only-binary :none: <包名>。也可以让新版本晚一天再装：pip 26.1 起在 [global] 加 uploaded-prior-to = P1D。",
+              "tool": "pip",
+              "used": "~/Library/Caches/pip",
+              "why": "pip 在这台 Mac 上从源码编译过 pycrypto，编译时会运行包自带的 setup.py"
+            },
+            "key": "pip",
+            "path": "~/.config/pip/pip.conf",
+            "rule": "pkg.install-scripts",
+            "severity": "medium",
+            "title": "pip 装源码包时会跑它的构建脚本",
+            "verdict": "confirm"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "升到 pnpm 10 或更新：默认不跑依赖的安装脚本，pnpm 11 起新版本还默认晚一天才装。以后有包真要跑脚本，单独放行：在项目的 pnpm-workspace.yaml 的 allowBuilds 里写上它（pnpm 10 是 onlyBuiltDependencies）。",
+              "tool": "pnpm",
+              "used": "~/Library/pnpm",
+              "why": "~/Library/pnpm/store 只有 pnpm 9 或更早用的 v3 仓库，这些版本默认会跑依赖的安装脚本"
+            },
+            "key": "pnpm",
+            "path": "",
+            "rule": "pkg.install-scripts",
+            "severity": "medium",
+            "title": "pnpm 允许依赖在安装时跑脚本",
+            "verdict": "confirm"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "how": "在 ~/.config/uv/uv.toml 最前面（任何 [表] 之前）加一行 no-build = true。改了以后，依赖里没有现成安装包（wheel）的会装不上（你自己的项目照样会构建）；uv 不能按包放行，要装时那一次加 --no-config（不读这份配置）。也可以让新版本晚一天再装：在 ~/.config/uv/uv.toml 加一行 exclude-newer = \"1 day\"。",
+              "tool": "uv",
+              "used": "~/.cache/uv",
+              "why": "uv 在这台 Mac 上从源码编译过 pyyaml，编译时会运行包自带的构建脚本"
+            },
+            "key": "uv",
+            "path": "~/.config/uv/uv.toml",
+            "rule": "pkg.install-scripts",
+            "severity": "medium",
+            "title": "uv 装源码包时会跑它的构建脚本",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

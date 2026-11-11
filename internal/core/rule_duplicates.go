@@ -242,7 +242,7 @@ func (r *DuplicateRule) Run(ctx *Context) ([]Finding, error) {
 			short = short[:16]
 		}
 		out = append(out, Finding{Rule: "space.duplicates", Category: CatSpace, Severity: Low, Verdict: Confirm, Path: keep.path, Bytes: Size(waste),
-			Title: strconv.Itoa(len(set)) + " 份一样的 " + filepath.Base(keep.path) + "（每份 " + FormatBytes(keep.size) + "），多占了 " + FormatBytes(waste),
+			Title: strconv.Itoa(len(set)) + " 份一样的 " + DisplayName(keep.path) + "（每份 " + FormatBytes(keep.size) + "），多占了 " + FormatBytes(waste),
 			Evidence: map[string]string{"keep": HomeRelative(keep.path, ctx.Home), "copies": strings.Join(rel, "；"),
 				"targets": strings.Join(targets, "\n"), "sha256": short,
 				"how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响"},

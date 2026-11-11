@@ -305,3 +305,45 @@ func LockHeld(dataDir string) bool {
 
 // trimSpace is strings.TrimSpace (kept short for the many places that need it).
 func trimSpace(s string) string { return strings.TrimSpace(s) }
+
+// RoundProgress is how far the round running now has got, for a page drawn by another process while it runs
+// (luoke-scan#124, #101): when it began, the checks done so far in order, how many there are, and what runs now
+// (a check's id, or "model" while the model writes its explanations). Gone when no round runs.
+type RoundProgress struct {
+	Started time.Time `json:"started"`
+	Done    []string  `json:"done"`
+	Total   int       `json:"total"`
+	Current string    `json:"current"`
+}
+
+func (s *Store) progressPath() string { return filepath.Join(s.Dir, "progress.json") }
+
+// SaveProgress writes how far the round has got (errors ignored: it is only for showing).
+func (s *Store) SaveProgress(p RoundProgress) {
+	if s == nil {
+		return
+	}
+	if b, err := json.Marshal(p); err == nil {
+		_ = WriteAtomic(s.progressPath(), b, 0o600)
+	}
+}
+
+// ClearProgress removes it when the round is over.
+func (s *Store) ClearProgress() {
+	if s != nil {
+		_ = os.Remove(s.progressPath())
+	}
+}
+
+// Progress is how far the round running now has got; nil when none is written down.
+func (s *Store) Progress() *RoundProgress {
+	b, err := os.ReadFile(s.progressPath())
+	if err != nil {
+		return nil
+	}
+	var p RoundProgress
+	if json.Unmarshal(b, &p) != nil {
+		return nil
+	}
+	return &p
+}

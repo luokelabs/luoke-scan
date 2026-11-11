@@ -295,11 +295,9 @@ func TestModelNotesAddedNothingElseChanged(t *testing.T) {
 	if !found {
 		t.Error("the body is not the prompt's")
 	}
-	if d, ok := listedDetail(skill); !ok || !strings.Contains(d, "本机模型看过") {
-		t.Errorf("listed %q", d)
-	}
-	if d, ok := listedDetail(byRule["space.growth"]); !ok || !strings.HasPrefix(d, "本机模型认的：") {
-		t.Errorf("listed %q", d)
+	// 模型的说明只留在报告里，卡片和扫描页上不写（负责人 11-06：不给用户看技术细节）
+	if skill.Evidence[skillReviewNoteKey] == "" || byRule["space.growth"].Evidence[identifyNoteKey] == "" {
+		t.Error("the model's notes are not in the report")
 	}
 }
 

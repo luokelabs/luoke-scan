@@ -1,0 +1,81 @@
+{
+  "about": "太大的不读：超过 4 MB 的 tokenizer_config.json、超过 1 MB 的 chat_template.jinja、模板超过 1 MB 的 GGUF，里面都有给模型的话，都不报，记一条低的「3 个模型没查完」；小的那个照报",
+  "case": "rules/model.chat-template/too-big",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "count": "3",
+              "how": "太大的不会查；别的下一轮接着查",
+              "why": "模板文件太大（JSON 超过 4 MB、模板超过 1 MB、GGUF 文件头超过 64 MB）、模型超过 500 个，或这一轮读得够多了"
+            },
+            "path": "",
+            "rule": "model.chat-template.partial",
+            "severity": "low",
+            "title": "有 3 个模型的对话模板这一轮没查完",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "chat_template.jinja",
+              "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download small/url`）；拿不准就先别用这个模型",
+              "kinds": "steer",
+              "model": "small/url",
+              "template": "~/.cache/huggingface/hub/models--small--url/snapshots/rev1/chat_template.jinja",
+              "tool": "Hugging Face",
+              "where": "对话模板",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型总推荐某样东西或附上链接。原文没有记下"
+            },
+            "key": "~/.cache/huggingface/hub/models--small--url|b09fe6202e58",
+            "path": "~/.cache/huggingface/hub/models--small--url",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Hugging Face 的模型 small/url：对话模板里多了给模型的话（让模型总推荐某样东西或附上链接）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

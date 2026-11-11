@@ -231,7 +231,7 @@ func (r *SecretsRule) Run(ctx *Context) ([]Finding, error) {
 				continue
 			}
 			out = append(out, Finding{Rule: "secrets.stray-key", Category: CatPosture, Severity: Medium, Verdict: Info, Path: u,
-				Title: place + " 里有一个" + kind + "：" + filepath.Base(u),
+				Title: place + " 里有一个" + kind + "：" + DisplayName(u),
 				Evidence: map[string]string{"kind": kind,
 					"why": "放在下载、桌面、文稿里的密钥容易被同步盘、备份或分享一起带走",
 					"how": "还要用就挪到 ~/.ssh 或钥匙串里，只让你自己能读；不用了就删掉（先确认没有别处要用它）"}})

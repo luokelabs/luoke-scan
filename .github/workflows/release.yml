@@ -1,5 +1,6 @@
 # 打 v<版本> 的 tag 就出一个 release：测过、打好包（不签名，只是临时签名能跑），挂上 tar 包和它的 SHA-256。
-# 螺壳每天打包时从这里取最新的 release，和别的一起用 Developer ID 签名、公证（集成方案在 luoke-core 的 PR 里）。
+# 螺壳打包时不用这里的 tar 包：按 release 的 tag 取源码，由 luoke-core 的 app/build_app.sh（LUOKE_SCAN_SRC）跑 scripts/package_app.py
+# 自己编（内部版取最新的 release，beta、正式版取顶层钉的那个 tag），和别的一起用 Developer ID 签名、公证。
 #
 # 仓库变量 LUOKE_RELEASE_TEAM：root 那一步核对签名用的团队标识，编进 luoke-scan，源码里不写。
 # 病毒库不在这里下载：打包用 --without-virus-db，不核「包里的 ClamAV 能不能读官方病毒库」那一项（输出里写明；EICAR 用自带的一行

@@ -9,8 +9,9 @@ import (
 // SkillRule: the AI agents' skills on this Mac (folders with a SKILL.md: personal ones in the home, and a project's
 // own), each read within bounds and checked statically (skillcheck.go) for what a malicious or careless skill does.
 // One finding per skill with something to say, only for reference: a skill is something the user chose to install,
-// so nothing is planned, cleaned or deleted. Nothing of a skill's contents is kept or sent; what is reported is where
-// and what kind, never the text that matched.
+// so nothing is planned, cleaned or deleted. Nothing of a skill's contents is kept, and what is reported is where and
+// what kind, never the text that matched. Only luoke-core's local model sees some of it: a shortened excerpt of a
+// reported skill (internal/service/hubtask.go), which stays on this Mac.
 type SkillRule struct {
 	Places []SkillPlace
 	Limits SkillLimits

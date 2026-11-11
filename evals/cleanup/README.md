@@ -4,7 +4,7 @@
 - 会重建的缓存；
 - 放了 14 天以上的、已装应用的安装包；
 - 下载文件夹里、在别处还有一份的重复文件；
-- 测试工具每跑一次留下的临时文件夹：现在只认 Puppeteer、Playwright、Lighthouse 三种的前缀（`AutoPick.knownTemp`）；别的临时文件夹（agent 留下的也是）只报，每次要点。
+- 测试工具每跑一次留下的临时文件夹：现在只认 Puppeteer、Playwright、Lighthouse 三种的前缀（`internal/core/autopick.go` 的 `autoTemp`，前缀写在 `rules/temp-folders.json`）；别的临时文件夹（agent 留下的，清单里新加的）只报，每次要点。
 
 开启的条件是规则评测覆盖这四类，并且「不该删的误判为 0」。本目录就是这份评测。
 

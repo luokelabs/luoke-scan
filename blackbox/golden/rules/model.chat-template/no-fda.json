@@ -1,0 +1,173 @@
+{
+  "about": "LM Studio 的模型文件夹链到文稿里：有完全磁盘访问照查；没有就不跟过去，说没看，Hugging Face 里的照报",
+  "case": "rules/model.chat-template/no-fda",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "model.gguf",
+              "how": "在 LM Studio 里删掉这个模型，从可信的发布者重新下载；拿不准就先别用",
+              "kinds": "ignore-rules",
+              "model": "someone/model-GGUF",
+              "template": "~/Documents/lmstudio-models/someone/model-GGUF/model.gguf",
+              "tool": "LM Studio",
+              "where": "对话模板",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型不管原来的指令。原文没有记下"
+            },
+            "key": "~/Documents/lmstudio-models/someone/model-GGUF|735301092219",
+            "path": "~/Documents/lmstudio-models/someone/model-GGUF",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "LM Studio 的模型 someone/model-GGUF：对话模板里多了给模型的话（让模型不管原来的指令）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "tokenizer_config.json",
+              "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download Qwen/Qwen2.5-7B-Instruct`）；拿不准就先别用这个模型",
+              "kinds": "conceal,steer",
+              "model": "Qwen/Qwen2.5-7B-Instruct",
+              "template": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/rev1/tokenizer_config.json",
+              "tool": "Hugging Face",
+              "where": "对话模板",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型瞒着你或骗你、让模型总推荐某样东西或附上链接。原文没有记下"
+            },
+            "key": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct|1237aba3cae5",
+            "path": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Hugging Face 的模型 Qwen/Qwen2.5-7B-Instruct：对话模板里多了给模型的话（让模型瞒着你或骗你、让模型总推荐某样东西或附上链接）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "tokenizer_config.json",
+              "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download Qwen/Qwen2.5-7B-Instruct`）；拿不准就先别用这个模型",
+              "kinds": "conceal,steer",
+              "model": "Qwen/Qwen2.5-7B-Instruct",
+              "template": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/rev1/tokenizer_config.json",
+              "tool": "Hugging Face",
+              "where": "对话模板",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型瞒着你或骗你、让模型总推荐某样东西或附上链接。原文没有记下"
+            },
+            "key": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct|1237aba3cae5",
+            "path": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Hugging Face 的模型 Qwen/Qwen2.5-7B-Instruct：对话模板里多了给模型的话（让模型瞒着你或骗你、让模型总推荐某样东西或附上链接）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:05:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents 里散落的密钥没看（看了 macOS 会弹框问你）",
+            "rule": "secrets"
+          },
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents、Music 里的重复文件没看（看了 macOS 会弹框问你）",
+            "rule": "space.duplicates"
+          },
+          {
+            "reason": "没有完全磁盘访问，LM Studio 下载的模型没看（看了 macOS 会弹框问你）",
+            "rule": "model.chat-template"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载、桌面、文稿里的系统恢复镜像没看（看了 macOS 会弹框问你）",
+            "rule": "space.system"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里新来的文件有没有病毒没看（看了 macOS 会弹框问你）",
+            "rule": "malware"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里的安装包和没下完的下载没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.installer"
+          },
+          {
+            "reason": "没有完全磁盘访问，别的应用的容器里留下的数据没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.app-data"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载和别的应用的数据占多大没看（看了 macOS 会弹框问你）",
+            "rule": "space"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载里很久没打开的大文件没看（看了 macOS 会弹框问你）",
+            "rule": "stale.large-file"
+          }
+        ],
+        "startedAt": "2026-10-20T12:05:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "没有完全磁盘访问：不跟到文稿里",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:05:00Z",
+        "--json",
+        "--no-full-disk-access"
+      ]
+    }
+  ]
+}

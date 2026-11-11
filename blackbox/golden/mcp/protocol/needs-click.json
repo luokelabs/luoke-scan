@@ -109,11 +109,7 @@
                               "children": [
                                 "h1",
                                 "t2",
-                                "c-i0",
-                                "t3",
-                                "c-i1",
-                                "t4",
-                                "r7"
+                                "r5"
                               ],
                               "component": "Column",
                               "id": "root"
@@ -121,69 +117,13 @@
                             {
                               "component": "Text",
                               "id": "h1",
-                              "text": "能清出 62.9 MB，另外有 1 件事值得看一眼",
+                              "text": "能清出 62.9 MB",
                               "variant": "h4"
                             },
                             {
                               "component": "Text",
                               "id": "t2",
-                              "text": "会自动重建的缓存直接删掉，别的放心删的移到废纸篓，要你确认的先不动。",
-                              "variant": "caption"
-                            },
-                            {
-                              "component": "ChoicePicker",
-                              "id": "c-i0",
-                              "label": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
-                              "options": [
-                                {
-                                  "label": "移到废纸篓",
-                                  "value": "trash"
-                                },
-                                {
-                                  "label": "先不动",
-                                  "value": "keep"
-                                },
-                                {
-                                  "label": "以后别提",
-                                  "value": "ignore"
-                                }
-                              ],
-                              "value": {
-                                "path": "/choices/i0"
-                              }
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t3",
-                              "text": "$TMPDIR 里的 25 项",
-                              "variant": "caption"
-                            },
-                            {
-                              "component": "ChoicePicker",
-                              "id": "c-i1",
-                              "label": "pip 的缓存，删了会自动重建（62.9 MB）",
-                              "options": [
-                                {
-                                  "label": "删掉（会自动重建）",
-                                  "value": "remove"
-                                },
-                                {
-                                  "label": "先不动",
-                                  "value": "keep"
-                                },
-                                {
-                                  "label": "以后别提",
-                                  "value": "ignore"
-                                }
-                              ],
-                              "value": {
-                                "path": "/choices/i1"
-                              }
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t4",
-                              "text": "~/Library/Caches/pip",
+                              "text": "会重建的缓存 1 项，不用你选；另外 1 项在「螺壳扫描」里等你看。",
                               "variant": "caption"
                             },
                             {
@@ -191,22 +131,24 @@
                                 "event": {
                                   "context": {
                                     "choices": {
-                                      "path": "/choices"
+                                      "i1": [
+                                        "remove"
+                                      ]
                                     },
                                     "plan_id": "p-000000000002"
                                   },
                                   "name": "scan_apply"
                                 }
                               },
-                              "child": "b5-text",
+                              "child": "b3-text",
                               "component": "Button",
-                              "id": "b5",
+                              "id": "b3",
                               "variant": "primary"
                             },
                             {
                               "component": "Text",
-                              "id": "b5-text",
-                              "text": "按这个处理"
+                              "id": "b3-text",
+                              "text": "清理 1 项缓存"
                             },
                             {
                               "action": {
@@ -217,22 +159,22 @@
                                   "name": "scan_autoclean"
                                 }
                               },
-                              "child": "b6-text",
+                              "child": "b4-text",
                               "component": "Button",
-                              "id": "b6"
+                              "id": "b4"
                             },
                             {
                               "component": "Text",
-                              "id": "b6-text",
-                              "text": "以后自动清"
+                              "id": "b4-text",
+                              "text": "打开自动清理"
                             },
                             {
                               "children": [
-                                "b5",
-                                "b6"
+                                "b3",
+                                "b4"
                               ],
                               "component": "Row",
-                              "id": "r7"
+                              "id": "r5"
                             }
                           ],
                           "surfaceId": "round-000000000001"
@@ -249,7 +191,7 @@
                                 "keep"
                               ],
                               "i1": [
-                                "remove"
+                                "keep"
                               ]
                             }
                           }
@@ -262,14 +204,371 @@
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
                     "kind": "findings",
-                    "summary": "放心删 1 条、要确认 1 条、仅供参考 0 条。",
-                    "title": "能清出 62.9 MB，另外有 1 件事值得看一眼",
+                    "summary": "会重建的缓存 1 项，不用你选；另外 1 项在「螺壳扫描」里等你看。",
+                    "title": "能清出 62.9 MB，另外 1 项等你处理",
                     "urgency": "low",
                     "why_now": "扫描刚查完一轮"
                   }
                 ]
               },
               "uri": "luoke://luoke-scan/outbox"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "page/overview"
+      },
+      "reply": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": [
+                {
+                  "createSurface": {
+                    "catalogId": "ai.luoke/a2ui/agent/1",
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                },
+                {
+                  "updateComponents": {
+                    "components": [
+                      {
+                        "children": [
+                          "r4",
+                          "aside1",
+                          "d15",
+                          "t16",
+                          "t17",
+                          "t18",
+                          "r20",
+                          "c-i0",
+                          "t21",
+                          "r23",
+                          "aside2"
+                        ],
+                        "component": "Column",
+                        "id": "root"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "h1",
+                        "text": "扫描",
+                        "variant": "h4"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "n2",
+                        "text": "上次查 10月20日 20:00",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {},
+                            "name": "scan_now"
+                          }
+                        },
+                        "child": "b3-text",
+                        "component": "Button",
+                        "id": "b3"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b3-text",
+                        "text": "现在查一下"
+                      },
+                      {
+                        "children": [
+                          "h1",
+                          "n2",
+                          "b3"
+                        ],
+                        "component": "Row",
+                        "id": "r4",
+                        "justify": "spaceBetween"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t6",
+                        "text": "这周清掉",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t7",
+                        "text": "还没清过",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t6",
+                          "t7"
+                        ],
+                        "component": "Column",
+                        "id": "s5"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t9",
+                        "text": "能清出",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t10",
+                        "text": "62.9 MB",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t9",
+                          "t10"
+                        ],
+                        "component": "Column",
+                        "id": "s8"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t12",
+                        "text": "等你处理",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t13",
+                        "text": "1 项",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t12",
+                          "t13"
+                        ],
+                        "component": "Column",
+                        "id": "s11"
+                      },
+                      {
+                        "children": [
+                          "s5",
+                          "s8",
+                          "s11"
+                        ],
+                        "component": "Row",
+                        "id": "r14",
+                        "justify": "spaceEvenly"
+                      },
+                      {
+                        "children": [
+                          "r14"
+                        ],
+                        "component": "Column",
+                        "id": "aside1",
+                        "placement": "aside"
+                      },
+                      {
+                        "component": "Divider",
+                        "id": "d15"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t16",
+                        "text": "可以清掉 2",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t17",
+                        "text": "会自动重建的缓存 1 项（62.9 MB）"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t18",
+                        "text": "pip",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {
+                              "choices": {
+                                "i1": [
+                                  "remove"
+                                ]
+                              },
+                              "plan_id": "p-000000000002"
+                            },
+                            "name": "scan_apply"
+                          }
+                        },
+                        "child": "b19-text",
+                        "component": "Button",
+                        "id": "b19"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b19-text",
+                        "text": "清理"
+                      },
+                      {
+                        "children": [
+                          "b19"
+                        ],
+                        "component": "Row",
+                        "id": "r20"
+                      },
+                      {
+                        "component": "ChoicePicker",
+                        "id": "c-i0",
+                        "label": "wings 留下的临时文件夹（131.1 MB）",
+                        "options": [
+                          {
+                            "label": "移到废纸篓",
+                            "value": "trash"
+                          },
+                          {
+                            "label": "先不动",
+                            "value": "keep"
+                          },
+                          {
+                            "label": "以后别提",
+                            "value": "ignore"
+                          }
+                        ],
+                        "value": {
+                          "path": "/choices/i0"
+                        }
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t21",
+                        "text": "25 个 wings-*，在系统临时目录里",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {
+                              "choices": {
+                                "path": "/choices"
+                              },
+                              "plan_id": "p-000000000002"
+                            },
+                            "name": "scan_apply"
+                          }
+                        },
+                        "child": "b22-text",
+                        "component": "Button",
+                        "id": "b22",
+                        "variant": "primary"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b22-text",
+                        "text": "按上面的选择清理"
+                      },
+                      {
+                        "children": [
+                          "b22"
+                        ],
+                        "component": "Row",
+                        "id": "r23"
+                      },
+                      {
+                        "component": "Divider",
+                        "id": "d24"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t25",
+                        "text": "自动清理"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {
+                              "on": true
+                            },
+                            "name": "scan_autoclean"
+                          }
+                        },
+                        "child": "b26-text",
+                        "component": "Button",
+                        "id": "b26",
+                        "on": false,
+                        "variant": "switch"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b26-text",
+                        "text": "打开自动清理"
+                      },
+                      {
+                        "children": [
+                          "t25",
+                          "b26"
+                        ],
+                        "component": "Row",
+                        "id": "r27",
+                        "justify": "spaceBetween"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t28",
+                        "text": "打开后，每天那一轮不用你点就清：会重建的缓存、装好了的应用的安装包、下载文件夹里的重复文件、测试工具留下的临时文件夹。移到废纸篓的都能放回，要你定的照样先问你。",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t29",
+                        "text": "病毒库更新于 10月20日",
+                        "variant": "caption"
+                      },
+                      {
+                        "children": [
+                          "d24",
+                          "r27",
+                          "t28",
+                          "t29"
+                        ],
+                        "component": "Column",
+                        "id": "aside2",
+                        "placement": "aside"
+                      }
+                    ],
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                },
+                {
+                  "updateDataModel": {
+                    "path": "/",
+                    "surfaceId": "overview",
+                    "value": {
+                      "choices": {
+                        "i0": [
+                          "keep"
+                        ],
+                        "i1": [
+                          "keep"
+                        ]
+                      }
+                    }
+                  },
+                  "version": "v0.9"
+                }
+              ],
+              "uri": "page/overview"
             }
           ],
           "resultType": "complete"
@@ -295,7 +594,7 @@
         "name": "scan_apply"
       },
       "reply": {
-        "id": 2,
+        "id": 3,
         "jsonrpc": "2.0",
         "result": {
           "content": [
@@ -323,7 +622,7 @@
         "name": "scan_ignore"
       },
       "reply": {
-        "id": 3,
+        "id": 4,
         "jsonrpc": "2.0",
         "result": {
           "content": [
@@ -351,7 +650,7 @@
         "name": "scan_restore"
       },
       "reply": {
-        "id": 4,
+        "id": 5,
         "jsonrpc": "2.0",
         "result": {
           "content": [
@@ -379,7 +678,7 @@
         "name": "scan_autoclean"
       },
       "reply": {
-        "id": 5,
+        "id": 6,
         "jsonrpc": "2.0",
         "result": {
           "content": [

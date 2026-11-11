@@ -106,6 +106,15 @@ func finished(cmd *exec.Cmd, out, errb *bytes.Buffer, o RunOpts) ProcResult {
 	return ProcResult{Status: ws.ExitStatus(), Stdout: out.String(), Stderr: errb.String()}
 }
 
+// LowerPriority is for the jobs nobody waits on while the user may be at the Mac (scan, its quick look, update, and
+// the round scan_now starts): the CPU at nice 10 and disk I/O at the utility tier, for this process and what it starts
+// afterwards (both are inherited). The user's apps come first and a round still finishes: the background tier made a
+// round 3-30 times slower on a busy Mac and could outlast luoke-core's 60-minute limit. Not for mcp: it answers a
+// click. Whether each took (nice fails when this process already runs nicer).
+func LowerPriority() (cpu, disk bool) {
+	return Nice(10) == nil, SetDiskPolicy(IOPolicyUtility) == nil
+}
+
 // IsExecutable says whether path is a file this user may run.
 func IsExecutable(path string) bool {
 	st, err := os.Stat(path)

@@ -1,0 +1,485 @@
+{
+  "about": "后台的同步助手 3 小时一直占满一个核：报，按钮打开活动监视器；刚起来的、平均不高的、别的用户的、扫描自己的工具不报",
+  "case": "rules/vitals/cpu-stuck",
+  "steps": [
+    {
+      "fakes": {
+        "processes": [
+          {
+            "path": "/Applications/Safari.app/Contents/MacOS/Safari",
+            "pid": 400,
+            "ppid": 1,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/opt/SyncHelper.app/Contents/MacOS/SyncHelper",
+            "pid": 4001,
+            "ppid": 400,
+            "started": "2026-10-20T09:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/bin/just-started",
+            "pid": 4002,
+            "ppid": 400,
+            "started": "2026-10-20T11:54:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/opt/Browser2.app/Contents/MacOS/Browser2",
+            "pid": 4003,
+            "ppid": 400,
+            "started": "2026-10-15T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "/usr/sbin/someone-elses",
+            "pid": 4004,
+            "ppid": 400,
+            "started": "2026-10-20T02:00:00Z",
+            "uid": 0
+          },
+          {
+            "path": "~/.local/bin/clamscan",
+            "pid": 4005,
+            "ppid": 400,
+            "started": "2026-10-20T10:00:00Z",
+            "uid": "$UID"
+          }
+        ],
+        "vitals": {
+          "battery": null,
+          "batteryUnknown": false,
+          "cpu": {
+            "4001": [
+              10257.03,
+              10259.999999999998
+            ],
+            "4002": [
+              497.0,
+              500
+            ],
+            "4003": [
+              86397.0,
+              86400.0
+            ],
+            "4004": [
+              35637.0,
+              35640.0
+            ],
+            "4005": [
+              7125.0,
+              7128.0
+            ]
+          },
+          "footprint": {},
+          "memTotal": 17179869184,
+          "pressure": 1,
+          "sampleSeconds": 3,
+          "swap": 0,
+          "thermal": [
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "vitals",
+            "evidence": {
+              "busy_average": "95%（这 3 小时平均）",
+              "busy_now": "99%（这会儿占一个核的多少）",
+              "program": "SyncHelper",
+              "running_for": "3 小时"
+            },
+            "key": "~/.local/opt/SyncHelper.app/Contents/MacOS/SyncHelper",
+            "path": "~/.local/opt/SyncHelper.app/Contents/MacOS/SyncHelper",
+            "rule": "vitals.cpu",
+            "severity": "medium",
+            "title": "「SyncHelper」这 3 小时一直占满一个处理器核，可能卡住了",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "page/overview"
+      },
+      "reply": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": [
+                {
+                  "createSurface": {
+                    "catalogId": "ai.luoke/a2ui/agent/1",
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                },
+                {
+                  "updateComponents": {
+                    "components": [
+                      {
+                        "children": [
+                          "r4",
+                          "aside1",
+                          "d15",
+                          "t16",
+                          "t17",
+                          "t18",
+                          "r20",
+                          "aside2"
+                        ],
+                        "component": "Column",
+                        "id": "root"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "h1",
+                        "text": "扫描",
+                        "variant": "h4"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "n2",
+                        "text": "上次查 10月20日 20:00",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {},
+                            "name": "scan_now"
+                          }
+                        },
+                        "child": "b3-text",
+                        "component": "Button",
+                        "id": "b3"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b3-text",
+                        "text": "现在查一下"
+                      },
+                      {
+                        "children": [
+                          "h1",
+                          "n2",
+                          "b3"
+                        ],
+                        "component": "Row",
+                        "id": "r4",
+                        "justify": "spaceBetween"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t6",
+                        "text": "这周清掉",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t7",
+                        "text": "还没清过",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t6",
+                          "t7"
+                        ],
+                        "component": "Column",
+                        "id": "s5"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t9",
+                        "text": "能清出",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t10",
+                        "text": "没有",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t9",
+                          "t10"
+                        ],
+                        "component": "Column",
+                        "id": "s8"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t12",
+                        "text": "等你处理",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t13",
+                        "text": "1 项",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t12",
+                          "t13"
+                        ],
+                        "component": "Column",
+                        "id": "s11"
+                      },
+                      {
+                        "children": [
+                          "s5",
+                          "s8",
+                          "s11"
+                        ],
+                        "component": "Row",
+                        "id": "r14",
+                        "justify": "spaceEvenly"
+                      },
+                      {
+                        "children": [
+                          "r14"
+                        ],
+                        "component": "Column",
+                        "id": "aside1",
+                        "placement": "aside"
+                      },
+                      {
+                        "component": "Divider",
+                        "id": "d15"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t16",
+                        "text": "要你看看 1",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t17",
+                        "text": "「SyncHelper」这 3 小时一直占满一个处理器核，可能卡住了"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t18",
+                        "text": "不是在做你交给它的事，多半是卡住了，可以退出它",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {
+                              "grant": "活动监视器"
+                            },
+                            "name": "scan_open_settings"
+                          }
+                        },
+                        "child": "b19-text",
+                        "component": "Button",
+                        "id": "b19"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b19-text",
+                        "text": "在活动监视器里看"
+                      },
+                      {
+                        "children": [
+                          "b19"
+                        ],
+                        "component": "Row",
+                        "id": "r20"
+                      },
+                      {
+                        "component": "Divider",
+                        "id": "d21"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t22",
+                        "text": "自动清理"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {
+                              "on": true
+                            },
+                            "name": "scan_autoclean"
+                          }
+                        },
+                        "child": "b23-text",
+                        "component": "Button",
+                        "id": "b23",
+                        "on": false,
+                        "variant": "switch"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b23-text",
+                        "text": "打开自动清理"
+                      },
+                      {
+                        "children": [
+                          "t22",
+                          "b23"
+                        ],
+                        "component": "Row",
+                        "id": "r24",
+                        "justify": "spaceBetween"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t25",
+                        "text": "打开后，每天那一轮不用你点就清：会重建的缓存、装好了的应用的安装包、下载文件夹里的重复文件、测试工具留下的临时文件夹。移到废纸篓的都能放回，要你定的照样先问你。",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t26",
+                        "text": "病毒库更新于 10月20日",
+                        "variant": "caption"
+                      },
+                      {
+                        "children": [
+                          "d21",
+                          "r24",
+                          "t25",
+                          "t26"
+                        ],
+                        "component": "Column",
+                        "id": "aside2",
+                        "placement": "aside"
+                      }
+                    ],
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                }
+              ],
+              "uri": "page/overview"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "summary"
+      },
+      "reply": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "count": 1,
+                "text": "1 项等你处理"
+              },
+              "uri": "summary"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "commands": [
+        {
+          "args": [
+            "/System/Applications/Utilities/Activity Monitor.app"
+          ],
+          "tool": "/usr/bin/open"
+        }
+      ],
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "grant": "活动监视器"
+        },
+        "name": "scan_open_settings"
+      },
+      "reply": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "打开了活动监视器。",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete"
+        }
+      },
+      "user-action": {
+        "at": "2026-10-20T20:01:00+08:00",
+        "componentId": "b19",
+        "surfaceId": "overview"
+      }
+    }
+  ]
+}

@@ -2,6 +2,8 @@ package core
 
 import (
 	"os"
+	"strconv"
+	"strings"
 	"syscall"
 	"time"
 	"unsafe"
@@ -10,7 +12,7 @@ import (
 )
 
 // The system calls the standard library does not wrap on macOS, through golang.org/x/sys/unix (11-05: no
-// system call numbers written by hand). Where x/sys has no wrapper (getattrlist, getattrlistbulk, proc_info, fcntl F_GETPATH) the call
+// system call numbers written by hand). Where x/sys has no wrapper (getattrlist, getattrlistbulk, proc_info, fcntl F_GETPATH, iopolicysys) the call
 // goes through unix.Syscall6 with x/sys's own name for it. Everything is in this one file: the rest of the package
 // calls these.
 
@@ -19,6 +21,7 @@ const (
 	AtSymlinkNoFollow = unix.AT_SYMLINK_NOFOLLOW
 	AtRemoveDir       = unix.AT_REMOVEDIR
 	RenameExcl        = unix.RENAME_EXCL
+	RenameSwap        = unix.RENAME_SWAP
 	XattrNoFollow     = unix.XATTR_NOFOLLOW
 )
 
@@ -190,6 +193,45 @@ func procInfo(call, pid int, flavor uint32, arg uint64, buf []byte) (int, syscal
 	return int(int32(n)), syscall.Errno(e)
 }
 
+// Nice sets this process's nice value (setpriority PRIO_PROCESS); a user who is not root can only raise it. What the
+// process starts afterwards inherits it.
+func Nice(n int) error { return unix.Setpriority(unix.PRIO_PROCESS, 0, n) }
+
+// The disk I/O policy, from <sys/resource.h>: x/sys names the system call but neither these values nor a wrapper.
+// libc's setiopolicy_np and getiopolicy_np fill struct _iopol_param_t {scope, type, policy} and make this one call.
+const (
+	iopolCmdGet       = 1 // IOPOL_CMD_GET
+	iopolCmdSet       = 2 // IOPOL_CMD_SET
+	iopolTypeDisk     = 0 // IOPOL_TYPE_DISK
+	iopolScopeProcess = 0 // IOPOL_SCOPE_PROCESS
+	IOPolicyUtility   = 4 // IOPOL_UTILITY: below the user's apps, above the background tier (IOPOL_THROTTLE)
+)
+
+type iopolParam struct{ scope, iotype, policy int32 }
+
+func iopolicysys(cmd int, p *iopolParam) error {
+	_, _, e := unix.Syscall(unix.SYS_IOPOLICYSYS, uintptr(cmd), uintptr(unsafe.Pointer(p)), 0)
+	if e != 0 {
+		return e
+	}
+	return nil
+}
+
+// SetDiskPolicy is setiopolicy_np(IOPOL_TYPE_DISK, IOPOL_SCOPE_PROCESS, policy): this process's disk I/O, and that of
+// what it starts afterwards (inherited).
+func SetDiskPolicy(policy int) error {
+	return iopolicysys(iopolCmdSet, &iopolParam{scope: iopolScopeProcess, iotype: iopolTypeDisk, policy: int32(policy)})
+}
+
+// DiskPolicy is getiopolicy_np(IOPOL_TYPE_DISK, IOPOL_SCOPE_PROCESS).
+func DiskPolicy() (int, error) {
+	p := iopolParam{scope: iopolScopeProcess, iotype: iopolTypeDisk}
+	if err := iopolicysys(iopolCmdGet, &p); err != nil {
+		return 0, err
+	}
+	return int(p.policy), nil
+}
+
 // FDPath is where an open file or folder is (fcntl F_GETPATH).
 func FDPath(fd int) (string, error) {
 	buf := make([]byte, unix.PathMax)
@@ -238,8 +280,9 @@ func splitPath(p string) []string {
 
 // RemoveNoFollow deletes the folder at path (its real path: no link anywhere on the way) and everything in it for good, following no link: its parent opened from
 // "/" one name at a time, then each folder through the descriptor of the one it is in. A link inside is removed as a
-// link; a disk mounted inside is not gone into. An error when the way has a link, it is not a folder, or something
-// stayed (what could go is gone).
+// link; a disk mounted inside is not gone into. A folder of the user's own that its tool made read-only is made
+// writable for the user first (its files can't be removed otherwise). An error when the way has a link or it is not a
+// folder; a *RemoveLeft, with what stayed and why, when something stayed (what could go is gone).
 func RemoveNoFollow(path string) error {
 	parent := OpenNoFollow(dirOf(path))
 	if parent < 0 {
@@ -251,37 +294,105 @@ func RemoveNoFollow(path string) error {
 	if Fstatat(parent, name, &st, AtSymlinkNoFollow) != nil || st.Mode&syscall.S_IFMT != syscall.S_IFDIR {
 		return syscall.ENOENT
 	}
-	if !removeTree(parent, name, st.Dev) {
-		return syscall.EACCES
+	left := &RemoveLeft{}
+	if !removeTree(parent, name, st.Dev, left) {
+		if left.Locked+left.NoPermission+left.Mounted+left.Other == 0 {
+			left.Other = 1
+		}
+		return left
 	}
 	return nil
 }
 
-func removeTree(dir int, name string, device int32) bool {
+// RemoveLeft: what a removal left, by why, counted in files and folders.
+type RemoveLeft struct {
+	Locked       int // 「锁定」 in the Finder's Get Info (chflags uchg)
+	NoPermission int // not the user's to change (another user's or the system's)
+	Mounted      int // another disk mounted inside
+	Other        int
+}
+
+func (l *RemoveLeft) Error() string { return l.Plain() }
+
+// Plain: why, for a person, short: 「12 个文件已锁定」.
+func (l *RemoveLeft) Plain() string {
+	var out []string
+	if l.Locked > 0 {
+		out = append(out, strconv.Itoa(l.Locked)+" 个文件已锁定")
+	}
+	if l.NoPermission > 0 {
+		out = append(out, strconv.Itoa(l.NoPermission)+" 个文件无权删除")
+	}
+	if l.Mounted > 0 {
+		out = append(out, "里面挂着其他磁盘")
+	}
+	if l.Other > 0 && len(out) == 0 {
+		out = append(out, strconv.Itoa(l.Other)+" 个文件删除出错")
+	}
+	return strings.Join(out, "，")
+}
+
+func (l *RemoveLeft) count(err error, st *syscall.Stat_t) {
+	switch {
+	case err == syscall.EPERM && st.Flags&(unix.UF_IMMUTABLE|unix.SF_IMMUTABLE) != 0:
+		l.Locked++
+	case err == syscall.EPERM || err == syscall.EACCES:
+		l.NoPermission++
+	default:
+		l.Other++
+	}
+}
+
+func removeTree(dir int, name string, device int32, left *RemoveLeft) bool {
 	var st syscall.Stat_t
 	if err := Fstatat(dir, name, &st, AtSymlinkNoFollow); err != nil {
-		return err == syscall.ENOENT
+		if err == syscall.ENOENT {
+			return true
+		}
+		left.Other++
+		return false
 	}
 	if st.Mode&syscall.S_IFMT != syscall.S_IFDIR {
 		err := Unlinkat(dir, name, 0)
-		return err == nil || err == syscall.ENOENT
+		if err == nil || err == syscall.ENOENT {
+			return true
+		}
+		left.count(err, &st)
+		return false
 	}
 	if st.Dev != device {
+		left.Mounted++
 		return false // another disk mounted here
+	}
+	// The user's own folder without write (or read, search) permission for them: a tool's read-only cache (Go's module
+	// cache is r-x). Theirs to change; given back to them before going in.
+	if st.Uid == uint32(os.Getuid()) && st.Mode&0o700 != 0o700 && st.Flags&(unix.UF_IMMUTABLE|unix.SF_IMMUTABLE) == 0 {
+		_ = unix.Fchmodat(dir, name, uint32(st.Mode&0o7777)|0o700, unix.AT_SYMLINK_NOFOLLOW)
 	}
 	fd, err := Openat(dir, name, syscall.O_RDONLY|syscall.O_DIRECTORY|syscall.O_NOFOLLOW|syscall.O_CLOEXEC, 0)
 	if err != nil {
+		left.count(err, &st)
 		return false
 	}
 	names, ok := readNames(fd)
+	if !ok {
+		left.Other++
+	}
 	for _, n := range names {
-		if !removeTree(fd, n, device) {
+		if !removeTree(fd, n, device, left) {
 			ok = false
 		}
 	}
 	syscall.Close(fd)
+	if !ok {
+		return false // the folder stays with what is left in it
+	}
 	err = Unlinkat(dir, name, AtRemoveDir)
-	return ok && (err == nil || err == syscall.ENOENT)
+	if err == nil || err == syscall.ENOENT {
+		return true
+	}
+	left.count(err, &st)
+	return false
 }
 
 // readNames lists an open folder's names (not . and ..) without closing it.

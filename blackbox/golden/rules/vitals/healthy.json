@@ -1,0 +1,71 @@
+{
+  "about": "运行正常的笔记本：电池 300 次、容量 95%，内存压力正常，不热，没有占满处理器的：什么都不报",
+  "case": "rules/vitals/healthy",
+  "steps": [
+    {
+      "fakes": {
+        "vitals": {
+          "battery": {
+            "capacity": 4750,
+            "cycles": 300,
+            "designCapacity": 5000,
+            "designCycles": 1000
+          },
+          "batteryUnknown": false,
+          "cpu": {},
+          "footprint": {},
+          "memTotal": 17179869184,
+          "pressure": 1,
+          "sampleSeconds": 3,
+          "swap": 209715200,
+          "thermal": [
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

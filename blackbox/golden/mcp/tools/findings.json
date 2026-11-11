@@ -552,12 +552,9 @@
                       "children": [
                         "h1",
                         "c-i0",
-                        "t2",
                         "c-i1",
-                        "t3",
                         "c-i2",
-                        "t4",
-                        "r6"
+                        "r3"
                       ],
                       "component": "Column",
                       "id": "root"
@@ -571,7 +568,7 @@
                     {
                       "component": "ChoicePicker",
                       "id": "c-i0",
-                      "label": "病毒库认出 eicar-test.com 是 Eicar-Test-Signature（4 KB）",
+                      "label": "下载里的「eicar-test.com」可能是病毒",
                       "options": [
                         {
                           "label": "移到废纸篓",
@@ -591,15 +588,9 @@
                       }
                     },
                     {
-                      "component": "Text",
-                      "id": "t2",
-                      "text": "~/Downloads/eicar-test.com",
-                      "variant": "caption"
-                    },
-                    {
                       "component": "ChoicePicker",
                       "id": "c-i1",
-                      "label": "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB",
+                      "label": "程序用完没删的临时文件（131.1 MB）",
                       "options": [
                         {
                           "label": "移到废纸篓",
@@ -619,15 +610,9 @@
                       }
                     },
                     {
-                      "component": "Text",
-                      "id": "t3",
-                      "text": "$TMPDIR 里的 25 项",
-                      "variant": "caption"
-                    },
-                    {
                       "component": "ChoicePicker",
                       "id": "c-i2",
-                      "label": "pip 的缓存，删了会自动重建（62.9 MB）",
+                      "label": "pip 的缓存",
                       "options": [
                         {
                           "label": "删掉（会自动重建）",
@@ -647,12 +632,6 @@
                       }
                     },
                     {
-                      "component": "Text",
-                      "id": "t4",
-                      "text": "~/Library/Caches/pip",
-                      "variant": "caption"
-                    },
-                    {
                       "action": {
                         "event": {
                           "context": {
@@ -664,22 +643,22 @@
                           "name": "scan_apply"
                         }
                       },
-                      "child": "b5-text",
+                      "child": "b2-text",
                       "component": "Button",
-                      "id": "b5",
+                      "id": "b2",
                       "variant": "primary"
                     },
                     {
                       "component": "Text",
-                      "id": "b5-text",
-                      "text": "按这个处理"
+                      "id": "b2-text",
+                      "text": "按上面的选择清理"
                     },
                     {
                       "children": [
-                        "b5"
+                        "b2"
                       ],
                       "component": "Row",
-                      "id": "r6"
+                      "id": "r3"
                     }
                   ],
                   "surfaceId": "plan-p-000000000006"
@@ -749,8 +728,7 @@
                       "children": [
                         "h1",
                         "c-i0",
-                        "t2",
-                        "r4"
+                        "r3"
                       ],
                       "component": "Column",
                       "id": "root"
@@ -764,7 +742,7 @@
                     {
                       "component": "ChoicePicker",
                       "id": "c-i0",
-                      "label": "pip 的缓存，删了会自动重建（62.9 MB）",
+                      "label": "pip 的缓存",
                       "options": [
                         {
                           "label": "删掉（会自动重建）",
@@ -784,12 +762,6 @@
                       }
                     },
                     {
-                      "component": "Text",
-                      "id": "t2",
-                      "text": "~/Library/Caches/pip",
-                      "variant": "caption"
-                    },
-                    {
                       "action": {
                         "event": {
                           "context": {
@@ -801,22 +773,22 @@
                           "name": "scan_apply"
                         }
                       },
-                      "child": "b3-text",
+                      "child": "b2-text",
                       "component": "Button",
-                      "id": "b3",
+                      "id": "b2",
                       "variant": "primary"
                     },
                     {
                       "component": "Text",
-                      "id": "b3-text",
-                      "text": "按这个处理"
+                      "id": "b2-text",
+                      "text": "按上面的选择清理"
                     },
                     {
                       "children": [
-                        "b3"
+                        "b2"
                       ],
                       "component": "Row",
-                      "id": "r4"
+                      "id": "r3"
                     }
                   ],
                   "surfaceId": "plan-p-000000000007"

@@ -121,8 +121,10 @@ func runRound(ctx *Context, rules []Rule, clock func() time.Time, previous *Repo
 		skipped = append(skipped, Skipped{r.ID(), reason})
 		tookOver = true
 	}
+	var done []string
 	for _, r := range rules {
 		began := time.Now()
+		ctx.Store.SaveProgress(RoundProgress{Started: wall, Done: done, Total: len(rules), Current: r.ID()})
 		if ctx.IsCancelled() {
 			stopped(r, nil)
 		} else if found, err := r.Run(ctx); err == nil {
@@ -140,6 +142,7 @@ func runRound(ctx *Context, rules []Rule, clock func() time.Time, previous *Repo
 			skipped = append(skipped, Skipped{r.ID(), err.Error()})
 		}
 		seconds[r.ID()] = float64(int(time.Since(began).Seconds()*10+0.5)) / 10
+		done = append(done, r.ID())
 	}
 	if previous != nil && tookOver {
 		have := map[string]bool{}

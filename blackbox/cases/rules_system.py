@@ -723,12 +723,26 @@ def malware_db_none(r: Run) -> None:
     r.scan(T0)
 
 
-@case("rules/malware/db-first-update-fails", "第一次下载病毒库就失败：update 退出码 1、说旧库保留；查的时候还是没有病毒库")
+@case("rules/malware/db-first-update-fails", "第一次下载病毒库就失败：update 退出码 1、说没下载成（没有旧库可保留）；查的时候还是没有病毒库")
 def malware_db_first_fail(r: Run) -> None:
     r.fx.file("~/Downloads/eicar-test.com", size=68, at=days(2))
     r.fx.tool_flag("fail-next")
     r.update()
     r.scan(T0)
+
+
+@case("rules/malware/db-first-round", "还没有病毒库时第一轮先下载（--update-first；这台 Mac 上 --this-mac 一直这样）：这一轮就查了病毒")
+def malware_db_first_round(r: Run) -> None:
+    r.fx.file("~/Downloads/eicar-test.com", size=68, at=days(2))
+    r.scan(T0, "--update-first")
+    r.scan(T0 + datetime.timedelta(hours=1), "--update-first")  # 有库了：不再下载
+
+
+@case("rules/malware/db-first-round-fails", "第一轮先下载病毒库没下成：照常查，病毒那一项说没下载")
+def malware_db_first_round_fails(r: Run) -> None:
+    r.fx.file("~/Downloads/eicar-test.com", size=68, at=days(2))
+    r.fx.tool_flag("fail-next")
+    r.scan(T0, "--update-first")
 
 
 @case("rules/malware/db-stale", "病毒库 20 天没更新：照样扫（认得的照报），再加一条「病毒库多少天没更新」")

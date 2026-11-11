@@ -99,7 +99,7 @@ func (r *PermissionRule) Run(ctx *Context) ([]Finding, error) {
 		if !Exists(db) && !strings.HasPrefix(db, "/Library") {
 			continue
 		}
-		if ctx.AccessOff { // macOS may still let it through: the user said no
+		if ctx.AccessOff { // macOS may still let it through: the user has not said yes
 			unreadable = append(unreadable, tccUnreadable(db).Error())
 			continue
 		}

@@ -67,7 +67,7 @@
             "path": "",
             "rule": "posture.partial",
             "severity": "low",
-            "title": "有几项没查成：Gatekeeper",
+            "title": "有几样没查成：Gatekeeper",
             "verdict": "info"
           },
           {
@@ -313,11 +313,15 @@
                 "destructiveHint": false,
                 "readOnlyHint": false
               },
-              "description": "把一条发现标成不用管，以后不再报",
+              "description": "把一条发现标成不用管，以后不再报；undo 为真时撤销，照样提醒",
               "inputSchema": {
                 "properties": {
                   "finding_id": {
                     "type": "string"
+                  },
+                  "undo": {
+                    "description": "撤销刚才的「以后别提」",
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -402,7 +406,7 @@
                 "destructiveHint": false,
                 "readOnlyHint": true
               },
-              "description": "打开系统设置里对应的页面（隐私与安全性的某个权限，或「登录项」）",
+              "description": "打开系统设置里对应的页面（隐私与安全性的某个权限、「登录项」或「电池」），或者打开活动监视器",
               "inputSchema": {
                 "properties": {
                   "grant": {
@@ -476,6 +480,11 @@
             },
             {
               "mimeType": "application/json",
+              "name": "状态",
+              "uri": "page/mac"
+            },
+            {
+              "mimeType": "application/json",
               "name": "概览",
               "uri": "page/overview"
             },
@@ -526,8 +535,7 @@
                               "children": [
                                 "h1",
                                 "t2",
-                                "t3",
-                                "r6"
+                                "r5"
                               ],
                               "component": "Column",
                               "id": "root"
@@ -535,19 +543,13 @@
                             {
                               "component": "Text",
                               "id": "h1",
-                              "text": "项目 web-app 用了已知恶意的 evil-stealer@3.2.1",
+                              "text": "装了一个已知的恶意软件包「evil-stealer@3.2.1」",
                               "variant": "h4"
                             },
                             {
                               "component": "Text",
                               "id": "t2",
-                              "text": "删掉这个项目的 node_modules，把 evil-stealer 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西。"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t3",
-                              "text": "依据：恶意包名单 2026-10-15（OSV 的 MAL- 条目），MAL-2026-9001\n位置：~/Projects/web-app/package-lock.json",
-                              "variant": "caption"
+                              "text": "装过就当密码和登录已经泄露：先把重要的密码都换掉；点「在访达里显示」看是哪个项目用了它，这个项目先别再打开。"
                             },
                             {
                               "action": {
@@ -558,14 +560,14 @@
                                   "name": "scan_reveal"
                                 }
                               },
-                              "child": "b4-text",
+                              "child": "b3-text",
                               "component": "Button",
-                              "id": "b4",
+                              "id": "b3",
                               "variant": "primary"
                             },
                             {
                               "component": "Text",
-                              "id": "b4-text",
+                              "id": "b3-text",
                               "text": "在访达里显示"
                             },
                             {
@@ -577,22 +579,22 @@
                                   "name": "scan_ignore"
                                 }
                               },
-                              "child": "b5-text",
+                              "child": "b4-text",
                               "component": "Button",
-                              "id": "b5"
+                              "id": "b4"
                             },
                             {
                               "component": "Text",
-                              "id": "b5-text",
+                              "id": "b4-text",
                               "text": "处理好了，以后别提"
                             },
                             {
                               "children": [
-                                "b4",
-                                "b5"
+                                "b3",
+                                "b4"
                               ],
                               "component": "Row",
-                              "id": "r6"
+                              "id": "r5"
                             }
                           ],
                           "surfaceId": "security-000000000001"
@@ -605,8 +607,8 @@
                     "expires": null,
                     "id": "security/supplychain.malicious/000000000002",
                     "kind": "security",
-                    "summary": "项目 web-app 用了已知恶意的 evil-stealer@3.2.1。删掉这个项目的 node_modules，把 evil-stealer 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西。",
-                    "title": "项目 web-app 用了已知恶意的 evil-stealer@3.2.1",
+                    "summary": "装了一个已知的恶意软件包「evil-stealer@3.2.1」。装过就当密码和登录已经泄露：先把重要的密码都换掉；点「在访达里显示」看是哪个项目用了它，这个项目先别再打开。",
+                    "title": "装了一个已知的恶意软件包「evil-stealer@3.2.1」",
                     "urgency": "urgent",
                     "why_now": "这一轮和恶意包名单比对出来的；装过就当令牌和钥匙已经泄露"
                   },
@@ -625,18 +627,7 @@
                             {
                               "children": [
                                 "h1",
-                                "d2",
-                                "t3",
-                                "t4",
-                                "t5",
-                                "r7",
-                                "t8",
-                                "t9",
-                                "d10",
-                                "t11",
-                                "t12",
-                                "t13",
-                                "t14"
+                                "t2"
                               ],
                               "component": "Column",
                               "id": "root"
@@ -644,90 +635,13 @@
                             {
                               "component": "Text",
                               "id": "h1",
-                              "text": "有 4 件事值得看一眼",
+                              "text": "4 项等你处理",
                               "variant": "h4"
                             },
                             {
-                              "component": "Divider",
-                              "id": "d2"
-                            },
-                            {
                               "component": "Text",
-                              "id": "t3",
-                              "text": "这几样螺壳不替你动，你可以自己看看：",
-                              "variant": "caption"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t4",
-                              "text": "项目 web-app 用了已知恶意的 evil-stealer@3.2.1"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t5",
-                              "text": "怎么办：删掉这个项目的 node_modules，把 evil-stealer 改到名单外的版本（或换掉它）再重新装；装过就当这台 Mac 上的令牌和钥匙已经泄露：.npmrc 里的令牌、~/.ssh 的钥匙、~/.aws 的密钥、浏览器里存的登录都要换。螺壳扫描不替你删项目里的东西",
-                              "variant": "caption"
-                            },
-                            {
-                              "action": {
-                                "event": {
-                                  "context": {
-                                    "finding_id": "supplychain.malicious/000000000002"
-                                  },
-                                  "name": "scan_reveal"
-                                }
-                              },
-                              "child": "b6-text",
-                              "component": "Button",
-                              "id": "b6"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "b6-text",
-                              "text": "在访达里显示"
-                            },
-                            {
-                              "children": [
-                                "b6"
-                              ],
-                              "component": "Row",
-                              "id": "r7"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t8",
-                              "text": "30 个 Helper 进程的程序已经被删掉了，还在跑"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t9",
-                              "text": "进程 100（gone）的程序已经被删掉了，它还在跑"
-                            },
-                            {
-                              "component": "Divider",
-                              "id": "d10"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t11",
-                              "text": "这几条值得留意，有空看一下：",
-                              "variant": "caption"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t12",
-                              "text": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t13",
-                              "text": "怎么办：系统设置 → 隐私与安全性 → FileVault",
-                              "variant": "caption"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t14",
-                              "text": "另有 4 条仅供参考，问我就列给你。",
+                              "id": "t2",
+                              "text": "另外 3 项在「螺壳扫描」里等你看。",
                               "variant": "caption"
                             }
                           ],
@@ -741,8 +655,8 @@
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
                     "kind": "findings",
-                    "summary": "放心删 0 条、要确认 3 条、仅供参考 5 条（其中需要留意的 1 条）。",
-                    "title": "有 4 件事值得看一眼",
+                    "summary": "另外 3 项在「螺壳扫描」里等你看。",
+                    "title": "3 项等你处理",
                     "urgency": "low",
                     "why_now": "扫描刚查完一轮"
                   }
@@ -771,7 +685,7 @@
               "mimeType": "application/json",
               "text": {
                 "count": 4,
-                "text": "有 1 件要尽快看看，另外 1 条需要留意"
+                "text": "4 项等你处理，其中 1 项要尽快"
               },
               "uri": "summary"
             }
@@ -833,12 +747,19 @@
                     "components": [
                       {
                         "children": [
-                          "h1",
-                          "t2",
-                          "t3",
-                          "t4",
-                          "t5",
-                          "r7"
+                          "r4",
+                          "aside1",
+                          "d15",
+                          "t16",
+                          "t17",
+                          "t18",
+                          "r20",
+                          "t21",
+                          "t22",
+                          "r24",
+                          "t25",
+                          "t26",
+                          "aside2"
                         ],
                         "component": "Column",
                         "id": "root"
@@ -851,25 +772,8 @@
                       },
                       {
                         "component": "Text",
-                        "id": "t2",
-                        "text": "有 1 件要尽快看看，另外 1 条需要留意"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t3",
-                        "text": "上一轮 10月20日 20:00：放心删 0、要确认 3、仅供参考 5",
-                        "variant": "caption"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t4",
-                        "text": "病毒库 daily 27000（2026-10-20）",
-                        "variant": "caption"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t5",
-                        "text": "自动清：关",
+                        "id": "n2",
+                        "text": "上次查 10月20日 20:00",
                         "variant": "caption"
                       },
                       {
@@ -879,21 +783,256 @@
                             "name": "scan_now"
                           }
                         },
-                        "child": "b6-text",
+                        "child": "b3-text",
                         "component": "Button",
-                        "id": "b6"
+                        "id": "b3"
                       },
                       {
                         "component": "Text",
-                        "id": "b6-text",
+                        "id": "b3-text",
                         "text": "现在查一下"
                       },
                       {
                         "children": [
-                          "b6"
+                          "h1",
+                          "n2",
+                          "b3"
                         ],
                         "component": "Row",
-                        "id": "r7"
+                        "id": "r4",
+                        "justify": "spaceBetween"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t6",
+                        "text": "这周清掉",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t7",
+                        "text": "还没清过",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t6",
+                          "t7"
+                        ],
+                        "component": "Column",
+                        "id": "s5"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t9",
+                        "text": "能清出",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t10",
+                        "text": "没有",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t9",
+                          "t10"
+                        ],
+                        "component": "Column",
+                        "id": "s8"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t12",
+                        "text": "等你处理",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t13",
+                        "text": "4 项",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t12",
+                          "t13"
+                        ],
+                        "component": "Column",
+                        "id": "s11"
+                      },
+                      {
+                        "children": [
+                          "s5",
+                          "s8",
+                          "s11"
+                        ],
+                        "component": "Row",
+                        "id": "r14",
+                        "justify": "spaceEvenly"
+                      },
+                      {
+                        "children": [
+                          "r14"
+                        ],
+                        "component": "Column",
+                        "id": "aside1",
+                        "placement": "aside"
+                      },
+                      {
+                        "component": "Divider",
+                        "id": "d15"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t16",
+                        "text": "要你看看 4",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t17",
+                        "text": "硬盘没加密：电脑丢了，别人能直接读出里面的东西"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t18",
+                        "text": "打开时会给你恢复密钥，抄下来放好",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {
+                              "grant": "FileVault"
+                            },
+                            "name": "scan_open_settings"
+                          }
+                        },
+                        "child": "b19-text",
+                        "component": "Button",
+                        "id": "b19"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b19-text",
+                        "text": "打开 FileVault 设置"
+                      },
+                      {
+                        "children": [
+                          "b19"
+                        ],
+                        "component": "Row",
+                        "id": "r20"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t21",
+                        "text": "装了一个已知的恶意软件包「evil-stealer@3.2.1」"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t22",
+                        "text": "装过就当密码和登录已经泄露：先把重要的密码都换掉；点「在访达里显示」看是哪个项目用了它，这个项目先别再打开。",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {
+                              "finding_id": "supplychain.malicious/000000000002"
+                            },
+                            "name": "scan_reveal"
+                          }
+                        },
+                        "child": "b23-text",
+                        "component": "Button",
+                        "id": "b23"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b23-text",
+                        "text": "在访达里显示"
+                      },
+                      {
+                        "children": [
+                          "b23"
+                        ],
+                        "component": "Row",
+                        "id": "r24"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t25",
+                        "text": "有 2 个程序已经删掉了却还在运行"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t26",
+                        "text": "「Helper」、「gone」\n重启一下电脑就好",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Divider",
+                        "id": "d27"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t28",
+                        "text": "自动清理"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {
+                              "on": true
+                            },
+                            "name": "scan_autoclean"
+                          }
+                        },
+                        "child": "b29-text",
+                        "component": "Button",
+                        "id": "b29",
+                        "on": false,
+                        "variant": "switch"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b29-text",
+                        "text": "打开自动清理"
+                      },
+                      {
+                        "children": [
+                          "t28",
+                          "b29"
+                        ],
+                        "component": "Row",
+                        "id": "r30",
+                        "justify": "spaceBetween"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t31",
+                        "text": "打开后，每天那一轮不用你点就清：会重建的缓存、装好了的应用的安装包、下载文件夹里的重复文件、测试工具留下的临时文件夹。移到废纸篓的都能放回，要你定的照样先问你。",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t32",
+                        "text": "病毒库更新于 10月20日",
+                        "variant": "caption"
+                      },
+                      {
+                        "children": [
+                          "d27",
+                          "r30",
+                          "t31",
+                          "t32"
+                        ],
+                        "component": "Column",
+                        "id": "aside2",
+                        "placement": "aside"
                       }
                     ],
                     "surfaceId": "overview"
@@ -1000,7 +1139,7 @@
       },
       "user-action": {
         "at": "2026-10-20T20:01:00+08:00",
-        "componentId": "b4",
+        "componentId": "b3",
         "surfaceId": "security-000000000001"
       }
     },
@@ -1020,7 +1159,7 @@
         "result": {
           "content": [
             {
-              "text": "好，以后不再提「项目 web-app 用了已知恶意的 evil-stealer@3.2.1」。",
+              "text": "已记下：「项目 web-app 用了已知恶意的 evil-stealer@3.2.1」以后不再提醒。",
               "type": "text"
             }
           ],
@@ -1033,15 +1172,43 @@
                   "components": [
                     {
                       "children": [
-                        "r97660-t1"
+                        "r97660-r3"
                       ],
                       "component": "Column",
                       "id": "root"
                     },
                     {
                       "component": "Text",
-                      "id": "r97660-t1",
-                      "text": "好，以后不再提「项目 web-app 用了已知恶意的 evil-stealer@3.2.1」。"
+                      "id": "r97660-n1",
+                      "text": "已记下：「项目 web-app 用了已知恶意的 evil-stealer@3.2.1」以后不再提醒。",
+                      "variant": "caption"
+                    },
+                    {
+                      "action": {
+                        "event": {
+                          "context": {
+                            "finding_id": "supplychain.malicious/000000000002",
+                            "undo": true
+                          },
+                          "name": "scan_ignore"
+                        }
+                      },
+                      "child": "r97660-b2-text",
+                      "component": "Button",
+                      "id": "r97660-b2"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "r97660-b2-text",
+                      "text": "撤销"
+                    },
+                    {
+                      "children": [
+                        "r97660-n1",
+                        "r97660-b2"
+                      ],
+                      "component": "Row",
+                      "id": "r97660-r3"
                     }
                   ],
                   "surfaceId": "security-000000000001"
@@ -1055,7 +1222,7 @@
       },
       "user-action": {
         "at": "2026-10-20T20:01:00+08:00",
-        "componentId": "b5",
+        "componentId": "b4",
         "surfaceId": "security-000000000001"
       }
     },
@@ -1090,15 +1257,7 @@
                             {
                               "children": [
                                 "h1",
-                                "d2",
-                                "t3",
-                                "t4",
-                                "t5",
-                                "d6",
-                                "t7",
-                                "t8",
-                                "t9",
-                                "t10"
+                                "t2"
                               ],
                               "component": "Column",
                               "id": "root"
@@ -1106,54 +1265,13 @@
                             {
                               "component": "Text",
                               "id": "h1",
-                              "text": "有 3 件事值得看一眼",
+                              "text": "3 项等你处理",
                               "variant": "h4"
                             },
                             {
-                              "component": "Divider",
-                              "id": "d2"
-                            },
-                            {
                               "component": "Text",
-                              "id": "t3",
-                              "text": "这几样螺壳不替你动，你可以自己看看：",
-                              "variant": "caption"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t4",
-                              "text": "30 个 Helper 进程的程序已经被删掉了，还在跑"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t5",
-                              "text": "进程 100（gone）的程序已经被删掉了，它还在跑"
-                            },
-                            {
-                              "component": "Divider",
-                              "id": "d6"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t7",
-                              "text": "这几条值得留意，有空看一下：",
-                              "variant": "caption"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t8",
-                              "text": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t9",
-                              "text": "怎么办：系统设置 → 隐私与安全性 → FileVault",
-                              "variant": "caption"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t10",
-                              "text": "另有 4 条仅供参考，问我就列给你。",
+                              "id": "t2",
+                              "text": "另外 3 项在「螺壳扫描」里等你看。",
                               "variant": "caption"
                             }
                           ],
@@ -1167,8 +1285,8 @@
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
                     "kind": "findings",
-                    "summary": "放心删 0 条、要确认 2 条、仅供参考 5 条（其中需要留意的 1 条）。",
-                    "title": "有 3 件事值得看一眼",
+                    "summary": "另外 3 项在「螺壳扫描」里等你看。",
+                    "title": "3 项等你处理",
                     "urgency": "low",
                     "why_now": "扫描刚查完一轮"
                   }

@@ -308,7 +308,7 @@
             "path": "",
             "rule": "posture.partial",
             "severity": "low",
-            "title": "有几项没查成：Gatekeeper",
+            "title": "有几样没查成：Gatekeeper",
             "verdict": "info"
           },
           {
@@ -730,7 +730,7 @@
             "path": "",
             "rule": "posture.partial",
             "severity": "low",
-            "title": "有几项没查成：Gatekeeper",
+            "title": "有几样没查成：Gatekeeper",
             "verdict": "info"
           },
           {

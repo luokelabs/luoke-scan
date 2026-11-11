@@ -153,10 +153,11 @@ func skillReadsLine(line []rune) bool {
 }
 
 // Hosts of well-known official installers: piping their script into a shell is how they are meant to be installed.
-const officialInstaller = `https?://(?:astral\.sh/uv/|sh\.rustup\.rs|static\.rust-lang\.org/rustup|raw\.githubusercontent\.com/(?:Homebrew/install|nvm-sh/nvm|pyenv/pyenv-installer)/|bun\.sh/install|deno\.land/install|install\.python-poetry\.org|get\.pnpm\.io/install|claude\.ai/install|ollama\.com/install|get\.sdkman\.io|pyenv\.run|starship\.rs/install|tailscale\.com/install|fnm\.vercel\.app/install|install\.determinate\.systems|mise\.run|get\.volta\.sh)`
+const officialInstaller = `https?://(?:astral\.sh/uv/|sh\.rustup\.rs|static\.rust-lang\.org/rustup|raw\.githubusercontent\.com/(?:Homebrew/install|nvm-sh/nvm|pyenv/pyenv-installer)/|bun\.(?:sh|com)/install|deno\.land/install|install\.python-poetry\.org|get\.pnpm\.io/install|claude\.ai/install|ollama\.com/install|get\.sdkman\.io|pyenv\.run|starship\.rs/install|tailscale\.com/install|fnm\.vercel\.app/install|install\.determinate\.systems|mise\.run|get\.volta\.sh)`
 
-// A shell or interpreter that runs what comes in on standard input (not python -c …, which reads it as data).
-const stdinRunner = `(?:sudo\s+(?:-\S+\s+)*)?(?:/\S*/)?(?:sh|bash|zsh|dash|ksh|fish|python[0-9.]*|perl|ruby|node|php|osascript)(?=\s*$|\s*[;&|)'"\x{60}]|\s+-s\b|\s+-(?=$|[\s;&|)'"\x{60}])|\s+--\s)`
+// A shell or interpreter that runs what comes in on standard input (not python -c …, which reads it as data); a
+// comment may follow it (| sh # …).
+const stdinRunner = `(?:sudo\s+(?:-\S+\s+)*)?(?:/\S*/)?(?:sh|bash|zsh|dash|ksh|fish|python[0-9.]*|perl|ruby|node|php|osascript)(?=\s*$|\s*[;&|)'"\x{60}]|\s+-s\b|\s+-(?=$|[\s;&|)'"\x{60}])|\s+--\s|\s+#)`
 
 // Using an SSH key, or the public half: not reading the private one.
 const sshUse = `\.ssh/(?:config|known_hosts)\b|\.pub\b|\bssh-(?:keygen|add|copy-id)\b|(?:^|\s)-i\s+\S*\.ssh/|IdentityFile|GIT_SSH_COMMAND|ssh\s+-o\b`
@@ -717,8 +718,24 @@ type assignedVar struct {
 	line   int
 }
 
+// skillScanOpts change how skillScanFileWith reads a script (the install checks'); the zero value is the skills' way.
+type skillScanOpts struct {
+	// code, in place of scriptCode: a line's code and whether it is only a comment, called once for each line in order.
+	code func(line string) (code string, only bool)
+	// talks, in place of the whole line's words: whether a match (in the line as checked) is in a statement that talks
+	// about such things rather than does them.
+	talks func(s []rune, m []int) bool
+	// cancelled: stop reading when it says so.
+	cancelled func() bool
+}
+
 // skillScanFile runs every pattern over one text or script file.
 func skillScanFile(text, path string, script bool, own []string) skillFileScan {
+	return skillScanFileWith(text, path, script, own, skillScanOpts{})
+}
+
+// skillScanFileWith is skillScanFile read the way opts say.
+func skillScanFileWith(text, path string, script bool, own []string, opts skillScanOpts) skillFileScan {
 	c := skc()
 	var out skillFileScan
 	name := aiNSLast(path)
@@ -730,6 +747,9 @@ func skillScanFile(text, path string, script bool, own []string) skillFileScan {
 	var assigned []assignedVar
 
 	for index, raw := range lines {
+		if opts.cancelled != nil && index%64 == 0 && opts.cancelled() {
+			return out
+		}
 		n := index + 1
 		inv := skillInvisible([]rune(strings.TrimSuffix(raw, "\r")), index == 0)
 		if aiUTF16Len(inv.clean) > 4000 {
@@ -777,13 +797,29 @@ func skillScanFile(text, path string, script bool, own []string) skillFileScan {
 			visible = cleanStr
 		}
 
+		// A script's line that is only a comment carries no commands; code after a block comment closed on the line
+		// (/**/ x, a /*! license */ banner, the end * … */ of a block comment) is code.
+		scriptComment := false
+		if script {
+			var code string
+			var only bool
+			if opts.code != nil {
+				code, only = opts.code(visible)
+			} else {
+				code, only = scriptCode(visible)
+			}
+			scriptComment = only
+			if !only && code != aiTrimWS(visible) {
+				visible = code
+			}
+		}
+
 		// Whether this line talks about something rather than says to do it.
 		trimmed := aiTrimWS(visible)
 		visibleR := []rune(visible)
 		talkNeg, talkTopic, commentLine := false, false, false
 		if script {
-			commentLine = (strings.HasPrefix(trimmed, "#") && !strings.HasPrefix(trimmed, "#!")) || strings.HasPrefix(trimmed, "//") ||
-				strings.HasPrefix(trimmed, "/*") || strings.HasPrefix(trimmed, "*") || strings.HasPrefix(trimmed, "-- ") || strings.HasPrefix(trimmed, "REM ")
+			commentLine = scriptComment
 			talkTopic = c.topic.hasRunes(visibleR) || c.patternLine.hasRunes(visibleR)
 		} else {
 			lastTalks := func(l string) bool { return c.topic.has(l) || c.negation.has(l) }
@@ -894,8 +930,11 @@ func skillScanFile(text, path string, script bool, own []string) skillFileScan {
 							continue
 						}
 					} else if !hidden {
-						before := aiPrefixUTF16(quiet, aiUTF16Len(s[:m[0]]))
-						if talkTopic || talkNeg || c.negation.hasRunes(before) {
+						if opts.talks != nil {
+							if opts.talks(s, m) {
+								continue
+							}
+						} else if before := aiPrefixUTF16(quiet, aiUTF16Len(s[:m[0]])); talkTopic || talkNeg || c.negation.hasRunes(before) {
 							continue
 						}
 					} else if c.topic.hasRunes(s) || c.negation.hasRunes(s) {
@@ -918,7 +957,12 @@ func skillScanFile(text, path string, script bool, own []string) skillFileScan {
 				if !aiContainsAny(lower, t.needles) || !t.path.hasRunes(s) {
 					continue
 				}
-				talk := !hidden && !decoded && (talkTopic || talkNeg || c.negation.hasRunes(quiet))
+				var talk bool
+				if opts.talks != nil {
+					talk = !hidden && !decoded && opts.talks(s, t.path.find(s, 0))
+				} else {
+					talk = !hidden && !decoded && (talkTopic || talkNeg || c.negation.hasRunes(quiet))
+				}
 				if script && commentLine {
 					continue
 				}
@@ -935,7 +979,14 @@ func skillScanFile(text, path string, script bool, own []string) skillFileScan {
 					}
 				}
 				if hasVariable {
-					assigned = append(assigned, assignedVar{variable, ti, n})
+					// Only the last 15 lines' are ever looked at: the older are dropped (a long file can set thousands).
+					keep := assigned[:0]
+					for _, a := range assigned {
+						if n-a.line <= 15 {
+							keep = append(keep, a)
+						}
+					}
+					assigned = append(keep, assignedVar{variable, ti, n})
 				}
 				intoVariable := hasVariable && skillDynamicRx(`(?:>>?|\btee\s+(?:-a\s+)?)\s*["']?\$\{?`+rxEscape(variable)+`\b`).hasRunes(s)
 				command := t.redirect.hasRunes(s) || t.copy.hasRunes(s) || (script && c.writeCall.hasRunes(s)) || intoVariable
@@ -1000,6 +1051,36 @@ func skillScanFile(text, path string, script bool, own []string) skillFileScan {
 		}
 	}
 	return out
+}
+
+// scriptCode is the code of a script's line: what is left after the block comments that open and close before it;
+// only true when the line is nothing but a comment (#, //, -- and REM to its end, or a block comment not closed on it).
+func scriptCode(line string) (code string, only bool) {
+	s := aiTrimWS(line)
+	for {
+		switch {
+		case strings.HasPrefix(s, "/*"):
+			i := strings.Index(s[2:], "*/")
+			if i < 0 {
+				return "", true
+			}
+			s = aiTrimWS(s[2+i+2:])
+		case strings.HasPrefix(s, "*"):
+			i := strings.Index(s, "*/")
+			if i < 0 {
+				return "", true
+			}
+			s = aiTrimWS(s[i+2:])
+		case (strings.HasPrefix(s, "#") && !strings.HasPrefix(s, "#!")) || strings.HasPrefix(s, "//") || strings.HasPrefix(s, "-- ") ||
+			strings.HasPrefix(s, "REM "):
+			return "", true
+		default:
+			return s, false
+		}
+		if s == "" {
+			return "", true
+		}
+	}
 }
 
 // aiPrefixUTF16 is the characters of s within the first n UTF-16 code units (NSString's substring(to:), a character cut

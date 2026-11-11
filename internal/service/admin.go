@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/luokelabs/luoke-scan/internal/core"
 )
@@ -243,7 +244,10 @@ func (s *Service) finish(plan Plan) {
 // applyAdmin is scan_apply on the plan that needs the password: one dialog for all of it, then the step with
 // administrator rights. Cancelled: nothing happened, and the card keeps this plan's controls (and the other plan's).
 // undecided: some items were not decided on (a terminal named only some): the plan stays open for them.
-func (s *Service) applyAdmin(plan Plan, picks map[string]string, meta O, undecided bool) (ToolOutput, error) {
+// answerBy: when the answer is due (zero: no limit, as from a terminal); the checks stop and the dialog is not shown when
+// too little of it is left.
+func (s *Service) applyAdmin(plan Plan, picks map[string]string, meta O, undecided bool, answerBy time.Time) (ToolOutput, error) {
+	late := func() bool { return !answerBy.IsZero() && time.Until(answerBy) < dialogLeast }
 	s.reconcileAdmin(plan.ID)
 	var picked []PlanItem
 	for _, it := range plan.Items {
@@ -255,7 +259,12 @@ func (s *Service) applyAdmin(plan Plan, picks map[string]string, meta O, undecid
 	// process makes, not as the plan file says.
 	verified := map[string]bool{}
 	brewPicked := false
+	ranOut := false
 	for _, it := range picked {
+		if late() {
+			ranOut = true
+			break
+		}
 		if it.BundleID != "" && s.stillLeftOver(it.BundleID) {
 			verified[it.BundleID] = true
 		}
@@ -263,7 +272,7 @@ func (s *Service) applyAdmin(plan Plan, picks map[string]string, meta O, undecid
 			brewPicked = true
 		}
 	}
-	brew := brewPicked && s.homebrewStillGoes()
+	brew := brewPicked && !ranOut && s.homebrewStillGoes()
 	var chosen, notNow []PlanItem
 	for _, it := range picked {
 		if (it.BundleID != "" && verified[it.BundleID]) || (it.Rule == homebrewRule && brew) {
@@ -297,13 +306,19 @@ func (s *Service) applyAdmin(plan Plan, picks map[string]string, meta O, undecid
 			}
 			lines(c)
 			if again {
-				s.adminBody(c, plan)
+				s.adminBody(c, plan, nil)
 			}
 			if other != nil {
 				c.Divider()
 				s.planBody(c, *other, "不要密码的这几项", "", nil)
 			}
 		})
+	}
+	if ranOut || (len(chosen) > 0 && late()) {
+		// Checking took so long that the main body would end this request before the user is done with the dialog: nothing
+		// moved, the card stays, a second click starts afresh (luoke-scan#122).
+		text := "核对花的时间太长，这次没弹密码框，什么都没动。再点一次就好。"
+		return ToolOutput{Text: text, Card: card(func(c *Card) { c.Text(text) }, true), Done: Bool(false)}, nil
 	}
 	if len(chosen) == 0 {
 		// Kept, or not mentioned again: decided, so done. Picked but no longer left over: said so.
@@ -367,7 +382,11 @@ func (s *Service) applyAdmin(plan Plan, picks map[string]string, meta O, undecid
 	if hasBrew {
 		args = append(args, "--homebrew")
 	}
-	res := s.Config.Elevate(args, prompt)
+	wait := hostWait
+	if !answerBy.IsZero() {
+		wait = min(wait, time.Until(answerBy))
+	}
+	res := s.Config.Elevate(args, prompt, wait)
 	switch res.Kind {
 	case "cancelled":
 		os.Remove(s.pendingPath(plan.ID))
@@ -464,10 +483,10 @@ func (s *Service) applyAdmin(plan Plan, picks map[string]string, meta O, undecid
 		parts = append(parts, p)
 	}
 	if len(gone) > 0 {
-		parts = append(parts, fmt.Sprintf("%d 项已经不在了", len(gone)))
+		parts = append(parts, fmt.Sprintf("%d 项找不到，已跳过", len(gone)))
 	}
 	if n := len(left) + len(notNow) + len(unanswered); n > 0 {
-		parts = append(parts, fmt.Sprintf("%d 项没动", n))
+		parts = append(parts, fmt.Sprintf("%d 项未能清理", n))
 	}
 	text := "没有改动什么。"
 	if len(parts) > 0 {
@@ -485,17 +504,17 @@ func (s *Service) applyAdmin(plan Plan, picks map[string]string, meta O, undecid
 			if it, ok := byKey[l.Key]; ok {
 				title = it.Title
 			}
-			why := "没动"
+			why := "未能清理"
 			if l.Error != nil {
-				why = *l.Error
+				why += "，" + *l.Error
 			}
 			c.Text(title+"："+s.display(l.Path)+"："+why, true)
 		}
 		for _, it := range notNow {
-			c.Text(it.Title+"："+notNowReason([]PlanItem{it}), true)
+			c.Text(it.Title+"：未能清理，"+notNowReason([]PlanItem{it}), true) // counted in 「N 项未能清理」
 		}
 		for _, it := range unanswered {
-			c.Text(it.Title+"：没动（删除那一步没说它怎么样了）", true)
+			c.Text(it.Title+"：未能清理，删除那一步没有返回结果", true)
 		}
 		if len(moved) > 0 {
 			c.Text("要放回，在访达里把它们从废纸篓拖回原来的位置（会要密码）：", true)
@@ -607,7 +626,7 @@ func (s *Service) TrashSystemLeftovers(keys []string) ([]string, bool) {
 			undecided = true
 		}
 	}
-	out, err := s.applyAdmin(plan, picks, O{}, undecided)
+	out, err := s.applyAdmin(plan, picks, O{}, undecided, time.Time{})
 	if err != nil {
 		if f, ok := err.(*ToolFailure); ok {
 			return []string{f.Message}, false

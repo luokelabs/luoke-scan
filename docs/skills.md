@@ -67,7 +67,7 @@ skill 是 AI 工具（Claude Code、Cursor、Gemini CLI、Codex……）照着�
 
 ### 一个 skill 一条
 
-- 一个 skill 有几处可疑，合成一条：规则名取最重的那一类（同样重时按上表从上到下），标题写最重的一处，「另有 N 处要看」；`why` 里逐条列出，每条写哪个文件第几行；`kinds` 列出所有的类。
+- 一个 skill 有几处可疑，合成一条：规则名取最重的那一类（同样重时依次取：读密钥再往外发、下载直接运行、自启动、改 AI 自己、提权和关保护、大面积删除、给 AI 的话、权限太宽、供应链、读不了的内容，见 `rule_skill.go` 的 `skillPriority`；和上表的顺序不全一样），标题写最重的一处，「另有 N 处要看」；`why` 里逐条列出，每条写哪个文件第几行；`kinds` 列出所有的类。
 - 结论一律「仅供参考」：skill 是你自己装的，不出方案、不自动清、不删。`how` 告诉你怎么办（不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做），按类再加一句（用过的话换密钥、看看 LaunchAgents……）。
 - 高的会算进卡片上的「高风险提醒」；病毒库、YARA 认出来的照旧是急事。
 - 编号按「真实位置 + 内容哈希」：同一个文件夹、内容没变，每轮同一个编号；内容一改就是新的一条，「以后别提」盖不住之后的改动。
@@ -102,14 +102,18 @@ AI 写代码的工具一打开项目、一启动，就会自己去读这些说�
 | Gemini CLI | `~/.gemini/GEMINI.md` | `GEMINI.md` |
 | Cursor | | `.cursorrules`、`.cursor/rules/` 下的 `.md`、`.mdc` |
 | Windsurf | | `.windsurfrules` |
-| GitHub Copilot | | `.github/copilot-instructions.md`、`.github/instructions/` 下的 `.md` |
+| GitHub Copilot | | `.github/copilot-instructions.md`、`.github/instructions/` 下的 `.md`、`.mdc` |
 
 - 项目和 skill 一样，是 `ctx.projectRoots` 下面的每个项目；只看项目最上一层的这些文件，子文件夹里的不看。
 - 链接过去的（常见：`CLAUDE.md` 链到 `AGENTS.md`）照真实位置只算一次；同一份内容抄进好几个项目（模板）也只说一次，另外几处写在「也在」里。
 - 每个文件最多读 256 KB，一轮最多 400 个、16 MB；只在 iCloud 里的不读（读了会下载）。
-- **和 skill 不同的地方**：说明文件本来就会讲怎么维护它自己和别的说明文件、项目的 skill 放哪、项目的 MCP 服务器配在哪，这些只当背景、不单独报（配 AI 工具的设置的那条是低）。真正危险的改法（下载来跑、让东西自己起来）有自己的检查。
+- **和 skill 不同的地方**：说明文件本来就会讲怎么维护它自己和别的说明文件、项目的 skill 放哪，这两样只当背景、不单独报；讲怎么改 AI 工具的设置（钩子、MCP 服务器、权限）、让 AI 跳过确认的，降成低（`rule_agentfile.go` 的 `adjustedSignals`）。真正危险的改法（下载来跑、让东西自己起来）有自己的检查。
 - 只供参考，不建议删，也不进方案；不交给模型复核（模型复核只看 skill）。
 - 评测：`.build/go/luoke-scan eval-agentfiles`，用例在 `evals/agentfiles/cases.json`（13 个恶意、13 个正常，正常的照真实项目常见的写法），规矩同 skill：恶意的全报，正常的一个都不报成高。
+
+## 依赖的安装脚本（`deps.install-script`）
+
+npm 包的 `preinstall`、`install`、`postinstall` 和它们运行的文件、从源码装的 Python 包的 `setup.py`，也用这里的文字检查（`skillScanFile`，当脚本查），再加几条只对安装脚本有意义的（跑 trufflehog 这类找密钥的工具、提到 `.github/workflows`、用令牌建仓库和发布包、`~/.npmrc` 当强凭证、把用户名主机名发出去、一大段编码和 `node -e`、`python -c`、`eval` 在同一行）。和 skill 不同：只报安装脚本不该做的（读密钥、往外发、下载就运行、自己启动……），没写版本号、单独的 sudo、给 AI 的话这类不报；结论一律是要确认。详见 [install-scripts.md](install-scripts.md)。
 
 ## 隐私
 
@@ -182,7 +186,7 @@ AI 写代码的工具一打开项目、一启动，就会自己去读这些说�
 - **什么时候问**：每一轮规则查完（自动清理之后）、存报告之前（`Service.withModel`）。先 `GET /tasks`，只问状态是 `available` 的任务；主控不在、任务没开（新任务第一次评过的那一版是关着发的）时只多这一次很快的 `GET`，报告照旧。agent 叫的那一轮（`--for-agent`）只用记下的答复，不问新的。只在这台 Mac 自己的数据目录、装好的 app 或指向自己那个主控（`LUOKE_HUB_SOCKET`）的开发版里问，和写记忆的条件一样。
 - **怎么问**：`POST /tasks/<任务>/v1/chat/completions`，后台优先级（`X-Luoke-Priority: background`），流式。请求体和 `bench/run_eval.py` 逐字节一样（`ModelPrompt` 照 `bench/prompts.py` 读 `prompts/`；测试对三个评测集的每一条都比了），所以发布评测量的就是线上发的。打包时 `prompts/` 原样拷进 `Contents/Resources/prompts`，核对时比逐个文件的哈希。
 - **问多少**：每个任务每轮最多问新的 skills 10 条、identify 5 条、explain 10 条，三个任务一共最多 3 分钟，一条最多等 90 秒（第一条可能要等模型加载）；一轮被打断就停。一个任务被挡回（`busy`、`unsupported`、`task_unavailable`……）或者出错、超时，这一轮就不再问它；只有主控说了很短的等待（`retry_after_ms` 不超过 5 秒）时等一次再问。
-- **记下来**：答复按任务、提示词指纹（所有提示词文件）和输入记在 `scan.db` 的 `model_answers`，下一轮同一个输入直接用，30 天没用到的忘掉。被挡回的不记，下一轮再问；答得不合格的也记（温度 0，同一个输入还是这么答）。
+- **记下来**：答复按任务、提示词指纹（所有提示词文件）和输入记在数据目录的 `model_answers`（`model_answers.json` 快照加 `model_answers.log`），下一轮同一个输入直接用，30 天没用到的忘掉。被挡回的不记，下一轮再问；答得不合格的也记（温度 0，同一个输入还是这么答）。
 - **skills**：规则报了的 skill，重的在前；问的时候把 skill 重新读一遍（`Skills.find`，按文件夹和内容哈希对上那条发现），输入、核对和附说明照上面的 `SkillReview`。
 - **identify**（`internal/core/identify.go`）：规则说不出是谁的文件夹：一直在涨的（`space.growth`，桌面、文稿、下载这些人人都认得的不问）和已卸载应用留下的数据（`leftover.app-data`，规则只知道 bundle id）。只给元信息：路径、大小、最后改动、文件数（最多数 2 万个、2 秒）、最常见的 4 种扩展名、前 6 项的名字，不打开任何文件；没有完全磁盘访问时受保护的文件夹不问。只有 `sure` 为真、不是 `unknown`、不说能不能删、不带网址和命令的才显示，证据 `model_identify`：「本机模型认的：名字（是什么）」。种类和把握不决定任何事。
 - **explain**（`internal/core/explain.go`）：这一轮卡片上要用户看的（不是仅供参考的，或者仅供参考但风险高的），重的、大的在前；skill 的发现不讲（有上面的说明）。输入是结论、标题、位置、大小和规则的依据（不含扫描自己附的 `model_*`、不含所有目标的清单，太长时先去掉最长的几项，整个不超过 3000 个字符）。显示前照评测程序的检查再核一遍：超过 120 字、Markdown、终端命令、网址和域名、说已经做了、把不是放心删的说成能删的、带单位的数字输入里没给（输入里的日期、文件夹名里的年份不算），都不显示（词表和写法和 `bench/run_eval.py` 一样，`bench/test_checks.py` 核对；测试拿评测记下的 378 条答复让两边各判一遍「编数字」，结果一样）；证据 `model_explain`。

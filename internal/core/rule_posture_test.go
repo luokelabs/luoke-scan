@@ -53,7 +53,7 @@ func TestPostureFixtureAnswers(t *testing.T) {
 	}
 	want := map[string]string{"posture.filevault": "FileVault 没开：电脑丢了，硬盘上的东西能直接被读出来",
 		"posture.screen-lock-delay": "屏保或关屏后 15 分钟内不要密码",
-		"posture.partial":           "有几项没查成：防火墙、SIP、Gatekeeper、共享服务"}
+		"posture.partial":           "有几样没查成：防火墙、SIP、Gatekeeper、共享服务"}
 	if !reflect.DeepEqual(rules, want) {
 		t.Fatalf("%q", rules)
 	}

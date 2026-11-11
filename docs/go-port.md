@@ -28,9 +28,11 @@ FSEvents 用 cgo，要一个能用的 C 编译器：`PATH` 里第一个 `clang` 
   签名用 `/usr/bin/codesign`，按 bundle id 找应用用 `mdfind` 再自己扫应用文件夹，Spotlight 属性用 `mdls`，电源用 `pmset -g ps`，
   进程用 sysctl。
 - **要密码的一步**交给螺壳本体弹框（框上写螺壳），接口在 luoke-core 的集成 PR 里定；终端里 `system --trash` 照旧 sudo。
-- **发行**：扫描仓库打 tag、出 release（不签名的 tar 包，带 ClamAV、YARA、证书、规则、提示词）；螺壳每天打包时取最新的放进去，
-  和别的一起签名、公证。
-- **数据目录**：螺壳里的那份 `~/.luoke-scan`；单独装的命令行版默认 `~/.local/share/luoke-scan`。
+- **发行**：扫描仓库打 tag、出 release（不签名的 tar 包，带 ClamAV、YARA、证书、规则、提示词）。螺壳打包时不用这个 tar 包，
+  按 release 的 tag 取源码自己编：内部版取最新的 release，beta、RC、正式版取顶层钉的那个（也得是 release 的 tag）；
+  luoke-core 的 `app/build_app.sh` 用 `LUOKE_SCAN_SRC` 指的源码跑 `scripts/package_app.py`，编好放进螺壳.app，和别的一起签名、公证。
+- **数据目录**：一律 `~/.luoke-scan`（`--this-mac`，以及不给 `--data` 的 `report`），螺壳里的和单独装的命令行版一样；
+  开发和测试用 `--data` 另指。
 - **提示词**：开发版从程序往上找仓库的 `prompts/`（最多六层，和 Swift 一样）；正式版用编在程序里的那份（`assets.go`，
   和 `freshclam.conf`、ClamAV 根证书一起）：不管程序放在哪，起它之前核的那个签名都盖住它们。0.3.0 起扫描打进螺壳.app
   （`Contents/Helpers`），不生成 .app。

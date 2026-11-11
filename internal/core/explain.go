@@ -29,7 +29,11 @@ const (
 // ExplainAsks says whether a finding is explained: what the round's card puts before the user (a decision, or
 // something serious only for reference). Not a skill's (it has its own note), not a round's own notes.
 func ExplainAsks(f Finding) bool {
-	if f.Category == CatSkill || strings.HasSuffix(f.Rule, ".partial") {
+	// Nor a dependency's install script: what it says comes from the package, kept away from the model as a skill's is.
+	if f.Category == CatSkill || strings.HasPrefix(f.Rule, "deps.install-script") || strings.HasSuffix(f.Rule, ".partial") {
+		return false
+	}
+	if strings.HasPrefix(f.Rule, "model.chat-template") { // a local model's template: its name is from downloaded files
 		return false
 	}
 	return f.Verdict != Info || f.Severity == High

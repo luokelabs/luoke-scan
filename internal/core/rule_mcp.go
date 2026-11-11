@@ -24,16 +24,8 @@ func NewMcpRule(l *Layout, f *Fakes) Rule { return &McpRule{} }
 func (r *McpRule) ID() string      { return "mcp" }
 func (r *McpRule) Emits() []string { return []string{"mcp.servers", "mcp.secrets"} }
 
-// mcpConfigs: where each tool keeps its servers, relative to the home, and under which key.
-var mcpConfigs = []struct{ tool, path, key string }{
-	{"Claude Code", ".claude.json", "mcpServers"},
-	{"Claude 桌面版", "Library/Application Support/Claude/claude_desktop_config.json", "mcpServers"},
-	{"Cursor", ".cursor/mcp.json", "mcpServers"},
-	{"Windsurf", ".codeium/windsurf/mcp_config.json", "mcpServers"},
-	{"VS Code", "Library/Application Support/Code/User/mcp.json", "servers"},
-	{"Gemini CLI", ".gemini/settings.json", "mcpServers"},
-	{"LM Studio", ".lmstudio/mcp.json", "mcpServers"},
-}
+// mcpConfigs: where each tool keeps its servers, relative to the home, and under which key (rules/settings-files.json).
+var mcpConfigs []mcpConfig
 
 // mcpSecretNames: names that say a value is a key.
 var mcpSecretNames = []string{"key", "token", "secret", "password", "passwd", "auth", "credential", "bearer"}
@@ -276,6 +268,9 @@ func mcpServers(j map[string]any, key string) []mcpServer {
 }
 
 func (r *McpRule) Run(ctx *Context) ([]Finding, error) {
+	if settingsErr != nil {
+		return nil, rulesMissing("settings-files.json")
+	}
 	out := []Finding{}
 	for _, c := range mcpConfigs {
 		u := filepath.Join(ctx.Home, c.path)

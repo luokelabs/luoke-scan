@@ -86,6 +86,9 @@ func (r *FreeSpaceRule) Run(ctx *Context) ([]Finding, error) {
 var importantCapacity = func(path string) (int64, int64, bool) { return 0, 0, false }
 
 // volumeCapacity is this Mac's free and total bytes of the volume home is on.
+// VolumeCapacity is the free and total bytes of the volume home is on (the 「状态」 page reads it when drawn).
+func VolumeCapacity(home string) (int64, int64, bool) { return volumeCapacity(home) }
+
 func volumeCapacity(home string) (int64, int64, bool) {
 	if free, total, ok := importantCapacity(home); ok {
 		return free, total, true
@@ -210,6 +213,9 @@ func spaceWatching(ctx *Context) (folders, unlisted []string, left bool) {
 	}
 	return folders, unlisted, left
 }
+
+// SpaceSizes is the size history the space rule keeps (canonical path → day → bytes), for the 「状态」 page.
+func SpaceSizes(s *Store) map[string]map[string]int64 { return spaceSizes(s).Load() }
 
 // spaceSizes is the size history: path → day → bytes.
 func spaceSizes(s *Store) Table[map[string]int64] { return NewTable[map[string]int64](s, "sizes", 1) }
@@ -542,7 +548,7 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 			continue
 		}
 		out = append(out, Finding{Rule: "space.growth", Category: CatSpace, Severity: Medium, Verdict: Info, Path: path, Bytes: Size(now),
-			Title: filepath.Base(path) + " 每天涨 " + FormatBytes(perDay),
+			Title: DisplayName(path) + " 每天涨 " + FormatBytes(perDay),
 			Evidence: map[string]string{"since": base, "then": FormatBytes(then), "now": FormatBytes(now), "per_day": FormatBytes(perDay),
 				"hint": "找出是谁在往这里写：一直这样涨，清一次也很快又满"}})
 	}

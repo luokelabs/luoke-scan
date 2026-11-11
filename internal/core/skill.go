@@ -18,7 +18,9 @@ import (
 
 // An AI agent's skill as found on this Mac: a folder with a SKILL.md (YAML front matter with at least name and
 // description, then instructions in Markdown for the agent), often with scripts and other files. Read once per round,
-// within bounds, and handed to the checks (skillcheck.go). Nothing of it is stored or sent anywhere.
+// within bounds, and handed to the checks (skillcheck.go). Its contents are not stored and never leave this Mac; the one
+// place they go is luoke-core's local model, on this Mac: for a skill the rules reported, a shortened excerpt
+// (SkillReviewInput) when that task is on (internal/service/hubtask.go).
 
 // SkillScope says whose a skill is: the user's own (in the home) or a project's.
 type SkillScope string

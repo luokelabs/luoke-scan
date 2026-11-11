@@ -6,6 +6,24 @@
 - **清理出了问题**：清了不该清的、放不回、要密码的那一步不对：写清楚是哪一类、做了什么、看到什么、期望什么；附截图前先遮住路径和文件名。
 - **安全问题**不要开公开 issue，见 [SECURITY.md](SECURITY.md)。
 
+## 往清单里加一条（`rules/`）
+
+认哪些位置、属于哪个工具、怎么清，写在仓库根目录 `rules/` 的 JSON 清单里，加一条不用改代码：
+
+| 文件 | 是什么 |
+|---|---|
+| `rules/caches.json` | 会重建的缓存；`notCaches` 是看着像、但删了会丢东西的位置 |
+| `rules/temp-folders.json` | 测试工具每跑一次留在临时目录里的文件夹的前缀 |
+| `rules/space-tools.json` | 虚拟机、容器工具的虚拟磁盘，AI 工具下载的模型 |
+| `rules/build-artifacts.json` | 项目里能重新生成的依赖和构建产物 |
+| `rules/settings-files.json` | 要读的设置文件：Chromium 系浏览器的用户数据文件夹，AI 工具的 MCP 设置 |
+
+- 每个文件开头的 `about` 说明了每个字段，照着已有的条目写。
+- 每条都要有 `why`（依据：工具文档的链接，或者为什么删了不丢东西）和 `samples`（合成的样例：建哪些文件、该出什么结论）。样例里只用编造的名字。
+- 跑 `go test ./internal/core -run Rules`：逐个文件检查格式（不认得的字段、重复的条目、路径要相对家目录、不能有 `..`），和搬进清单之前的代码逐条比，再照每个样例建假目录跑一遍规则，结论对不上就不过。提交前照下面第 3 条跑全套。
+- 新加的缓存和临时文件夹前缀**只报，用户点了才清**。要不用点就清，由项目审过，在 `evals/cleanup/` 加上它和「看着像、但不该清」的用例，清理评测挑错为 0，再把它加进 `internal/core/autopick.go` 的 `autoCaches` 或 `autoTemp`。
+- 结论和轻重、哪些算急事、哪些能不用点就清、清之前的核对、密钥的样子、病毒和 YARA 规则不在清单里，改这些照下面「改代码」来。
+
 ## 改代码
 
 1. **先开 issue 说明要改什么、为什么**，商量好再动手。加规则、改清理、改提示词、改给螺壳的接口（MCP 工具、outbox、配件清单 `packaging/luoke-accessory.json`）尤其要先说。
@@ -21,7 +39,7 @@
    ```
 
    （PATH 上的 `clang` 用不了时，命令前加 `CC=/usr/bin/clang`。）测试只用生成的假用户目录和假的扫描器（假 clamscan、freshclam、sigtool、yara 都是 shell 脚本），只在临时目录里读写，不碰你的家目录、不联网、不弹框，socket 只开在临时目录里的 Unix socket 上。自己试命令行也一样：用 `--fixture` 或 `--home <假目录> --data .dev/<名字>`，见 README「从源码构建和开发」；不要对自己的 Mac 跑会改动东西的命令。
-   - 给螺壳 agent 的 MCP 和卡片另有一份自测 `scripts/agent_selftest.py`，要一份 luoke-agent 的代码，它现在还没公开，外部贡献者跑不了，由维护者在合并前跑。
+   - 给螺壳 agent 的 MCP 和卡片：外部测试的 `mcp/agent/` 几个场景照 agent 的做法读卡片、点按钮（`blackbox/agent.py`），一个请求起一次 `luoke-scan mcp`；luoke-agent 那边把下面的样例拷过去，在它自己的核心上回放、核对卡片（那个仓库还没公开）。
    - agent 在几种处境下看到的答复（outbox、卡片、基础页、权限、点按的答复）录在 [fixtures/agent/](fixtures/agent/README.md) 里，是和 agent 之间的接口说明。`python3 scripts/record_agent_fixtures.py --check` 用 Go 版（`.build/go/luoke-scan`）重录一遍和它比：改了 agent 看到的东西就不过。是有意的改动就重录、一起提交，并在 PR 里说清 agent 那边要不要跟着改：
 
      ```bash

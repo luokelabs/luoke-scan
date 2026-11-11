@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -22,23 +23,24 @@ const (
 	skillReviewNoteKey  = "model_note"
 	// maxToldCleans: automatic cleans drawn in full on one card; older ones are a line.
 	maxToldCleans = 2
-	// maxListed is the most findings one list on the round's card shows.
-	maxListed = 10
-	// listedCost: components a listed finding takes at most (its title, what to do, a row of two buttons).
-	listedCost = 7
 )
 
 // outbox: the report before the state: a round writes what it cleaned to the state before it saves its report, so
-// the new report never comes with a state from before it.
-func (s *Service) outbox() any {
+// the new report never comes with a state from before it. features: the forms the agent core draws (Features); the
+// round's card uses them, the others are drawn as version 1 of the catalog has them.
+func (s *Service) outbox(features map[string]bool) any {
 	r := s.Store.LastReport()
-	return s.outboxOf(s.state(), r)
+	return s.outboxOf(s.state(), r, features)
 }
 
-func (s *Service) outboxOf(st State, r *core.Report) O {
+func (s *Service) outboxOf(st State, r *core.Report, features ...map[string]bool) O {
+	var fs map[string]bool
+	if len(features) > 0 {
+		fs = features[0]
+	}
 	items := A{}
 	if r != nil {
-		for _, group := range [][]O{s.securityItems(*r, st), s.spaceItems(*r, st), s.roundItems(*r, st), s.accessItems(*r)} {
+		for _, group := range [][]O{s.securityItems(*r, st), s.spaceItems(*r, st), s.roundItems(*r, st, fs), s.accessItems(*r)} {
 			for _, it := range group {
 				id, _ := it["id"].(string)
 				if a, ok := st.Acks[id]; ok && a.State != "shown" {
@@ -75,6 +77,9 @@ func (s *Service) securityItems(r core.Report, st State) []O {
 		if a, ok := st.Acks[id]; ok && a.State != "shown" {
 			continue
 		}
+		if s.urgentDone(f, r) { // moved, or found gone, with a click this round (wherever): the card goes too
+			continue
+		}
 		if f.Rule == "persistence.new" {
 			out = append(out, s.persistenceItem(f, id, r))
 			continue
@@ -83,27 +88,14 @@ func (s *Service) securityItems(r core.Report, st State) []O {
 			out = append(out, s.maliciousPackageItem(f, id, r))
 			continue
 		}
-		basis := "规则 " + f.Rule
-		if rule, ok := f.Evidence["rule"]; ok {
-			basis = "规则 " + rule
-		}
-		if sig, ok := f.Evidence["signature"]; ok {
-			basis = "病毒库认出是 " + sig + "（" + f.Evidence["database"] + "）"
-		}
+		// 大白话：是什么、怎么办；规则名、病毒名、路径留在报告里（负责人 11-06）
+		title, advice := s.plain(f)
 		c := NewCard("security-" + core.ShortHash(s.fid(f)))
-		c.Heading(f.Title)
-		c.Text(s.display(f.Path), true)
-		c.Text(strings.Join(append([]string{"依据：" + basis}, modelLines(f)...), "\n"), true)
-		var buttons []Button
-		if p := s.plan([]core.Finding{f}, r, "security", id, false); p != nil {
-			buttons = append(buttons, Button{Label: "移到废纸篓", Event: "scan_apply",
-				Context: O{"plan_id": p.ID, "choices": O{"i0": A{ChoiceTrash}}}, Primary: true})
-		}
-		buttons = append(buttons, Button{Label: "在访达里显示", Event: "scan_reveal", Context: O{"finding_id": s.fid(f)}},
-			Button{Label: "不是病毒，以后别提", Event: "scan_ignore", Context: O{"finding_id": s.fid(f)}})
-		c.Buttons(buttons)
-		out = append(out, s.item(id, "security", "urgent", r.FinishedAt.Time, "这一轮刚认出来；没打开过就别打开", f.Title,
-			s.display(f.Path)+"："+basis+"。建议移到废纸篓。", c.Messages(), nil, ""))
+		c.Heading(title)
+		c.Text(advice)
+		c.Buttons(s.malwareButtons(f, r, id))
+		out = append(out, s.item(id, "security", "urgent", r.FinishedAt.Time, "这一轮刚认出来；建议先不要打开", title,
+			title+"。"+advice, c.Messages(), nil, ""))
 	}
 	return out
 }
@@ -113,47 +105,66 @@ func (s *Service) securityItems(r core.Report, st State) []O {
 func (s *Service) persistenceItem(f core.Finding, id string, r core.Report) O {
 	scope, why := f.Evidence["scope"], f.Evidence["why"]
 	c := NewCard("security-" + core.ShortHash(s.fid(f)))
-	c.Heading(f.Title)
+	// Named as Login Items names it: the app it belongs to; the program's own name only when that says more.
+	app, program := f.Evidence["app"], appName(programName(f.Evidence["program"]))
+	submitted := f.Evidence["submitted"] == "1"
+	title := "新装了一个会跟着电脑一起启动的程序"
+	if submitted {
+		title = "有个程序在后台运行"
+		if app != "" {
+			title = "「" + app + "」在后台起了一个程序"
+		}
+		if program != "" && program != app {
+			title += "「" + program + "」"
+		}
+	} else if app != "" {
+		title += "「" + app + "」"
+	} else if program != "" {
+		title += "「" + program + "」"
+	}
+	c.Heading(title)
 	mine := "是我装的"
+	body := "它会跟着电脑一起启动，这一轮刚出现。"
 	var advice string
-	switch scope {
-	case "user-agent":
+	switch {
+	case submitted:
+		body = "它是开着的程序交给系统运行的，这一轮刚出现；重启以后不会再自己起来，所以不在「登录项」里。"
+		if app != "" {
+			body = "它是「" + app + "」开着时交给系统运行的，这一轮刚出现；重启以后不会再自己起来，所以不在「登录项」里。"
+		}
+		advice = "如果是你装的应用起的，点「是我装的」就好；不认识的话，点「在访达里显示」看看它是哪个程序。"
+	case scope == "user-agent":
 		advice = "如果是你自己装的，点「是我装的」就好；不认识的话可以停掉它，配置会移到废纸篓，随时能放回。"
-	case "login-item":
+	case scope == "login-item":
 		advice = "如果是你自己装的，点「是我装的」就好；不认识的话，在 系统设置 → 通用 → 登录项与扩展 里关掉。"
-	case "cron":
+	case scope == "cron":
 		mine = "是我加的"
-		advice = "如果是你自己加的，点「是我加的」就好；不认识的话，在终端里运行 crontab -e 删掉这一行。"
+		advice = "如果是你自己加的，点「是我加的」就好；不认识的话，点「在访达里显示」看看它运行的是哪个程序，把那个程序移到废纸篓。"
 	default:
 		advice = "如果是你自己装的，点「是我装的」就好；不认识的话，在访达里找到它移到废纸篓（会要你的密码）。"
 	}
-	var body string
-	if program, ok := f.Evidence["program"]; ok {
-		body = "它会运行 " + program + "。"
-	}
-	if why != "" {
-		body += why + "。"
-	}
 	c.Text(body + advice)
-	if f.Path != "" {
-		c.Text("配置文件："+s.display(f.Path), true)
-	}
 	buttons := []Button{{Label: mine, Event: "scan_ignore", Context: O{"finding_id": s.fid(f)}, Primary: true}}
 	if f.Path != "" {
 		buttons = append(buttons, Button{Label: "在访达里显示", Event: "scan_reveal", Context: O{"finding_id": s.fid(f)}})
 	}
-	switch scope {
-	case "user-agent":
+	switch {
+	case submitted: // not in Login Items, and not the user's LaunchAgent to stop
+	case scope == "user-agent":
 		if p := s.plan([]core.Finding{f}, r, "security", id, false); p != nil {
 			buttons = append(buttons, Button{Label: "停掉它", Event: "scan_apply",
 				Context: O{"plan_id": p.ID, "choices": O{"i0": A{ChoiceTrash}}}})
 		}
-	case "login-item":
+	case scope == "login-item":
 		buttons = append(buttons, Button{Label: "打开「登录项」设置", Event: "scan_open_settings", Context: O{"grant": loginItemsGrantName}})
 	}
 	c.Buttons(buttons)
-	return s.item(id, "security", "urgent", r.FinishedAt.Time, "这一轮新加的、会自己启动的程序（"+why+"）", f.Title,
-		f.Title+"。"+body+advice, c.Messages(), nil, "")
+	about := "这一轮新加的、会自己启动的程序（" + why + "）"
+	if submitted {
+		about = "这一轮新加的、在后台运行的程序（" + why + "）"
+	}
+	return s.item(id, "security", "urgent", r.FinishedAt.Time, about, title,
+		title+"。"+body+advice, c.Messages(), nil, "")
 }
 
 // maliciousPackageItem: a project or a global install uses a known malicious package. What to do is written out (take
@@ -161,33 +172,19 @@ func (s *Service) persistenceItem(f core.Finding, id string, r core.Report) O {
 // lockfile in Finder, never to delete anything of the project's. The rule gives one finding per package (every place
 // it is used listed in it) and a handful at most, the rest as one more: so a package in thirty projects is one card.
 func (s *Service) maliciousPackageItem(f core.Finding, id string, r core.Report) O {
+	// 大白话（负责人 11-06）：名单、编号、位置和「怎么办」的命令都在报告里
+	title, advice := s.plain(f)
 	c := NewCard("security-" + core.ShortHash(s.fid(f)))
-	c.Heading(f.Title)
-	how := f.Evidence["how"]
-	c.Text(how + "。")
-	lines := []string{"依据：" + f.Evidence["list"] + "，" + f.Evidence["ids"]}
-	if f.Evidence["ids"] == "" {
-		lines[0] = "依据：" + f.Evidence["list"]
-	}
-	switch {
-	case f.Evidence["packages"] != "":
-		lines = append(lines, "包："+f.Evidence["packages"])
-	case f.Evidence["places"] != "":
-		lines = append(lines, "位置（"+f.Evidence["count"]+" 处）："+f.Evidence["places"])
-	case f.Evidence["lockfile"] != "":
-		lines = append(lines, "位置："+f.Evidence["lockfile"])
-	default:
-		lines = append(lines, "位置："+f.Evidence["where"])
-	}
-	c.Text(strings.Join(append(lines, modelLines(f)...), "\n"), true)
+	c.Heading(title)
+	c.Text(advice)
 	var buttons []Button
 	if strings.HasPrefix(f.Path, "/") {
 		buttons = append(buttons, Button{Label: "在访达里显示", Event: "scan_reveal", Context: O{"finding_id": s.fid(f)}, Primary: true})
 	}
 	buttons = append(buttons, Button{Label: "处理好了，以后别提", Event: "scan_ignore", Context: O{"finding_id": s.fid(f)}})
 	c.Buttons(buttons)
-	return s.item(id, "security", "urgent", r.FinishedAt.Time, "这一轮和恶意包名单比对出来的；装过就当令牌和钥匙已经泄露", f.Title,
-		f.Title+"。"+how+"。", c.Messages(), nil, "")
+	return s.item(id, "security", "urgent", r.FinishedAt.Time, "这一轮和恶意包名单比对出来的；装过就当令牌和钥匙已经泄露", title,
+		title+"。"+advice, c.Messages(), nil, "")
 }
 
 // spaceItems: low free space, with what can be freed right away (rebuildable caches) offered on the same card.
@@ -225,8 +222,11 @@ func (s *Service) spaceItems(r core.Report, st State) []O {
 	}
 	summary += "）。"
 	if p := s.plan(caches, r, "space", id, false); p != nil {
-		summary += "会重建的工具缓存能马上腾出 " + core.FormatBytes(bytes) + "。"
-		s.planBody(c, *p, low.Title, "下面这些是会重建的工具缓存，删了用到时会重新下载。", caches)
+		line := "会自己重建的工具缓存能马上腾出 " + core.FormatBytes(bytes) + "，删了不影响使用。"
+		summary += line
+		c.Heading(low.Title)
+		c.Text(line)
+		s.cleanButton(c, *p, "腾出 "+core.FormatBytes(bytes))
 	} else {
 		c.Heading(low.Title)
 		c.Text(summary, true)
@@ -237,7 +237,7 @@ func (s *Service) spaceItems(r core.Report, st State) []O {
 // roundItems: the round as one item (luoke-agent#2, 10-27). auto-done when there is something on top (every
 // automatic clean is told; one the agent has not said yet when the next round starts is carried into that round's
 // item); else findings when something waits for the user or is serious; else nothing. Its id is the round's alone.
-func (s *Service) roundItems(r core.Report, st State) []O {
+func (s *Service) roundItems(r core.Report, st State, features map[string]bool) []O {
 	id := roundID(r)
 	// Answered or dismissed under the id the version before this one gave the round.
 	if a, ok := st.Acks["findings/"+core.ISOTime(r.StartedAt.Time)]; ok && a.State != "shown" {
@@ -248,7 +248,7 @@ func (s *Service) roundItems(r core.Report, st State) []O {
 	if len(told) == 0 && !decide {
 		return nil
 	}
-	c := NewCard(roundSurface(id))
+	c := NewCard(roundSurface(id)).Use(features)
 	title, summary := s.roundBody(c, r, st, told, f, decide, id)
 	if len(told) > 0 {
 		newest := told[0]
@@ -349,7 +349,7 @@ func (s *Service) roundBody(c *Card, r core.Report, st State, told []AutoDone, f
 		}
 	}
 	if len(lines) > 0 {
-		line := strings.Join(lines, "、") + " 的缓存没清成（它自己的清理命令出错了），下次再试。"
+		line := strings.Join(lines, "、") + " 的缓存没清成（里面的文件删不掉），下次再试。"
 		c.Text(line, true)
 		summary += line
 	}
@@ -379,7 +379,7 @@ func (s *Service) toldBody(c *Card, told []AutoDone) (string, string) {
 	return strings.Join(titles, "；"), summary
 }
 
-// roundRedraw: for a tool answering a click on the round's card ([放回], [以后别自动清], [以后自动清]): the card as it
+// roundRedraw: for a tool answering a click on the round's card ([放回], [关掉自动清理], [打开自动清理]): the card as it
 // is now, to draw under the answer, and whether something on it still waits for the user. nil when the click came
 // from another card, or the round's item is done with.
 func (s *Service) roundRedraw(meta O) *redraw {
@@ -404,11 +404,18 @@ func (s *Service) roundRedraw(meta O) *redraw {
 			waits = true
 		}
 	}
-	report := *r
+	report, features := *r, Features(meta)
+	// drawn as the outbox draws the round's card for this core; an answer above it stays as it was
+	card := func(c *Card) {
+		was := c.features
+		c.Use(features)
+		s.roundBody(c, report, st, told, f, below, id)
+		c.Use(was)
+	}
 	return &redraw{body: func(c *Card) {
 		c.Divider()
-		s.roundBody(c, report, st, told, f, below, id)
-	}, waits: waits}
+		card(c)
+	}, card: card, waits: waits, rest: s.roundRest(s.roundView(f, report, id), f, st)}
 }
 
 // roundTop: for the answer to the plan on the round's card: the cleans on top of it again, so their [放回] stays.
@@ -427,109 +434,330 @@ func (s *Service) roundTop(plan Plan) func(*Card) {
 	}
 }
 
-// decisionsBody is what waits for the user, with the clean-up plan; its title and summary. Every finding the title
-// counts is on the card (in a plan, among the grants to take back, or listed with what to do); so are the serious ones
-// only for reference.
-func (s *Service) decisionsBody(c *Card, r core.Report, st State, f []core.Finding, id string) (string, string) {
-	count := map[core.Verdict]int{}
+// roundView: a round's findings sorted for its card and the scan page: the plan (what 「清理」 does as suggested,
+// and the choices on the page), the items that need the password, and what waits for the user that no plan carries.
+type roundView struct {
+	plan, admin *Plan
+	trash       []PlanItem     // what the plan clears as suggested
+	bytes       int64          // what that frees
+	look        []core.Finding // what waits for the user outside the plans (serious ones only for reference too)
+	toLook      int            // how many things wait for the user: all but the rebuildable caches (luoke-scan#129)
+	caches      []PlanItem     // the rebuildable caches: deleted with their own button, nothing to choose
+	cleaned     []PlanItem     // the rebuildable caches the user already had deleted this round (cachesCleaned)
+	freed       int64          // what deleting those freed
+	high        int
+	count       map[core.Verdict]int
+	// done: the other items already gone with a click this round (itemsCleaned), from 「今天」's cards or the scan page,
+	// or found already gone by one (deleted outside this tool): not offered again, not counted in what can be freed nor
+	// in what waits for the user
+	done []PlanItem
+}
+
+func (s *Service) roundView(f []core.Finding, r core.Report, id string) roundView {
+	v := roundView{count: map[core.Verdict]int{}}
 	for _, x := range f {
-		count[x.Verdict]++
+		v.count[x.Verdict]++
 	}
-	p, admin := s.plans(f, r, "findings", id)
-	// The title says what the card's button does as preselected: these go, the rest wait for the user.
-	var trash []PlanItem
-	if p != nil {
-		for _, it := range p.Items {
+	v.plan, v.admin = s.plans(f, r, "findings", id)
+	caches := 0
+	done := map[string]bool{} // finding ids of v.done
+	if v.plan != nil {
+		gone := s.cachesCleaned(*v.plan, r)
+		moved := s.itemsCleaned(*v.plan, r)
+		for _, it := range v.plan.Items {
+			if it.Suggested == ChoiceRemove {
+				caches++
+				if b, ok := gone[it.Key]; ok {
+					v.cleaned = append(v.cleaned, it)
+					v.freed += b
+					continue
+				}
+			}
+			if moved[it.Key] {
+				v.done = append(v.done, it)
+				if it.Suggested != ChoiceRemove { // the caches are not counted as waiting anyway
+					done[it.FindingID] = true
+				}
+				continue
+			}
 			if Clears(it.Suggested) {
-				trash = append(trash, it)
+				v.trash = append(v.trash, it)
+				if it.Bytes != nil {
+					v.bytes += *it.Bytes
+				}
+			}
+			if it.Suggested == ChoiceRemove {
+				v.caches = append(v.caches, it)
 			}
 		}
 	}
-	var bytes int64
-	for _, it := range trash {
-		if it.Bytes != nil {
-			bytes += *it.Bytes
-		}
-	}
-	toLook := len(f) - count[core.Info] - len(trash)
-	var grants []core.Finding
-	for _, x := range f {
-		if x.Rule == "permission.stale-grant" && len(grants) < 5 {
-			grants = append(grants, x)
-		}
-	}
-	// What the title counts that is neither in a plan nor among the grants: what no plan can carry.
-	onCard := map[string]bool{}
-	for _, pl := range []*Plan{p, admin} {
+	inPlan := map[string]bool{}
+	for _, pl := range []*Plan{v.plan, v.admin} {
 		if pl != nil {
 			for _, it := range pl.Items {
-				onCard[it.FindingID] = true
+				inPlan[it.FindingID] = true
 			}
 		}
 	}
-	for _, g := range grants {
-		onCard[s.fid(g)] = true
-	}
-	var own, high []core.Finding
+	gone := 0 // what done takes off toLook
 	for _, x := range f {
-		if x.Verdict != core.Info && !onCard[s.fid(x)] {
-			own = append(own, x)
-		}
 		if isHighInfo(x) {
-			high = append(high, x)
+			v.high++
+		}
+		if done[s.fid(x)] && (x.Verdict != core.Info || isHighInfo(x)) {
+			gone++
+		}
+		// Once: what the plan lists (with its own 「移到废纸篓」) is not listed again under 「要你看看」 (AI plugins, models)
+		if (x.Verdict != core.Info || isHighInfo(x)) && !inPlan[s.fid(x)] {
+			v.look = append(v.look, x)
 		}
 	}
-	own = bySeverity(own)
-	title := roundHeadline(len(trash), bytes, toLook+len(high))
-	summary := fmt.Sprintf("放心删 %d 条、要确认 %d 条、仅供参考 %d 条", count[core.Safe], count[core.Confirm], count[core.Info])
-	if len(high) > 0 {
-		summary += fmt.Sprintf("（其中需要留意的 %d 条）", len(high))
+	v.look = bySeverity(v.look)
+	// What is suggested to the Trash still waits for the user's click on the scan page; only the caches do not, nor what
+	// already went this round
+	v.toLook = len(f) - v.count[core.Info] - caches + v.high - gone
+	return v
+}
+
+// isDone: the finding's item already went with a click this round (roundView.done).
+func (v roundView) isDone(fid string) bool {
+	for _, it := range v.done {
+		if it.FindingID == fid {
+			return true
+		}
 	}
-	summary += "。"
-	if len(r.Skipped) > 0 {
-		summary += fmt.Sprintf("有 %d 项没查成。", len(r.Skipped))
+	return false
+}
+
+// cachesCleaned: the rebuildable caches of the round's plan the user already had deleted with a click this round
+// (「清理 N 项缓存」 on the round's card, 「清理」 on the scan page), from the clean-up record: deleted for good (not in
+// the Trash), not by automatic cleaning, since the round started, the same rule and folder. By item key, with what
+// that freed. They are not offered again until the next round finds them. The plan's id is not compared: the plan of
+// the same round can change (something on the page put away with 以后别提).
+func (s *Service) cachesCleaned(p Plan, r core.Report) map[string]int64 {
+	out := map[string]int64{}
+	var caches []PlanItem
+	for _, it := range p.Items {
+		if it.Suggested == ChoiceRemove {
+			caches = append(caches, it)
+		}
 	}
-	// 以后自动清 sits next to 按这个处理 when there is a plan, else on its own row.
-	var auto []Button
-	if st.AutocleanOff != nil {
-		for _, x := range f {
-			if x.Category == core.CatCache && x.Verdict == core.Safe {
-				auto = []Button{{Label: "以后自动清", Event: "scan_autoclean", Context: O{"on": true}}}
-				break
+	if len(caches) == 0 {
+		return out
+	}
+	for _, e := range s.Cleaned() {
+		if e.Auto != nil || e.Trashed != nil || e.Wrote != nil || e.At.Before(r.StartedAt.Time) || !strings.HasPrefix(e.Batch, "p-") {
+			continue
+		}
+		for _, it := range caches {
+			for _, t := range it.Targets {
+				if e.Rule == it.Rule && e.Original == t.Path {
+					b := int64(0)
+					if e.Bytes != nil {
+						b = *e.Bytes
+					}
+					out[it.Key] += b
+				}
 			}
 		}
 	}
-	if p != nil {
-		s.planBody(c, *p, title, "会自动重建的缓存直接删掉，别的放心删的移到废纸篓，要你确认的先不动。", f, auto...)
-		auto = nil
-	} else {
-		c.Heading(title)
+	return out
+}
+
+// itemsCleaned: the items of the round's plan that already went with a click this round, wherever the user clicked
+// (an urgent card or the round's card in 「今天」, the scan page). By item key. The round's report still lists them until
+// the next round looks again; offered again they would only come back 「找不到，已跳过」. Either way:
+//   - every place the item would move or change has a record in the clean-up record since the round started, by a plan
+//     (not automatic cleaning), the same rule, not put back; matched by where it was (as written, or its folders' links
+//     resolved as the record has it) or by what it was (device and inode, when the plan has them);
+//   - or a click found it already gone (State.Gone, deleted outside this tool) since the round started, and nothing of
+//     it was put back since.
+func (s *Service) itemsCleaned(p Plan, r core.Report) map[string]bool {
+	type ident struct {
+		dev int64
+		ino uint64
 	}
-	if admin != nil {
-		s.adminBody(c, *admin)
+	at, by := map[string]bool{}, map[ident]string{}
+	back := map[string]time.Time{} // rule and where it was → when it was last put back
+	for _, e := range s.Cleaned() {
+		if e.Restored != nil {
+			if k := e.Rule + "\x00" + e.Original; e.Restored.After(back[k]) {
+				back[k] = e.Restored.Time
+			}
+		}
+		if e.Auto != nil || e.Restored != nil || e.At.Before(r.StartedAt.Time) || !strings.HasPrefix(e.Batch, "p-") {
+			continue
+		}
+		at[e.Rule+"\x00"+e.Original] = true
+		if e.Inode != 0 {
+			by[ident{e.Device, e.Inode}] = e.Rule
+		}
 	}
-	if len(auto) > 0 {
-		c.Buttons(auto)
+	gone := s.state().Gone
+	out := map[string]bool{}
+	if len(at) == 0 && len(gone) == 0 {
+		return out
 	}
-	if len(grants) > 0 {
-		c.Divider()
-		c.Text("这几个应用已经删了，权限还留着，可以在系统设置里移除：", true)
-		for _, g := range grants {
-			c.Text(g.Title)
-			if gs, ok := g.Evidence["grants"]; ok {
-				first := strings.Split(gs, "、")[0]
-				c.Buttons([]Button{{Label: "打开「" + first + "」设置", Event: "scan_open_settings", Context: O{"grant": first}}})
+	for _, it := range p.Items {
+		all := len(it.Targets) > 0
+		var putBack time.Time
+		for _, t := range it.Targets {
+			canonical := core.Canonical(filepath.Dir(t.Path)) + "/" + filepath.Base(t.Path)
+			rule, known := by[ident{t.Device, t.Inode}]
+			all = all && (at[it.Rule+"\x00"+t.Path] || at[it.Rule+"\x00"+canonical] || t.Inode != 0 && known && rule == it.Rule)
+			for _, k := range []string{it.Rule + "\x00" + t.Path, it.Rule + "\x00" + canonical} {
+				if back[k].After(putBack) {
+					putBack = back[k]
+				}
+			}
+		}
+		g, wasGone := gone[it.FindingID]
+		if all || wasGone && !g.Before(r.StartedAt.Time) && !putBack.After(g.Time) {
+			out[it.Key] = true
+		}
+	}
+	return out
+}
+
+// urgentDone: an urgent finding's item already went this round (itemsCleaned on its own plan, the one its card and the
+// scan page's row click): moved by a click, or a click found it gone.
+func (s *Service) urgentDone(f core.Finding, r core.Report) bool {
+	p := s.plan([]core.Finding{f}, r, "security", "security/"+s.fid(f), false)
+	return p != nil && len(p.Items) == 1 && s.itemsCleaned(*p, r)[p.Items[0].Key]
+}
+
+// roundRest: how many things the round's card sends to the scan page (「另外 N 项」, 「去扫描页看 N 项」): what waits
+// for the user but what the urgent cards in 「今天」 already ask about.
+func (s *Service) roundRest(v roundView, f []core.Finding, st State) int {
+	urgent := 0
+	for _, x := range f {
+		if isUrgent(x) && !v.isDone(s.fid(x)) { // done: toLook already leaves it out
+			if a, ok := st.Acks["security/"+s.fid(x)]; !ok || a.State == "shown" {
+				urgent++
 			}
 		}
 	}
-	unlisted := s.listBody(c, own, "这几样螺壳不替你动，你可以自己看看：") + s.listBody(c, high, "这几条值得留意，有空看一下：")
-	if unlisted > 0 {
-		c.Text(fmt.Sprintf("还有 %d 条这里放不下，问我就列给你。", unlisted), true)
+	return v.toLook - urgent
+}
+
+// decisionsBody is the round's card for the user (负责人 11-06：一句结论、一个按钮; luoke-scan#129): how much can be
+// freed, that the rebuildable caches need no choosing and how many other things wait in the scan page, and a button
+// that deletes just the caches. The items, their choices and what to do with each are on the page (page/overview);
+// paths, ids, rule names and 「仅供参考」 are only in the report. Its title and summary.
+func (s *Service) decisionsBody(c *Card, r core.Report, st State, f []core.Finding, id string) (string, string) {
+	v := s.roundView(f, r, id)
+	rest := s.roundRest(v, f, st) // 「今天」上面已经有急事卡的不再算进「另外 N 项」
+	title := roundHeadline(len(v.trash), v.bytes, 0)
+	if title == "" {
+		title = fmt.Sprintf("%d 项等你处理", v.toLook)
 	}
-	if info := count[core.Info] - len(high); info > 0 {
-		c.Text(fmt.Sprintf("另有 %d 条仅供参考，问我就列给你。", info), true)
+	c.Heading(title)
+	// Where the core opens the tool's own pages (§4 openPage), what waits on the scan page is a button that goes there
+	// (「去扫描页看 N 项」) instead of a line that names it. The summary says it either way: it is read without the card.
+	openPage := c.Has("openPage")
+	var parts, drawn []string
+	if len(v.cleaned) > 0 { // after 「清理 N 项缓存」 the card stays while the rest waits: it says the caches went
+		p := fmt.Sprintf("已删掉会重建的缓存 %d 项", len(v.cleaned))
+		if v.freed > 0 {
+			p += "（腾出 " + core.FormatBytes(v.freed) + "）"
+		}
+		parts = append(parts, p)
+		drawn = append(drawn, p)
 	}
-	return title, summary
+	if len(v.caches) > 0 {
+		parts = append(parts, fmt.Sprintf("会重建的缓存 %d 项，不用你选", len(v.caches)))
+		drawn = append(drawn, parts[len(parts)-1])
+	}
+	if rest > 0 {
+		parts = append(parts, fmt.Sprintf("另外 %d 项在「螺壳扫描」里等你看", rest))
+		if !openPage {
+			drawn = append(drawn, parts[len(parts)-1])
+		}
+	}
+	line := ""
+	if len(parts) > 0 {
+		line = strings.Join(parts, "；") + "。"
+	}
+	if len(drawn) > 0 {
+		c.Text(strings.Join(drawn, "；")+"。", true)
+	}
+	var buttons []Button
+	if v.plan != nil && len(v.caches) > 0 {
+		only := O{}
+		for _, it := range v.plan.Items {
+			c.Defaults(it.Key, ChoiceKeep)
+		}
+		for _, it := range v.caches {
+			only[it.Key] = A{ChoiceRemove}
+		}
+		buttons = append(buttons, Button{Label: fmt.Sprintf("清理 %d 项缓存", len(v.caches)), Event: "scan_apply",
+			Context: O{"plan_id": v.plan.ID, "choices": only}, Primary: true})
+	}
+	if rest > 0 && openPage {
+		buttons = append(buttons, Button{Label: fmt.Sprintf("去扫描页看 %d 项", rest), Event: "agent.open_page",
+			Context: O{"page": "overview"}, Primary: len(buttons) == 0})
+	}
+	if buttons = append(buttons, s.autoButton(f, st)...); len(buttons) > 0 {
+		c.Buttons(buttons)
+	}
+	summary := line
+	for _, l := range skippedLines(r) {
+		summary += l.text + "。"
+	}
+	return roundHeadline(len(v.trash), v.bytes, rest), summary
+}
+
+// cleanButton: one button that applies the plan as suggested. The choices are in the card's data model, not drawn.
+func (s *Service) cleanButton(c *Card, p Plan, label string, extra ...Button) {
+	for _, it := range p.Items {
+		c.Defaults(it.Key, it.Suggested)
+	}
+	c.Buttons(append([]Button{{Label: label, Event: "scan_apply", Context: O{"plan_id": p.ID, "choices": ChoicesPath}, Primary: true}}, extra...))
+}
+
+// autoButton: 「打开自动清理」 while automatic cleaning is off and there are rebuildable caches to clean.
+func (s *Service) autoButton(f []core.Finding, st State) []Button {
+	if st.AutocleanOff == nil {
+		return nil
+	}
+	for _, x := range f {
+		if x.Category == core.CatCache && x.Verdict == core.Safe {
+			return []Button{{Label: "打开自动清理", Event: "scan_autoclean", Context: O{"on": true}}}
+		}
+	}
+	return nil
+}
+
+// skipped: what a round could not check, by reason, in the user's words: what lacks Full Disk Access waits for the
+// user (not for the next round, luoke-scan#114); the virus database not yet downloaded comes by itself.
+type skipped struct {
+	text  string
+	grant string // the System Settings page that fixes it, or ""
+}
+
+func skippedLines(r core.Report) []skipped {
+	fda, db, other := 0, 0, 0
+	for _, x := range r.Skipped {
+		switch {
+		case strings.Contains(x.Reason, "完全磁盘访问"):
+			fda++
+		case strings.Contains(x.Reason, "病毒库"):
+			db++
+		default:
+			other++
+		}
+	}
+	var out []skipped
+	if fda > 0 {
+		out = append(out, skipped{fmt.Sprintf("有 %d 项要打开「完全磁盘访问」才能查", fda), "完全磁盘访问"})
+	}
+	if db > 0 {
+		out = append(out, skipped{"病毒库还在准备，准备好了再查", ""})
+	}
+	if other > 0 {
+		out = append(out, skipped{fmt.Sprintf("有 %d 项这次没查成，下一轮再试", other), ""})
+	}
+	return out
 }
 
 // roundHeadline: what a round found, in one line: how much can go right away, and how many things are worth a look.
@@ -537,15 +765,15 @@ func roundHeadline(safe int, bytes int64, toLook int) string {
 	var title string
 	switch {
 	case safe > 0 && bytes > 0:
-		title = "能清出 " + core.FormatBytes(bytes)
+		title = "能清出 " + core.FormatBytes(bytes) // 算的是建议清的那些（缓存，和扫描页上默认移到废纸篓的）
 	case safe > 0:
 		title = fmt.Sprintf("能放心删的 %d 项", safe)
 	}
 	switch {
 	case toLook > 0 && title != "":
-		title += fmt.Sprintf("，另外有 %d 件事值得看一眼", toLook)
+		title += fmt.Sprintf("，另外 %d 项等你处理", toLook)
 	case toLook > 0:
-		title = fmt.Sprintf("有 %d 件事值得看一眼", toLook)
+		title = fmt.Sprintf("%d 项等你处理", toLook) // 和「12 项等你处理，其中 2 项要尽快」同一个写法
 	}
 	return title
 }
@@ -557,79 +785,52 @@ func bySeverity(f []core.Finding) []core.Finding {
 	return out
 }
 
-// listBody: findings no plan carries, one by one with what to do. No button deletes anything. As many as the card
-// holds (room is left for the lines after it); how many were not listed.
-func (s *Service) listBody(c *Card, fs []core.Finding, note string) int {
-	room := CardMaxComponents - 3 // what did not fit, what is only for reference, a failed clean
-	if len(fs) == 0 || c.Count()+2+listedCost > room {
-		return len(fs)
-	}
-	c.Divider()
-	c.Text(note, true)
-	listed := 0
-	for i, f := range fs {
-		if i >= maxListed || c.Count()+listedCost > room {
-			break
-		}
-		c.Text(withSize(f.Title, f.Bytes))
-		if line, ok := listedDetail(f); ok {
-			c.Text(line, true)
-		}
-		if b := s.listButtons(f); len(b) > 0 {
-			c.Buttons(b)
-		}
-		listed++
-	}
-	return len(fs) - listed
-}
-
-// listedDetail: the line under a listed finding: whose folder it is and the plain words, when the model said; what
-// to do; else why; the note on a skill. One caption.
-func listedDetail(f core.Finding) (string, bool) {
-	_, explained := f.Evidence[explainNoteKey]
-	var rule string
-	if how, ok := f.Evidence["how"]; ok {
-		rule = "怎么办：" + how
-	} else if !explained {
-		if why, ok := f.Evidence["why"]; ok {
-			rule = why
-		} else {
-			rule = f.Evidence["hint"]
-		}
-	}
-	var lines []string
-	for _, l := range []string{f.Evidence[identifyNoteKey], f.Evidence[explainNoteKey], rule, f.Evidence[skillReviewNoteKey]} {
-		if l != "" {
-			lines = append(lines, l)
-		}
-	}
-	if len(lines) == 0 {
-		return "", false
-	}
-	return strings.Join(lines, "\n"), true
-}
-
 // listButtons: its page in System Settings where it has one, and the Finder where there is something to show.
 func (s *Service) listButtons(f core.Finding) []Button {
 	var b []Button
 	switch {
 	case f.Rule == "permission.stale-grant" && f.Evidence["grants"] != "":
-		g := strings.Split(f.Evidence["grants"], "、")[0]
-		b = append(b, Button{Label: "打开「" + g + "」设置", Event: "scan_open_settings", Context: O{"grant": g}})
+		// One page each: the app is in each of these lists, and each needs its own 「−」
+		for _, g := range strings.Split(f.Evidence["grants"], "、") {
+			b = append(b, Button{Label: "打开「" + g + "」", Event: "scan_open_settings", Context: O{"grant": g}})
+		}
+	case f.Rule == "posture.filevault":
+		b = append(b, Button{Label: "打开 FileVault 设置", Event: "scan_open_settings", Context: O{"grant": "FileVault"}})
 	case f.Rule == "keyboard.unvouched":
 		b = append(b, Button{Label: "打开「输入监控」设置", Event: "scan_open_settings", Context: O{"grant": "输入监控"}})
-	case f.Rule == "persistence.new" && f.Evidence["scope"] == "login-item":
-		b = append(b, Button{Label: "打开「登录项」设置", Event: "scan_open_settings", Context: O{"grant": loginItemsGrantName}})
+	case isVitals(f):
+		b = append(b, vitalsButton(f))
+	case f.Category == core.CatPersistence && !strings.HasPrefix(f.Rule, "browser.") && f.Evidence["scope"] != "cron",
+		strings.HasPrefix(f.Rule, "startup."):
+		// 系统设置的「登录项与扩展」里列着开机启动的程序和后台项目，开关在那里（luoke-scan#129：给一件能做的事，不让用户去找别人）
+		b = append(b, Button{Label: "在登录项里管理", Event: "scan_open_settings", Context: O{"grant": loginItemsGrantName}})
 	}
-	if strings.HasPrefix(f.Path, "/") && f.Rule != "process.deleted-binary" && f.Rule != "permission.stale-grant" {
+	if strings.HasPrefix(f.Path, "/") && f.Rule != "process.deleted-binary" && f.Rule != "permission.stale-grant" && !isVitals(f) {
 		b = append(b, Button{Label: "在访达里显示", Event: "scan_reveal", Context: O{"finding_id": s.fid(f)}})
 	}
 	return b
 }
 
+// malwareButtons: what a file the virus database or YARA recognised gets, on its urgent card and on the scan page:
+// 「移到废纸篓」 (the user's own click; plans never trash it by default) and 「不是病毒」. No 「在访达里显示」: it takes
+// a non-technical user right next to the file, where a curious double-click opens it (design review 11-07).
+func (s *Service) malwareButtons(f core.Finding, r core.Report, id string) []Button {
+	var b []Button
+	if p := s.plan([]core.Finding{f}, r, "security", id, false); p != nil {
+		b = append(b, Button{Label: "移到废纸篓", Event: "scan_apply",
+			Context: O{"plan_id": p.ID, "choices": O{"i0": A{ChoiceTrash}}}, Primary: true, Icon: "trash"})
+	}
+	return append(b, Button{Label: "不是病毒", Event: "scan_ignore", Context: O{"finding_id": s.fid(f)}})
+}
+
 // accessItems: checks that could not run for lack of a permission only the user can give, also one not allowed for this
 // app: it is needed again, and the card is how the user is asked.
 func (s *Service) accessItems(r core.Report) []O {
+	if s.Config.FullDiskAccess != nil { // allowed since that round: the card goes now, not a round later (luoke-scan#101)
+		if now := s.Config.FullDiskAccess(); now != nil && *now {
+			return nil
+		}
+	}
 	need := false
 	for _, x := range r.Skipped {
 		if strings.Contains(x.Reason, "完全磁盘访问") {
@@ -651,7 +852,7 @@ func (s *Service) accessItems(r core.Report) []O {
 func kindLabel(k string) string { return core.AutoKind(k).Label() }
 
 // autoDoneBody: what was cleaned without a click; its title and summary. Caches were deleted; the rest went to the
-// Trash and come back with 「放回」 (the whole batch). offerStop: with [以后别自动清].
+// Trash and come back with 「放回」 (the whole batch). offerStop: with [关掉自动清理].
 func (s *Service) autoDoneBody(c *Card, d AutoDone, offerStop bool) (string, string) {
 	cleaned := uniq(append(append([]string(nil), d.Tools...), d.Partial...))
 	summary := ""
@@ -669,7 +870,7 @@ func (s *Service) autoDoneBody(c *Card, d AutoDone, offerStop bool) (string, str
 		summary += "其中 " + strings.Join(d.Partial, "、") + " 的只清掉了一部分（有文件删不掉），下次再试。"
 	}
 	if len(d.Failed) > 0 {
-		summary += strings.Join(d.Failed, "、") + " 的缓存没清成（它自己的清理命令出错了），下次再试。"
+		summary += strings.Join(d.Failed, "、") + " 的缓存没清成（里面的文件删不掉），下次再试。"
 	}
 	// What went to the Trash is not freed until the Trash is emptied: said apart from the caches.
 	count, size := 0, int64(0)
@@ -692,11 +893,13 @@ func (s *Service) autoDoneBody(c *Card, d AutoDone, offerStop bool) (string, str
 	c.Heading(title)
 	c.Text(summary)
 	for _, m := range d.Moved {
-		more := ""
-		if m.Items > len(m.Names) {
-			more = fmt.Sprintf(" 等 %d 项", m.Items)
+		var names []string
+		for _, n := range m.Names {
+			if t := friendlyName(n); !contains(names, t) {
+				names = append(names, t)
+			}
 		}
-		c.Text(kindLabel(m.Kind)+"："+strings.Join(m.Names, "、")+more, true)
+		c.Text(kindLabel(m.Kind)+"："+andMore(strings.Join(names, "、"), len(names), m.Items), true)
 	}
 	if len(d.Unrecorded) > 0 {
 		c.Text("这几项没记进清理记录，要放回得在访达里打开废纸篓："+strings.Join(d.Unrecorded, "、"), true)
@@ -706,7 +909,7 @@ func (s *Service) autoDoneBody(c *Card, d AutoDone, offerStop bool) (string, str
 		buttons = append(buttons, Button{Label: "放回", Event: "scan_restore", Context: O{"id": d.Batch}})
 	}
 	if offerStop {
-		buttons = append(buttons, Button{Label: "以后别自动清", Event: "scan_autoclean", Context: O{"on": false}})
+		buttons = append(buttons, Button{Label: "关掉自动清理", Event: "scan_autoclean", Context: O{"on": false}})
 	}
 	if len(buttons) > 0 {
 		c.Buttons(buttons)

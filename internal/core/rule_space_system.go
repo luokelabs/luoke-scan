@@ -90,39 +90,18 @@ func SnapshotDates(text string) []time.Time {
 	return out
 }
 
-// vmTools: container and VM tools keep everything inside one large disk image (sparse: what counts is what it holds).
-var vmTools = []struct {
-	tool  string
-	paths []string
-	how   string
-}{
-	{"Docker Desktop", []string{"Library/Containers/com.docker.docker/Data/vms"},
-		"`docker system df` 看占在哪，`docker system prune` 清掉不用的镜像、容器和构建缓存；虚拟磁盘的上限在 Docker Desktop 的 设置 → Resources"},
-	{"OrbStack", []string{".orbstack/data", "Library/Group Containers/HUAQ24HBR6.dev.orbstack/data"},
-		"`docker system prune` 清掉不用的；OrbStack 会把空出来的空间还给系统"},
-	{"colima", []string{".colima", ".lima"}, "`docker system prune` 清掉不用的；整台虚拟机都不要了用 `colima delete`（里面的东西都会没）"},
-	{"Podman", []string{".local/share/containers/podman/machine"}, "`podman system prune` 清掉不用的；不要了用 `podman machine rm`"},
-	{"lume", []string{".lume"}, "`lume ls` 看有哪些虚拟机，用不到的 `lume delete <名字>` 删掉（那台虚拟机里的东西都会没）"},
-}
-
-// vmMarkers are signs a container tool whose disk is in its container is installed.
-var vmMarkers = map[string]struct{ folder, app string }{"Docker Desktop": {".docker", "Docker.app"}, "OrbStack": {".orbstack", "OrbStack.app"}}
-
-// aiTools are the folders of AI tools' downloaded models. models: each model is a folder of its own (offered one by one).
-var aiTools = []struct {
-	tool, path string
-	models     bool
-	how        string
-}{
-	{"Hugging Face", ".cache/huggingface/hub", true, "用不到了就删；再用时会重新下载"},
-	{"LM Studio", ".lmstudio/models", true, "用不到了在 LM Studio 里删，或删这个文件夹；再用时会重新下载"},
-	{"LM Studio", ".cache/lm-studio/models", true, "用不到了在 LM Studio 里删，或删这个文件夹；再用时会重新下载"},
-	{"Ollama", ".ollama/models", false, "`ollama list` 看有哪些，`ollama rm <名字>` 删掉用不到的"},
-	{"PyTorch", ".cache/torch", false, "里面是下载的模型权重，删了用到时会重新下载"},
-	{"Whisper", ".cache/whisper", false, "里面是语音识别模型，删了用到时会重新下载"},
-}
+// vmTools are the container and VM tools whose disk images are measured, vmMarkers the signs that one whose disk is in
+// its container is installed, and aiTools the folders of AI tools' downloaded models (rules/space-tools.json).
+var (
+	vmTools   []vmTool
+	vmMarkers map[string]vmSign
+	aiTools   []aiTool
+)
 
 func (r *SystemSpaceRule) Run(ctx *Context) ([]Finding, error) {
+	if spaceErr != nil {
+		return nil, rulesMissing("space-tools.json")
+	}
 	var out []Finding
 	snapshots := r.Snapshots
 	if snapshots == nil {
@@ -187,13 +166,9 @@ func (r *SystemSpaceRule) Run(ctx *Context) ([]Finding, error) {
 		if bytes < r.MinVMBytes {
 			continue
 		}
-		why := "镜像、容器、数据卷和构建缓存都在这块虚拟磁盘里，删了的东西不一定会把空间还回来"
-		if vm.tool == "lume" {
-			why = "每台 macOS 虚拟机一个文件夹，里面是它的整块硬盘；虚拟机里删了东西，这里不一定变小"
-		}
 		out = append(out, Finding{Rule: "space.vm-disk", Category: CatSpace, Severity: Low, Verdict: Info, Path: dirs[0], Bytes: Size(bytes),
 			Title:    vm.tool + " 的虚拟磁盘占了 " + FormatBytes(bytes),
-			Evidence: map[string]string{"tool": vm.tool, "why": why, "how": vm.how}})
+			Evidence: map[string]string{"tool": vm.tool, "why": vm.explain, "how": vm.how}})
 	}
 	if ctx.IsCancelled() {
 		return nil, Skip(Interrupted, out...)
@@ -211,11 +186,11 @@ func (r *SystemSpaceRule) Run(ctx *Context) ([]Finding, error) {
 	var unusedShared []string
 	for _, ai := range aiTools {
 		root := filepath.Join(ctx.Home, ai.path)
-		if !Exists(root) {
+		if !ctx.MayLook(root) || !Exists(root) {
 			continue
 		}
 		var sum int64
-		if ai.models {
+		if ai.models != "" {
 			// What each model's files really take: its own, and those its links point to inside the cache (Hugging
 			// Face's shared store keeps each file once in hub/blobs and links it from every repository using it).
 			rootReal, err := filepath.EvalSymlinks(root) // spelled as realpath spells the links' targets
@@ -223,7 +198,7 @@ func (r *SystemSpaceRule) Run(ctx *Context) ([]Finding, error) {
 				rootReal = root
 			}
 			used := map[string]int64{}
-			for _, m := range modelFolders(root, ai.tool) {
+			for _, m := range modelFolders(root, ai.models) {
 				own := map[string]int64{}
 				shared := reachable(m.dir, rootReal, own)
 				for k, v := range own {
@@ -371,7 +346,7 @@ func (r *SystemSpaceRule) ipsw(ctx *Context) ([]Finding, bool) {
 			if bytes < r.MinIpswBytes || age < r.IpswQuiet.Seconds() {
 				continue
 			}
-			name := filepath.Base(f)
+			name := DisplayName(f)
 			out = append(out, Finding{Rule: "space.ipsw", Category: CatCache, Severity: Low, Verdict: Confirm, Path: f, Bytes: Size(bytes),
 				Title: fmt.Sprintf("系统恢复镜像 %s（%s），%d 天前下载", name, FormatBytes(bytes), int(math.Max(0, age)/86400)),
 				Evidence: map[string]string{"file": name, "downloaded": ISODay(changed),
@@ -504,11 +479,11 @@ func (r *SystemSpaceRule) xcode(ctx *Context) []Finding {
 
 type modelFolder struct{ dir, name string }
 
-// modelFolders are one folder per model: Hugging Face's models--org--name and datasets--org--name, LM Studio's
-// <publisher>/<model>.
-func modelFolders(root, tool string) []modelFolder {
+// modelFolders are one folder per model, as layout says (aiTool.models): Hugging Face's models--org--name and
+// datasets--org--name, or <publisher>/<model> (LM Studio's).
+func modelFolders(root, layout string) []modelFolder {
 	var out []modelFolder
-	if tool == "Hugging Face" {
+	if layout == modelsHuggingFace {
 		for _, u := range Children(root) {
 			n := filepath.Base(u)
 			for _, kind := range []string{"models--", "datasets--"} {

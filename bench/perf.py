@@ -35,8 +35,8 @@ ROOT = os.path.dirname(HERE)
 TREE_VERSION = 1
 DAY = 86_400
 # Worse than the baseline by more than this share, and by more than the floor (noise on small numbers), fails. Wall
-# time is reported, not compared: the jobs run at utility priority on purpose, so how long a round takes depends on
-# what else the Mac is doing; CPU time and memory do not.
+# time is reported, not compared: the jobs lower their own priority on purpose (nice 10, disk I/O at the utility tier;
+# core.LowerPriority), so how long a round takes depends on what else the Mac is doing; CPU time and memory do not.
 TOLERANCE = 0.25
 FLOOR = {"cpu_s": 1.0, "peak_mb": 20.0}
 

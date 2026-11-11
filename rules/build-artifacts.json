@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "about": [
+    "项目里能重新生成的依赖和构建产物（规则 stale.project 的 stale.artifacts：半年多没动的项目里只删这些，项目本身留着）。",
+    "artifacts 每条：name（文件夹名）、markers（旁边要有的这个工具的文件，有一个就算；*.扩展名 是任何这个扩展名的文件，也可以写相对路径）、inside（可选：名字太常见时，文件夹里还要有的文件）、again（给人看：怎么重新生成）、why（依据）、samples（合成的样例）。同名的几条，按顺序认第一条对得上的。",
+    "文件夹里有 git 管着的文件、或者有仓库的，都不算（代码里判断）。",
+    "samples：files 是在假的项目文件夹里建的文件（相对项目文件夹），expect 是该有的结论：found（认成这一条）、none（不认）。"
+  ],
+  "artifacts": [
+    {
+      "name": "node_modules", "markers": ["package.json"], "again": "npm install（或 yarn、pnpm）",
+      "why": "npm、yarn、pnpm 按 package.json 和锁文件装的依赖，装一遍就回来。",
+      "samples": [
+        {"files": ["package.json", "node_modules/left-pad/index.js"], "expect": "found"},
+        {"files": ["node_modules/left-pad/index.js"], "expect": "none"}
+      ]
+    },
+    {
+      "name": ".next", "markers": ["package.json"], "again": "重新构建",
+      "why": "Next.js 的构建输出和缓存，构建一遍就回来。",
+      "samples": [{"files": ["package.json", ".next/cache/webpack/client-production/0.pack"], "expect": "found"}]
+    },
+    {
+      "name": ".nuxt", "markers": ["package.json"], "again": "重新构建",
+      "why": "Nuxt 生成的文件，构建或启动开发服务时重新生成。",
+      "samples": [{"files": ["package.json", ".nuxt/nuxt.d.ts"], "expect": "found"}]
+    },
+    {
+      "name": ".svelte-kit", "markers": ["package.json"], "again": "重新构建",
+      "why": "SvelteKit 生成的文件和构建输出，构建时重新生成。",
+      "samples": [{"files": ["package.json", ".svelte-kit/output/client/app.js"], "expect": "found"}]
+    },
+    {
+      "name": ".turbo", "markers": ["package.json"], "again": "重新构建",
+      "why": "Turborepo 的本地任务缓存，跑任务时重新生成。",
+      "samples": [{"files": ["package.json", ".turbo/cache/0123abcd.tar.zst"], "expect": "found"}]
+    },
+    {
+      "name": ".parcel-cache", "markers": ["package.json"], "again": "重新构建",
+      "why": "Parcel 的构建缓存，构建时重新生成。",
+      "samples": [{"files": ["package.json", ".parcel-cache/data.mdb"], "expect": "found"}]
+    },
+    {
+      "name": "target", "markers": ["Cargo.toml"], "again": "cargo build",
+      "why": "Cargo 的构建输出，cargo build 重新生成。",
+      "samples": [{"files": ["Cargo.toml", "target/debug/demo"], "expect": "found"}]
+    },
+    {
+      "name": "target", "markers": ["pom.xml"], "again": "mvn package",
+      "why": "Maven 的构建输出，mvn package 重新生成。",
+      "samples": [{"files": ["pom.xml", "target/classes/Demo.class"], "expect": "found"}]
+    },
+    {
+      "name": ".build", "markers": ["Package.swift"], "again": "swift build",
+      "why": "SwiftPM 的构建输出和拉下来的依赖，swift build 重新生成。",
+      "samples": [{"files": ["Package.swift", ".build/debug/Demo"], "expect": "found"}]
+    },
+    {
+      "name": "build", "markers": ["build.gradle", "build.gradle.kts"], "again": "gradle build",
+      "why": "Gradle 的构建输出，构建一遍就回来。",
+      "samples": [{"files": ["build.gradle.kts", "build/libs/demo.jar"], "expect": "found"}]
+    },
+    {
+      "name": ".gradle", "markers": ["build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts"], "again": "gradle build",
+      "why": "Gradle 放在项目里的缓存，构建时重新生成。",
+      "samples": [{"files": ["settings.gradle", ".gradle/8.10/checksums/checksums.lock"], "expect": "found"}]
+    },
+    {
+      "name": "build", "markers": ["CMakeLists.txt"], "inside": "CMakeCache.txt", "again": "cmake 再配置、构建一遍",
+      "why": "CMake 的构建目录，再配置、构建一遍就回来。build 这个名字太常见，里面有 CMakeCache.txt 才算。",
+      "samples": [
+        {"files": ["CMakeLists.txt", "build/CMakeCache.txt", "build/main.o"], "expect": "found"},
+        {"files": ["CMakeLists.txt", "build/notes.txt"], "expect": "none"}
+      ]
+    },
+    {
+      "name": "Pods", "markers": ["Podfile"], "again": "pod install",
+      "why": "CocoaPods 按 Podfile 装的依赖，pod install 重新装。",
+      "samples": [{"files": ["Podfile", "Pods/Demo/Sources/Demo.swift"], "expect": "found"}]
+    },
+    {
+      "name": "DerivedData", "markers": ["*.xcodeproj", "*.xcworkspace"], "again": "在 Xcode 里构建",
+      "why": "放在项目里的 Xcode 构建产物和索引，在 Xcode 里构建时重新生成。",
+      "samples": [{"files": ["Demo.xcodeproj/project.pbxproj", "DerivedData/Build/Intermediates.noindex/main.o"], "expect": "found"}]
+    },
+    {
+      "name": ".venv", "markers": ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"], "inside": "pyvenv.cfg", "again": "重新建虚拟环境、装依赖",
+      "why": "Python 的虚拟环境，按项目的依赖文件重新建。里面有 pyvenv.cfg 才算。",
+      "samples": [
+        {"files": ["pyproject.toml", ".venv/pyvenv.cfg", ".venv/lib/python3.12/site-packages/demo.py"], "expect": "found"},
+        {"files": ["pyproject.toml", ".venv/notes.txt"], "expect": "none"}
+      ]
+    },
+    {
+      "name": "venv", "markers": ["pyproject.toml", "requirements.txt", "setup.py", "Pipfile"], "inside": "pyvenv.cfg", "again": "重新建虚拟环境、装依赖",
+      "why": "Python 的虚拟环境，按项目的依赖文件重新建。里面有 pyvenv.cfg 才算。",
+      "samples": [{"files": ["requirements.txt", "venv/pyvenv.cfg", "venv/lib/python3.12/site-packages/demo.py"], "expect": "found"}]
+    },
+    {
+      "name": ".tox", "markers": ["tox.ini"], "again": "tox",
+      "why": "tox 建的各个测试环境，跑 tox 时重新建。",
+      "samples": [{"files": ["tox.ini", ".tox/py312/pyvenv.cfg"], "expect": "found"}]
+    },
+    {
+      "name": ".dart_tool", "markers": ["pubspec.yaml"], "again": "dart pub get",
+      "why": "Dart、Flutter 工具生成的文件，dart pub get 重新生成。",
+      "samples": [{"files": ["pubspec.yaml", ".dart_tool/package_config.json"], "expect": "found"}]
+    },
+    {
+      "name": ".zig-cache", "markers": ["build.zig"], "again": "zig build",
+      "why": "Zig 的构建缓存，zig build 重新生成。",
+      "samples": [{"files": ["build.zig", ".zig-cache/o/0123abcd/demo.o"], "expect": "found"}]
+    },
+    {
+      "name": "zig-cache", "markers": ["build.zig"], "again": "zig build",
+      "why": "旧版 Zig 的构建缓存，zig build 重新生成。",
+      "samples": [{"files": ["build.zig", "zig-cache/o/0123abcd/demo.o"], "expect": "found"}]
+    },
+    {
+      "name": ".stack-work", "markers": ["stack.yaml"], "again": "stack build",
+      "why": "Haskell Stack 的构建输出，stack build 重新生成。",
+      "samples": [{"files": ["stack.yaml", ".stack-work/dist/demo.o"], "expect": "found"}]
+    },
+    {
+      "name": "_build", "markers": ["mix.exs"], "again": "mix compile",
+      "why": "Elixir 的编译输出，mix compile 重新生成。",
+      "samples": [{"files": ["mix.exs", "_build/dev/lib/demo/ebin/demo.app"], "expect": "found"}]
+    },
+    {
+      "name": "deps", "markers": ["mix.exs"], "again": "mix deps.get",
+      "why": "Elixir 按 mix.exs 拉下来的依赖，mix deps.get 重新拉。",
+      "samples": [{"files": ["mix.exs", "deps/plug/lib/plug.ex"], "expect": "found"}]
+    },
+    {
+      "name": "Library", "markers": ["ProjectSettings/ProjectVersion.txt"], "again": "用 Unity 打开项目，它会重新导入",
+      "why": "Unity 导入资源时生成的缓存，用 Unity 打开项目时重新导入。旁边有 ProjectSettings/ProjectVersion.txt 才是 Unity 项目。",
+      "samples": [
+        {"files": ["ProjectSettings/ProjectVersion.txt", "Library/ArtifactDB"], "expect": "found"},
+        {"files": ["Library/notes.txt"], "expect": "none"}
+      ]
+    },
+    {
+      "name": "Temp", "markers": ["ProjectSettings/ProjectVersion.txt"], "again": "用 Unity 打开项目",
+      "why": "Unity 开着项目时的临时文件，用 Unity 打开项目时重新生成。",
+      "samples": [{"files": ["ProjectSettings/ProjectVersion.txt", "Temp/UnityLockfile"], "expect": "found"}]
+    }
+  ]
+}

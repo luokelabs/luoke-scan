@@ -180,7 +180,7 @@ func (r *InstallLeftoverRule) installers(ctx *Context) []Finding {
 				ev["signed"] = "1"
 			}
 		}
-		title := "下载文件夹里 " + days + " 天前的安装包 " + name
+		title := "下载文件夹里 " + days + " 天前的安装包 " + DisplayName(u)
 		if app != "" {
 			title += "（" + app + " 已经装好了）"
 		}
@@ -216,6 +216,7 @@ func (r *InstallLeftoverRule) partialDownloads(ctx *Context) []Finding {
 		if name == "" {
 			name = filepath.Base(u)
 		}
+		name = DisplayName(name)
 		out = append(out, Finding{Rule: "leftover.partial-download", Category: CatLeftover, Severity: Low, Verdict: Confirm, Path: u,
 			Bytes: Size(bytes), Title: "没下完的下载 " + name + "（" + FormatBytes(bytes) + "），" + strconv.Itoa(days) + " 天没动了",
 			Evidence: map[string]string{"how": "浏览器下到一半停了（暂停或失败）；还要的话重新下载，不要就删掉", "last_changed": ISODay(last)}})

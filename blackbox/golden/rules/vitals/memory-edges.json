@@ -1,0 +1,169 @@
+{
+  "about": "压力警告但几乎没用交换空间：不报；压力严重：不看交换空间也报；压力正常、交换空间很大：不报",
+  "case": "rules/vitals/memory-edges",
+  "steps": [
+    {
+      "fakes": {
+        "vitals": {
+          "battery": null,
+          "batteryUnknown": false,
+          "cpu": {},
+          "footprint": {},
+          "memTotal": 17179869184,
+          "pressure": 2,
+          "sampleSeconds": 3,
+          "swap": 209715200,
+          "thermal": [
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "vitals": {
+          "battery": null,
+          "batteryUnknown": false,
+          "cpu": {},
+          "footprint": {},
+          "memTotal": 17179869184,
+          "pressure": 4,
+          "sampleSeconds": 3,
+          "swap": 0,
+          "thermal": [
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "vitals",
+            "evidence": {
+              "memory": "16 GB（这台 Mac 的内存）",
+              "pressure": "严重"
+            },
+            "path": "",
+            "rule": "vitals.memory",
+            "severity": "medium",
+            "title": "内存不够用了",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:01:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:01:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:01:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "vitals": {
+          "battery": null,
+          "batteryUnknown": false,
+          "cpu": {},
+          "footprint": {},
+          "memTotal": 17179869184,
+          "pressure": 1,
+          "sampleSeconds": 3,
+          "swap": 8589934592,
+          "thermal": [
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-20T12:02:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:02:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:02:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

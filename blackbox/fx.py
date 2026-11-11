@@ -132,6 +132,10 @@ def standard_fakes(home: str) -> Dict[str, Any]:
         "onBattery": False,
         "lowPower": False,
         "memoryPressure": 1,
+        # 运行状况（luoke-scan#126）：一台运行正常的台式机。cpu 是两次读数之间各进程的处理器秒数（按 pid），
+        # footprint 各进程占的内存；pressure 1 正常、2 警告、4 严重；battery null 是没有电池；thermal 是两次读到的发热档位。
+        "vitals": {"cpu": {}, "sampleSeconds": 3, "footprint": {}, "memTotal": 16 * 1024 ** 3, "pressure": 1, "swap": 0,
+                   "battery": None, "batteryUnknown": False, "thermal": [0, 0]},
     }
 
 

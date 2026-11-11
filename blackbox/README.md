@@ -59,6 +59,7 @@ TCC 只读 `home/Library/Application Support/com.apple.TCC/TCC.db`。不调 laun
 | `installedCommands` | 装着的命令（缓存自己的清理命令要它在） |
 | `volume` | 家目录所在的盘：`free`、`total`、`swap`（字节）；`null`：不知道 |
 | `onBattery`、`lowPower`、`memoryPressure` | 两轮之间看一眼新下载的（`scan --quick`）要等的：在用电池、低电量模式、内存压力（1 正常、2 警告、4 严重） |
+| `vitals` | 运行状况（`vitals` 规则）：`cpu` 是一轮里两次读数时各进程用过的处理器秒数（`{"pid": [先, 后]}`，两次相隔 `sampleSeconds` 秒；`null` 读不到）、`footprint` 各进程占的内存（字节）、`memTotal`、`pressure`（1 正常、2 警告、4 严重，0 读不到）、`swap`（`null` 读不到）、`battery`（`cycles`、`designCycles`、`capacity`、`designCapacity`；`null` 没有电池）、`batteryUnknown`、`thermal`（两次读到的发热档位，0–4；空的是读不到）；整个是 `null` 时什么都不报 |
 | `staleFiles`、`downloaded`、`appsAdded` | Spotlight 的答复：很久没用的文件（`path`、`used`、`changed`）、最近下载的文件、应用来到文件夹的时间；前两个 `null`：Spotlight 没答 |
 
 没在 `codesign`、`appTrust` 里列的签名检查（还有安装包的），对假目录里的文件真的跑 `codesign`。常驻项看

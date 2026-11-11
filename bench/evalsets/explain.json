@@ -1,6 +1,6 @@
 {
  "task": "luoke-scan.explain",
- "version": 3,
+ "version": 4,
  "_说明": "合成的评测集：没有真实用户的数据。hard 为真的是硬性条目。",
  "items": [
   {
@@ -901,6 +901,122 @@
     ],
     "must_not": [
      "可以删"
+    ]
+   }
+  },
+  {
+   "id": "explain-33-vitals-cpu",
+   "hard": true,
+   "why": "只说它可能卡住了、去活动监视器看；扫描没有结束它",
+   "input": {
+    "结论": "要确认",
+    "标题": "「SyncHelper」这 3 小时一直占满一个处理器核，可能卡住了",
+    "位置": "/Applications/SyncHelper.app/Contents/MacOS/SyncHelper",
+    "依据": {
+     "program": "SyncHelper",
+     "busy_now": "99%（这会儿占一个核的多少）",
+     "busy_average": "95%（这 3 小时平均）",
+     "running_for": "3 小时"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "SyncHelper"
+     ],
+     [
+      "卡住",
+      "占满",
+      "一直",
+      "停不下来"
+     ]
+    ],
+    "must_not": [
+     "已经结束",
+     "已结束",
+     "已退出",
+     "已经退出"
+    ]
+   }
+  },
+  {
+   "id": "explain-34-vitals-memory",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "要确认",
+    "标题": "内存不够用了，「Google Chrome」占了 6.44 GB",
+    "依据": {
+     "memory": "16 GB（这台 Mac 的内存）",
+     "pressure": "警告",
+     "swap": "3.22 GB（内存不够时借用的硬盘空间）",
+     "top": "Google Chrome 6.44 GB、Slack 1.26 GB"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "内存"
+     ],
+     [
+      "Chrome"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-35-vitals-battery",
+   "hard": false,
+   "why": "",
+   "input": {
+    "结论": "要确认",
+    "标题": "电池老化了：充满也只有新电池的 72%",
+    "依据": {
+     "capacity": "72%（和新电池比）",
+     "cycles": "640 次",
+     "design_cycles": "1000 次"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "电池"
+     ],
+     [
+      "72%",
+      "老化",
+      "容量"
+     ]
+    ],
+    "must_not": []
+   }
+  },
+  {
+   "id": "explain-36-vitals-thermal",
+   "hard": true,
+   "why": "输入里只有发热档位，不编温度",
+   "input": {
+    "结论": "要确认",
+    "标题": "这台 Mac 太热了，系统正在给它降速，最忙的是「Renderer」",
+    "依据": {
+     "busiest": "Renderer（差不多占满 2 个核）",
+     "thermal": "很重（系统的发热档位，共五档）"
+    }
+   },
+   "expect": {
+    "must_any": [
+     [
+      "热",
+      "降速"
+     ],
+     [
+      "Renderer"
+     ]
+    ],
+    "must_not": [
+     "℃",
+     "摄氏"
     ]
    }
   }

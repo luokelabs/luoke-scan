@@ -78,7 +78,7 @@ func (db VirusDB) DailyVersion() string {
 func dbVersion(file, sigtool string) string {
 	certs, done := ClamAVCerts()
 	defer done()
-	r := Run(sigtool, append([]string{"--info=" + file}, certs...), RunOpts{Timeout: 60 * time.Second})
+	r := Run(sigtool, append([]string{"--info=" + file}, certs...), RunOpts{Env: CertsEnv(certs, nil), Timeout: 60 * time.Second})
 	if r.Status != 0 {
 		return ""
 	}
@@ -218,7 +218,7 @@ func (db VirusDB) Update(s *Store, now time.Time, force bool, timeout time.Durat
 	defer done()
 	before := dbKeys(staging)
 	r := Run(freshclam, append([]string{"--config-file=" + conf, "--datadir=" + staging, "--stdout"}, certs...),
-		RunOpts{Timeout: timeout})
+		RunOpts{Env: CertsEnv(certs, nil), Timeout: timeout})
 	// freshclam's state (cool-down after rate limiting) is kept whatever happens next.
 	if state := filepath.Join(staging, "freshclam.dat"); Exists(state) {
 		os.MkdirAll(db.Dir, 0o700)
@@ -383,7 +383,7 @@ func (db VirusDB) MakeQuick() bool {
 		ok := func() bool {
 			certs, done := ClamAVCerts()
 			defer done()
-			if Run(sigtool, append([]string{"--unpack=" + f}, certs...), RunOpts{Dir: unpacked, Timeout: 600 * time.Second}).Status != 0 {
+			if Run(sigtool, append([]string{"--unpack=" + f}, certs...), RunOpts{Dir: unpacked, Env: CertsEnv(certs, nil), Timeout: 600 * time.Second}).Status != 0 {
 				return false
 			}
 			for _, piece := range Children(unpacked) {

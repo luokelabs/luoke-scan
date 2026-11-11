@@ -178,7 +178,7 @@ func (r *StaleFileRule) Run(ctx *Context) ([]Finding, error) {
 		if years >= 2 {
 			age = strconv.Itoa(int(years)) + " 年多"
 		}
-		name := filepath.Base(p)
+		name := DisplayName(p)
 		ev := map[string]string{"how": "还要就留着（可以挪到外接硬盘）；不要了就移到废纸篓"}
 		title := name + "（" + FormatBytes(item.Bytes) + "）" + age + "没打开过"
 		if !used.IsZero() {

@@ -1,0 +1,87 @@
+{
+  "about": "GGUF 文件头里的模板：LM Studio 里叫模型不管用户的系统提示的（高）；Hugging Face 的 GGUF 仓库里，子文件夹里那份带名字的 tool_use 模板是中文的「忽略之前的指令」（高）；正常的、视觉投影（mmproj）、分片的第二片、不是 GGUF 的：不报",
+  "case": "rules/model.chat-template/gguf",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "Llama-3.1-8B-Instruct-Q4_K_M.gguf",
+              "how": "在 LM Studio 里删掉这个模型，从可信的发布者重新下载；拿不准就先别用",
+              "kinds": "ignore-rules",
+              "model": "someone/Llama-3.1-8B-Instruct-GGUF",
+              "template": "~/.lmstudio/models/someone/Llama-3.1-8B-Instruct-GGUF/Llama-3.1-8B-Instruct-Q4_K_M.gguf",
+              "tool": "LM Studio",
+              "where": "对话模板",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型不管原来的指令。原文没有记下"
+            },
+            "key": "~/.lmstudio/models/someone/Llama-3.1-8B-Instruct-GGUF|735301092219",
+            "path": "~/.lmstudio/models/someone/Llama-3.1-8B-Instruct-GGUF",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "LM Studio 的模型 someone/Llama-3.1-8B-Instruct-GGUF：对话模板里多了给模型的话（让模型不管原来的指令）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "Mistral-7B-Instruct-Q4_K_M.gguf",
+              "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download someone/Mistral-7B-Instruct-GGUF`）；拿不准就先别用这个模型",
+              "kinds": "ignore-rules",
+              "model": "someone/Mistral-7B-Instruct-GGUF",
+              "template": "~/.cache/huggingface/hub/models--someone--Mistral-7B-Instruct-GGUF/snapshots/rev1/Q4_K_M/Mistral-7B-Instruct-Q4_K_M.gguf",
+              "tool": "Hugging Face",
+              "where": "对话模板",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型不管原来的指令。原文没有记下"
+            },
+            "key": "~/.cache/huggingface/hub/models--someone--Mistral-7B-Instruct-GGUF|96426d757f53",
+            "path": "~/.cache/huggingface/hub/models--someone--Mistral-7B-Instruct-GGUF",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Hugging Face 的模型 someone/Mistral-7B-Instruct-GGUF：对话模板里多了给模型的话（让模型不管原来的指令）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

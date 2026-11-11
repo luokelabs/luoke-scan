@@ -116,6 +116,30 @@ func oddPlace(ctx *Context, program string) string {
 	return ""
 }
 
+// sparklePlace is where Sparkle (the update framework many apps use) copies its updater to run an update:
+// ~/Library/Caches/<app's bundle id>/org.sparkle-project.Sparkle/Launcher/<random>/Updater.app. The bundle id is the
+// first group.
+var sparklePlace = regexp.MustCompile(`(?i)/library/caches/([^/]+)/org\.sparkle-project\.sparkle/(?:launcher|installation)/[^/]+/[^/]+\.app/`)
+
+// sparkleUpdate: a job a running app submitted that is that app's own Sparkle updater, where Sparkle always puts it
+// (a cache folder, so not odd). Only a submitted job (it is gone after a restart; a plist that starts with the Mac is
+// not exempt, wherever its program is), signed by the same developer as the installed app whose cache folder it is in.
+func (r *PersistenceRule) sparkleUpdate(it persistenceItem, sig Signature, signature func(string) Signature) bool {
+	if !it.submitted || sig.Kind != SigDeveloper || sig.Team == "" {
+		return false
+	}
+	m := sparklePlace.FindStringSubmatch(Standardized(it.program))
+	if m == nil {
+		return false
+	}
+	app := r.FindApp(m[1])
+	if app == "" {
+		return false
+	}
+	as := signature(app)
+	return as.Kind == SigDeveloper && as.Team == sig.Team
+}
+
 // ScopedDir is a folder of launchd jobs and their scope.
 type ScopedDir struct {
 	Dir   string
@@ -130,6 +154,9 @@ type SessionJob struct {
 	Program string `json:"program,omitempty"`
 	// ParentBundle is the app that registered it through ServiceManagement, by bundle id.
 	ParentBundle string `json:"parentBundle,omitempty"`
+	// SubmittedBy is the process that handed it to launchd while running (`path = (submitted by ChatGPT[123])`,
+	// SMJobSubmit or `launchctl submit`): such a job is gone after a restart and is not in Login Items.
+	SubmittedBy string `json:"submittedBy,omitempty"`
 }
 
 // LoginItemsGrant is System Settings → General → Login Items & Extensions (scan_open_settings takes this name).
@@ -268,8 +295,8 @@ func jobProgram(plist map[string]any) (string, bool) {
 	return first, true
 }
 
-// isSystemProgram: part of macOS, on the sealed system volume; nothing to check.
-func isSystemProgram(path string) bool {
+// IsSystemProgram: part of macOS, on the sealed system volume; nothing to check.
+func IsSystemProgram(path string) bool {
 	for _, p := range []string{"/System/", "/usr/bin/", "/usr/sbin/", "/usr/libexec/", "/bin/", "/sbin/"} {
 		if strings.HasPrefix(path, p) {
 			return true
@@ -333,6 +360,12 @@ func ParseSessionJob(label, text string) SessionJob {
 		switch {
 		case key == "path" && job.Path == "":
 			job.Path = value
+			if by, ok := strings.CutPrefix(value, "(submitted by "); ok {
+				if i := strings.LastIndex(by, "["); i > 0 {
+					by = by[:i]
+				}
+				job.SubmittedBy = strings.TrimSpace(strings.TrimSuffix(by, ")"))
+			}
 		case key == "program" && job.Program == "":
 			job.Program = value
 		case key == "parent bundle identifier" && job.ParentBundle == "":
@@ -422,6 +455,10 @@ type persistenceItem struct {
 	source  string
 	program string
 	hasProg bool
+	// app is the app it belongs to, as Login Items names it: the app that registered it, or the one that submitted it.
+	app string
+	// submitted: handed to launchd by a running program; it does not start with the Mac.
+	submitted bool
 }
 
 func (it persistenceItem) key() string { return string(it.scope) + ":" + it.source + "|" + it.program }
@@ -443,14 +480,18 @@ func sessionItems(jobs []SessionJob, appPath func(string) string) []persistenceI
 		if program == "" {
 			program = app
 		}
-		if program != "" && isSystemProgram(program) && j.ParentBundle == "" && j.Path == "" {
+		if program != "" && IsSystemProgram(program) && j.ParentBundle == "" && j.Path == "" {
 			continue
 		}
-		name := j.Label
+		name, owner := j.Label, ""
 		if app != "" {
 			name = NameWithoutExtension(app)
+			owner = name
+		} else if j.SubmittedBy != "" && j.SubmittedBy != "launchctl" { // by hand from a terminal: nobody to name
+			owner = j.SubmittedBy
 		}
-		out = append(out, persistenceItem{scope: ScopeLoginItem, name: name, source: j.Label, program: program, hasProg: program != ""})
+		out = append(out, persistenceItem{scope: ScopeLoginItem, name: name, source: j.Label, program: program, hasProg: program != "",
+			app: owner, submitted: j.SubmittedBy != ""})
 	}
 	return out
 }
@@ -624,7 +665,7 @@ func (r *PersistenceRule) Run(ctx *Context) (found []Finding, err error) {
 			item := persistenceItem{scope: scope, name: label, source: f, program: program, hasProg: true}
 			items = append(items, item)
 			// A bare name (`node`) is looked up on launchd's PATH: nothing to check here.
-			if !strings.HasPrefix(program, "/") || isSystemProgram(program) {
+			if !strings.HasPrefix(program, "/") || IsSystemProgram(program) {
 				continue
 			}
 			sig := signature(program)
@@ -648,11 +689,15 @@ func (r *PersistenceRule) Run(ctx *Context) (found []Finding, err error) {
 				if scope == ScopeDaemon {
 					why = "它以管理员（root）身份运行：任何以你身份运行的程序都能换掉它，下次启动就拿到管理员权限"
 				}
+				// 「怎么办」按程序的来源写：Homebrew 的才说 Homebrew（luoke-scan#113：Jump Desktop 也被说成 Homebrew）
+				how := "用不到了就删掉这个系统级的后台任务；还要用的话，换成只给你自己装的版本"
+				if strings.HasPrefix(label, "homebrew.") || strings.Contains(program, "/homebrew/") || strings.Contains(program, "/Cellar/") {
+					how = "Homebrew 的服务别用 sudo 起（`brew services start` 不加 sudo，就以你自己的身份运行）；用不到了就删掉这个系统级的后台任务"
+				}
 				out = append(out, Finding{Rule: "persistence.daemon-writable", Category: CatPersistence, Severity: High, Verdict: Confirm,
 					Path: f, Title: scope.label() + " " + label + " 运行的程序你自己就能改",
 					Evidence: map[string]string{"label": label, "program": shown(program), "signature": sig.Label(), "scope": string(scope),
-						"admin": "1", "why": why,
-						"how": "Homebrew 的服务别用 sudo 起（`brew services start` 不加 sudo，就以你自己的身份运行）；用不到了就删掉这个系统级的后台任务"}})
+						"admin": "1", "why": why, "how": how}})
 				flagged[item.key()] = true
 			} else if sig.Kind == SigInvalid {
 				out = append(out, Finding{Rule: "persistence.bad-signature", Category: CatPersistence, Severity: Medium, Verdict: Confirm,
@@ -722,9 +767,9 @@ func (r *PersistenceRule) Run(ctx *Context) (found []Finding, err error) {
 			if len(listed) < 20 {
 				listed = append(listed, e.schedule+" "+name)
 			}
-			if e.program != "" && !isSystemProgram(e.program) && signature(e.program).Kind == SigMissing {
+			if e.program != "" && !IsSystemProgram(e.program) && signature(e.program).Kind == SigMissing {
 				out = append(out, Finding{Rule: "persistence.cron-missing", Category: CatPersistence, Severity: Medium, Verdict: Confirm,
-					Title:    "定时任务（" + e.schedule + "）要运行的 " + filepath.Base(e.program) + " 已经不在了",
+					Title:    "定时任务（" + e.schedule + "）要运行的 " + DisplayName(e.program) + " 已经不在了",
 					Evidence: map[string]string{"schedule": e.schedule, "missing": shown(e.program), "how": "在终端里运行 crontab -e，删掉这一行"}})
 				flagged[item.key()] = true
 			}
@@ -788,7 +833,7 @@ func (r *PersistenceRule) Run(ctx *Context) (found []Finding, err error) {
 			if it.scope == ScopeCron {
 				why = append(why, "是 crontab 里新加的一行")
 			}
-			if it.hasProg && strings.HasPrefix(it.program, "/") && !isSystemProgram(it.program) {
+			if it.hasProg && strings.HasPrefix(it.program, "/") && !IsSystemProgram(it.program) {
 				sig := signature(it.program)
 				switch {
 				case sig.Kind == SigInvalid:
@@ -805,7 +850,7 @@ func (r *PersistenceRule) Run(ctx *Context) (found []Finding, err error) {
 					why = append(why, "它以管理员或所有用户的身份运行，程序却放在你自己就能改的地方")
 					serious = true
 				}
-				if place := oddPlace(ctx, it.program); place != "" {
+				if place := oddPlace(ctx, it.program); place != "" && !r.sparkleUpdate(it, sig, signature) {
 					why = append(why, "程序放在"+place+"里，装好的程序很少放在那儿")
 					serious = true
 				}
@@ -834,7 +879,18 @@ func (r *PersistenceRule) Run(ctx *Context) (found []Finding, err error) {
 			if serious {
 				severity = High
 			}
+			title := "新加了" + it.scope.newLabel() + "：" + it.name
+			if it.submitted {
+				how = "它重启后不会再自己起来；是你装的应用起的就不用管，不认识的话在访达里看看它是哪个程序"
+				title = "新加了一个交给系统运行的后台程序：" + it.name
+			}
 			ev := map[string]string{"scope": string(it.scope), "name": it.name, "why": reason, "how": how}
+			if it.app != "" {
+				ev["app"] = it.app
+			}
+			if it.submitted {
+				ev["submitted"] = "1"
+			}
 			if it.scope == ScopeUserAgent || it.scope == ScopeSystemAgent || it.scope == ScopeDaemon {
 				ev["label"] = it.name
 			}
@@ -855,7 +911,7 @@ func (r *PersistenceRule) Run(ctx *Context) (found []Finding, err error) {
 				path, key = "", it.key()
 			}
 			out = append(out, Finding{Rule: "persistence.new", Category: CatPersistence, Severity: severity, Verdict: Confirm, Path: path,
-				Title: "新加了" + it.scope.newLabel() + "：" + it.name, Evidence: ev, Key: key})
+				Title: title, Evidence: ev, Key: key})
 			flagged[it.key()] = true
 		}
 		// One batch that starts over (Replace fails while there is no log yet: store.go removes it unconditionally).

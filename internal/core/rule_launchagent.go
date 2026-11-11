@@ -70,7 +70,7 @@ func (r *LaunchAgentRule) Run(ctx *Context) ([]Finding, error) {
 		plist, ok := readJobPlist(f)
 		if !ok {
 			out = append(out, Finding{Rule: "persistence.launchagent-unreadable", Category: CatPersistence, Severity: Low, Verdict: Info,
-				Path: f, Title: filepath.Base(f) + " 读不出来", Evidence: map[string]string{}})
+				Path: f, Title: DisplayName(f) + " 读不出来", Evidence: map[string]string{}})
 			continue
 		}
 		// One in a guarded folder is not looked for without Full Disk Access: unknown, not missing.

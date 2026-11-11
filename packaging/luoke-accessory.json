@@ -3,7 +3,7 @@
   "accessory": "luoke-scan",
   "bundle_id": "ai.luoke.scan",
   "name": "螺壳扫描",
-  "version": "0.3.8",
+  "version": "0.3.30",
   "type": "app",
   "entry": [],
   "resident": false,
@@ -43,6 +43,7 @@
       "summary": true,
       "pages": [
         {"id": "overview", "title": "概览"},
+        {"id": "mac", "title": "状态"},
         {"id": "cleaned", "title": "清理记录"}
       ]
     },

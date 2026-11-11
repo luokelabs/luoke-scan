@@ -1,0 +1,121 @@
+{
+  "about": "Ollama：SYSTEM 层叫模型把密码发出去、别告诉你（两个标签用同一层，各报一条）；MESSAGE 层预设的对话里叫它发密码（中文）；SYSTEM 里藏着标签字符；清单里的摘要想跳出 blobs 的、清单不是 JSON 的、层不在的：都不读",
+  "case": "rules/model.chat-template/ollama",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "MESSAGE",
+              "how": "是你自己用 Modelfile 建的，看看里面的 SYSTEM、TEMPLATE 是不是你写的；不是的话 `ollama rm someone/assistant-zh:latest` 删掉，从 ollama.com 上的原版重新拉",
+              "kinds": "exfil",
+              "model": "someone/assistant-zh:latest",
+              "tool": "Ollama",
+              "where": "预设的对话",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型把对话或资料发出去。原文没有记下"
+            },
+            "key": "~/.ollama/models/manifests/registry.ollama.ai/someone/assistant-zh/latest|97cbec6f7f3c",
+            "path": "~/.ollama/models/manifests/registry.ollama.ai/someone/assistant-zh/latest",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Ollama 的模型 someone/assistant-zh:latest：对话模板里多了给模型的话（让模型把对话或资料发出去）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "SYSTEM",
+              "how": "是你自己用 Modelfile 建的，看看里面的 SYSTEM、TEMPLATE 是不是你写的；不是的话 `ollama rm llama3.2:hidden` 删掉，从 ollama.com 上的原版重新拉",
+              "kinds": "ignore-rules,hidden",
+              "model": "llama3.2:hidden",
+              "tool": "Ollama",
+              "where": "默认系统提示",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型不管原来的指令、藏着看不见的字符。原文没有记下"
+            },
+            "key": "~/.ollama/models/manifests/registry.ollama.ai/library/llama3.2/hidden|53ff4c4a7655",
+            "path": "~/.ollama/models/manifests/registry.ollama.ai/library/llama3.2/hidden",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Ollama 的模型 llama3.2:hidden：对话模板里多了给模型的话（让模型不管原来的指令、藏着看不见的字符）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "SYSTEM",
+              "how": "是你自己用 Modelfile 建的，看看里面的 SYSTEM、TEMPLATE 是不是你写的；不是的话 `ollama rm qwen2.5:7b` 删掉，从 ollama.com 上的原版重新拉",
+              "kinds": "exfil,conceal",
+              "model": "qwen2.5:7b",
+              "tool": "Ollama",
+              "where": "默认系统提示",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型把对话或资料发出去、让模型瞒着你或骗你。原文没有记下"
+            },
+            "key": "~/.ollama/models/manifests/registry.ollama.ai/library/qwen2.5/7b|ec937a2afd57",
+            "path": "~/.ollama/models/manifests/registry.ollama.ai/library/qwen2.5/7b",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Ollama 的模型 qwen2.5:7b：对话模板里多了给模型的话（让模型把对话或资料发出去、让模型瞒着你或骗你）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "SYSTEM",
+              "how": "是你自己用 Modelfile 建的，看看里面的 SYSTEM、TEMPLATE 是不是你写的；不是的话 `ollama rm qwen2.5:latest` 删掉，从 ollama.com 上的原版重新拉",
+              "kinds": "exfil,conceal",
+              "model": "qwen2.5:latest",
+              "tool": "Ollama",
+              "where": "默认系统提示",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型把对话或资料发出去、让模型瞒着你或骗你。原文没有记下"
+            },
+            "key": "~/.ollama/models/manifests/registry.ollama.ai/library/qwen2.5/latest|ec937a2afd57",
+            "path": "~/.ollama/models/manifests/registry.ollama.ai/library/qwen2.5/latest",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Ollama 的模型 qwen2.5:latest：对话模板里多了给模型的话（让模型把对话或资料发出去、让模型瞒着你或骗你）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

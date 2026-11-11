@@ -214,7 +214,7 @@ func (r *StartupHooksRule) loginHooks(ctx *Context) []Finding {
 			when = "每次登录"
 		}
 		out = append(out, Finding{Rule: "startup.login-hook", Category: CatPersistence, Severity: Medium, Verdict: Info, Path: u,
-			Title: when + "都会以管理员身份运行 " + filepath.Base(script),
+			Title: when + "都会以管理员身份运行 " + DisplayName(script),
 			Evidence: map[string]string{"script": script, "why": "这是早就不推荐的老办法，现在几乎只有很旧的软件和恶意软件还在用",
 				"how": "不认得的话，在终端里运行 sudo defaults delete /Library/Preferences/com.apple.loginwindow " + k},
 			Key: u + "#" + k})

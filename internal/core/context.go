@@ -1,6 +1,7 @@
 package core
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -22,8 +23,9 @@ type Context struct {
 	// FullDiskAccess: nil not known (tests, a fixture: everything is looked at); false: the folders macOS asks about
 	// are left alone and said to be.
 	FullDiskAccess *bool
-	// AccessOff: the user switched Full Disk Access off for this app (FullDiskAccess is false then), and macOS may
-	// still allow it. What only macOS would have stopped is stopped here: PrivacyPlaces, the TCC databases.
+	// AccessOff: the user has not confirmed Full Disk Access for this app in 螺壳 (never, or switched it off again;
+	// FullDiskAccess is false then), and macOS may still allow it. What only macOS would have stopped is stopped here:
+	// PrivacyPlaces, the TCC databases.
 	AccessOff bool
 	Cancelled func() bool
 	// Replays are the journal replays made this round, shared by the rules that ask (space and temp both replay the
@@ -46,7 +48,7 @@ var Guarded = []string{"Desktop", "Documents", "Downloads", "Music", "Movies/TV"
 	"Library/CloudStorage", "Library/Containers", "Library/Daemon Containers", "Library/Group Containers"}
 
 // PrivacyPlaces are the folders under the home macOS refuses without Full Disk Access, with no dialog: no check has to
-// stay out of them, macOS keeps it out. With access switched off (AccessOff) MayLook keeps it out instead.
+// stay out of them, macOS keeps it out. With access not confirmed for this app (AccessOff) MayLook keeps it out instead.
 var PrivacyPlaces = []string{"Library/Mail", "Library/Messages", "Library/Safari", "Library/Cookies", "Library/Calendars",
 	"Library/Reminders", "Library/HomeKit", "Library/Metadata", "Library/IdentityServices", "Library/Suggestions",
 	"Library/Biome", "Library/Accounts", "Library/PersonalizationPortrait", "Library/Application Support/AddressBook",
@@ -79,7 +81,7 @@ func (c *Context) spellings() []string {
 }
 
 // MayLook says whether this round may look at path: anywhere with Full Disk Access (or not knowing), else nowhere at
-// or inside a guarded folder, or a privacy place when access is switched off (compared as spelled from the home,
+// or inside a guarded folder, or a privacy place when access is not confirmed (compared as spelled from the home,
 // ignoring case). The path is Standardized, as the Swift version's standardizedFileURL: a deleted program under
 // /private/var/… is looked at (the goldens record it).
 func (c *Context) MayLook(path string) bool {
@@ -101,6 +103,55 @@ func (c *Context) MayLook(path string) bool {
 				return false
 			}
 		}
+	}
+	return true
+}
+
+// MayFollow is MayLook for a path opened following its links: neither it nor where a link on the way leads is at or
+// inside a folder this round may not look at. Resolved one name at a time, each name checked before it is looked at,
+// so nothing inside a guarded folder is touched to find out (~/.npmrc linked into ~/Documents is not followed).
+func (c *Context) MayFollow(path string) bool {
+	if c.FullDiskAccess == nil || *c.FullDiskAccess {
+		return true
+	}
+	if !filepath.IsAbs(path) {
+		return c.MayLook(path)
+	}
+	done := "/"
+	rest := strings.Split(path, "/")
+	for hops := 0; len(rest) > 0; {
+		part := rest[0]
+		rest = rest[1:]
+		switch part {
+		case "", ".":
+			continue
+		case "..":
+			done = filepath.Dir(done)
+			continue
+		}
+		next := filepath.Join(done, part)
+		if !c.MayLook(next) {
+			return false
+		}
+		st, err := os.Lstat(next)
+		if err != nil {
+			return true // not there: nothing past it is opened
+		}
+		if st.Mode()&os.ModeSymlink == 0 {
+			done = next
+			continue
+		}
+		if hops++; hops > 32 {
+			return false
+		}
+		to, err := os.Readlink(next)
+		if err != nil {
+			return false
+		}
+		if filepath.IsAbs(to) {
+			done = "/"
+		}
+		rest = append(strings.Split(to, "/"), rest...)
 	}
 	return true
 }

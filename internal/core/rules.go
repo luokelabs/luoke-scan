@@ -11,15 +11,15 @@ var makers = map[string]RuleMaker{}
 func Register(id string, m RuleMaker) { makers[id] = m }
 
 // RuleOrder is the order rules run in (as the Swift version's Scanner.defaultRules).
-var RuleOrder = []string{"space.low", "space", "space.system", "space.duplicates", "cache.rebuildable", "leak.temp-prefix",
+var RuleOrder = []string{"space.low", "space", "space.system", "space.duplicates", "cache.rebuildable", "cache.app", "leak.temp-prefix",
 	"leftover.app-data", "leftover.installer", "stale.project", "stale.large-file", "persistence.launchagent-missing",
 	"persistence.review", "startup", "apps.new", "process", "keyboard", "exposure", "secrets", "browser", "mcp", "skill",
 	"agentfile", "permission.stale-grant", "posture", "malware",
-	"supplychain.malicious"}
+	"supplychain.malicious", "pkg.install-scripts", "deps.install-script"}
 
 func build(l *Layout, f *Fakes) []Rule {
 	var out []Rule
-	for _, id := range RuleOrder {
+	for _, id := range append(append(append([]string{}, FirstRules...), RuleOrder...), LaterRules...) {
 		if m, ok := makers[id]; ok {
 			out = append(out, m(l, f))
 		}
@@ -37,3 +37,11 @@ func FixtureRules(l Layout, f *Fakes) []Rule {
 	}
 	return build(&l, f)
 }
+
+// FirstRules run before RuleOrder and LaterRules after it, in this order. Kept apart from RuleOrder so that branches
+// adding a rule there and here do not touch the same lines. First: how this Mac runs (luoke-scan#126), looked at
+// before the round's own work keeps the processor busy and warms the Mac. Later: local models' chat templates.
+var (
+	FirstRules = []string{"vitals"}
+	LaterRules = []string{"model.chat-template"}
+)

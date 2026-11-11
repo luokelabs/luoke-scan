@@ -6,6 +6,8 @@ import (
 	"syscall"
 	"testing"
 	"time"
+
+	"golang.org/x/sys/unix"
 )
 
 func TestRemoveNoFollowAndRenameExcl(t *testing.T) {
@@ -44,6 +46,24 @@ func TestRemoveNoFollowAndRenameExcl(t *testing.T) {
 	}
 	if st, _ := os.Stat(filepath.Join(dir, "made")); st.Mode().Perm() != 0o700 {
 		t.Fatal(st.Mode())
+	}
+}
+
+func TestLowerPriority(t *testing.T) {
+	before, err := unix.Getpriority(unix.PRIO_PROCESS, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, disk := LowerPriority()
+	if !disk {
+		t.Fatal("the disk policy did not take")
+	}
+	// Nice only goes up: run already nicer than 10 (nice -n 15 go test), it stays there.
+	if n, err := unix.Getpriority(unix.PRIO_PROCESS, 0); err != nil || n < 10 || n < before {
+		t.Fatalf("nice %d (was %d): %v", n, before, err)
+	}
+	if p, err := DiskPolicy(); err != nil || p != IOPolicyUtility {
+		t.Fatalf("disk policy %d: %v", p, err)
 	}
 }
 

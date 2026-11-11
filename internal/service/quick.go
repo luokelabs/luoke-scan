@@ -137,6 +137,9 @@ func (s *Service) RunQuick(journal core.JournalSource) *core.Report {
 		}
 	}
 	part := core.RunRound(&ctx, []core.Rule{malware}, s.Config.Clock, last)
+	if !core.LockHeld(s.Store.Dir) { // what this one check wrote of its progress is not a round's
+		s.Store.ClearProgress()
+	}
 	// Stopped, timed out or not run: what the round found stands.
 	if ctx.IsCancelled() {
 		return nil

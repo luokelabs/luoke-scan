@@ -42,7 +42,7 @@
               "last_commit:app": "2025-09-15",
               "repos": "1",
               "size": "176 KB",
-              "would_lose": "app 有被 git 忽略、只在这台 Mac 上的：.env、data、export.csv、local.db、scratch.txt 等 7 项"
+              "would_lose": "app 有被 git 忽略、只在这台 Mac 上的：.env、data、export.csv、local.db、scratch.txt 等 7 样"
             },
             "path": "~/Projects/app",
             "rule": "stale.project",

@@ -1,0 +1,155 @@
+{
+  "about": "跑了好几天、平均不高的程序：这一轮起比上一轮一直占满（隔了 1 小时）才报",
+  "case": "rules/vitals/cpu-since-last-round",
+  "steps": [
+    {
+      "fakes": {
+        "processes": [
+          {
+            "path": "/Applications/Safari.app/Contents/MacOS/Safari",
+            "pid": 400,
+            "ppid": 1,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/opt/Indexer.app/Contents/MacOS/Indexer",
+            "pid": 4101,
+            "ppid": 400,
+            "started": "2026-10-15T12:00:00Z",
+            "uid": "$UID"
+          }
+        ],
+        "vitals": {
+          "battery": null,
+          "batteryUnknown": false,
+          "cpu": {
+            "4101": [
+              43197.0,
+              43200.0
+            ]
+          },
+          "footprint": {},
+          "memTotal": 17179869184,
+          "pressure": 1,
+          "sampleSeconds": 3,
+          "swap": 0,
+          "thermal": [
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-20T11:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T11:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "上一轮：这会儿忙，但 5 天平均才 10%",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T11:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "fakes": {
+        "vitals": {
+          "battery": null,
+          "batteryUnknown": false,
+          "cpu": {
+            "4101": [
+              46689.0,
+              46692.0
+            ]
+          },
+          "footprint": {},
+          "memTotal": 17179869184,
+          "pressure": 1,
+          "sampleSeconds": 3,
+          "swap": 0,
+          "thermal": [
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "vitals",
+            "evidence": {
+              "busy_average": "97%（这 1 小时平均）",
+              "busy_now": "100%（这会儿占一个核的多少）",
+              "program": "Indexer",
+              "running_for": "5 天"
+            },
+            "key": "~/.local/opt/Indexer.app/Contents/MacOS/Indexer",
+            "path": "~/.local/opt/Indexer.app/Contents/MacOS/Indexer",
+            "rule": "vitals.cpu",
+            "severity": "medium",
+            "title": "「Indexer」这 1 小时一直占满一个处理器核，可能卡住了",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "这一轮：比上一轮多用了 0.97 小时的处理器",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

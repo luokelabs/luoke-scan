@@ -39,16 +39,8 @@ func (r *BrowserRule) Emits() []string {
 	return []string{"browser.extensions", "browser.forced-extensions", "browser.sideloaded-extensions", "browser.native-host"}
 }
 
-// chromiumBrowsers: their user data folder under the home, and their bundle id (managed preferences).
-var chromiumBrowsers = []struct{ name, path, bundleID string }{
-	{"Chrome", "Library/Application Support/Google/Chrome", "com.google.Chrome"},
-	{"Chrome Beta", "Library/Application Support/Google/Chrome Beta", "com.google.Chrome.beta"},
-	{"Edge", "Library/Application Support/Microsoft Edge", "com.microsoft.Edge"},
-	{"Brave", "Library/Application Support/BraveSoftware/Brave-Browser", "com.brave.Browser"},
-	{"Arc", "Library/Application Support/Arc/User Data", "company.thebrowser.Browser"},
-	{"Vivaldi", "Library/Application Support/Vivaldi", "com.vivaldi.Vivaldi"},
-	{"Chromium", "Library/Application Support/Chromium", "org.chromium.Chromium"},
-}
+// chromiumBrowsers: their user data folder under the home, and their bundle id (rules/settings-files.json).
+var chromiumBrowsers []chromiumBrowser
 
 // browserEverySite: host patterns that reach every site.
 var browserEverySite = aiSet("<all_urls>", "*://*/*", "http://*/*", "https://*/*", "*://*/", "http://*/", "https://*/")
@@ -306,6 +298,9 @@ func aiFirstN(a []string, n int) []string {
 }
 
 func (r *BrowserRule) Run(ctx *Context) ([]Finding, error) {
+	if settingsErr != nil {
+		return nil, rulesMissing("settings-files.json")
+	}
 	out := []Finding{}
 	for _, b := range chromiumBrowsers {
 		root := filepath.Join(ctx.Home, b.path)

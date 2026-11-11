@@ -109,7 +109,7 @@
             "path": "",
             "rule": "posture.partial",
             "severity": "low",
-            "title": "有几项没查成：防火墙隐身模式",
+            "title": "有几样没查成：防火墙隐身模式",
             "verdict": "info"
           }
         ],

@@ -1,0 +1,522 @@
+{
+  "about": "内存不够用、占得最多的是螺壳主控装的模型引擎：照样报内存不够，不点它的名字，点名其余的；用户自己装在「应用程序」里的 oMLX 照样点名",
+  "case": "rules/vitals/memory-engine",
+  "steps": [
+    {
+      "fakes": {
+        "processes": [
+          {
+            "path": "/Applications/Safari.app/Contents/MacOS/Safari",
+            "pid": 400,
+            "ppid": 1,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Library/Application Support/luoke-core/engines/omlx-0.7.3/oMLX.app/Contents/MacOS/oMLX",
+            "pid": 4301,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Library/Application Support/luoke-core/engines/omlx-0.7.3/oMLX.app/Contents/Resources/python/bin/python3",
+            "pid": 4302,
+            "ppid": 4301,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/opt/Slack.app/Contents/MacOS/Slack",
+            "pid": 4303,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          }
+        ],
+        "vitals": {
+          "battery": null,
+          "batteryUnknown": false,
+          "cpu": {},
+          "footprint": {
+            "4301": 7130316800,
+            "4302": 943718400,
+            "4303": 1258291200
+          },
+          "memTotal": 17179869184,
+          "pressure": 2,
+          "sampleSeconds": 3,
+          "swap": 3221225472,
+          "thermal": [
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "vitals",
+            "evidence": {
+              "memory": "16 GB（这台 Mac 的内存）",
+              "pressure": "警告",
+              "swap": "3.22 GB（内存不够时借用的硬盘空间）",
+              "top": "Slack 1.26 GB"
+            },
+            "path": "",
+            "rule": "vitals.memory",
+            "severity": "medium",
+            "title": "内存不够用了，「Slack」占了 1.26 GB",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "page/overview"
+      },
+      "reply": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": [
+                {
+                  "createSurface": {
+                    "catalogId": "ai.luoke/a2ui/agent/1",
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                },
+                {
+                  "updateComponents": {
+                    "components": [
+                      {
+                        "children": [
+                          "r4",
+                          "aside1",
+                          "d15",
+                          "t16",
+                          "t17",
+                          "t18",
+                          "r20",
+                          "aside2"
+                        ],
+                        "component": "Column",
+                        "id": "root"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "h1",
+                        "text": "扫描",
+                        "variant": "h4"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "n2",
+                        "text": "上次查 10月20日 20:00",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {},
+                            "name": "scan_now"
+                          }
+                        },
+                        "child": "b3-text",
+                        "component": "Button",
+                        "id": "b3"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b3-text",
+                        "text": "现在查一下"
+                      },
+                      {
+                        "children": [
+                          "h1",
+                          "n2",
+                          "b3"
+                        ],
+                        "component": "Row",
+                        "id": "r4",
+                        "justify": "spaceBetween"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t6",
+                        "text": "这周清掉",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t7",
+                        "text": "还没清过",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t6",
+                          "t7"
+                        ],
+                        "component": "Column",
+                        "id": "s5"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t9",
+                        "text": "能清出",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t10",
+                        "text": "没有",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t9",
+                          "t10"
+                        ],
+                        "component": "Column",
+                        "id": "s8"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t12",
+                        "text": "等你处理",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t13",
+                        "text": "1 项",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t12",
+                          "t13"
+                        ],
+                        "component": "Column",
+                        "id": "s11"
+                      },
+                      {
+                        "children": [
+                          "s5",
+                          "s8",
+                          "s11"
+                        ],
+                        "component": "Row",
+                        "id": "r14",
+                        "justify": "spaceEvenly"
+                      },
+                      {
+                        "children": [
+                          "r14"
+                        ],
+                        "component": "Column",
+                        "id": "aside1",
+                        "placement": "aside"
+                      },
+                      {
+                        "component": "Divider",
+                        "id": "d15"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t16",
+                        "text": "要你看看 1",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t17",
+                        "text": "内存不够用了，「Slack」占了 1.26 GB"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t18",
+                        "text": "关掉暂时不用的程序和网页标签",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {
+                              "grant": "活动监视器"
+                            },
+                            "name": "scan_open_settings"
+                          }
+                        },
+                        "child": "b19-text",
+                        "component": "Button",
+                        "id": "b19"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b19-text",
+                        "text": "在活动监视器里看"
+                      },
+                      {
+                        "children": [
+                          "b19"
+                        ],
+                        "component": "Row",
+                        "id": "r20"
+                      },
+                      {
+                        "component": "Divider",
+                        "id": "d21"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t22",
+                        "text": "自动清理"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {
+                              "on": true
+                            },
+                            "name": "scan_autoclean"
+                          }
+                        },
+                        "child": "b23-text",
+                        "component": "Button",
+                        "id": "b23",
+                        "on": false,
+                        "variant": "switch"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b23-text",
+                        "text": "打开自动清理"
+                      },
+                      {
+                        "children": [
+                          "t22",
+                          "b23"
+                        ],
+                        "component": "Row",
+                        "id": "r24",
+                        "justify": "spaceBetween"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t25",
+                        "text": "打开后，每天那一轮不用你点就清：会重建的缓存、装好了的应用的安装包、下载文件夹里的重复文件、测试工具留下的临时文件夹。移到废纸篓的都能放回，要你定的照样先问你。",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t26",
+                        "text": "病毒库更新于 10月20日",
+                        "variant": "caption"
+                      },
+                      {
+                        "children": [
+                          "d21",
+                          "r24",
+                          "t25",
+                          "t26"
+                        ],
+                        "component": "Column",
+                        "id": "aside2",
+                        "placement": "aside"
+                      }
+                    ],
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                }
+              ],
+              "uri": "page/overview"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:01:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "summary"
+      },
+      "reply": {
+        "id": 2,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "count": 1,
+                "text": "1 项等你处理"
+              },
+              "uri": "summary"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "fakes": {
+        "processes": [
+          {
+            "path": "/Applications/Safari.app/Contents/MacOS/Safari",
+            "pid": 400,
+            "ppid": 1,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Library/Application Support/luoke-core/engines/omlx-0.7.3/oMLX.app/Contents/MacOS/oMLX",
+            "pid": 4301,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Library/Application Support/luoke-core/engines/omlx-0.7.3/oMLX.app/Contents/Resources/python/bin/python3",
+            "pid": 4302,
+            "ppid": 4301,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/opt/Slack.app/Contents/MacOS/Slack",
+            "pid": 4303,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/Applications/oMLX.app/Contents/MacOS/oMLX",
+            "pid": 4311,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "path": "~/.local/opt/Slack.app/Contents/MacOS/Slack",
+            "pid": 4312,
+            "ppid": 400,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          }
+        ],
+        "vitals": {
+          "battery": null,
+          "batteryUnknown": false,
+          "cpu": {},
+          "footprint": {
+            "4311": 5368709120,
+            "4312": 1258291200
+          },
+          "memTotal": 17179869184,
+          "pressure": 2,
+          "sampleSeconds": 3,
+          "swap": 3221225472,
+          "thermal": [
+            0,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "vitals",
+            "evidence": {
+              "memory": "16 GB（这台 Mac 的内存）",
+              "pressure": "警告",
+              "swap": "3.22 GB（内存不够时借用的硬盘空间）",
+              "top": "oMLX 5.37 GB、Slack 1.26 GB"
+            },
+            "path": "",
+            "rule": "vitals.memory",
+            "severity": "medium",
+            "title": "内存不够用了，「oMLX」占了 5.37 GB",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:02:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:02:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:02:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

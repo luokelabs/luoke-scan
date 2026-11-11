@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "about": [
+    "测试工具每跑一次在系统临时目录里建的一次性文件夹，名字是前缀加上 -、_ 或 . 再加六个以上的字母、数字。规则 leak.temp-prefix 按前缀成批报出来；这里认得的前缀，报的时候说是哪个工具留下的。",
+    "folders 每条：prefix（文件夹名去掉随机后缀）、tool（给人看的工具名）、why（依据：工具为什么建它，为什么删了不丢东西）、samples（合成的样例）。",
+    "samples：files 是在假的临时目录里建的文件（相对临时目录，第一段是这个前缀的文件夹），commandLines 是正在跑的程序的命令行（小写），expect 是该有的结论：auto（报出来，不用点就清）、ask（报出来，用户点了才清）、none（不报）。",
+    "新加的前缀只报、用户点了才清（ask）。要不用点就清，由项目审过，在 evals/cleanup/ 加上用例，清理评测挑错为 0，再把前缀加进 internal/core/autopick.go 的 autoTemp；工具在跑时就不能清的，同时加进那里的 AutoWaitForTool。"
+  ],
+  "folders": [
+    {
+      "prefix": "puppeteer_dev_chrome_profile",
+      "tool": "Puppeteer",
+      "why": "Puppeteer 每次启动 Chrome 新建的临时浏览器资料，正常关掉时自己删，测试中途被杀、崩溃时留下。里面只有那一次的浏览器资料。",
+      "samples": [{"files": ["puppeteer_dev_chrome_profile-AbC123/Default/Preferences"], "expect": "auto"}]
+    },
+    {
+      "prefix": "puppeteer_dev_firefox_profile",
+      "tool": "Puppeteer",
+      "why": "Puppeteer 每次启动 Firefox 新建的临时浏览器资料，正常关掉时自己删，中途被杀、崩溃时留下。",
+      "samples": [{"files": ["puppeteer_dev_firefox_profile-AbC123/prefs.js"], "expect": "auto"}]
+    },
+    {
+      "prefix": "playwright_chromiumdev_profile",
+      "tool": "Playwright",
+      "why": "Playwright 每次启动 Chromium 新建的临时浏览器资料，正常关掉时自己删，中途被杀、崩溃时留下。",
+      "samples": [{"files": ["playwright_chromiumdev_profile-AbC123/Default/Preferences"], "expect": "auto"}]
+    },
+    {
+      "prefix": "playwright_firefoxdev_profile",
+      "tool": "Playwright",
+      "why": "Playwright 每次启动 Firefox 新建的临时浏览器资料，正常关掉时自己删，中途被杀、崩溃时留下。",
+      "samples": [{"files": ["playwright_firefoxdev_profile-AbC123/prefs.js"], "expect": "auto"}]
+    },
+    {
+      "prefix": "playwright-artifacts",
+      "tool": "Playwright",
+      "why": "Playwright 跑测试时放下载、录屏、trace 的临时文件夹，跑完自己删，中途被杀时留下。正在跑的测试会往里写，所以 Playwright 在跑时不清（AutoWaitForTool）。",
+      "samples": [
+        {"files": ["playwright-artifacts-AbC123/trace.zip"], "expect": "auto"},
+        {"files": ["playwright-artifacts-AbC123/trace.zip"], "commandLines": ["node /work/demo/node_modules/.bin/playwright test"], "expect": "ask"}
+      ]
+    },
+    {
+      "prefix": "lighthouse",
+      "tool": "Lighthouse",
+      "why": "Lighthouse（经 chrome-launcher）每次启动 Chrome 新建的临时浏览器资料，名字是 lighthouse. 加随机后缀，正常结束时自己删，中途被杀时留下。",
+      "samples": [{"files": ["lighthouse.AbC1234/Default/Preferences"], "expect": "auto"}]
+    }
+  ]
+}

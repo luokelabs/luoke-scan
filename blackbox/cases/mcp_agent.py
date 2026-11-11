@@ -86,7 +86,7 @@ def first_run_no_fda(r: Run) -> None:
     a.call("scan_status")
 
 
-@case("mcp/agent/decide-3", "要你决定 3 项的清理方案：照默认的选项点「按这个处理」，pip 的缓存移进废纸篓", quiet=False)
+@case("mcp/agent/decide-3", "要你决定 3 项的清理方案：照默认的选项点「按上面的选择清理」，pip 的缓存移进废纸篓", quiet=False)
 def decide_3(r: Run) -> None:
     prepared(r, remove=True)
     r.scan(T0)
@@ -99,7 +99,7 @@ def decide_3(r: Run) -> None:
     a.read("summary")
 
 
-@case("mcp/agent/malware", "下载里有报毒的文件：记下说过了、移到废纸篓、另一个说不是病毒以后别提", quiet=False)
+@case("mcp/agent/malware", "下载里有报毒的文件：记下说过了、移到废纸篓、另一个说不是病毒以后别提、又撤销", quiet=False)
 def malware(r: Run) -> None:
     prepared(r)
     r.scan(T0)
@@ -108,25 +108,30 @@ def malware(r: Run) -> None:
     a.look()
     a.at(at(2)).call("outbox_ack", {"id": a.item("security", "eicar")["id"], "state": "shown"})
     a.click("scan_apply", "废纸篓", item=a.item("security", "eicar"))
-    a.click("scan_ignore", item=a.item("security", "update.scpt"))
+    scpt = a.item("security", "update.scpt")
+    a.click("scan_ignore", item=scpt)
+    a.read(OUTBOX)
+    a.at(at(3)).click("scan_ignore", "撤销", item=scpt)   # 答复那一行上的「撤销」：照样提醒
     a.read(OUTBOX)
     a.read("summary")
 
 
-@case("mcp/agent/cleaned-restore", "把临时文件夹也改成移到废纸篓、点「按这个处理」；一小时后在清理记录页上整批放回", quiet=False)
+@case("mcp/agent/cleaned-restore", "把临时文件夹也改成移到废纸篓、点「按上面的选择清理」；一小时后在清理记录页上整批放回", quiet=False)
 def cleaned_restore(r: Run) -> None:
     prepared(r, remove=True)
     r.scan(T0)
     a = Agent(r, at(1))
     a.read(OUTBOX)
-    a.at(at(5)).click("scan_apply", item=a.item("findings"), choose={"wings-*": "trash"})
+    # 改选项在扫描页上（卡片上只有「清理」）
+    a.read("page/overview")
+    a.at(at(5)).click("scan_apply", "按上面的选择清理", page="overview", choose={"临时文件": "trash"})
     a.at(at(60)).look()
     a.at(at(65)).click("scan_restore", page="cleaned")
     a.read("page/cleaned")
     a.read("permissions")
 
 
-@case("mcp/agent/autoclean-done", "打开自动清以后，空闲任务那一轮清了 4 类；放回整批，再点「以后别自动清」", quiet=False)
+@case("mcp/agent/autoclean-done", "打开自动清以后，空闲任务那一轮清了 4 类；放回整批，再点「关掉自动清理」", quiet=False)
 def autoclean_done(r: Run) -> None:
     prepared(r, remove=True, auto_kinds=True)
     a = Agent(r, days(0.2))
@@ -138,6 +143,6 @@ def autoclean_done(r: Run) -> None:
     a.at(at(10)).click("scan_restore", item=a.item("auto-done"))
     a.read("permissions")
     a.read(OUTBOX)
-    a.at(at(11)).click("scan_autoclean", "别自动清", item=a.item("auto-done"))
+    a.at(at(11)).click("scan_autoclean", "关掉自动清理", item=a.item("auto-done"))
     a.read("permissions")
     a.read("page/overview")

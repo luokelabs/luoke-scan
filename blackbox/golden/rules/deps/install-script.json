@@ -1,0 +1,782 @@
+{
+  "about": "依赖的安装脚本（要确认）：钩子运行的文件读 ~/.npmrc 再发出去（两个项目里同一个包合成一条）、依赖混淆的探测、钩子里一段编码解开就运行、全局包往 LaunchAgents 里放东西、虚拟环境里从源码装的包的 setup.py 下载就运行；钩子里换了行的第二条命令、/*! */ 后面跟着的代码、开头带 BOM 的 package.json 也查；名字用 npm 装它的文件夹的（package.json 里写的不一样时说一句）。预编译程序的下载、求赞助的横幅（经 node -e require 跟到）、node-gyp、没有钩子的包里的坏文件、钩子没运行的文件、site-packages 里的、项目自己的 package.json 不报。第二轮什么都没变照报；改好一个以后那条没了",
+  "case": "rules/deps/install-script",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "@corp/utils@99.0.0",
+              "files": "index.js",
+              "hook": "preinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 preinstall 脚本，用的是你的权限。规则查到：把这台电脑的用户名、主机名发到网上（index.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|@corp/utils@99.0.0|把这台电脑的用户名、主机名发到网上",
+            "path": "~/Projects/web/node_modules/@corp/utils",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 @corp/utils@99.0.0 安装时会把这台电脑的用户名、主机名发出去",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "bad@1.2.3",
+              "files": "lib/p.js",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "where": "项目 api、项目 web",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：读 npm 的登录令牌（~/.npmrc）再发到网上（lib/p.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|bad@1.2.3|读 npm 的登录令牌（~/.npmrc）再发到网上",
+            "path": "~/Projects/api/node_modules/bad",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 api 等 2 处的依赖 bad@1.2.3 安装时会把 npm 的登录令牌（~/.npmrc）发出去",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "banner@2.0.0",
+              "files": "i.js",
+              "hook": "install",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 install 脚本，用的是你的权限。规则查到：从网上下载代码直接运行（i.js 第 1 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|banner@2.0.0|从网上下载代码直接运行",
+            "path": "~/Projects/web/node_modules/banner",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 banner@2.0.0 安装时会从网上下载代码直接运行",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "gtool@2.0.0",
+              "files": "setup.sh",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，看看 ~/Library/LaunchAgents、crontab -l、shell 的启动文件和项目的 .github/workflows 里有没有多出来的东西",
+              "kinds": "persistence",
+              "where": "全局装的 npm 包",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：在 LaunchAgents 里放东西（开机自己运行）（setup.sh 第 2 行）；把程序登记成开机自己运行（launchctl）（setup.sh 第 3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|gtool@2.0.0|在 LaunchAgents 里放东西（开机自己运行）|把程序登记成开机自己运行（launchctl）",
+            "path": "$FIXTURE/opt-homebrew/lib/node_modules/gtool",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "全局装的 npm 包 gtool@2.0.0 安装时会在 LaunchAgents 里放东西（开机自己运行），另有 1 处要看",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "helper",
+              "files": "setup.py",
+              "hook": "setup.py",
+              "how": "先别再装这个包（装一次它的 setup.py 就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "where": "项目 py",
+              "why": "从源码装这个包时 pip 会运行它的 setup.py，用的是你的权限。规则查到：从网上下载代码直接运行（setup.py 第 3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "python|helper|从网上下载代码直接运行",
+            "path": "~/Projects/py/.venv/src/helper",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 py 里从源码装的 Python 包 helper 装的时候会从网上下载代码直接运行",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "hidden@0.0.9",
+              "files": "package.json",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：把编码过的内容解开直接运行（package.json 第 5 行）；从网上下载代码直接运行（藏在编码里）（package.json 第 5 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|hidden@0.0.9|从网上下载代码直接运行（藏在编码里）|把编码过的内容解开直接运行",
+            "path": "~/Projects/web/node_modules/hidden",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 hidden@0.0.9 安装时会把编码过的内容解开直接运行，另有 1 处要看",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "nl@1.0.0",
+              "files": "evil.js",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：把这台电脑的用户名、主机名发到网上（evil.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|nl@1.0.0|把这台电脑的用户名、主机名发到网上",
+            "path": "~/Projects/web/node_modules/nl",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 nl@1.0.0 安装时会把这台电脑的用户名、主机名发出去",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "odd@1.0.0",
+              "files": "package.json",
+              "hook": "preinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "name": "它的 package.json 里写的名字和 npm 装它的文件夹对不上（冒名的包常这样）；这里写的是文件夹的名字",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 preinstall 脚本，用的是你的权限。规则查到：从网上下载代码直接运行（package.json 第 5 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|odd@1.0.0|从网上下载代码直接运行",
+            "path": "~/Projects/web/node_modules/odd",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 odd@1.0.0 安装时会从网上下载代码直接运行",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "raect@18.0.0",
+              "files": "i.js",
+              "hook": "preinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "name": "它的 package.json 里写的名字和 npm 装它的文件夹对不上（冒名的包常这样）；这里写的是文件夹的名字",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 preinstall 脚本，用的是你的权限。规则查到：读 npm 的登录令牌（~/.npmrc）再发到网上（i.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|raect@18.0.0|读 npm 的登录令牌（~/.npmrc）再发到网上",
+            "path": "~/Projects/web/node_modules/raect",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 raect@18.0.0 安装时会把 npm 的登录令牌（~/.npmrc）发出去",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "@corp/utils@99.0.0",
+              "files": "index.js",
+              "hook": "preinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 preinstall 脚本，用的是你的权限。规则查到：把这台电脑的用户名、主机名发到网上（index.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|@corp/utils@99.0.0|把这台电脑的用户名、主机名发到网上",
+            "path": "~/Projects/web/node_modules/@corp/utils",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 @corp/utils@99.0.0 安装时会把这台电脑的用户名、主机名发出去",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "bad@1.2.3",
+              "files": "lib/p.js",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "where": "项目 api、项目 web",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：读 npm 的登录令牌（~/.npmrc）再发到网上（lib/p.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|bad@1.2.3|读 npm 的登录令牌（~/.npmrc）再发到网上",
+            "path": "~/Projects/api/node_modules/bad",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 api 等 2 处的依赖 bad@1.2.3 安装时会把 npm 的登录令牌（~/.npmrc）发出去",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "banner@2.0.0",
+              "files": "i.js",
+              "hook": "install",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 install 脚本，用的是你的权限。规则查到：从网上下载代码直接运行（i.js 第 1 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|banner@2.0.0|从网上下载代码直接运行",
+            "path": "~/Projects/web/node_modules/banner",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 banner@2.0.0 安装时会从网上下载代码直接运行",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "gtool@2.0.0",
+              "files": "setup.sh",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，看看 ~/Library/LaunchAgents、crontab -l、shell 的启动文件和项目的 .github/workflows 里有没有多出来的东西",
+              "kinds": "persistence",
+              "where": "全局装的 npm 包",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：在 LaunchAgents 里放东西（开机自己运行）（setup.sh 第 2 行）；把程序登记成开机自己运行（launchctl）（setup.sh 第 3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|gtool@2.0.0|在 LaunchAgents 里放东西（开机自己运行）|把程序登记成开机自己运行（launchctl）",
+            "path": "$FIXTURE/opt-homebrew/lib/node_modules/gtool",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "全局装的 npm 包 gtool@2.0.0 安装时会在 LaunchAgents 里放东西（开机自己运行），另有 1 处要看",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "helper",
+              "files": "setup.py",
+              "hook": "setup.py",
+              "how": "先别再装这个包（装一次它的 setup.py 就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "where": "项目 py",
+              "why": "从源码装这个包时 pip 会运行它的 setup.py，用的是你的权限。规则查到：从网上下载代码直接运行（setup.py 第 3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "python|helper|从网上下载代码直接运行",
+            "path": "~/Projects/py/.venv/src/helper",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 py 里从源码装的 Python 包 helper 装的时候会从网上下载代码直接运行",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "hidden@0.0.9",
+              "files": "package.json",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：把编码过的内容解开直接运行（package.json 第 5 行）；从网上下载代码直接运行（藏在编码里）（package.json 第 5 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|hidden@0.0.9|从网上下载代码直接运行（藏在编码里）|把编码过的内容解开直接运行",
+            "path": "~/Projects/web/node_modules/hidden",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 hidden@0.0.9 安装时会把编码过的内容解开直接运行，另有 1 处要看",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "nl@1.0.0",
+              "files": "evil.js",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：把这台电脑的用户名、主机名发到网上（evil.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|nl@1.0.0|把这台电脑的用户名、主机名发到网上",
+            "path": "~/Projects/web/node_modules/nl",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 nl@1.0.0 安装时会把这台电脑的用户名、主机名发出去",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "odd@1.0.0",
+              "files": "package.json",
+              "hook": "preinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "name": "它的 package.json 里写的名字和 npm 装它的文件夹对不上（冒名的包常这样）；这里写的是文件夹的名字",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 preinstall 脚本，用的是你的权限。规则查到：从网上下载代码直接运行（package.json 第 5 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|odd@1.0.0|从网上下载代码直接运行",
+            "path": "~/Projects/web/node_modules/odd",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 odd@1.0.0 安装时会从网上下载代码直接运行",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "raect@18.0.0",
+              "files": "i.js",
+              "hook": "preinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "name": "它的 package.json 里写的名字和 npm 装它的文件夹对不上（冒名的包常这样）；这里写的是文件夹的名字",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 preinstall 脚本，用的是你的权限。规则查到：读 npm 的登录令牌（~/.npmrc）再发到网上（i.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|raect@18.0.0|读 npm 的登录令牌（~/.npmrc）再发到网上",
+            "path": "~/Projects/web/node_modules/raect",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 raect@18.0.0 安装时会把 npm 的登录令牌（~/.npmrc）发出去",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "什么都没变：读过的不再读，照报",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "bad@1.2.3",
+              "files": "lib/p.js",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "where": "项目 api、项目 web",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：读 npm 的登录令牌（~/.npmrc）再发到网上（lib/p.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|bad@1.2.3|读 npm 的登录令牌（~/.npmrc）再发到网上",
+            "path": "~/Projects/api/node_modules/bad",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 api 等 2 处的依赖 bad@1.2.3 安装时会把 npm 的登录令牌（~/.npmrc）发出去",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "banner@2.0.0",
+              "files": "i.js",
+              "hook": "install",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 install 脚本，用的是你的权限。规则查到：从网上下载代码直接运行（i.js 第 1 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|banner@2.0.0|从网上下载代码直接运行",
+            "path": "~/Projects/web/node_modules/banner",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 banner@2.0.0 安装时会从网上下载代码直接运行",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "gtool@2.0.0",
+              "files": "setup.sh",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，看看 ~/Library/LaunchAgents、crontab -l、shell 的启动文件和项目的 .github/workflows 里有没有多出来的东西",
+              "kinds": "persistence",
+              "where": "全局装的 npm 包",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：在 LaunchAgents 里放东西（开机自己运行）（setup.sh 第 2 行）；把程序登记成开机自己运行（launchctl）（setup.sh 第 3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|gtool@2.0.0|在 LaunchAgents 里放东西（开机自己运行）|把程序登记成开机自己运行（launchctl）",
+            "path": "$FIXTURE/opt-homebrew/lib/node_modules/gtool",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "全局装的 npm 包 gtool@2.0.0 安装时会在 LaunchAgents 里放东西（开机自己运行），另有 1 处要看",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "helper",
+              "files": "setup.py",
+              "hook": "setup.py",
+              "how": "先别再装这个包（装一次它的 setup.py 就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "where": "项目 py",
+              "why": "从源码装这个包时 pip 会运行它的 setup.py，用的是你的权限。规则查到：从网上下载代码直接运行（setup.py 第 3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "python|helper|从网上下载代码直接运行",
+            "path": "~/Projects/py/.venv/src/helper",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 py 里从源码装的 Python 包 helper 装的时候会从网上下载代码直接运行",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "hidden@0.0.9",
+              "files": "package.json",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：把编码过的内容解开直接运行（package.json 第 5 行）；从网上下载代码直接运行（藏在编码里）（package.json 第 5 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|hidden@0.0.9|从网上下载代码直接运行（藏在编码里）|把编码过的内容解开直接运行",
+            "path": "~/Projects/web/node_modules/hidden",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 hidden@0.0.9 安装时会把编码过的内容解开直接运行，另有 1 处要看",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "nl@1.0.0",
+              "files": "evil.js",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：把这台电脑的用户名、主机名发到网上（evil.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|nl@1.0.0|把这台电脑的用户名、主机名发到网上",
+            "path": "~/Projects/web/node_modules/nl",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 nl@1.0.0 安装时会把这台电脑的用户名、主机名发出去",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "odd@1.0.0",
+              "files": "package.json",
+              "hook": "preinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "name": "它的 package.json 里写的名字和 npm 装它的文件夹对不上（冒名的包常这样）；这里写的是文件夹的名字",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 preinstall 脚本，用的是你的权限。规则查到：从网上下载代码直接运行（package.json 第 5 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|odd@1.0.0|从网上下载代码直接运行",
+            "path": "~/Projects/web/node_modules/odd",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 odd@1.0.0 安装时会从网上下载代码直接运行",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "raect@18.0.0",
+              "files": "i.js",
+              "hook": "preinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "name": "它的 package.json 里写的名字和 npm 装它的文件夹对不上（冒名的包常这样）；这里写的是文件夹的名字",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 preinstall 脚本，用的是你的权限。规则查到：读 npm 的登录令牌（~/.npmrc）再发到网上（i.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|raect@18.0.0|读 npm 的登录令牌（~/.npmrc）再发到网上",
+            "path": "~/Projects/web/node_modules/raect",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 raect@18.0.0 安装时会把 npm 的登录令牌（~/.npmrc）发出去",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "@corp/utils 换成了正常的版本：那条没了",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "bad@1.2.3",
+              "files": "lib/p.js",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "where": "项目 api、项目 web",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：读 npm 的登录令牌（~/.npmrc）再发到网上（lib/p.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|bad@1.2.3|读 npm 的登录令牌（~/.npmrc）再发到网上",
+            "path": "~/Projects/api/node_modules/bad",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 api 等 2 处的依赖 bad@1.2.3 安装时会把 npm 的登录令牌（~/.npmrc）发出去",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "banner@2.0.0",
+              "files": "i.js",
+              "hook": "install",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 install 脚本，用的是你的权限。规则查到：从网上下载代码直接运行（i.js 第 1 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|banner@2.0.0|从网上下载代码直接运行",
+            "path": "~/Projects/web/node_modules/banner",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 banner@2.0.0 安装时会从网上下载代码直接运行",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "gtool@2.0.0",
+              "files": "setup.sh",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，看看 ~/Library/LaunchAgents、crontab -l、shell 的启动文件和项目的 .github/workflows 里有没有多出来的东西",
+              "kinds": "persistence",
+              "where": "全局装的 npm 包",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：在 LaunchAgents 里放东西（开机自己运行）（setup.sh 第 2 行）；把程序登记成开机自己运行（launchctl）（setup.sh 第 3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|gtool@2.0.0|在 LaunchAgents 里放东西（开机自己运行）|把程序登记成开机自己运行（launchctl）",
+            "path": "$FIXTURE/opt-homebrew/lib/node_modules/gtool",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "全局装的 npm 包 gtool@2.0.0 安装时会在 LaunchAgents 里放东西（开机自己运行），另有 1 处要看",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "helper",
+              "files": "setup.py",
+              "hook": "setup.py",
+              "how": "先别再装这个包（装一次它的 setup.py 就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "where": "项目 py",
+              "why": "从源码装这个包时 pip 会运行它的 setup.py，用的是你的权限。规则查到：从网上下载代码直接运行（setup.py 第 3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "python|helper|从网上下载代码直接运行",
+            "path": "~/Projects/py/.venv/src/helper",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 py 里从源码装的 Python 包 helper 装的时候会从网上下载代码直接运行",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "hidden@0.0.9",
+              "files": "package.json",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：把编码过的内容解开直接运行（package.json 第 5 行）；从网上下载代码直接运行（藏在编码里）（package.json 第 5 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|hidden@0.0.9|从网上下载代码直接运行（藏在编码里）|把编码过的内容解开直接运行",
+            "path": "~/Projects/web/node_modules/hidden",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 hidden@0.0.9 安装时会把编码过的内容解开直接运行，另有 1 处要看",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "nl@1.0.0",
+              "files": "evil.js",
+              "hook": "postinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 postinstall 脚本，用的是你的权限。规则查到：把这台电脑的用户名、主机名发到网上（evil.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|nl@1.0.0|把这台电脑的用户名、主机名发到网上",
+            "path": "~/Projects/web/node_modules/nl",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 nl@1.0.0 安装时会把这台电脑的用户名、主机名发出去",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "odd@1.0.0",
+              "files": "package.json",
+              "hook": "preinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，它下载的程序可能已经在跑，看看病毒扫描和开机自己运行的东西",
+              "kinds": "download-exec",
+              "name": "它的 package.json 里写的名字和 npm 装它的文件夹对不上（冒名的包常这样）；这里写的是文件夹的名字",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 preinstall 脚本，用的是你的权限。规则查到：从网上下载代码直接运行（package.json 第 5 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|odd@1.0.0|从网上下载代码直接运行",
+            "path": "~/Projects/web/node_modules/odd",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 odd@1.0.0 安装时会从网上下载代码直接运行",
+            "verdict": "confirm"
+          },
+          {
+            "category": "malware",
+            "evidence": {
+              "dependency": "raect@18.0.0",
+              "files": "i.js",
+              "hook": "preinstall",
+              "how": "先别在这个项目里再装依赖（装一次它就再跑一次）；到包的主页或代码仓库看看这个版本是不是被人报过，认不出就换掉或删掉这个依赖；装过的话，把它可能读过的令牌和密钥（npm、GitHub、云服务、SSH）换新的",
+              "kinds": "exfil",
+              "name": "它的 package.json 里写的名字和 npm 装它的文件夹对不上（冒名的包常这样）；这里写的是文件夹的名字",
+              "where": "项目 web",
+              "why": "装这个包时 npm 会自动运行它的 preinstall 脚本，用的是你的权限。规则查到：读 npm 的登录令牌（~/.npmrc）再发到网上（i.js 第 2、3 行）。规则会看错，所以是要确认，不是急事"
+            },
+            "key": "npm|raect@18.0.0|读 npm 的登录令牌（~/.npmrc）再发到网上",
+            "path": "~/Projects/web/node_modules/raect",
+            "rule": "deps.install-script",
+            "severity": "medium",
+            "title": "项目 web 的依赖 raect@18.0.0 安装时会把 npm 的登录令牌（~/.npmrc）发出去",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents 里散落的密钥没看（看了 macOS 会弹框问你）",
+            "rule": "secrets"
+          },
+          {
+            "reason": "没有完全磁盘访问，Downloads、Desktop、Documents、Music 里的重复文件没看（看了 macOS 会弹框问你）",
+            "rule": "space.duplicates"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里新来的文件有没有病毒没看（看了 macOS 会弹框问你）",
+            "rule": "malware"
+          },
+          {
+            "reason": "没有完全磁盘访问，下载文件夹里的安装包和没下完的下载没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.installer"
+          },
+          {
+            "reason": "没有完全磁盘访问，别的应用的容器里留下的数据没看（看了 macOS 会弹框问你）",
+            "rule": "leftover.app-data"
+          },
+          {
+            "reason": "没有完全磁盘访问，桌面、文稿、下载里很久没打开的大文件没看（看了 macOS 会弹框问你）",
+            "rule": "stale.large-file"
+          }
+        ],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "没有完全磁盘访问：项目目录不在文稿里，照报",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json",
+        "--no-full-disk-access"
+      ]
+    }
+  ]
+}

@@ -47,33 +47,9 @@ type staleArtifactKind struct {
 	again string
 }
 
-var staleArtifactKinds = []staleArtifactKind{
-	{"node_modules", []string{"package.json"}, "", "npm install（或 yarn、pnpm）"},
-	{".next", []string{"package.json"}, "", "重新构建"},
-	{".nuxt", []string{"package.json"}, "", "重新构建"},
-	{".svelte-kit", []string{"package.json"}, "", "重新构建"},
-	{".turbo", []string{"package.json"}, "", "重新构建"},
-	{".parcel-cache", []string{"package.json"}, "", "重新构建"},
-	{"target", []string{"Cargo.toml"}, "", "cargo build"},
-	{"target", []string{"pom.xml"}, "", "mvn package"},
-	{".build", []string{"Package.swift"}, "", "swift build"},
-	{"build", []string{"build.gradle", "build.gradle.kts"}, "", "gradle build"},
-	{".gradle", []string{"build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts"}, "", "gradle build"},
-	{"build", []string{"CMakeLists.txt"}, "CMakeCache.txt", "cmake 再配置、构建一遍"},
-	{"Pods", []string{"Podfile"}, "", "pod install"},
-	{"DerivedData", []string{"*.xcodeproj", "*.xcworkspace"}, "", "在 Xcode 里构建"},
-	{".venv", []string{"pyproject.toml", "requirements.txt", "setup.py", "Pipfile"}, "pyvenv.cfg", "重新建虚拟环境、装依赖"},
-	{"venv", []string{"pyproject.toml", "requirements.txt", "setup.py", "Pipfile"}, "pyvenv.cfg", "重新建虚拟环境、装依赖"},
-	{".tox", []string{"tox.ini"}, "", "tox"},
-	{".dart_tool", []string{"pubspec.yaml"}, "", "dart pub get"},
-	{".zig-cache", []string{"build.zig"}, "", "zig build"},
-	{"zig-cache", []string{"build.zig"}, "", "zig build"},
-	{".stack-work", []string{"stack.yaml"}, "", "stack build"},
-	{"_build", []string{"mix.exs"}, "", "mix compile"},
-	{"deps", []string{"mix.exs"}, "", "mix deps.get"},
-	{"Library", []string{"ProjectSettings/ProjectVersion.txt"}, "", "用 Unity 打开项目，它会重新导入"},
-	{"Temp", []string{"ProjectSettings/ProjectVersion.txt"}, "", "用 Unity 打开项目"},
-}
+// staleArtifactKinds are the kinds known (rules/build-artifacts.json), in order: of several for one folder name, the
+// first whose markers are there.
+var staleArtifactKinds []staleArtifactKind
 
 // StaleArtifact is one such folder, relative to the project, with its size.
 type StaleArtifact struct {
@@ -315,7 +291,7 @@ func staleFirst(items []string, n int) string {
 	if len(items) <= n {
 		return strings.Join(items, "、")
 	}
-	return strings.Join(items[:n], "、") + " 等 " + strconv.Itoa(len(items)) + " 项"
+	return strings.Join(items[:n], "、") + " 等 " + strconv.Itoa(len(items)) + " 样"
 }
 
 // staleVerdict is what a folder was found to be, as kept between rounds.
@@ -350,6 +326,9 @@ func staleArtifactsOf(dir string) []StaleArtifact {
 }
 
 func (r *StaleProjectRule) Run(ctx *Context) ([]Finding, error) {
+	if artifactsErr != nil {
+		return nil, rulesMissing("build-artifacts.json")
+	}
 	since := ctx.Now.Add(-ctx.StaleAfter)
 	var table Table[staleRow]
 	known := map[string]staleRow{}
@@ -512,7 +491,7 @@ func (r *StaleProjectRule) Run(ctx *Context) ([]Finding, error) {
 			}
 			out = append(out, Finding{Rule: "stale.folders", Category: CatStaleProject, Severity: Low, Verdict: Info, Path: root,
 				Bytes:    Size(total),
-				Title:    filepath.Base(root) + " 里有 " + strconv.Itoa(len(plain)) + " 个文件夹半年多没动过（不在 git 里，无法确认别处有没有副本）",
+				Title:    DisplayName(root) + " 里有 " + strconv.Itoa(len(plain)) + " 个文件夹半年多没动过（不在 git 里，无法确认别处有没有副本）",
 				Evidence: map[string]string{"count": strconv.Itoa(len(plain)), "size": FormatBytes(total), "folders": strings.Join(listed, "；")}})
 		}
 	}

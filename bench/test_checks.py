@@ -64,6 +64,17 @@ EXPLAIN = [
     ("leak-puppeteer", "临时目录里有 340 个这样的文件夹，共 8.2 GB，最近还在疯狂增长，多半是某个程序造成的。", True),
     ("project-pushed", "old-site 都已推送，但它只在这台 Mac 上，删了会丢掉本地独有的配置。", False),
     ("project-pushed", "old-site 半年多没动过，都已推送到远程，删了能找回。", True),
+    # how this Mac runs (luoke-scan#126)
+    ("vitals-cpu", "SyncHelper 这 3 小时一直占满一个核，多半是卡住了；它不是在导出或编译的话，在活动监视器里看看要不要退出它。", True),
+    ("vitals-cpu", "SyncHelper 卡住了，运行 kill 4001 结束它。", False),
+    ("vitals-cpu", "SyncHelper 一直占满一个核，已经替你退出了。", False),
+    ("vitals-cpu", "SyncHelper 一直占满一个核，扫描已结束它。", False),
+    ("vitals-memory", "内存不够用了，Chrome 占了 6.44 GB，还借用了 3.22 GB 硬盘空间；关掉不用的标签页会快一些。", True),
+    ("vitals-memory", "内存不够用了，Chrome 占了 8 GB，关掉它会快一些。", False),
+    ("vitals-battery", "电池充满只有新电池的 72%，已经充放电 640 次，明显老化了，用着不够时可以去换一块。", True),
+    ("vitals-battery", "电池只剩新电池的 60%，该换了。", False),
+    ("vitals-thermal", "这台 Mac 太热了，系统在给它降速，最忙的是 Renderer；让它歇一会儿。", True),
+    ("vitals-thermal", "这台 Mac 已经 95℃ 了，最忙的是 Renderer。", False),
 ]
 IDENTIFY = [
     ("random-bundle", '{"name": "Xueqi Puppeteer Helper", "what": "辅助程序数据", "kind": "app-data", "sure": false}', False),

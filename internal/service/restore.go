@@ -39,8 +39,11 @@ type Cleaned struct {
 	RestoredTo *string    `json:"restoredTo,omitempty"`
 	Rule       string     `json:"rule"`
 	Title      string     `json:"title"`
-	// Trashed is where it is in the Trash; nil when it was deleted for good (a cache its tool rebuilds).
+	// Trashed is where it is in the Trash; nil when it was deleted for good (a cache its tool rebuilds), or when there
+	// was nothing before a file this tool wrote (Wrote).
 	Trashed *string `json:"trashed,omitempty"`
+	// Wrote: a config this tool wrote in its place (改成不跑); putting back takes that one away first.
+	Wrote *Wrote `json:"wrote,omitempty"`
 }
 
 // cleanLine is one line of the clean-up record: something went to the Trash (trashed, the whole entry) or came back.
@@ -169,7 +172,7 @@ func (l cleanLog) load() []Cleaned {
 func (l cleanLog) compact(now time.Time) {
 	var data []byte
 	for _, e := range l.load() {
-		if now.Sub(e.At.Time) >= cleanKeepFor {
+		if now.Sub(e.At.Time) >= cleanKeepFor && !newConfigThere(e) { // a config made by 改成不跑: kept while it is there
 			if e.Restored != nil || e.Trashed == nil {
 				continue
 			}
@@ -462,8 +465,8 @@ func (s *Service) PutBackIDs(ids []string) []PutBack {
 		if e.Auto != nil {
 			against[*e.Auto] = true
 		}
-		note := ""
-		if to != target {
+		note := why // what putting back has to say about it (a config changed since stays)
+		if note == "" && to != target {
 			note = "原来的位置有同名的了，放在旁边：" + filepath.Base(to)
 		}
 		out = append(out, PutBack{Title: e.Title, To: to, Note: note})
@@ -535,8 +538,8 @@ func (s *Service) restoreTool(args, meta O) (ToolOutput, error) {
 		for _, d := range back {
 			if d.Note != "" {
 				lines = append(lines, d.Title+"："+d.Note)
-			} else {
-				lines = append(lines, d.Title)
+			} else if t := friendlyName(d.Title); !contains(lines, t) { // 同一个工具的一串临时文件夹合成一行
+				lines = append(lines, t)
 			}
 		}
 		for _, d := range before {
@@ -568,6 +571,14 @@ func (s *Service) restoreTool(args, meta O) (ToolOutput, error) {
 // putBackOne puts one entry back, into place when given (a folder of the same batch came back under another name).
 // Where it went, or "" and why not.
 func (s *Service) putBackOne(e Cleaned, place string) (string, string) {
+	if e.Wrote != nil {
+		return s.putBackWrote(e, place)
+	}
+	return s.putBackTrashed(e, place)
+}
+
+// putBackTrashed puts back what went to the Trash.
+func (s *Service) putBackTrashed(e Cleaned, place string) (string, string) {
 	if e.Trashed == nil {
 		switch {
 		case strings.HasPrefix(e.Rule, "cache."):
@@ -669,6 +680,17 @@ func besideName(name string, n int) string {
 // openFolder is dir, opened from the home or temp folder down one folder at a time without following a link, the
 // missing ones made as it goes (0700: only this user); -1 and why when it cannot be. The caller closes it.
 func (s *Service) openFolder(dir string) (int, string) {
+	fd, why, _ := s.openFolderAt(dir, true)
+	return fd, why
+}
+
+// openFolderAt is openFolder; create false: a folder not there is not made, and missing says so (-1 then).
+func (s *Service) openFolderAt(dir string, create bool) (fd int, why string, missing bool) {
+	fd, why = s.openFolderWalk(dir, create, &missing)
+	return fd, why, missing
+}
+
+func (s *Service) openFolderWalk(dir string, create bool, missing *bool) (int, string) {
 	p := filepath.Clean(dir)
 	roots := []string{s.Config.Context.Home}
 	if s.Config.Context.Tmp != "" {
@@ -694,6 +716,11 @@ func (s *Service) openFolder(dir string) (int, string) {
 				}
 				flags := syscall.O_RDONLY | syscall.O_DIRECTORY | syscall.O_NOFOLLOW | syscall.O_CLOEXEC
 				next, err := core.Openat(fd, part, flags, 0)
+				if err == syscall.ENOENT && !create {
+					syscall.Close(fd)
+					*missing = true
+					return -1, "原来的文件夹不在了"
+				}
 				if err == syscall.ENOENT {
 					if e := core.Mkdirat(fd, part, 0o700); e != nil && e != syscall.EEXIST {
 						syscall.Close(fd)

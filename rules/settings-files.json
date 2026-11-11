@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "about": [
+    "要读的设置文件在哪：Chromium 系浏览器的扩展（规则 browser）、AI 工具的 MCP 设置（规则 mcp）。这里只是位置；哪些扩展、哪些服务器要提，密钥长什么样，多严重，都在代码里。",
+    "browsers 每条：name（给人看的浏览器名）、path（用户数据文件夹，相对家目录：里面的 Default、Profile N 是各个资料，NativeMessagingHosts 是扩展能启动的程序）、bundleID（读管理员策略强制装的扩展用）、why（依据）、samples（合成的样例）。",
+    "mcp 每条：tool（给人看的工具名）、path（设置文件，相对家目录）、key（服务器列在哪个键下）、why、samples。",
+    "samples：write 是在假的家目录里写的文件（相对家目录）和内容（字符串原样写，对象写成 JSON），expect 是该有的发现（browser.extensions、mcp.servers 这类规则名），none 是不该有。"
+  ],
+  "browsers": [
+    {
+      "name": "Chrome", "path": "Library/Application Support/Google/Chrome", "bundleID": "com.google.Chrome",
+      "why": "Chrome 的用户数据文件夹和 bundle id。",
+      "samples": [{"write": {"Library/Application Support/Google/Chrome/Default/Extensions/aaaabbbbccccddddeeeeffffgggghhhh/1.0_0/manifest.json": {"name": "示例扩展", "manifest_version": 3, "host_permissions": ["<all_urls>"]}}, "expect": "browser.extensions"}]
+    },
+    {
+      "name": "Chrome Beta", "path": "Library/Application Support/Google/Chrome Beta", "bundleID": "com.google.Chrome.beta",
+      "why": "Chrome Beta 的用户数据文件夹和 bundle id，和正式版分开。",
+      "samples": [{"write": {"Library/Application Support/Google/Chrome Beta/Profile 1/Extensions/aaaabbbbccccddddeeeeffffgggghhhh/1.0_0/manifest.json": {"name": "示例扩展", "manifest_version": 3, "host_permissions": ["<all_urls>"]}}, "expect": "browser.extensions"}]
+    },
+    {
+      "name": "Edge", "path": "Library/Application Support/Microsoft Edge", "bundleID": "com.microsoft.Edge",
+      "why": "Microsoft Edge 的用户数据文件夹和 bundle id。",
+      "samples": [{"write": {"Library/Application Support/Microsoft Edge/Default/Extensions/aaaabbbbccccddddeeeeffffgggghhhh/1.0_0/manifest.json": {"name": "示例扩展", "manifest_version": 3, "host_permissions": ["<all_urls>"]}}, "expect": "browser.extensions"}]
+    },
+    {
+      "name": "Brave", "path": "Library/Application Support/BraveSoftware/Brave-Browser", "bundleID": "com.brave.Browser",
+      "why": "Brave 的用户数据文件夹和 bundle id。",
+      "samples": [{"write": {"Library/Application Support/BraveSoftware/Brave-Browser/Default/Extensions/aaaabbbbccccddddeeeeffffgggghhhh/1.0_0/manifest.json": {"name": "示例扩展", "manifest_version": 3, "host_permissions": ["<all_urls>"]}}, "expect": "browser.extensions"}]
+    },
+    {
+      "name": "Arc", "path": "Library/Application Support/Arc/User Data", "bundleID": "company.thebrowser.Browser",
+      "why": "Arc 的 Chromium 用户数据文件夹（在 Arc 文件夹下的 User Data 里）和 bundle id。",
+      "samples": [{"write": {"Library/Application Support/Arc/User Data/Default/Extensions/aaaabbbbccccddddeeeeffffgggghhhh/1.0_0/manifest.json": {"name": "示例扩展", "manifest_version": 3, "host_permissions": ["<all_urls>"]}}, "expect": "browser.extensions"}]
+    },
+    {
+      "name": "Vivaldi", "path": "Library/Application Support/Vivaldi", "bundleID": "com.vivaldi.Vivaldi",
+      "why": "Vivaldi 的用户数据文件夹和 bundle id。",
+      "samples": [{"write": {"Library/Application Support/Vivaldi/Default/Extensions/aaaabbbbccccddddeeeeffffgggghhhh/1.0_0/manifest.json": {"name": "示例扩展", "manifest_version": 3, "host_permissions": ["<all_urls>"]}}, "expect": "browser.extensions"}]
+    },
+    {
+      "name": "Chromium", "path": "Library/Application Support/Chromium", "bundleID": "org.chromium.Chromium",
+      "why": "Chromium 的用户数据文件夹和 bundle id。",
+      "samples": [{"write": {"Library/Application Support/Chromium/Default/Extensions/aaaabbbbccccddddeeeeffffgggghhhh/1.0_0/manifest.json": {"name": "示例扩展", "manifest_version": 3, "host_permissions": ["<all_urls>"]}}, "expect": "browser.extensions"}]
+    }
+  ],
+  "mcp": [
+    {
+      "tool": "Claude Code", "path": ".claude.json", "key": "mcpServers",
+      "why": "Claude Code 用户级的 MCP 服务器在 ~/.claude.json 的 mcpServers 下；各项目的在 projects 下，代码里一起读。",
+      "samples": [{"write": {".claude.json": {"mcpServers": {"demo": {"command": "npx", "args": ["-y", "demo-mcp-server@1.0.0"]}}}}, "expect": "mcp.servers"}]
+    },
+    {
+      "tool": "Claude 桌面版", "path": "Library/Application Support/Claude/claude_desktop_config.json", "key": "mcpServers",
+      "why": "Claude 桌面版的 MCP 服务器写在 claude_desktop_config.json 的 mcpServers 下。",
+      "samples": [{"write": {"Library/Application Support/Claude/claude_desktop_config.json": {"mcpServers": {"demo": {"command": "uvx", "args": ["demo-mcp-server==1.0.0"]}}}}, "expect": "mcp.servers"}]
+    },
+    {
+      "tool": "Cursor", "path": ".cursor/mcp.json", "key": "mcpServers",
+      "why": "Cursor 全局的 MCP 服务器写在 ~/.cursor/mcp.json 的 mcpServers 下。",
+      "samples": [{"write": {".cursor/mcp.json": {"mcpServers": {"demo": {"command": "npx", "args": ["-y", "demo-mcp-server@1.0.0"]}}}}, "expect": "mcp.servers"}]
+    },
+    {
+      "tool": "Windsurf", "path": ".codeium/windsurf/mcp_config.json", "key": "mcpServers",
+      "why": "Windsurf 的 MCP 服务器写在 ~/.codeium/windsurf/mcp_config.json 的 mcpServers 下。",
+      "samples": [{"write": {".codeium/windsurf/mcp_config.json": {"mcpServers": {"demo": {"command": "npx", "args": ["-y", "demo-mcp-server@1.0.0"]}}}}, "expect": "mcp.servers"}]
+    },
+    {
+      "tool": "VS Code", "path": "Library/Application Support/Code/User/mcp.json", "key": "servers",
+      "why": "VS Code 用户级的 MCP 服务器写在 User/mcp.json 里，键是 servers，不是 mcpServers。",
+      "samples": [
+        {"write": {"Library/Application Support/Code/User/mcp.json": {"servers": {"demo": {"command": "npx", "args": ["-y", "demo-mcp-server@1.0.0"]}}}}, "expect": "mcp.servers"},
+        {"write": {"Library/Application Support/Code/User/mcp.json": {"mcpServers": {"demo": {"command": "npx", "args": ["-y", "demo-mcp-server@1.0.0"]}}}}, "expect": "none"}
+      ]
+    },
+    {
+      "tool": "Gemini CLI", "path": ".gemini/settings.json", "key": "mcpServers",
+      "why": "Gemini CLI 用户级的 MCP 服务器写在 ~/.gemini/settings.json 的 mcpServers 下。",
+      "samples": [{"write": {".gemini/settings.json": {"mcpServers": {"demo": {"command": "npx", "args": ["-y", "demo-mcp-server@1.0.0"]}}}}, "expect": "mcp.servers"}]
+    },
+    {
+      "tool": "LM Studio", "path": ".lmstudio/mcp.json", "key": "mcpServers",
+      "why": "LM Studio 的 MCP 服务器写在 ~/.lmstudio/mcp.json 的 mcpServers 下。",
+      "samples": [{"write": {".lmstudio/mcp.json": {"mcpServers": {"demo": {"command": "npx", "args": ["-y", "demo-mcp-server@1.0.0"]}}}}, "expect": "mcp.servers"}]
+    }
+  ]
+}

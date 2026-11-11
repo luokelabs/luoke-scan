@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "about": [
+    "只报不删的空间大户（规则 space.system）：容器和虚拟机工具的虚拟磁盘、AI 工具下载的模型。这里只是位置；结论（仅供参考、要确认）和多大才报在代码里。",
+    "vmDisks 每条：tool（给人看的工具名）、paths（虚拟磁盘所在的文件夹，相对家目录；量的是各处加起来，第一处是发现指向的位置）、explain（给人看：为什么占这么多）、how（给人看：怎么腾空间）、signs（可选：工具装着的迹象，家目录里的 folder 或「应用程序」里的 app；没有完全磁盘访问、看不了它的容器时，有迹象才说「没看」）、why（依据）、samples（合成的样例）。",
+    "aiModels 每条：tool、path（相对家目录）、models（可选：一个模型一个文件夹时怎么认，huggingface 是 models--组织--名字 和 datasets--组织--名字，publisher/model 是「发布者/模型」两层；不写就只算这个文件夹总共多大）、how（给人看）、why、samples。",
+    "samples：files 是在假的家目录里建的文件（相对家目录），expect 是该有的结论：found（报出来）、none（不报）；models 是该单独列出来的模型名。"
+  ],
+  "vmDisks": [
+    {
+      "tool": "Docker Desktop",
+      "paths": ["Library/Containers/com.docker.docker/Data/vms"],
+      "explain": "镜像、容器、数据卷和构建缓存都在这块虚拟磁盘里，删了的东西不一定会把空间还回来",
+      "how": "`docker system df` 看占在哪，`docker system prune` 清掉不用的镜像、容器和构建缓存；虚拟磁盘的上限在 Docker Desktop 的 设置 → Resources",
+      "signs": {"folder": ".docker", "app": "Docker.app"},
+      "why": "Docker Desktop 把整台 Linux 虚拟机的磁盘（Docker.raw，稀疏文件，按实际占用算）放在它的容器里。里面有用户的数据卷，只报不删。",
+      "samples": [{"files": ["Library/Containers/com.docker.docker/Data/vms/0/data/Docker.raw"], "expect": "found"}]
+    },
+    {
+      "tool": "OrbStack",
+      "paths": [".orbstack/data", "Library/Group Containers/HUAQ24HBR6.dev.orbstack/data"],
+      "explain": "镜像、容器、数据卷和构建缓存都在这块虚拟磁盘里，删了的东西不一定会把空间还回来",
+      "how": "`docker system prune` 清掉不用的；OrbStack 会把空出来的空间还给系统",
+      "signs": {"folder": ".orbstack", "app": "OrbStack.app"},
+      "why": "OrbStack 的虚拟磁盘在 ~/.orbstack/data，新版放在它的 Group Container 里。里面有容器和数据卷，只报不删。",
+      "samples": [{"files": [".orbstack/data/data.img"], "expect": "found"}]
+    },
+    {
+      "tool": "colima",
+      "paths": [".colima", ".lima"],
+      "explain": "镜像、容器、数据卷和构建缓存都在这块虚拟磁盘里，删了的东西不一定会把空间还回来",
+      "how": "`docker system prune` 清掉不用的；整台虚拟机都不要了用 `colima delete`（里面的东西都会没）",
+      "why": "colima 经 Lima 起虚拟机，虚拟机的磁盘在 ~/.colima 和 ~/.lima。里面有容器和数据卷，只报不删。",
+      "samples": [{"files": [".colima/_lima/colima/diffdisk"], "expect": "found"}]
+    },
+    {
+      "tool": "Podman",
+      "paths": [".local/share/containers/podman/machine"],
+      "explain": "镜像、容器、数据卷和构建缓存都在这块虚拟磁盘里，删了的东西不一定会把空间还回来",
+      "how": "`podman system prune` 清掉不用的；不要了用 `podman machine rm`",
+      "why": "podman machine 的虚拟机磁盘在这里。里面有容器和数据卷，只报不删。",
+      "samples": [{"files": [".local/share/containers/podman/machine/applehv/podman-machine-default-arm64.raw"], "expect": "found"}]
+    },
+    {
+      "tool": "lume",
+      "paths": [".lume"],
+      "explain": "每台 macOS 虚拟机一个文件夹，里面是它的整块硬盘；虚拟机里删了东西，这里不一定变小",
+      "how": "`lume ls` 看有哪些虚拟机，用不到的 `lume delete <名字>` 删掉（那台虚拟机里的东西都会没）",
+      "why": "lume 的 macOS 虚拟机放在 ~/.lume，一台一个文件夹。整台虚拟机都在里面，只报不删。",
+      "samples": [{"files": [".lume/demo-vm/disk.img"], "expect": "found"}]
+    }
+  ],
+  "aiModels": [
+    {
+      "tool": "Hugging Face",
+      "path": ".cache/huggingface/hub",
+      "models": "huggingface",
+      "how": "用不到了就删；再用时会重新下载",
+      "why": "huggingface_hub 下载的模型和数据集，一个仓库一个 models--组织--名字 文件夹，文件放在共用的 blobs 里、从各个仓库链过去。再用时重新下载。",
+      "samples": [{"files": [".cache/huggingface/hub/models--demo-org--demo-model/snapshots/0123abcd/model.safetensors"], "models": ["demo-org/demo-model"], "expect": "found"}]
+    },
+    {
+      "tool": "LM Studio",
+      "path": ".lmstudio/models",
+      "models": "publisher/model",
+      "how": "用不到了在 LM Studio 里删，或删这个文件夹；再用时会重新下载",
+      "why": "LM Studio 下载的模型，按「发布者/模型」两层放。再用时重新下载。",
+      "samples": [{"files": [".lmstudio/models/demo-publisher/demo-model-GGUF/demo-model-Q4_K_M.gguf"], "models": ["demo-publisher/demo-model-GGUF"], "expect": "found"}]
+    },
+    {
+      "tool": "LM Studio",
+      "path": ".cache/lm-studio/models",
+      "models": "publisher/model",
+      "how": "用不到了在 LM Studio 里删，或删这个文件夹；再用时会重新下载",
+      "why": "旧版 LM Studio 放模型的位置，也是「发布者/模型」两层。",
+      "samples": [{"files": [".cache/lm-studio/models/demo-publisher/demo-model-GGUF/demo-model-Q4_K_M.gguf"], "models": ["demo-publisher/demo-model-GGUF"], "expect": "found"}]
+    },
+    {
+      "tool": "Ollama",
+      "path": ".ollama/models",
+      "how": "`ollama list` 看有哪些，`ollama rm <名字>` 删掉用不到的",
+      "why": "Ollama 拉下来的模型（blobs 和 manifests），只算总共多大；删要经 ollama rm，不按文件夹删。",
+      "samples": [{"files": [".ollama/models/blobs/sha256-0123456789abcdef"], "expect": "found"}]
+    },
+    {
+      "tool": "PyTorch",
+      "path": ".cache/torch",
+      "how": "里面是下载的模型权重，删了用到时会重新下载",
+      "why": "torch.hub 下载的模型权重，用到时重新下载。",
+      "samples": [{"files": [".cache/torch/hub/checkpoints/demo-0123abcd.pth"], "expect": "found"}]
+    },
+    {
+      "tool": "Whisper",
+      "path": ".cache/whisper",
+      "how": "里面是语音识别模型，删了用到时会重新下载",
+      "why": "openai-whisper 下载的语音识别模型，用到时重新下载。",
+      "samples": [{"files": [".cache/whisper/base.pt"], "expect": "found"}]
+    },
+    {
+      "tool": "GPT4All",
+      "path": "Library/Application Support/nomic.ai/GPT4All",
+      "how": "在 GPT4All 里删掉用不到的模型；再用时会重新下载",
+      "why": "GPT4All 下载的模型（GGUF 文件），只算总共多大；在 GPT4All 里删。",
+      "samples": [{"files": ["Library/Application Support/nomic.ai/GPT4All/demo-model.Q4_0.gguf"], "expect": "found"}]
+    },
+    {
+      "tool": "Jan",
+      "path": "Library/Application Support/Jan/data/models",
+      "how": "在 Jan 里删掉用不到的模型；再用时会重新下载",
+      "why": "Jan 下载的模型（新版的数据文件夹），只算总共多大；在 Jan 里删。",
+      "samples": [{"files": ["Library/Application Support/Jan/data/models/demo-model/model.gguf"], "expect": "found"}]
+    },
+    {
+      "tool": "Jan",
+      "path": "jan/models",
+      "how": "在 Jan 里删掉用不到的模型；再用时会重新下载",
+      "why": "Jan 下载的模型（旧版放在家目录的 jan 文件夹），只算总共多大；在 Jan 里删。",
+      "samples": [{"files": ["jan/models/demo-model/model.gguf"], "expect": "found"}]
+    },
+    {
+      "tool": "DiffusionBee",
+      "path": ".diffusionbee/downloads",
+      "how": "在 DiffusionBee 里删掉用不到的模型；再用时会重新下载",
+      "why": "DiffusionBee 下载的图像模型，只算总共多大；在 DiffusionBee 里删。",
+      "samples": [{"files": [".diffusionbee/downloads/demo-model.tdict"], "expect": "found"}]
+    },
+    {
+      "tool": "Draw Things",
+      "path": "Library/Containers/com.liuliu.draw-things/Data/Documents/Models",
+      "how": "在 Draw Things 里删掉用不到的模型；再用时会重新下载",
+      "why": "Draw Things 下载的图像模型（在它的容器里，没有完全磁盘访问时不看），只算总共多大；在 Draw Things 里删。",
+      "samples": [{"files": ["Library/Containers/com.liuliu.draw-things/Data/Documents/Models/demo_model_f16.ckpt"], "expect": "found"}]
+    },
+    {
+      "tool": "应用自带的 Hugging Face",
+      "path": "Documents/huggingface/models",
+      "how": "下载它的应用用不到了就删；再用时会重新下载",
+      "why": "有的应用把 Hugging Face 的模型下到文稿里（在文稿里，没有完全磁盘访问时不看），只算总共多大。",
+      "samples": [{"files": ["Documents/huggingface/models/demo-org/demo-model/model.safetensors"], "expect": "found"}]
+    }
+  ]
+}

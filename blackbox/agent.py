@@ -15,7 +15,10 @@ OUTBOX = "luoke://luoke-scan/outbox"
 
 
 def texts(comps: Dict[str, dict], cid: str) -> str:
+    """按钮上的字：子组件是 Text，或是一行（Icon 加 Text）里的那段字"""
     c = comps.get(cid) or {}
+    if c.get("component") == "Row":
+        return "".join(texts(comps, k) for k in c.get("children") or [])
     return c.get("text", "") if c.get("component") == "Text" else ""
 
 
@@ -103,8 +106,10 @@ class Agent:
         self.clock = clock
         return self
 
-    def request(self, method: str, params: Optional[dict] = None, *, user_action: Optional[dict] = None, note: str = "") -> Any:
-        res = self.r.mcp(method, params, clock=self.clock, user_action=user_action, no_fda=self.no_fda, note=note)
+    def request(self, method: str, params: Optional[dict] = None, *, user_action: Optional[dict] = None, note: str = "",
+                progress_token: Any = None) -> Any:
+        res = self.r.mcp(method, params, clock=self.clock, user_action=user_action, no_fda=self.no_fda, note=note,
+                         progress_token=progress_token)
         if isinstance(res, dict) and "error" in res and "jsonrpc" in res:
             return res
         return res
@@ -147,8 +152,9 @@ class Agent:
         raise Failed(f"outbox 里没有 {kind}（{title}）；有 {[(i['kind'], i['title']) for i in self.outbox]}")
 
     def click(self, event: str, label: str = "", *, item: Optional[dict] = None, page: Optional[str] = None,
-              choose: Optional[Dict[str, str]] = None, note: str = "") -> Any:
-        """用户在卡片（outbox 的一件）或基础页上点了一个按钮。"""
+              choose: Optional[Dict[str, str]] = None, note: str = "", progress: bool = False) -> Any:
+        """用户在卡片（outbox 的一件）或基础页上点了一个按钮。`progress`：像 agent 那样带上 progressToken，
+        记下答复之前的进度通知（工具协议 §5）。"""
         sid = surface_id(item["card"]) if item is not None else page
         if sid is None or sid not in self.surfaces:
             raise Failed("没有这张卡片")
@@ -158,7 +164,8 @@ class Agent:
         cid, ctx = surface.button(event, label)
         args = resolve(ctx, surface.data)
         ua = {"surfaceId": sid, "componentId": cid, "at": self.clock.astimezone(LOCAL).isoformat(timespec="seconds")}
-        res = self.request("tools/call", {"name": event, "arguments": args}, user_action=ua, note=note)
+        res = self.request("tools/call", {"name": event, "arguments": args}, user_action=ua, note=note,
+                           progress_token=f"{sid}/{cid}" if progress else None)
         card = ((res or {}).get("structuredContent") or {}).get("card")
         if card and page is None:
             surface.apply(card)   # agent 用答复的卡片换掉原来那张；基础页不画答复的卡片，重新读那一页

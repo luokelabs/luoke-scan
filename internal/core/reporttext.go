@@ -19,7 +19,7 @@ func ReportText(r Report, home string) string {
 	groups := []struct {
 		v          Verdict
 		name, note string
-	}{{Safe, "放心删", "会重建的缓存，删了用到时会重新下载"}, {Confirm, "要确认", "多半用不到了，一项项看过再决定"},
+	}{{Safe, "放心删", "会重建的缓存，删了用到时会重新下载"}, {Confirm, "要确认", "多半用不到了，一样样看过再决定"},
 		{Info, "仅供参考", "不建议直接删，或者只是让你知道"}}
 	var out []string
 	secs := int(r.FinishedAt.Sub(r.StartedAt.Time).Seconds())
@@ -58,7 +58,7 @@ func ReportText(r Report, home string) string {
 		if total > 0 && g.v != Info {
 			sum = "，共 " + FormatBytes(total)
 		}
-		out = append(out, "", fmt.Sprintf("%s（%d 项%s）——%s", g.name, len(items), sum, g.note))
+		out = append(out, "", fmt.Sprintf("%s（%d 样%s）——%s", g.name, len(items), sum, g.note))
 		indent := strings.Repeat(" ", 11)
 		for _, f := range items {
 			size := "·"
@@ -89,7 +89,7 @@ func ReportText(r Report, home string) string {
 		}
 	}
 	if len(r.Skipped) > 0 {
-		out = append(out, "", fmt.Sprintf("没查成（%d 项）", len(r.Skipped)))
+		out = append(out, "", fmt.Sprintf("没查成（%d 样）", len(r.Skipped)))
 		for _, s := range r.Skipped {
 			out = append(out, "  "+s.Rule+"："+s.Reason)
 		}

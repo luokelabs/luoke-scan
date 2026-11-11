@@ -38,7 +38,7 @@ func TestHostElevate(t *testing.T) {
 		theirs.Write([]byte(`{"id": 99, "result": {"status": "done"}}` + "\n")) // someone else's: skipped
 		theirs.Write([]byte(`{"id": 1, "result": {"status": "done", "output": "{\"key\":\"a0\"}\n"}}` + "\n"))
 	}()
-	got := h.elevate([]string{"--plan", "p-0123456789ab"}, "要删")
+	got := h.elevate([]string{"--plan", "p-0123456789ab"}, "要删", 0)
 	if got.Kind != "done" || got.Output != "{\"key\":\"a0\"}\n" {
 		t.Fatalf("%+v", got)
 	}
@@ -48,7 +48,7 @@ func TestHostElevateWithoutMainBody(t *testing.T) {
 	if os.Getenv(HostFDEnv) != "" {
 		t.Skip("run with a host channel")
 	}
-	if got := HostElevate(nil, ""); got.Kind != "failed" {
+	if got := HostElevate(nil, "", 0); got.Kind != "failed" {
 		t.Fatalf("%+v", got)
 	}
 }
@@ -90,7 +90,7 @@ func TestHostElevateUncertain(t *testing.T) {
 		bufio.NewReader(theirs).ReadBytes('\n')
 		theirs.Write([]byte(`{"id": 1, "result": {"status": "failed", "why": "可能已经做了一部分", "uncertain": true}}` + "\n"))
 	}()
-	got := h.elevate([]string{"--plan", "p-0123456789ab"}, "要删")
+	got := h.elevate([]string{"--plan", "p-0123456789ab"}, "要删", 0)
 	if got.Kind != "failed" || !got.Uncertain || got.Why != "可能已经做了一部分" {
 		t.Fatalf("%+v", got)
 	}

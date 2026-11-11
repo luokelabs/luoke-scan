@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -18,26 +19,37 @@ var AutoKinds = core.AutoKinds
 var settingsPages = map[string]string{"完全磁盘访问": "Privacy_AllFiles", "辅助功能": "Privacy_Accessibility", "录屏": "Privacy_ScreenCapture",
 	"输入监控": "Privacy_ListenEvent", "控制电脑": "Privacy_Accessibility", "文稿": "Privacy_FilesAndFolders",
 	"下载": "Privacy_FilesAndFolders", "桌面": "Privacy_FilesAndFolders", "摄像头": "Privacy_Camera",
-	"麦克风": "Privacy_Microphone", "自动化": "Privacy_Automation"}
+	"麦克风": "Privacy_Microphone", "自动化": "Privacy_Automation", "FileVault": "FDE"}
 
 const (
 	loginItemsGrant = "登录项"
 	loginItemsURL   = "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
 )
 
-func settingsURL(grant string) (string, bool) {
-	if grant == loginItemsGrant {
-		return loginItemsURL, true
+// settingsPane is the page's name the main body knows (HostRequests.settingsPanes in luoke-core), and its address.
+func settingsPane(grant string) (pane, url string, ok bool) {
+	switch grant {
+	case loginItemsGrant:
+		return "LoginItems", loginItemsURL, true
+	case batteryGrant: // 运行状况（luoke-scan#126）：本体不认这两个时由扫描自己 open
+		return "Battery", batteryURL, true
+	case activityMonitorGrant:
+		return "ActivityMonitor", activityMonitorApp, true
 	}
 	if p, ok := settingsPages[grant]; ok {
-		return "x-apple.systempreferences:com.apple.preference.security?" + p, true
+		return p, "x-apple.systempreferences:com.apple.preference.security?" + p, true
 	}
-	return "", false
+	return "", "", false
+}
+
+func settingsURL(grant string) (string, bool) {
+	_, url, ok := settingsPane(grant)
+	return url, ok
 }
 
 func (s *Service) register() {
 	srv := s.Server
-	srv.Resource(s.OutboxURI(), "扫描要告诉你的事", func() any { return s.outbox() })
+	srv.ResourceMeta(s.OutboxURI(), "扫描要告诉你的事", func(meta O) any { return s.outbox(Features(meta)) })
 	s.registerPages()
 	srv.Tool("scan_status", ToolSpec{Title: "扫描的状态", Description: "上一轮什么时候查的、查出多少、病毒库日期、哪些项没查成", ReadOnly: true},
 		func(_ O, meta O) (ToolOutput, error) { return s.status(meta, s.state()) })
@@ -53,8 +65,8 @@ func (s *Service) register() {
 	srv.Tool("scan_apply", ToolSpec{Title: "执行清理方案", Description: "执行用户在卡片上点过的方案：只做方案里列的、用户选的",
 		Properties: O{"plan_id": O{"type": "string"}, "choices": O{"type": "object"}}, Required: []string{"plan_id", "choices"}, Destructive: true},
 		func(args O, meta O) (ToolOutput, error) { return s.apply(args, meta) })
-	srv.Tool("scan_ignore", ToolSpec{Title: "以后别提这一条", Description: "把一条发现标成不用管，以后不再报",
-		Properties: O{"finding_id": O{"type": "string"}}, Required: []string{"finding_id"}},
+	srv.Tool("scan_ignore", ToolSpec{Title: "以后别提这一条", Description: "把一条发现标成不用管，以后不再报；undo 为真时撤销，照样提醒",
+		Properties: O{"finding_id": O{"type": "string"}, "undo": O{"type": "boolean", "description": "撤销刚才的「以后别提」"}}, Required: []string{"finding_id"}},
 		func(args O, meta O) (ToolOutput, error) { return s.ignore(args, meta) })
 	srv.Tool("scan_restore", ToolSpec{Title: "放回",
 		Description: "把清理时移进废纸篓的放回原处：一条清理记录（c-…），或一次清理的整批（p-… / auto-…）；原位置有同名的就放在旁边，不盖掉",
@@ -67,7 +79,7 @@ func (s *Service) register() {
 	srv.Tool("scan_reveal", ToolSpec{Title: "在访达里显示", Description: "在访达里选中一条发现指的文件或文件夹", ReadOnly: true,
 		Properties: O{"finding_id": O{"type": "string"}}, Required: []string{"finding_id"}, MacOnly: true},
 		func(args O, _ O) (ToolOutput, error) { return s.reveal(args) })
-	srv.Tool("scan_open_settings", ToolSpec{Title: "打开系统设置", Description: "打开系统设置里对应的页面（隐私与安全性的某个权限，或「登录项」）", ReadOnly: true,
+	srv.Tool("scan_open_settings", ToolSpec{Title: "打开系统设置", Description: "打开系统设置里对应的页面（隐私与安全性的某个权限、「登录项」或「电池」），或者打开活动监视器", ReadOnly: true,
 		Properties: O{"grant": O{"type": "string"}}, Required: []string{"grant"}, MacOnly: true},
 		func(args O, _ O) (ToolOutput, error) { return s.openSettings(args) })
 	srv.Tool("outbox_ack", ToolSpec{Title: "记下说过了", Description: "agent 告诉扫描某件事已经说过、答过或放下了", ReadOnly: true,
@@ -125,7 +137,8 @@ func (s *Service) status(meta O, st State) (ToolOutput, error) {
 		lines = append(lines, "自动清："+strings.Join(on, "、"))
 	}
 	if scanning {
-		lines = append(lines, "现在正在查")
+		what, _ := s.scanProgress(r)
+		lines = append(lines, "现在正在查（"+what+"）")
 	}
 	return ToolOutput{Text: strings.Join(lines, "；"), Card: s.answerCard(meta, false, func(c *Card) {
 		c.Heading("扫描")
@@ -242,6 +255,7 @@ func (s *Service) scanNow() (ToolOutput, error) {
 		if !s.Config.StartScan() {
 			return ToolOutput{}, Fail("failed", "没能开始查。")
 		}
+		s.waitStarted(3 * time.Second)
 	} else {
 		lock := core.TakeLock(s.Store.Dir, "round.lock", 0)
 		if lock == nil {
@@ -260,12 +274,18 @@ func (s *Service) ignore(args, meta O) (ToolOutput, error) {
 	if id == "" || len([]rune(id)) >= 300 {
 		return ToolOutput{}, Fail("invalid", "finding_id 不对")
 	}
-	fresh := false
+	undo, _ := args["undo"].(bool)
+	changed := false
 	at := s.now()
 	s.mutate(func(st *State) {
 		_, had := st.Ignored[id]
-		fresh = !had
-		st.Ignored[id] = core.Time{Time: at}
+		if undo {
+			changed = had
+			delete(st.Ignored, id)
+		} else {
+			changed = !had
+			st.Ignored[id] = core.Time{Time: at}
+		}
 	})
 	report := s.Store.LastReport()
 	var f *core.Finding
@@ -277,14 +297,28 @@ func (s *Service) ignore(args, meta O) (ToolOutput, error) {
 			}
 		}
 	}
-	if fresh && f != nil {
+	name := "这一条"
+	if f != nil {
+		name = "「" + f.Title + "」"
+		if isMalware(*f) {
+			name = "「" + filepath.Base(f.Path) + "」" // 报毒的卡片上写的是文件名
+		}
+	}
+	if undo {
+		if changed && f != nil {
+			s.remember([]MemoryRecord{s.unignoredRecord(*f)})
+		}
+		text := "撤销了，" + name + "还会提醒你。"
+		return ToolOutput{Text: text, Card: s.answerCard(meta, false, func(c *Card) { c.Text(text) }), Done: Bool(true)}, nil
+	}
+	if changed && f != nil {
 		s.remember([]MemoryRecord{s.ignoredRecord(*f, report)})
 	}
-	text := "好，以后不再提这一条。"
-	if f != nil {
-		text = "好，以后不再提「" + f.Title + "」。"
-	}
-	return ToolOutput{Text: text, Card: s.answerCard(meta, false, func(c *Card) { c.Text(text) }), Done: Bool(true)}, nil
+	// 在原来那张卡的位置留一行，点错了能撤销（设计评审 11-07：「不是病毒」就在垃圾桶旁边，自己下载的文件很可能就点它）
+	text := "已记下：" + name + "以后不再提醒。"
+	return ToolOutput{Text: text, Card: s.answerCard(meta, false, func(c *Card) {
+		c.ButtonsAfter(text, []Button{{Label: "撤销", Event: "scan_ignore", Context: O{"finding_id": id, "undo": true}}})
+	}), Done: Bool(true)}, nil
 }
 
 func (s *Service) setAutoclean(args, meta O) (ToolOutput, error) {
@@ -303,7 +337,12 @@ func (s *Service) setAutoclean(args, meta O) (ToolOutput, error) {
 	changed := false
 	s.mutate(func(st *State) {
 		was := st.AutocleanOff == nil
-		if on && st.AutocleanOff != nil {
+		allOff := len(st.AutoOff) > 0
+		for _, k := range AutoKinds {
+			_, off := st.AutoOff[string(k)]
+			allOff = allOff && off
+		}
+		if on && (st.AutocleanOff != nil || allOff) { // 每一类都关了时开关画成关：打开就是都打开
 			st.AutoOff = nil
 		}
 		if on {
@@ -319,7 +358,7 @@ func (s *Service) setAutoclean(args, meta O) (ToolOutput, error) {
 				}
 			}
 		}
-		changed = was != on
+		changed = was != on || (on && allOff)
 	})
 	var onKinds []string
 	for _, k := range AutoKinds {
@@ -368,6 +407,10 @@ func (s *Service) reveal(args O) (ToolOutput, error) {
 				if strings.HasSuffix(target, "-*") {
 					target = dirOfPath(target)
 				}
+				// A model's chat template: the template file itself, not the model's whole folder (luoke-scan#152)
+				if t := s.expandHome(f.Evidence["template"]); strings.HasPrefix(f.Rule, "model.chat-template") && strings.HasPrefix(t, f.Path+"/") {
+					target = t
+				}
 				break
 			}
 		}
@@ -375,10 +418,23 @@ func (s *Service) reveal(args O) (ToolOutput, error) {
 	if target == "" || !core.Exists(target) {
 		return ToolOutput{}, Fail("stale", "这一条指的东西已经不在了。")
 	}
-	if s.Config.Command("/usr/bin/open", []string{"-R", target}) != 0 {
+	// 螺壳 is in front: it can bring Finder forward, this process cannot (host.go)
+	if !s.front("reveal", map[string]any{"path": target}) && s.Config.Command("/usr/bin/open", []string{"-R", target}) != 0 {
 		return ToolOutput{}, Fail("failed", "访达没打开。")
 	}
 	return ToolOutput{Text: "在访达里选中了 " + s.display(target) + "。"}, nil
+}
+
+func (s *Service) front(method string, params map[string]any) bool {
+	return s.Config.Front != nil && s.Config.Front(method, params)
+}
+
+// expandHome: 「~/…」 in the home this service looks at; anything else as it is.
+func (s *Service) expandHome(p string) string {
+	if rest, ok := strings.CutPrefix(p, "~/"); ok {
+		return filepath.Join(s.Config.Context.Home, rest)
+	}
+	return p
 }
 
 func dirOfPath(p string) string {
@@ -390,12 +446,15 @@ func dirOfPath(p string) string {
 
 func (s *Service) openSettings(args O) (ToolOutput, error) {
 	grant, _ := args["grant"].(string)
-	url, ok := settingsURL(grant)
+	pane, url, ok := settingsPane(grant)
 	if !ok {
 		return ToolOutput{}, Fail("invalid", "不认识这个权限")
 	}
-	if s.Config.Command("/usr/bin/open", []string{url}) != 0 {
+	if !s.front("open_settings", map[string]any{"pane": pane}) && s.Config.Command("/usr/bin/open", []string{url}) != 0 {
 		return ToolOutput{}, Fail("failed", "系统设置没打开。")
+	}
+	if grant == activityMonitorGrant {
+		return ToolOutput{Text: "打开了活动监视器。"}, nil
 	}
 	return ToolOutput{Text: "打开了系统设置的「" + grant + "」页。"}, nil
 }

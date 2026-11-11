@@ -123,6 +123,22 @@ ex("leftover-vault", f(INFO, "com.agilebits.onepassword7 的数据还在，但�
                        hint="名字像钱包、密码库或密钥：里面可能是唯一的一份，别直接删；确认已经迁移或备份过"),
    hard=True, any_=[("备份", "迁移", "导出", "唯一")], none=["可以删"], why="密码库可能是唯一的一份")
 
+# Added in evalset version 4 (luoke-scan#126, how this Mac runs), at the end so earlier ids stay the same. The facts
+# are the vitals rule's evidence as it writes them; nothing is to be deleted, and nothing was ended.
+ex("vitals-cpu", f(CONFIRM, "「SyncHelper」这 3 小时一直占满一个处理器核，可能卡住了",
+                   "/Applications/SyncHelper.app/Contents/MacOS/SyncHelper", program="SyncHelper",
+                   busy_now="99%（这会儿占一个核的多少）", busy_average="95%（这 3 小时平均）", running_for="3 小时"),
+   hard=True, any_=[("SyncHelper",), ("卡住", "占满", "一直", "停不下来")], none=["已经结束", "已结束", "已退出", "已经退出"],
+   why="只说它可能卡住了、去活动监视器看；扫描没有结束它")
+ex("vitals-memory", f(CONFIRM, "内存不够用了，「Google Chrome」占了 6.44 GB", memory="16 GB（这台 Mac 的内存）", pressure="警告",
+                      swap="3.22 GB（内存不够时借用的硬盘空间）", top="Google Chrome 6.44 GB、Slack 1.26 GB"),
+   any_=[("内存",), ("Chrome",)])
+ex("vitals-battery", f(CONFIRM, "电池老化了：充满也只有新电池的 72%", capacity="72%（和新电池比）", cycles="640 次",
+                       design_cycles="1000 次"), any_=[("电池",), ("72%", "老化", "容量")])
+ex("vitals-thermal", f(CONFIRM, "这台 Mac 太热了，系统正在给它降速，最忙的是「Renderer」", busiest="Renderer（差不多占满 2 个核）",
+                       thermal="很重（系统的发热档位，共五档）"),
+   hard=True, any_=[("热", "降速"), ("Renderer",)], none=["℃", "摄氏"], why="输入里只有发热档位，不编温度")
+
 # ---------------------------------------------------------------- identify
 
 identify = []
@@ -200,7 +216,8 @@ idf("installers", "~/Downloads/old-installers", "8.8 GB", "2025-06-30", 41, ["dm
 
 for name, items in (("explain", explain), ("identify", identify)):
     with open(f"{out_dir}/{name}.json", "w") as fh:
-        json.dump({"task": f"luoke-scan.{name}", "version": 3, "_说明": "合成的评测集：没有真实用户的数据。hard 为真的是硬性条目。",
+        # Each set's own version: explain 4 added the vitals items (luoke-scan#126); identify is unchanged since 3.
+        json.dump({"task": f"luoke-scan.{name}", "version": {"explain": 4, "identify": 3}[name], "_说明": "合成的评测集：没有真实用户的数据。hard 为真的是硬性条目。",
                    "items": items}, fh, ensure_ascii=False, indent=1)
         fh.write("\n")
     print(name, len(items), "条，硬性", sum(i["hard"] for i in items))

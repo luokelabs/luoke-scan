@@ -97,12 +97,20 @@ type AutoPick struct {
 // AutoWaitForTool are prefixes whose folders wait while any process of their tool runs.
 var AutoWaitForTool = map[string]bool{"playwright-artifacts": true}
 
-// AutoKnownTemp are temp folder prefixes of tools that make a throwaway folder per run, and the tool.
-var AutoKnownTemp = map[string]string{
-	"puppeteer_dev_chrome_profile": "Puppeteer", "puppeteer_dev_firefox_profile": "Puppeteer",
-	"playwright_chromiumdev_profile": "Playwright", "playwright_firefoxdev_profile": "Playwright",
-	"playwright-artifacts": "Playwright", "lighthouse": "Lighthouse",
-}
+// AutoKnownTemp are temp folder prefixes of tools that make a throwaway folder per run, and the tool
+// (rules/temp-folders.json). Going without a click is autoTemp's.
+var AutoKnownTemp map[string]string
+
+// autoCaches are the caches (KnownCaches' ids) automatic cleaning may take, and autoTemp the temp folder prefixes
+// (AutoKnownTemp): each reviewed by the project, with cases in the cleanup eval (evals/cleanup/) and none of them
+// picked wrongly there. One only added to rules/ is reported and goes when the user clicks.
+var (
+	autoCaches = spaceSet("pip", "swiftpm", "go-build", "xcode-deriveddata", "cargo-registry-cache", "cargo-registry-src", "bun",
+		"uv", "npm", "homebrew", "yarn", "cocoapods", "gradle-caches", "gradle-wrapper", "poetry-cache", "poetry-artifacts",
+		"node-gyp", "composer", "xcode-documentation", "coresimulator-caches", "xctest-devices", "xcode-cache", "corepack")
+	autoTemp = spaceSet("puppeteer_dev_chrome_profile", "puppeteer_dev_firefox_profile", "playwright_chromiumdev_profile",
+		"playwright_firefoxdev_profile", "playwright-artifacts", "lighthouse")
+)
 
 // NewAutoPick is a picker with the defaults; running has no default (a caller that forgot it would clean caches in use).
 func NewAutoPick(home, tmp string, now time.Time, running map[string]bool) AutoPick {
@@ -154,7 +162,7 @@ func knownCache(rule string) (RebuildableCache, bool) {
 
 func (p AutoPick) cache(f Finding) []AutoItem {
 	c, ok := knownCache(f.Rule)
-	if f.Category != CatCache || f.Verdict != Safe || !ok {
+	if f.Category != CatCache || f.Verdict != Safe || !ok || !autoCaches[c.ID] {
 		return nil
 	}
 	at := filepath.Join(p.Home, c.Path)
@@ -244,7 +252,7 @@ func (p AutoPick) duplicates(f Finding) []AutoItem {
 func (p AutoPick) temp(f Finding) []AutoItem {
 	prefix, has := f.Evidence["prefix"]
 	tool, known := AutoKnownTemp[prefix]
-	if p.Tmp == "" || !has || !known || p.CommandLines == nil {
+	if p.Tmp == "" || !has || !known || !autoTemp[prefix] || p.CommandLines == nil {
 		return nil
 	}
 	lines := *p.CommandLines

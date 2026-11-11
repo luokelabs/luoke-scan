@@ -1,0 +1,66 @@
+{
+  "about": "npm 11 用着、~/.npmrc 没关：要确认一条，列出已装的依赖里要跑脚本的和放行的命令；项目自己的 .npmrc 不算",
+  "case": "rules/pkg.install-scripts/npm",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "append": "ignore-scripts=true",
+              "how": "点「关闭自动运行」会在 ~/.npmrc 末尾加一行 ignore-scripts=true；原来那份移到废纸篓，能放回。已装的依赖里 esbuild、fsnative 要跑安装脚本，改了以后装它们要单独放行：npm rebuild esbuild fsnative --ignore-scripts=false。这一行也会让项目自己的 prepare 和 pre、post 脚本不跑（比如 husky 装 git 钩子），要跑时用 npm run <脚本名>。升到 npm 12 以后默认就不跑依赖的安装脚本，也能设新版本晚几天再装（min-release-age）。",
+              "packages": "esbuild、fsnative",
+              "tool": "npm",
+              "used": "~/.npmrc",
+              "why": "装着的 npm 11.6.2（$FIXTURE/usr-local/lib/node_modules/npm）默认会跑依赖的安装脚本，~/.npmrc 里没有关掉"
+            },
+            "key": "npm",
+            "path": "~/.npmrc",
+            "rule": "pkg.install-scripts",
+            "severity": "medium",
+            "title": "npm 允许依赖在安装时跑脚本",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

@@ -55,7 +55,7 @@
             "category": "persistence",
             "evidence": {
               "admin": "1",
-              "how": "Homebrew 的服务别用 sudo 起（`brew services start` 不加 sudo，就以你自己的身份运行）；用不到了就删掉这个系统级的后台任务",
+              "how": "用不到了就删掉这个系统级的后台任务；还要用的话，换成只给你自己装的版本",
               "label": "io.example.writable",
               "program": "$FIXTURE/SystemLibrary/Application Support/io.example.tool/helper",
               "scope": "daemon",

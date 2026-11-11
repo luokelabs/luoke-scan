@@ -36,18 +36,26 @@ def ua(a: Agent, surface: str = "chat", component: str = "button") -> dict:
 
 
 def plan_on_card(a: Agent) -> dict:
-    """一轮的卡片上「按这个处理」按钮带的方案（plan_id 和默认的选项），另加 options：每一项能选的值。"""
+    """一轮的方案（plan_id 和默认的选项），另加 options：每一项能选的值；caches：会重建的缓存那一行的「清理」删的
+    （luoke-scan#129：缓存合成一行、自己一个按钮，不画选择框）。每一项的选项在扫描页上（负责人 11-06），从页上
+    「按上面的选择清理」读。"""
     a.read(OUTBOX)
-    s = a.surfaces[surface_id(a.item("findings")["card"])]
-    _, ctx = s.button("scan_apply", "")
+    a.read("page/overview")
+    s = a.surfaces["overview"]
+    _, ctx = s.button("scan_apply", "按上面的选择清理")
     p = resolve(ctx, s.data)
     p["options"] = s.options()
+    p["caches"] = {}
+    for cid, event, label in s.buttons():
+        if event == "scan_apply" and label == "清理":   # 按钮上的字正好是「清理」（不是「按上面的选择清理」）
+            p["caches"] = s.comps[cid]["action"]["event"]["context"]["choices"]
     return p
 
 
 def clear_all(p: dict) -> dict:
-    """每一项都选「清掉」：移到废纸篓，会重建的缓存是删掉。"""
-    return {k: [p["options"][k][0]] for k in p["choices"]}
+    """页上有选择框的每一项都选「清掉」：移到废纸篓；会重建的缓存照它那一行的「清理」删掉。病毒不在方案的选择框里
+    （扫描页最上面单独处理），照默认。"""
+    return {k: [p["options"][k][0]] if k in p["options"] else p["caches"].get(k, v) for k, v in p["choices"].items()}
 
 
 # ================================================================ 协议
@@ -151,8 +159,9 @@ def apply_choices(r: Run) -> None:
     small(r, malware=True)
     a = Agent(r, at(1))
     p = plan_on_card(a)
-    keys = sorted(p["choices"])
-    choices = {k: [p["options"][k][[0, -2, -1][i % 3]]] for i, k in enumerate(keys)}   # 清掉、先不动、以后别提
+    keys = sorted(k for k in p["choices"] if k in p["options"])   # 病毒在扫描页最上面单独处理，不在选择框里：照默认
+    choices = dict(p["choices"])
+    choices.update({k: [p["options"][k][[0, -2, -1][i % 3]]] for i, k in enumerate(keys)})   # 清掉、先不动、以后别提
     a.at(at(2)).call("scan_apply", {"plan_id": p["plan_id"], "choices": choices}, user_action=ua(a))
     a.call("scan_apply", {"plan_id": p["plan_id"], "choices": choices}, user_action=ua(a), note="同一份方案再点一次")
     a.call("scan_apply", {"plan_id": "p-000000000000", "choices": choices}, user_action=ua(a))
@@ -178,6 +187,59 @@ def apply_changed(r: Run) -> None:
     fx.remove("$TMPDIR/wings-A00002")                                        # 已经不在了
     r.note("wings-A00000 刚写过；wings-A00001 删了重建；wings-A00002 删了")
     a.at(at(2)).call("scan_apply", {"plan_id": p["plan_id"], "choices": clear_all(p)}, user_action=ua(a))
+
+
+@case("mcp/apply/app-caches", "装着的应用的缓存、Chromium 应用的缓存、崩溃报告：要确认；清掉以后缓存文件夹和崩溃报告进了废纸篓，Service Worker 和设置留在原处")
+def apply_app_caches(r: Run) -> None:
+    fx = r.fx
+    fx.app("~/Applications/Fooapp.app", "io.example.fooapp", "Fooapp", at=days(30))
+    bulk(fx, "~/Library/Caches/io.example.fooapp", 220 * MiB, at=days(3))
+    sup = "~/Library/Application Support/Chatapp"
+    fx.file(sup + "/Local State", "{}", at=days(3))
+    fx.file(sup + "/Preferences", "{}", at=days(3))
+    bulk(fx, sup + "/Cache/Cache_Data", 150 * MiB, at=days(3))
+    fx.touch(sup + "/Cache", days(3))
+    bulk(fx, sup + "/Code Cache/js", 80 * MiB, at=days(3))
+    fx.touch(sup + "/Code Cache", days(3))
+    fx.file(sup + "/Service Worker/CacheStorage/sw.bin", size=MiB, at=days(3))
+    fx.touch(sup + "/Service Worker", days(3))
+    bulk(fx, "~/Library/Logs/DiagnosticReports", 120 * MiB, at=days(3))
+    r.update()
+    r.scan(T0)
+    a = Agent(r, at(1))
+    p = plan_on_card(a)
+    a.at(at(2)).call("scan_apply", {"plan_id": p["plan_id"], "choices": clear_all(p)}, user_action=ua(a))
+    a.read("page/cleaned")
+    r.note("Chatapp 留下的：" + "、".join(sorted(os.listdir(fx.p(sup)))))
+
+
+@case("mcp/apply/progress", "点清理时带着 progressToken（agent 那样）：答复之前每做一项发一条进度通知，第几项、一共几项、"
+      "正在做什么；选了「先不动」的不算、不报；同一份假目录不带的时候照旧只有答复（见 mcp/apply/app-caches）")
+def apply_progress(r: Run) -> None:
+    fx = r.fx
+    fx.app("~/Applications/Fooapp.app", "io.example.fooapp", "Fooapp", at=days(30))
+    bulk(fx, "~/Library/Caches/io.example.fooapp", 220 * MiB, at=days(3))
+    sup = "~/Library/Application Support/Chatapp"
+    fx.file(sup + "/Local State", "{}", at=days(3))
+    fx.file(sup + "/Preferences", "{}", at=days(3))
+    bulk(fx, sup + "/Cache/Cache_Data", 150 * MiB, at=days(3))
+    fx.touch(sup + "/Cache", days(3))
+    bulk(fx, sup + "/Code Cache/js", 80 * MiB, at=days(3))
+    fx.touch(sup + "/Code Cache", days(3))
+    fx.file(sup + "/Service Worker/CacheStorage/sw.bin", size=MiB, at=days(3))
+    fx.touch(sup + "/Service Worker", days(3))
+    bulk(fx, "~/Library/Logs/DiagnosticReports", 120 * MiB, at=days(3))
+    r.update()
+    r.scan(T0)
+    a = Agent(r, at(1))
+    p = plan_on_card(a)
+    choices = clear_all(p)
+    keep = sorted(choices)[0]
+    choices[keep] = ["keep"]
+    r.note(f"{keep} 选「先不动」")
+    a.at(at(2)).request("tools/call", {"name": "scan_apply", "arguments": {"plan_id": p["plan_id"], "choices": choices}},
+                        user_action=ua(a, "overview", "clean"), progress_token="overview/clean")
+    a.read("page/cleaned")
 
 
 @case("mcp/apply/links-on-path", "缓存所在的 ~/Library/Caches 换成了链接：不删、不移，留到下一轮；临时目录里的一个文件夹换成链接：不跟着走")

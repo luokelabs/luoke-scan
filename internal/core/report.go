@@ -50,6 +50,7 @@ const (
 	CatMalware      Category = "malware"
 	CatSkill        Category = "skill"
 	CatSupplyChain  Category = "supply-chain"
+	CatVitals       Category = "vitals" // how this Mac runs (luoke-scan#126)
 )
 
 // Finding is one result of a round: an object, what it is, why, and what may be done.

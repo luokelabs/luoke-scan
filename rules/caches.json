@@ -1,0 +1,233 @@
+{
+  "version": 1,
+  "about": [
+    "会重建的缓存：工具自己会重新下载、重新生成的文件夹，删了不丢东西。规则 cache.rebuildable 把它们报出来（≥ 50 MB），结论是「放心删」。",
+    "caches 每条：id（发现的规则名是 cache.rebuildable.<id>，只用小写字母、数字和 -）、path（相对家目录）、tool（给人看的工具名）、clean（给人看的清法）、command 和 env（clean 是工具自己的命令时：命令名，和把命令钉在报出来的这个文件夹的环境变量，值相对家目录）、users（用这处缓存的程序名，有一个在跑就先不清；每条都要有）、why（依据：为什么删了不丢东西，能附工具文档的链接最好）、samples（合成的样例）。",
+    "notCaches：看着像缓存、但删了会丢东西的位置和原因。caches 的 path 不能是它们本身或它们的上级。",
+    "samples：files 是在假的家目录里建的文件（相对家目录），running 是正在跑的程序，expect 是该有的结论：auto（报出来，不用点就清）、ask（报出来，用户点了才清）、none（不报）。go test ./internal/core 照每个样例建假目录跑一遍，对不上就不过。",
+    "新加的缓存只报、用户点了才清（ask）。要不用点就清（auto），由项目审过，在 evals/cleanup/ 加上它和「看着像、但不该清」的用例，清理评测挑错为 0，再把 id 加进 internal/core/autopick.go 的 autoCaches。"
+  ],
+  "caches": [
+    {
+      "id": "pip",
+      "path": "Library/Caches/pip",
+      "tool": "pip",
+      "clean": "删除这个文件夹",
+      "users": ["pip", "pip3"],
+      "why": "pip 下载过的包和编好的 wheel，用到时重新下载。清法是删文件夹，不用 pip cache purge：旧版的 pip（比如系统自带的）清不掉新版 pip 的 http-v2 缓存。https://pip.pypa.io/en/stable/topics/caching/",
+      "samples": [{"files": ["Library/Caches/pip/http-v2/a/b/c/d/e/0123456789abcdef.body"], "expect": "auto"}]
+    },
+    {
+      "id": "swiftpm",
+      "path": "Library/Caches/org.swift.swiftpm",
+      "tool": "SwiftPM",
+      "clean": "删除这个文件夹",
+      "users": ["swift-build", "swift-package", "swift-test", "swift-run", "xcodebuild", "Xcode"],
+      "why": "SwiftPM 拉下来的依赖仓库和清单的缓存，构建时重新拉取。",
+      "samples": [{"files": ["Library/Caches/org.swift.swiftpm/repositories/swift-argument-parser-0123abcd/HEAD"], "expect": "auto"}]
+    },
+    {
+      "id": "go-build",
+      "path": "Library/Caches/go-build",
+      "tool": "Go",
+      "clean": "go clean -cache",
+      "command": "go",
+      "env": {"GOCACHE": "Library/Caches/go-build"},
+      "users": ["go", "gopls"],
+      "why": "Go 的构建缓存：编译、测试的中间结果，下次构建时重新生成。GOCACHE 把 go clean -cache 钉在报出来的这个文件夹。https://pkg.go.dev/cmd/go#hdr-Build_and_test_caching",
+      "samples": [{"files": ["Library/Caches/go-build/ab/ab0123456789abcdef-d"], "expect": "auto"}]
+    },
+    {
+      "id": "xcode-deriveddata",
+      "path": "Library/Developer/Xcode/DerivedData",
+      "tool": "Xcode",
+      "clean": "删除这个文件夹（Xcode 没开着时）",
+      "users": ["Xcode", "xcodebuild", "SourceKitService"],
+      "why": "Xcode 的构建产物和索引，打开项目、构建时重新生成。",
+      "samples": [{"files": ["Library/Developer/Xcode/DerivedData/Demo-abcdefghijklmnop/Build/Products/Debug/Demo"], "expect": "auto"}]
+    },
+    {
+      "id": "cargo-registry-cache",
+      "path": ".cargo/registry/cache",
+      "tool": "Cargo",
+      "clean": "删除这个文件夹",
+      "users": ["cargo", "rustc"],
+      "why": "Cargo 下载的 crate 压缩包，用到时重新下载。https://doc.rust-lang.org/cargo/guide/cargo-home.html",
+      "samples": [{"files": [".cargo/registry/cache/index.crates.io-0123456789abcdef/demo-1.0.0.crate"], "expect": "auto"}]
+    },
+    {
+      "id": "cargo-registry-src",
+      "path": ".cargo/registry/src",
+      "tool": "Cargo",
+      "clean": "删除这个文件夹",
+      "users": ["cargo", "rustc", "rust-analyzer"],
+      "why": "Cargo 从 crate 压缩包解开的源码，构建时重新解开或重新下载。https://doc.rust-lang.org/cargo/guide/cargo-home.html",
+      "samples": [{"files": [".cargo/registry/src/index.crates.io-0123456789abcdef/demo-1.0.0/src/lib.rs"], "expect": "auto"}]
+    },
+    {
+      "id": "bun",
+      "path": ".bun/install/cache",
+      "tool": "Bun",
+      "clean": "删除这个文件夹",
+      "users": ["bun"],
+      "why": "Bun 装包用的全局缓存，下次 bun install 重新下载。https://bun.sh/docs/install/cache",
+      "samples": [{"files": [".bun/install/cache/left-pad@1.3.0@@@1/index.js"], "expect": "auto"}]
+    },
+    {
+      "id": "uv",
+      "path": ".cache/uv",
+      "tool": "uv",
+      "clean": "uv cache clean",
+      "command": "uv",
+      "env": {"UV_CACHE_DIR": ".cache/uv"},
+      "users": ["uv"],
+      "why": "uv 下载的包和编好的 wheel，用到时重新下载。UV_CACHE_DIR 把 uv cache clean 钉在报出来的这个文件夹。https://docs.astral.sh/uv/concepts/cache/",
+      "samples": [{"files": [".cache/uv/archive-v0/0123abcd/demo/__init__.py"], "expect": "auto"}]
+    },
+    {
+      "id": "npm",
+      "path": ".npm/_cacache",
+      "tool": "npm",
+      "clean": "npm cache clean --force",
+      "command": "npm",
+      "env": {"npm_config_cache": ".npm"},
+      "users": ["npm", "npx"],
+      "why": "只是 npm 自己的下载缓存，用到时重新下载；不含 ~/.npm/_npx（见 notCaches）。npm_config_cache 把 npm cache clean 钉在报出来的这处。https://docs.npmjs.com/cli/v10/commands/npm-cache",
+      "samples": [{"files": [".npm/_cacache/content-v2/sha512/ab/cd/0123456789abcdef"], "expect": "auto"}]
+    },
+    {
+      "id": "homebrew",
+      "path": "Library/Caches/Homebrew",
+      "tool": "Homebrew",
+      "clean": "删除这个文件夹",
+      "users": ["brew", "ruby"],
+      "why": "Homebrew 下载的瓶子、源码包和公式列表，装、升级时重新下载。清法是删文件夹，不用 brew cleanup：它还会删掉装着的旧版本。brew 跑起来是 bash，再是 Homebrew 自带的 ruby，所以 users 有 ruby。",
+      "samples": [{"files": ["Library/Caches/Homebrew/downloads/0123abcd--wget-1.24.5.arm64_sequoia.bottle.tar.gz"], "expect": "auto"}]
+    },
+    {
+      "id": "yarn",
+      "path": "Library/Caches/Yarn",
+      "tool": "Yarn",
+      "clean": "删除这个文件夹",
+      "users": ["yarn", "yarn.js"],
+      "why": "Yarn 1 的下载缓存，下次 yarn install 重新下载；不含 Yarn 2 以上的全局缓存（见 notCaches）。Homebrew 装的 yarn 跑起来叫 yarn.js。https://classic.yarnpkg.com/en/docs/cli/cache",
+      "samples": [{"files": ["Library/Caches/Yarn/v6/npm-left-pad-1.3.0-0123abcd-integrity/node_modules/left-pad/index.js"], "expect": "auto"}]
+    },
+    {
+      "id": "cocoapods",
+      "path": "Library/Caches/CocoaPods",
+      "tool": "CocoaPods",
+      "clean": "删除这个文件夹",
+      "users": ["pod"],
+      "why": "CocoaPods 下载的 pod 和 specs，下次 pod install 重新下载。",
+      "samples": [{"files": ["Library/Caches/CocoaPods/Pods/Release/Demo/1.0.0-0123a/Sources/Demo.swift"], "expect": "auto"}]
+    },
+    {
+      "id": "gradle-caches",
+      "path": ".gradle/caches",
+      "tool": "Gradle",
+      "clean": "删除这个文件夹（Gradle 没在跑时）",
+      "users": ["gradle", "gradlew", "java"],
+      "why": "Gradle 下载的依赖和构建缓存，下次构建时重新下载、重新生成。Gradle 的守护进程跑起来是 java。https://docs.gradle.org/current/userguide/directory_layout.html",
+      "samples": [{"files": [".gradle/caches/modules-2/files-2.1/com.example/demo/1.0/0123abcd/demo-1.0.jar"], "expect": "auto"}]
+    },
+    {
+      "id": "gradle-wrapper",
+      "path": ".gradle/wrapper/dists",
+      "tool": "Gradle",
+      "clean": "删除这个文件夹（各项目的 gradlew 用到时会重新下载）",
+      "users": ["gradle", "gradlew", "java"],
+      "why": "gradlew 下载的各个版本的 Gradle，各项目的 gradlew 用到时重新下载。https://docs.gradle.org/current/userguide/directory_layout.html",
+      "samples": [{"files": [".gradle/wrapper/dists/gradle-8.10-bin/0123abcd/gradle-8.10-bin.zip"], "expect": "auto"}]
+    },
+    {
+      "id": "poetry-cache",
+      "path": "Library/Caches/pypoetry/cache",
+      "tool": "Poetry",
+      "clean": "删除这个文件夹",
+      "users": ["poetry"],
+      "why": "Poetry 的包索引缓存，用到时重新下载。只算 cache 和 artifacts，不是整个 pypoetry 文件夹：项目的虚拟环境也在那里（见 notCaches）。https://python-poetry.org/docs/configuration/#cache-dir",
+      "samples": [{"files": ["Library/Caches/pypoetry/cache/repositories/PyPI/_http/0/1/2/0123abcd"], "expect": "auto"}]
+    },
+    {
+      "id": "poetry-artifacts",
+      "path": "Library/Caches/pypoetry/artifacts",
+      "tool": "Poetry",
+      "clean": "删除这个文件夹",
+      "users": ["poetry"],
+      "why": "Poetry 下载的包文件（wheel、源码包），用到时重新下载。不是整个 pypoetry 文件夹（见 poetry-cache）。https://python-poetry.org/docs/configuration/#cache-dir",
+      "samples": [{"files": ["Library/Caches/pypoetry/artifacts/01/23/ab/cd/demo-1.0-py3-none-any.whl"], "expect": "auto"}]
+    },
+    {
+      "id": "node-gyp",
+      "path": "Library/Caches/node-gyp",
+      "tool": "node-gyp",
+      "clean": "删除这个文件夹",
+      "users": ["node-gyp", "npm", "npx"],
+      "why": "node-gyp 下载的 Node.js 头文件，编原生模块时重新下载。",
+      "samples": [{"files": ["Library/Caches/node-gyp/22.11.0/include/node/node.h"], "expect": "auto"}]
+    },
+    {
+      "id": "composer",
+      "path": "Library/Caches/composer",
+      "tool": "Composer",
+      "clean": "删除这个文件夹",
+      "users": ["composer"],
+      "why": "Composer 下载的包和元数据，用到时重新下载。https://getcomposer.org/doc/03-cli.md#clear-cache-clearcache-cc",
+      "samples": [{"files": ["Library/Caches/composer/files/demo/demo/0123abcd.zip"], "expect": "auto"}]
+    },
+    {
+      "id": "xcode-documentation",
+      "path": "Library/Developer/Xcode/DocumentationCache",
+      "tool": "Xcode",
+      "clean": "删除这个文件夹（Xcode 没开着时）",
+      "users": ["Xcode"],
+      "why": "Xcode 的文档缓存，用到时重新生成。",
+      "samples": [{"files": ["Library/Developer/Xcode/DocumentationCache/v265/0123ABCD/DeveloperDocumentation.index"], "expect": "auto"}]
+    },
+    {
+      "id": "coresimulator-caches",
+      "path": "Library/Developer/CoreSimulator/Caches",
+      "tool": "模拟器",
+      "clean": "删除这个文件夹（模拟器没开着时）",
+      "users": ["Simulator", "simctl", "com.apple.CoreSimulator.CoreSimulatorService", "launchd_sim", "Xcode", "xcodebuild"],
+      "why": "模拟器第一次启动时生成的共用缓存，下次启动时重新生成；不含 Devices（见 notCaches）。",
+      "samples": [{"files": ["Library/Developer/CoreSimulator/Caches/dyld/24A335/com.apple.CoreSimulator.SimRuntime.iOS-18-0.24A335/dyld_sim_shared_cache_arm64e"], "expect": "auto"}]
+    },
+    {
+      "id": "xctest-devices",
+      "path": "Library/Developer/XCTestDevices",
+      "tool": "Xcode 测试用的模拟器",
+      "clean": "删除这个文件夹（Xcode 没在跑测试时）",
+      "users": ["Simulator", "simctl", "com.apple.CoreSimulator.CoreSimulatorService", "launchd_sim", "Xcode", "xcodebuild"],
+      "why": "Xcode 并行跑测试时克隆出来的模拟器，下次跑测试时重新克隆；不是 CoreSimulator/Devices 里用户自己的模拟器。",
+      "samples": [{"files": ["Library/Developer/XCTestDevices/0123ABCD-4567-89AB-CDEF-0123456789AB/data/Library/blob"], "expect": "auto"}]
+    },
+    {
+      "id": "xcode-cache",
+      "path": "Library/Caches/com.apple.dt.Xcode",
+      "tool": "Xcode",
+      "clean": "删除这个文件夹（Xcode 没开着时）",
+      "users": ["Xcode", "xcodebuild", "SourceKitService"],
+      "why": "Xcode 自己的缓存，打开 Xcode 时重新生成。",
+      "samples": [{"files": ["Library/Caches/com.apple.dt.Xcode/Cache.db"], "expect": "auto"}]
+    },
+    {
+      "id": "corepack",
+      "path": ".cache/node/corepack",
+      "tool": "Corepack",
+      "clean": "删除这个文件夹",
+      "users": ["corepack", "node", "npm", "npx", "pnpm", "yarn"],
+      "why": "Corepack 下载的包管理器（pnpm、Yarn），项目用到哪个版本时重新下载。https://github.com/nodejs/corepack",
+      "samples": [{"files": [".cache/node/corepack/v1/pnpm/9.0.0/dist/pnpm.cjs"], "expect": "auto"}]
+    }
+  ],
+  "notCaches": [
+    {"path": ".npm/_npx", "why": "npx 装的包：正在跑的工具（比如 MCP 服务器）用着。"},
+    {"path": ".yarn/berry/cache", "why": "Yarn 2 以上的全局缓存：Plug'n'Play 的项目直接从这里加载包，删了要等重新 install 才回来。"},
+    {"path": "Library/Caches/pypoetry/virtualenvs", "why": "Poetry 给各个项目建的虚拟环境，不是缓存。"},
+    {"path": "Library/Developer/CoreSimulator/Devices", "why": "各个模拟器，和装在里面的应用的数据。"},
+    {"path": "Library/Caches/deno", "why": "Deno 的文件夹：location_data 里是应用的本地数据库。"},
+    {"path": ".cache/pre-commit", "why": "pre-commit 跑钩子时，把没暂存的改动以补丁的形式放在这里。"}
+  ]
+}

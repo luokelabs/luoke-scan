@@ -684,7 +684,7 @@ func (r *ExposureRule) Run(ctx *Context) ([]Finding, error) {
 		}
 		joined := strings.Join(portText, "、")
 		out = append(out, Finding{Rule: "exposure.listening", Category: CatPosture, Severity: Low, Verdict: Info, Path: program,
-			Title: filepath.Base(program) + " 在" + where + "监听 " + joined + " 端口：同一个网络里的人能连进来",
+			Title: DisplayName(program) + " 在" + where + "监听 " + joined + " 端口：同一个网络里的人能连进来",
 			Evidence: map[string]string{"ports": joined, "addresses": strings.Join(addresses, "、"),
 				"how": "开发用的服务改成只听 127.0.0.1（多数工具有 --host 127.0.0.1 之类的选项）；不需要就关掉。防火墙打开时会先问你放不放行"},
 			Key: "exposure.listening:" + program})
@@ -697,7 +697,7 @@ func (r *ExposureRule) Run(ctx *Context) ([]Finding, error) {
 		sort.Strings(kinds) // the same words every round
 		joined := strings.Join(kinds, "、")
 		out = append(out, Finding{Rule: "exposure.argv-secret", Category: CatProcess, Severity: Medium, Verdict: Info, Path: program,
-			Title: "正在运行的 " + filepath.Base(program) + " 命令行里带着" + joined,
+			Title: "正在运行的 " + DisplayName(program) + " 命令行里带着" + joined,
 			Evidence: map[string]string{"kinds": joined,
 				"why": "命令行参数这台 Mac 上以你身份运行的程序都能看到，也常被记进 shell 历史、日志和崩溃报告",
 				"how": "改用环境变量、配置文件或钥匙串传；已经露出去的令牌最好换一个"},

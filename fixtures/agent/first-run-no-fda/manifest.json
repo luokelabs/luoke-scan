@@ -90,6 +90,10 @@
           "title": "概览"
         },
         {
+          "id": "mac",
+          "title": "状态"
+        },
+        {
           "id": "cleaned",
           "title": "清理记录"
         }
@@ -159,5 +163,5 @@
   ],
   "type": "app",
   "ui_element": true,
-  "version": "0.3.8"
+  "version": "0.3.30"
 }

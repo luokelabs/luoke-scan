@@ -95,7 +95,7 @@ func TestMemoryRecordsWrittenThroughLuokeCoresPython(t *testing.T) {
 	env := map[string]string{"LUOKE_HUB_SOCKET": f.socket, "LUOKE_HOME": out, "HOME": "/tmp/la-home", "LUOKE_SCAN_TEST_LEAK": "x"}
 	records := []MemoryRecord{
 		{Topic: "scan-autoclean", Speaker: "user", Kind: "statement", Text: "在螺壳扫描里打开了不用点就清", HappenedAt: time.Now(), Data: map[string]any{"on": true}},
-		{Topic: "scan-ignored", Speaker: "user", Kind: "statement", Text: "在螺壳扫描里说这一项缓存以后别提", Ref: "p1", HappenedAt: time.Now(),
+		{Topic: "scan-ignored", Speaker: "user", Kind: "statement", Text: "在螺壳扫描里说这一样缓存以后别提", Ref: "p1", HappenedAt: time.Now(),
 			Data: map[string]any{"category": "cache", "rule": "cache.rebuildable.pip", "items": 1}},
 	}
 	if n := rememberRecords(records, "0.1.0", env); n != 2 {

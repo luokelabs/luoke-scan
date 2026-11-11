@@ -53,6 +53,9 @@ type State struct {
 	AutoDone       []AutoDone           `json:"autoDone"`
 	AutoOff        map[string]core.Time `json:"autoOff,omitempty"`
 	DonePlans      map[string]core.Time `json:"donePlans,omitempty"`
+	// Gone: findings whose item a click found already gone (「找不到，已跳过」: deleted outside this tool), by finding id,
+	// when. Not offered again in the round that listed them (one that started before then); the next round looks again.
+	Gone map[string]core.Time `json:"gone,omitempty"`
 }
 
 // neverOn: automatic cleaning off from the start (the user never turned it on).
@@ -200,6 +203,15 @@ func (s State) save(path string, now time.Time) {
 		}
 		s.DonePlans = kept
 	}
+	if s.Gone != nil {
+		kept := map[string]core.Time{}
+		for k, v := range s.Gone {
+			if now.Sub(v.Time) < 30*24*time.Hour {
+				kept[k] = v
+			}
+		}
+		s.Gone = kept
+	}
 	data, err := core.EncodeJSON(s)
 	if err != nil {
 		return
@@ -230,6 +242,8 @@ type PlanItem struct {
 	Label     string   `json:"label,omitempty"`
 	Original  string   `json:"original,omitempty"`
 	BundleID  string   `json:"bundleID,omitempty"`
+	// Tool: the package manager whose user config 改成不跑 writes (core.ScriptsTools).
+	Tool string `json:"tool,omitempty"`
 }
 
 // Plan is a clean-up the tool offered: only these items, only these choices, done only after the user clicks.
@@ -241,6 +255,8 @@ type Plan struct {
 	Items    []PlanItem `json:"items"`
 	Admin    bool       `json:"admin,omitempty"`
 	Sibling  string     `json:"sibling,omitempty"`
+	// Tool: the version of this tool that made the plan: one from an older version takes this one's defaults (suggestAgain).
+	Tool string `json:"tool,omitempty"`
 }
 
 // Choices.
@@ -251,11 +267,14 @@ const (
 	ChoiceClone  = "clone"
 	ChoiceDelete = "delete"
 	ChoiceRemove = "remove"
+	// ChoiceScriptsOff appends the line that stops dependencies' install scripts to a package manager's user config.
+	ChoiceScriptsOff = "scripts-off"
 )
 
 // ChoiceLabels are what the card says for each choice.
 var ChoiceLabels = map[string]string{ChoiceTrash: "移到废纸篓", ChoiceKeep: "先不动", ChoiceIgnore: "以后别提",
-	ChoiceClone: "换成克隆（都留着，省空间）", ChoiceDelete: "删掉（只是失效的链接）", ChoiceRemove: "删掉（会自动重建）"}
+	ChoiceClone: "换成克隆（都留着，省空间）", ChoiceDelete: "删掉（只是失效的链接）", ChoiceRemove: "删掉（会自动重建）",
+	ChoiceScriptsOff: "关闭自动运行"}
 
 // Clears: moved to the Trash, or (a rebuildable cache) deleted.
 func Clears(choice string) bool { return choice == ChoiceTrash || choice == ChoiceRemove }

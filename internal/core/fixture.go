@@ -70,6 +70,32 @@ type Fakes struct {
 	OnBattery         bool                 `json:"onBattery"`
 	LowPower          bool                 `json:"lowPower"`
 	MemoryPressure    int32                `json:"memoryPressure"`
+	// Vitals: how this Mac runs, for the vitals rule (luoke-scan#126); nil: nothing to tell.
+	Vitals *FakeVitals `json:"vitals"`
+}
+
+// FakeVitals is one look at how the fake Mac runs. CPU: processor seconds of a process (by pid; Processes says what
+// it is) at the look's two readings, SampleSeconds apart; nil: not read. Footprint: its memory, bytes. Pressure: 1
+// normal, 2 warning, 4 critical (0: not read). Swap: bytes in use (nil: not read). Battery: nil when there is none;
+// BatteryUnknown: it could not be read. Thermal: the thermal pressure levels read (none: not read).
+type FakeVitals struct {
+	CPU            map[string][2]float64 `json:"cpu"`
+	SampleSeconds  float64               `json:"sampleSeconds"`
+	Footprint      map[string]int64      `json:"footprint"`
+	MemTotal       int64                 `json:"memTotal"`
+	Pressure       int                   `json:"pressure"`
+	Swap           *int64                `json:"swap"`
+	Battery        *FakeBattery          `json:"battery"`
+	BatteryUnknown bool                  `json:"batteryUnknown"`
+	Thermal        []int                 `json:"thermal"`
+}
+
+// FakeBattery is IOKit's battery: charge cycles so far and by design, capacity now and new (mAh).
+type FakeBattery struct {
+	Cycles         int `json:"cycles"`
+	DesignCycles   int `json:"designCycles"`
+	Capacity       int `json:"capacity"`
+	DesignCapacity int `json:"designCapacity"`
 }
 
 type FakeProcess struct {

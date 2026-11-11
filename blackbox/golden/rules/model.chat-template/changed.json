@@ -1,0 +1,196 @@
+{
+  "about": "没变的文件下一轮不再读，结果一样；换回正常的模板，下一轮就不报；又换成另一种动过的，是一条新的发现（编号跟着内容变）",
+  "case": "rules/model.chat-template/changed",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "tokenizer_config.json",
+              "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download Qwen/Qwen2.5-7B-Instruct`）；拿不准就先别用这个模型",
+              "kinds": "conceal,steer",
+              "model": "Qwen/Qwen2.5-7B-Instruct",
+              "template": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/rev1/tokenizer_config.json",
+              "tool": "Hugging Face",
+              "where": "对话模板",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型瞒着你或骗你、让模型总推荐某样东西或附上链接。原文没有记下"
+            },
+            "key": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct|1237aba3cae5",
+            "path": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Hugging Face 的模型 Qwen/Qwen2.5-7B-Instruct：对话模板里多了给模型的话（让模型瞒着你或骗你、让模型总推荐某样东西或附上链接）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "tokenizer_config.json",
+              "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download Qwen/Qwen2.5-7B-Instruct`）；拿不准就先别用这个模型",
+              "kinds": "conceal,steer",
+              "model": "Qwen/Qwen2.5-7B-Instruct",
+              "template": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/rev1/tokenizer_config.json",
+              "tool": "Hugging Face",
+              "where": "对话模板",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型瞒着你或骗你、让模型总推荐某样东西或附上链接。原文没有记下"
+            },
+            "key": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct|1237aba3cae5",
+            "path": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Hugging Face 的模型 Qwen/Qwen2.5-7B-Instruct：对话模板里多了给模型的话（让模型瞒着你或骗你、让模型总推荐某样东西或附上链接）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T13:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T13:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "note": "没变：一样",
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T13:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "重新下载了原版的模板"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-20T14:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T14:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T14:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "do": "又被换成带网址的"
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "tokenizer_config.json",
+              "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download Qwen/Qwen2.5-7B-Instruct`）；拿不准就先别用这个模型",
+              "kinds": "steer",
+              "model": "Qwen/Qwen2.5-7B-Instruct",
+              "template": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct/snapshots/rev1/tokenizer_config.json",
+              "tool": "Hugging Face",
+              "where": "对话模板",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型总推荐某样东西或附上链接。原文没有记下"
+            },
+            "key": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct|b09fe6202e58",
+            "path": "~/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B-Instruct",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Hugging Face 的模型 Qwen/Qwen2.5-7B-Instruct：对话模板里多了给模型的话（让模型总推荐某样东西或附上链接）",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T15:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T15:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T15:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

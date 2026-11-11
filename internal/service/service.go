@@ -19,7 +19,7 @@ import (
 )
 
 // ToolVersion is this build's version; it must be the accessory manifest's (packaging/luoke-accessory.json).
-const ToolVersion = "0.3.8"
+const ToolVersion = "0.3.30"
 
 // ModelLink is luoke-core's model for the generate tasks.
 type ModelLink struct {
@@ -54,11 +54,21 @@ type Config struct {
 	AttachedImages func() map[string]bool
 	Installed      func(command, home string) bool
 	Added          func(path string) (time.Time, bool)
-	Elevate        func(args []string, prompt string) Elevated
+	// Elevate runs the password step; wait is the most it may take, dialog included.
+	Elevate func(args []string, prompt string, wait time.Duration) Elevated
+	// Front asks 螺壳's main body to bring Finder or Settings forward ("reveal" {"path"}, "open_settings" {"pane"});
+	// false: it did not (no main body, not right after a click), open it with Command instead.
+	Front func(method string, params map[string]any) bool
 	// Clone turns copy into a clone of original (checking the contents again).
 	Clone func(original, copy string) error
 	// QuickWaits is why the quick look between rounds waits now (on battery, Low Power Mode, memory tight); "" it can go.
 	QuickWaits func() string
+	// Volume is the free and total bytes of the disk home is on, read when the 「状态」 page is drawn; ok false when
+	// not known. A fake home answers its fakes' volume, so the page is the same each time.
+	Volume func(home string) (free, total int64, ok bool)
+	// AppName is an installed app's own name for its bundle id ("" when it is not on this Mac): the 「状态」 page
+	// names a folder kept under a bundle id after its app.
+	AppName func(bundleID string) string
 }
 
 // Elevated is how the password step went.
@@ -92,24 +102,41 @@ func NewConfig(ctx core.Context) Config {
 		AttachedImages: func() map[string]bool { return map[string]bool{} },
 		Installed:      func(string, string) bool { return false },
 		Added:          func(string) (time.Time, bool) { return time.Time{}, false },
-		Elevate: func([]string, string) Elevated {
+		Elevate: func([]string, string, time.Duration) Elevated {
 			return Elevated{Kind: "failed", Why: "这一版的要密码那一步还没接上螺壳本体"}
 		},
+		Front:      func(string, map[string]any) bool { return false },
 		QuickWaits: QuickLookWaitsNow,
+		Volume:     core.VolumeCapacity,
+		AppName:    installedAppName,
 	}
 }
 
 // trashForReal moves to the user's Trash with Finder's own naming (osascript is not used: no dialog).
 func trashForReal(path string) (string, error) {
 	h, _ := os.UserHomeDir()
-	dest := filepath.Join(h, ".Trash", filepath.Base(path))
-	for n := 2; core.Exists(dest); n++ {
-		dest = filepath.Join(h, ".Trash", filepath.Base(path)+" "+strconv.Itoa(n))
+	return trashInto(filepath.Join(h, ".Trash"), path)
+}
+
+// trashInto moves path into the folder trash under its own name, else "name 2.ext", "name 3.ext"… as Finder names
+// them. Each try is one exclusive rename (RENAME_EXCL): never over what is there, even what came after the name was
+// picked or a link pointing nowhere; a name taken is tried again with the next.
+func trashInto(trash, path string) (string, error) {
+	name := filepath.Base(path)
+	dest := filepath.Join(trash, name)
+	for n := 1; n <= 1000; n++ {
+		if n > 1 {
+			dest = filepath.Join(trash, numbered(name, n))
+		}
+		err := core.RenameatxNp(core.AtFDCWD, path, core.AtFDCWD, dest, core.RenameExcl)
+		if err == nil {
+			return dest, nil
+		}
+		if err != syscall.EEXIST {
+			return "", &os.LinkError{Op: "rename", Old: path, New: dest, Err: err}
+		}
 	}
-	if err := os.Rename(path, dest); err != nil {
-		return "", err
-	}
-	return dest, nil
+	return "", &os.LinkError{Op: "rename", Old: path, New: dest, Err: syscall.EEXIST}
 }
 
 // FixtureConfig is the settings for a fake home: its own folders and the fakes' answers for this Mac's state; nothing
@@ -117,6 +144,18 @@ func trashForReal(path string) (string, error) {
 func FixtureConfig(l core.Layout, f *core.Fakes) Config {
 	cfg := NewConfig(l.Context(nil))
 	cfg.Rules = core.FixtureRules(l, f)
+	cfg.AppName = func(id string) string { // 假家目录里装着的应用，不问这台 Mac 的 LaunchServices
+		if p := core.FindAppIn(id, cfg.Context.AppDirs); p != "" {
+			return core.NameWithoutExtension(p)
+		}
+		return ""
+	}
+	cfg.Volume = func(string) (int64, int64, bool) {
+		if f == nil || f.Volume == nil {
+			return 0, 0, false
+		}
+		return f.Volume.Free, f.Volume.Total, true
+	}
 	if PermissionOff(fdaPermission) {
 		no := false
 		cfg.Context.FullDiskAccess, cfg.Context.AccessOff = &no, true
@@ -141,7 +180,9 @@ func FixtureConfig(l core.Layout, f *core.Fakes) Config {
 		}
 		return 0
 	}
-	cfg.Elevate = func([]string, string) Elevated { return Elevated{Kind: "failed", Why: "假目录不用密码删除"} }
+	cfg.Elevate = func([]string, string, time.Duration) Elevated {
+		return Elevated{Kind: "failed", Why: "假目录不用密码删除"}
+	}
 	if f != nil {
 		running := map[string]bool{}
 		for _, p := range f.Running {
@@ -220,21 +261,23 @@ func ThisMacConfig(s *core.Store, t core.Tools, otherData bool) Config {
 	// The password step goes through 螺壳's main body, which shows the dialog (LUOKE_HOST_FD); a terminal uses sudo
 	// (luoke-scan system sets its own).
 	cfg.Elevate = HostElevate
+	cfg.Front = HostFront // 在访达里显示、打开设置 by the main body, which is in front (LUOKE_HOST_FD); without it, open
 	if otherData {
-		cfg.Elevate = func([]string, string) Elevated {
+		cfg.Elevate = func([]string, string, time.Duration) Elevated {
 			return Elevated{Kind: "failed", Why: "用别的数据目录时不用密码删除"}
 		}
 	}
 	return cfg
 }
 
-// PermissionsOffEnv: the permissions (ids in the manifest, comma-separated) the user switched off for this app in the
-// 权限 page. Set by 螺壳's main body.
+// PermissionsOffEnv: the permissions this app may not use (ids in the manifest, comma-separated): those the manifest
+// declares under 螺壳's name that the user has not confirmed for this app in 螺壳, whether never confirmed or switched
+// off again. Set by 螺壳's main body.
 const PermissionsOffEnv = "LUOKE_PERMISSIONS_OFF"
 
 const fdaPermission = "fda"
 
-// PermissionOff says whether the user switched this permission off for this app.
+// PermissionOff says whether this app may not use this permission: the user has not confirmed it (LUOKE_PERMISSIONS_OFF).
 func PermissionOff(id string) bool {
 	for _, p := range strings.Split(os.Getenv(PermissionsOffEnv), ",") {
 		if strings.TrimSpace(p) == id {
@@ -244,7 +287,7 @@ func PermissionOff(id string) bool {
 	return false
 }
 
-// FullDiskAccessNow: false when the user switched it off for this app, whatever macOS would allow. Else opening the
+// FullDiskAccessNow: false when the user has not confirmed it for this app, whatever macOS would allow. Else opening the
 // user's TCC database needs Full Disk Access, and macOS never shows a dialog for it; else the Mac's. nil: not known
 // (the probe failed some other way).
 func FullDiskAccessNow(home string) *bool {
@@ -417,6 +460,7 @@ func (s *Service) IsScanning() bool { return core.LockHeld(s.Store.Dir) }
 func (s *Service) RunRound(autoclean bool) core.Report {
 	lock := core.TakeLock(s.Store.Dir, "round.lock", 0)
 	defer lock.Release()
+	defer s.Store.ClearProgress()
 	s.reconcileAdmin()
 	ctx := s.Config.Context
 	ctx.Store = s.Store
@@ -424,6 +468,10 @@ func (s *Service) RunRound(autoclean bool) core.Report {
 	report := core.RunRound(&ctx, s.Config.Rules, s.Config.Clock, s.Store.LastReport())
 	if autoclean && !ctx.IsCancelled() {
 		report = s.autoclean(report)
+	}
+	if p := s.Store.Progress(); p != nil { // 规则都跑完了，模型在写说明
+		p.Done, p.Current = append(p.Done, p.Current), "model"
+		s.Store.SaveProgress(*p)
 	}
 	report = s.withModel(report, &ctx)
 	s.Store.SaveReport(report)
@@ -479,5 +527,31 @@ func Self() string {
 func StartDetached(args []string) bool {
 	cmd := exec.Command(Self(), args...)
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	if core.Packed() {
+		return startVouched(cmd) // the installed one checks who started it (FromApp)
+	}
 	return cmd.Start() == nil
+}
+
+// installedAppName: an app's own name for its bundle id, from one read of the usual app folders kept for ten minutes.
+// Not AppsWithBundleID: outside a round that asks Spotlight once per id (up to 10 s each), and a page names hundreds
+// of folders; the agent gives up on a page after 10 s (the 「状态」 page showed 「没在运行」, 11-09).
+func installedAppName(id string) string {
+	appNames.Lock()
+	defer appNames.Unlock()
+	if appNames.index == nil || time.Since(appNames.at) > 10*time.Minute {
+		home, _ := os.UserHomeDir()
+		appNames.index = core.AppIndexIn([]string{"/Applications", "/System/Applications", filepath.Join(home, "Applications")})
+		appNames.at = time.Now()
+	}
+	if p := appNames.index[strings.ToLower(id)]; p != "" {
+		return core.NameWithoutExtension(p)
+	}
+	return ""
+}
+
+var appNames struct {
+	sync.Mutex
+	index map[string]string
+	at    time.Time
 }

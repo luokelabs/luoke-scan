@@ -7,6 +7,7 @@ const usage = "用法：\n" +
 	"  luoke-scan scan --this-mac [--autoclean] [--projects <目录>]… [--json]   查这台 Mac（主控的空闲任务带 --autoclean 起）\n" +
 	"  luoke-scan scan --fixture <假目录> [--json]     查假目录（外部测试 blackbox/ 用）\n" +
 	"      [--clock <时间>] [--no-full-disk-access]   假目录的时钟停在这个 ISO 8601 时间；当作没有完全磁盘访问（录 fixtures/agent 用）\n" +
+	"      [--update-first]                          还没有病毒库就先下载（--this-mac 一直这样）\n" +
 	"  luoke-scan scan --this-mac --quick             两轮之间看一眼新下载的（下载、桌面有动静才扫，只扫病毒；用电池、低电量模式、内存紧张时不看）\n" +
 	"  luoke-scan report [--data <目录>]              上一轮的结果，按放心删、要确认、仅供参考分开列\n" +
 	"  luoke-scan findings --data <目录> [--json]     上一轮的发现，每条的全部细节\n" +

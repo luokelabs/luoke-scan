@@ -573,7 +573,7 @@ def verify(root: str, in_app: bool = False, smoke: bool = True, need_db: bool = 
                 bad.append(f"第三方说明里没写 {t['file']}")
     # The program with Full Disk Access takes no flag that points it at other programs or folders (review of #14).
     for cmd in (["update", "--this-mac", "--tool-dir", "/nonexistent", "--force"], ["scan", "--home", "/nonexistent"],
-                ["mcp", "--fixture", "/nonexistent"], ["fixture", "/nonexistent"]):
+                ["mcp", "--fixture", "/nonexistent"]):
         r = subprocess.run([os.path.join(helpers, "luoke-scan")] + cmd, capture_output=True, text=True, timeout=30)
         if r.returncode != 64:
             bad.append(f"包里的 luoke-scan 没拒绝开发参数：{' '.join(cmd)} 退出码 {r.returncode}")

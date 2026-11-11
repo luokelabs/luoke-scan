@@ -11,11 +11,11 @@
         "$REPO/evals/cleanup/cases.json"
       ],
       "stdout": [
-        "清理规则评测：72 个用例",
+        "清理规则评测：75 个用例",
         "",
         "| 类 | 用例 | 该清 | 挑中 | 漏了 | 不该清 | 挑错 |",
         "|---|---|---|---|---|---|---|",
-        "| cache | 18 | 19 | 19 | 0 | 26 | 0 |",
+        "| cache | 21 | 22 | 22 | 0 | 29 | 0 |",
         "| installer | 27 | 8 | 8 | 0 | 25 | 0 |",
         "| duplicate | 17 | 4 | 4 | 0 | 26 | 0 |",
         "| temp | 10 | 133 | 133 | 0 | 94 | 0 |",
@@ -138,6 +138,33 @@
           "auto": 2,
           "id": "cache-xcode-more",
           "keep": 0,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 3,
+          "id": "cache-xcode-tests-corepack",
+          "keep": 0,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-xcode-tests-running",
+          "keep": 2,
+          "kind": "cache",
+          "missed": [],
+          "skipped": [],
+          "wrong": []
+        },
+        {
+          "auto": 0,
+          "id": "cache-corepack-running",
+          "keep": 1,
           "kind": "cache",
           "missed": [],
           "skipped": [],

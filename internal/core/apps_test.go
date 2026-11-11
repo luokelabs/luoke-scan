@@ -116,7 +116,25 @@ func TestLaunchctlText(t *testing.T) {
 			}
 			return ""
 		})
-	if len(items) != 2 || items[0].source != "io.example.byhand" || items[1].name != "Ex" || items[1].program != "/Applications/Ex.app" {
+	if len(items) != 2 || items[0].source != "io.example.byhand" || items[1].name != "Ex" || items[1].program != "/Applications/Ex.app" ||
+		items[1].app != "Ex" || items[0].app != "" || items[0].submitted || items[1].submitted {
+		t.Errorf("sessionItems = %+v", items)
+	}
+}
+
+// A job a running app handed to launchd (SMJobSubmit, `launchctl submit`): launchctl names the process that submitted
+// it in place of a plist. It belongs to that app; one submitted by hand from a terminal names no one.
+func TestSubmittedJob(t *testing.T) {
+	job := ParseSessionJob("io.example-progress", "io.example-progress = {\n\tactive count = 1\n\tpath = (submitted by Example App[56907])\n\ttype = Submitted\n\tprogram = /Users/x/Library/Caches/io.example/Updater.app/Contents/MacOS/Updater\n\tresource coalition = {\n\t\ttype = resource\n\t}\n}\n")
+	want := SessionJob{Label: "io.example-progress", Path: "(submitted by Example App[56907])", SubmittedBy: "Example App",
+		Program: "/Users/x/Library/Caches/io.example/Updater.app/Contents/MacOS/Updater"}
+	if job != want {
+		t.Errorf("ParseSessionJob = %+v", job)
+	}
+	byHand := ParseSessionJob("x", "x = {\n\tpath = (submitted by launchctl[1])\n\tprogram = /Users/x/bin/x\n}\n")
+	items := sessionItems([]SessionJob{job, byHand}, func(string) string { return "" })
+	if len(items) != 2 || items[0].app != "Example App" || !items[0].submitted || items[0].name != "io.example-progress" ||
+		items[1].app != "" || !items[1].submitted {
 		t.Errorf("sessionItems = %+v", items)
 	}
 }

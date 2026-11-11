@@ -78,8 +78,13 @@ func (s *Service) cleanedRecords(plan string, outcomes []outcome, report *core.R
 			verb = "换成了克隆"
 		case ChoiceRemove:
 			verb = "删掉了（会自动重建）"
+		case ChoiceScriptsOff:
+			verb = "改成了不让依赖在安装时跑脚本"
 		}
 		label, has := categoryLabels[first.Category]
+		if g[0].choice == ChoiceScriptsOff {
+			label, has = "包管理器的设置", true
+		}
 		if !has {
 			label = "东西"
 		}
@@ -140,6 +145,16 @@ func (s *Service) ignoredRecord(f core.Finding, report *core.Report) MemoryRecor
 		return s.malwareRecord(s.fid(f), f.Rule, filepath.Base(f.Path), "ignore", "", report)
 	}
 	return s.ignoredGroup(string(f.Category), f.Rule, f.Evidence["bundle_id"], 1, "")
+}
+
+// unignoredRecord: the user took back 「以后别提」 for one finding right after (撤销 on the answer card).
+func (s *Service) unignoredRecord(f core.Finding) MemoryRecord {
+	what := "这一项" + categoryLabels[string(f.Category)]
+	if isMalware(f) {
+		what = "报毒的文件 " + filepath.Base(f.Path)
+	}
+	return MemoryRecord{Topic: "scan-ignored", Speaker: "user", Kind: "statement", Text: "在螺壳扫描里撤回了「" + what + "以后别提」，照样提醒",
+		HappenedAt: s.now(), Data: map[string]any{"category": string(f.Category), "rule": f.Rule, "action": "undo"}}
 }
 
 // ignoredRecords: "以后别提" chosen in a plan: one record per kind of thing (and app), with how many; malware one by one.

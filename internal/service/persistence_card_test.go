@@ -23,12 +23,13 @@ func TestPersistenceCardIsPlain(t *testing.T) {
 	item := s.persistenceItem(f, "security/x", m.report)
 	b, _ := json.Marshal(item)
 	text := string(b)
-	for _, bad := range []string{"为什么现在说", "恶意软件", "停掉并移到废纸篓", "我认识它"} {
+	// 不给用户看路径、配置文件、bundle id（负责人 11-06）
+	for _, bad := range []string{"为什么现在说", "恶意软件", "停掉并移到废纸篓", "我认识它", "~/Downloads/odd", "配置文件：", "io.example.odd"} {
 		if strings.Contains(text, bad) {
 			t.Errorf("card still says %q", bad)
 		}
 	}
-	for _, want := range []string{"它会运行 ~/Downloads/odd。", "如果是你自己装的，点「是我装的」就好", "配置文件：", "\"是我装的\""} {
+	for _, want := range []string{"会跟着电脑一起启动的程序「odd」", "如果是你自己装的，点「是我装的」就好", "\"是我装的\""} {
 		if !strings.Contains(text, want) {
 			t.Errorf("card lacks %q", want)
 		}
@@ -37,6 +38,46 @@ func TestPersistenceCardIsPlain(t *testing.T) {
 		t.Errorf("「是我装的」should come first")
 	}
 	t.Log(text)
+}
+
+// Named as Login Items names it: a login item an app registered by that app, not by the helper program inside it. A job a
+// running app submitted is not in Login Items and is gone after a restart: the card says whose it is and that, and does
+// not send the user to Login Items.
+func TestPersistenceCardNamesTheApp(t *testing.T) {
+	m := newModelSetup(t)
+	s := m.service(nil, nil)
+	text := func(f core.Finding) string {
+		b, _ := json.Marshal(s.persistenceItem(f, "security/x", m.report))
+		return string(b)
+	}
+	registered := core.Finding{Rule: "persistence.new", Category: core.CatPersistence, Severity: core.Medium, Verdict: core.Confirm,
+		Path: "/Applications/Example Sync.app/Contents/Library/LoginItems/SyncAgent.app/Contents/MacOS/SyncAgent",
+		Evidence: map[string]string{"scope": "login-item", "name": "Example Sync", "app": "Example Sync",
+			"program": "/Applications/Example Sync.app/Contents/Library/LoginItems/SyncAgent.app/Contents/MacOS/SyncAgent", "why": "程序没有开发者签名"}}
+	got := text(registered)
+	for _, want := range []string{"新装了一个会跟着电脑一起启动的程序「Example Sync」", "打开「登录项」设置"} {
+		if !strings.Contains(got, want) {
+			t.Errorf("login item card lacks %q: %s", want, got)
+		}
+	}
+	program := m.ctx.Home + "/Library/Caches/io.example.chat/helper/Updater.app/Contents/MacOS/Updater"
+	submitted := core.Finding{Rule: "persistence.new", Category: core.CatPersistence, Severity: core.High, Verdict: core.Confirm,
+		Path: program, Evidence: map[string]string{"scope": "login-item", "name": "io.example.chat-progress", "app": "Chat", "submitted": "1",
+			"program": program, "why": "程序放在缓存文件夹里，装好的程序很少放在那儿"}}
+	got = text(submitted)
+	for _, want := range []string{"「Chat」在后台起了一个程序「Updater」", "重启以后不会再自己起来，所以不在「登录项」里", "\"是我装的\"", "在访达里显示"} {
+		if !strings.Contains(got, want) {
+			t.Errorf("submitted job card lacks %q: %s", want, got)
+		}
+	}
+	for _, bad := range []string{"跟着电脑一起启动", "打开「登录项」设置", "登录项与扩展", "io.example.chat"} {
+		if strings.Contains(got, bad) {
+			t.Errorf("submitted job card says %q: %s", bad, got)
+		}
+	}
+	if title, _ := s.plain(submitted); title != "「Chat」在后台起的程序" {
+		t.Errorf("plain = %q", title)
+	}
 }
 
 // A known malicious package in a project: urgent, what to do written out, the lockfile shown in Finder; nothing of the
@@ -57,13 +98,13 @@ func TestMaliciousPackageCard(t *testing.T) {
 	}
 	b, _ := json.Marshal(item)
 	text := string(b)
-	for _, want := range []string{"依据：恶意包名单 2026-10-10（OSV 的 MAL- 条目），MAL-2025-1", "位置：~/Projects/web/package-lock.json", "删掉这个项目的 node_modules",
-		"在访达里显示", "处理好了，以后别提"} {
+	// 大白话（负责人 11-06）：名单、编号、位置和命令都只在报告里
+	for _, want := range []string{"装了一个已知的恶意软件包", "先把重要的密码都换掉", "在访达里显示", "处理好了，以后别提"} {
 		if !strings.Contains(text, want) {
 			t.Errorf("card lacks %q", want)
 		}
 	}
-	for _, bad := range []string{"移到废纸篓", "scan_apply", "不是病毒"} {
+	for _, bad := range []string{"移到废纸篓", "scan_apply", "不是病毒", "依据：", "MAL-2025-1", "~/Projects", "node_modules"} {
 		if strings.Contains(text, bad) {
 			t.Errorf("card has %q", bad)
 		}
@@ -110,12 +151,12 @@ func TestMaliciousPackageCardsMergedAndCapped(t *testing.T) {
 		t.Fatalf("want 11 urgent cards, got %d", len(items))
 	}
 	first, _ := json.Marshal(items[0])
-	if !strings.Contains(string(first), "30 处用了已知恶意的 evil-all@1.0.0") || !strings.Contains(string(first), "位置（30 处）：项目 app100") ||
+	if !strings.Contains(string(first), "有 30 处装了已知的恶意软件包「evil-all") || strings.Contains(string(first), "位置（") ||
 		!strings.Contains(string(first), "在访达里显示") {
 		t.Fatalf("merged card: %s", first)
 	}
 	last, _ := json.Marshal(items[10])
-	if !strings.Contains(string(last), "另外还有 3 个已知恶意的包") || !strings.Contains(string(last), "包：other-") ||
+	if !strings.Contains(string(last), "另外还有 3 个已知的恶意软件包") || strings.Contains(string(last), "包：other-") ||
 		strings.Contains(string(last), "在访达里显示") || !strings.Contains(string(last), "处理好了，以后别提") {
 		t.Fatalf("card for the rest: %s", last)
 	}

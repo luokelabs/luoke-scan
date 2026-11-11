@@ -4,6 +4,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -108,12 +109,43 @@ func systemXProtect() string {
 
 // ClamAVCerts is --cvdcertsdir for the packed ClamAV tools (ClamAV 1.5 reads no database without its root
 // certificate, and the folder it looks in by default is Homebrew's): the certificate luoke-scan carries, written to a
-// folder of its own that done removes. Nothing in a development build (Homebrew's tools find their own).
-func ClamAVCerts() (args []string, done func()) {
+// folder of its own that done removes. Nothing in a development build (Homebrew's tools find their own). Run the tool
+// with CertsEnv too: freshclam's test of what it downloaded does not take the option (luoke-scan#103).
+var ClamAVCerts = func() (args []string, done func()) {
 	if !Packed() {
 		return nil, func() {}
 	}
 	return clamAVCertsFrom(assets.FS)
+}
+
+// CertsEnv is env (nil: this process's environment) with CVD_CERTS_DIR set to the folder certs (ClamAVCerts) points
+// at; nil when certs points nowhere, so the tool keeps this process's environment. freshclam loads the database it has
+// just downloaded to test it, and that load reads the certificate from CVD_CERTS_DIR, else from the folder compiled
+// in (Homebrew's, missing on a Mac without Homebrew's ClamAV): without it every download fails its test (exit 8).
+func CertsEnv(certs []string, env map[string]string) map[string]string {
+	dir := ""
+	for _, a := range certs {
+		if strings.HasPrefix(a, "--cvdcertsdir=") {
+			dir = strings.TrimPrefix(a, "--cvdcertsdir=")
+		}
+	}
+	if dir == "" {
+		return env
+	}
+	out := map[string]string{}
+	if env == nil {
+		for _, kv := range os.Environ() {
+			if i := strings.Index(kv, "="); i > 0 {
+				out[kv[:i]] = kv[i+1:]
+			}
+		}
+	} else {
+		for k, v := range env {
+			out[k] = v
+		}
+	}
+	out["CVD_CERTS_DIR"] = dir
+	return out
 }
 
 func clamAVCertsFrom(fsys fs.FS) (args []string, done func()) {

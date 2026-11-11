@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -17,10 +18,22 @@ import (
 // target checked again (same file, not a link, unchanged, inside the home or temp folder).
 
 const (
-	// maxPlanItems is the most items one card lists (2 components each; a card holds at most 200).
-	maxPlanItems = 30
-	// checkBudget is how long one scan_apply may spend checking targets before it stops checking (and moving) the rest.
+	// planGroupFrom: a kind with more items than this is one row on the page and the plan's card, its one choice for
+	// all of them (planGroups): the plan takes everything that can be cleaned, however many (luoke-scan#129: no cap
+	// that drops 41 installers into 「要你看看」), and a card still holds at most 200 components.
+	planGroupFrom = 3
+	// applyBudget: after this much of a scan_apply no more items are started (the rest stay, 「再点一次」), so the answer
+	// comes within requestLimit even when one item (a big cache) takes a while.
+	applyBudget = requestLimit - 60*time.Second
+	// checkBudget is how long one scan_apply may spend looking for changes in its targets: walking a folder for changes,
+	// it looks at the clock every 500 entries and, once past it, stops and leaves that target (and the rest) where they
+	// are. The other checks of a target (same file, not a link, where it should be) take no time worth limiting.
 	checkBudget = 120 * time.Second
+	// requestLimit: 螺壳's main body ends a request (one luoke-scan mcp process) that has not answered in 300 s, with
+	// SIGKILL (docs/host-interface.md §2; luoke-scan#122). scan_apply answers within this of its start: the checks and the
+	// password dialog share it, and the dialog is not shown with less than dialogLeast left.
+	requestLimit = 285 * time.Second
+	dialogLeast  = 60 * time.Second
 )
 
 func isMalware(f core.Finding) bool {
@@ -40,6 +53,9 @@ func isMaliciousPackage(f core.Finding) bool { return f.Rule == "supplychain.mal
 
 // plannable: a finding is something to delete, decided from the finding alone (no file system access).
 func (s *Service) plannable(f core.Finding) bool {
+	if trashableSkill(f) {
+		return true // in the plan, a high-risk one to the Trash by default (baseSuggestion); not just a button to the Finder (luoke-scan#152)
+	}
 	if f.Verdict == core.Info {
 		return false
 	}
@@ -58,9 +74,32 @@ func (s *Service) plannable(f core.Finding) bool {
 		return f.Rule == "persistence.launchagent-missing" || (f.Rule == "persistence.new" && f.Evidence["scope"] == "user-agent")
 	case core.CatMalware:
 		return isMalware(f)
+	case core.CatPosture:
+		// A package manager's user config that one appended line fixes (改成不跑).
+		return f.Rule == core.InstallScriptsRuleID && f.Evidence["append"] != ""
 	}
 	return false
 }
+
+// trashableSkill: an AI plugin the user put in their own skills folder, or a local model whose chat template has
+// words added: a folder of its own, safe to move to the Trash and put back. Not a plugin a marketplace installed (its
+// manager puts it back; it is uninstalled in the tool), not a project's (the project is the user's), not an Ollama
+// model (its files are shared between models).
+func trashableSkill(f core.Finding) bool {
+	if f.Path == "" || !strings.HasPrefix(f.Path, "/") {
+		return false
+	}
+	switch {
+	case strings.HasPrefix(f.Rule, "skill.") && f.Rule != "skill.partial":
+		return f.Evidence["scope"] == string(core.ScopePersonal) && !pluginSkill(f)
+	case f.Rule == "model.chat-template":
+		return f.Evidence["tool"] != "Ollama"
+	}
+	return false
+}
+
+// pluginSkill: a skill that came with a plugin from a marketplace (Claude Code's plugins folder).
+func pluginSkill(f core.Finding) bool { return f.Evidence["agent"] == "Claude Code 插件" }
 
 // installRule is the round's install rule, with this service's settings (where /usr/local is: tests point it at a
 // fake folder).
@@ -124,7 +163,8 @@ func (s *Service) targetPaths(f core.Finding) []string {
 		}
 		sort.Strings(out)
 		return out
-	case (f.Category == core.CatSpace && f.Rule == "space.duplicates") || (f.Category == core.CatStaleProject && f.Rule == "stale.artifacts"):
+	case (f.Category == core.CatSpace && f.Rule == "space.duplicates") || (f.Category == core.CatStaleProject && f.Rule == "stale.artifacts") ||
+		(f.Category == core.CatCache && f.Rule == "cache.electron"):
 		var out []string
 		for _, t := range strings.Split(f.Evidence["targets"], "\n") {
 			if t != "" {
@@ -200,6 +240,12 @@ func (s *Service) insideHomebrewLinks(path string) bool {
 // planItem is one item of a plan. admin: the targets in the system's Library (the plan that needs the password),
 // else those in the home or temp folder.
 func (s *Service) planItem(f core.Finding, key string, admin bool) *PlanItem {
+	if f.Rule == core.InstallScriptsRuleID {
+		if admin {
+			return nil
+		}
+		return s.scriptsOffItem(f, key)
+	}
 	links := f.Rule == homebrewLinksRule // links themselves, deleted rather than moved
 	var targets []Target
 	for _, p := range s.targetPaths(f) {
@@ -227,13 +273,7 @@ func (s *Service) planItem(f core.Finding, key string, admin bool) *PlanItem {
 	// A rebuildable cache is deleted, not moved to the Trash: nothing is lost (its tool rebuilds it) and the space is
 	// free at once (11-05, as automatic cleaning).
 	cache := strings.HasPrefix(f.Rule, "cache.rebuildable.")
-	suggested := ChoiceKeep
-	if f.Verdict == core.Safe {
-		suggested = ChoiceTrash
-		if cache {
-			suggested = ChoiceRemove
-		}
-	}
+	suggested := baseSuggestion(f)
 	options := []string{ChoiceTrash, ChoiceKeep, ChoiceIgnore}
 	switch {
 	case f.Rule == "space.duplicates":
@@ -268,9 +308,6 @@ func (s *Service) plan(findings []core.Finding, report core.Report, scope, outbo
 		}
 		if ok {
 			candidates = append(candidates, f)
-			if len(candidates) == maxPlanItems {
-				break
-			}
 		}
 	}
 	if len(candidates) == 0 {
@@ -286,6 +323,9 @@ func (s *Service) plan(findings []core.Finding, report core.Report, scope, outbo
 	}
 	id := "p-" + core.ShortHash(parts...)
 	if p, ok := LoadPlan(s.plansDir(), id); ok {
+		if p.Tool != ToolVersion {
+			s.suggestAgain(&p, candidates, admin, scope)
+		}
 		return &p
 	}
 	// Nothing could be planned for these: not looked at again. Kept on disk too, since every request may be a
@@ -294,6 +334,12 @@ func (s *Service) plan(findings []core.Finding, report core.Report, scope, outbo
 	if _, known := s.noPlan.Load(id); known || core.Exists(empty) {
 		return nil
 	}
+	// What automatic cleaning would take without asking (the four kinds, by its own stricter rules: an installer of an
+	// app installed at that version, two weeks in Downloads; a copy in Downloads; a test tool's idle temp folder) is
+	// suggested too, even where the rule itself says 「要确认」 (负责人 11-09 on luoke-scan#129: what the rules already
+	// call safe goes by default; the user still clicks, and it comes back from the Trash). Not a kind the user turned
+	// off or put something back from (the picker's Off).
+	auto := s.autoSuggest(candidates, admin, scope)
 	var items []PlanItem
 	for i, f := range candidates {
 		key := "i" + strconv.Itoa(i)
@@ -301,6 +347,7 @@ func (s *Service) plan(findings []core.Finding, report core.Report, scope, outbo
 			key = "a" + strconv.Itoa(i)
 		}
 		if it := s.planItem(f, key, admin); it != nil {
+			withAuto(it, auto)
 			items = append(items, *it)
 		}
 	}
@@ -311,9 +358,120 @@ func (s *Service) plan(findings []core.Finding, report core.Report, scope, outbo
 		return nil
 	}
 	scanned := report.StartedAt
-	p := Plan{ID: id, Created: core.Time{Time: s.now()}, Scanned: &scanned, OutboxID: outboxID, Items: items, Admin: admin}
+	p := Plan{ID: id, Created: core.Time{Time: s.now()}, Scanned: &scanned, OutboxID: outboxID, Items: items, Admin: admin,
+		Tool: ToolVersion}
 	p.Save(s.plansDir())
 	return &p
+}
+
+// planGroup: items of one kind the page and the plan's card draw as one row with one choice: key is what that choice
+// is sent as, options what every one of them offers.
+type planGroup struct {
+	key     string
+	items   []PlanItem
+	options []string
+}
+
+// planGroups: the kinds (one rule, one preselected choice) with more than planGroupFrom items, among what the user
+// chooses for one by one (not the rebuildable caches, which have their own button, nor a virus, which has its own
+// buttons); each keyed g-<its first item's key>, its items in the plan's order. Worked out from the plan alone, the
+// same for the page that draws them and for scan_apply that hands their choice to each item.
+func planGroups(items []PlanItem) []planGroup {
+	var order []string
+	by := map[string][]PlanItem{}
+	for _, it := range items {
+		if it.Suggested == ChoiceRemove || it.Rule == "malware.clamav" || strings.HasPrefix(it.Rule, "malware.yara.") {
+			continue
+		}
+		k := it.Rule + "\x00" + it.Suggested
+		if by[k] == nil {
+			order = append(order, k)
+		}
+		by[k] = append(by[k], it)
+	}
+	var out []planGroup
+	for _, k := range order {
+		members := by[k]
+		if len(members) <= planGroupFrom {
+			continue
+		}
+		var options []string
+		for _, o := range members[0].Options {
+			all := true
+			for _, m := range members[1:] {
+				all = all && contains(m.Options, o)
+			}
+			if all {
+				options = append(options, o)
+			}
+		}
+		out = append(out, planGroup{key: "g-" + members[0].Key, items: members, options: options})
+	}
+	return out
+}
+
+// baseSuggestion: what an item is preselected to by its rule's verdict: safe ones go (a rebuildable cache deleted, the
+// rest to the Trash), the others stay until the user picks (改成不跑 too).
+func baseSuggestion(f core.Finding) string {
+	if trashableSkill(f) && f.Severity == core.High {
+		return ChoiceTrash // a high-risk AI plugin or model: to the Trash by default, back from it (luoke-scan#152); the rest 先不动
+	}
+	switch {
+	case f.Rule == core.InstallScriptsRuleID || f.Verdict != core.Safe:
+		return ChoiceKeep
+	case strings.HasPrefix(f.Rule, "cache.rebuildable."):
+		return ChoiceRemove
+	}
+	return ChoiceTrash
+}
+
+// autoSuggest: what automatic cleaning would take of these, by finding id; only for the round's plan.
+func (s *Service) autoSuggest(candidates []core.Finding, admin bool, scope string) map[string]core.AutoHow {
+	auto := map[string]core.AutoHow{}
+	if !admin && scope == "findings" {
+		for _, x := range s.autoPicker().Pick(candidates) {
+			auto[x.FindingID] = x.How
+		}
+	}
+	return auto
+}
+
+// withAuto: an item automatic cleaning would take is preselected to go too, where its rule leaves it to the user.
+func withAuto(it *PlanItem, auto map[string]core.AutoHow) {
+	how, ok := auto[it.FindingID]
+	if !ok || it.Suggested != ChoiceKeep {
+		return
+	}
+	switch {
+	case how == core.HowTrash && contains(it.Options, ChoiceTrash):
+		it.Suggested = ChoiceTrash
+	case (how == core.HowRemove || how == core.HowTool) && contains(it.Options, ChoiceRemove):
+		it.Suggested = ChoiceRemove
+	}
+}
+
+// suggestAgain: a plan an older version of this tool saved (luoke-scan#129: 14:37's plan kept every installer at
+// 「先不动」 after the update that preselects them) takes this version's defaults, from the same round's findings: the
+// same items and targets as the round found them (nothing is looked at on disk again), each preselected as this version
+// would. The plan records no choice of the user's (those live on the card, and the page sends its defaults on every
+// read), so there is nothing of theirs to keep. Saved, so it happens once.
+func (s *Service) suggestAgain(p *Plan, candidates []core.Finding, admin bool, scope string) {
+	byID := map[string]core.Finding{}
+	for _, f := range candidates {
+		byID[s.fid(f)] = f
+	}
+	auto := s.autoSuggest(candidates, admin, scope)
+	for i := range p.Items {
+		it := &p.Items[i]
+		f, ok := byID[it.FindingID]
+		if !ok {
+			continue
+		}
+		it.Suggested = baseSuggestion(f)
+		withAuto(it, auto)
+	}
+	p.Tool = ToolVersion
+	p.Save(s.plansDir())
 }
 
 // plans: the plan offered on a card and the one beside it that needs the password, each knowing the other
@@ -363,7 +521,7 @@ func (s *Service) planTool(args O, st State) (ToolOutput, error) {
 		c.Heading("这几项可以这样处理")
 	}
 	if a != nil {
-		s.adminBody(c, *a)
+		s.adminBody(c, *a, f)
 	}
 	var texts []string
 	if p != nil {
@@ -411,14 +569,14 @@ func withSize(title string, b *int64) string {
 func labeled(options []string) []Option {
 	out := make([]Option, len(options))
 	for i, o := range options {
-		out[i] = Option{Value: o, Label: ChoiceLabels[o]}
+		out[i] = Option{Value: o, Label: ChoiceLabels[o], Icon: choiceIcons[o]}
 	}
 	return out
 }
 
 // planBody is one picker per item (suggested choice preselected), then the button that runs the plan. findings: the
 // ones the items are for, so what the model said about one is under it (modelLines). extra: buttons that go in the same
-// row as 按这个处理, side by side (以后自动清).
+// row as 按上面的选择清理, side by side (打开自动清理).
 func (s *Service) planBody(c *Card, p Plan, title, note string, findings []core.Finding, extra ...Button) {
 	c.Heading(title)
 	if note != "" {
@@ -428,32 +586,64 @@ func (s *Service) planBody(c *Card, p Plan, title, note string, findings []core.
 	for _, f := range findings {
 		about[s.fid(f)] = f
 	}
-	for _, it := range p.Items {
-		c.Choice(it.Key, withSize(it.Title, it.Bytes), labeled(it.Options), it.Suggested)
-		where := s.display(it.Targets[0].Path)
-		if len(it.Targets) > 1 {
-			where = fmt.Sprintf("%s 里的 %d 项", s.display(filepath.Dir(it.Targets[0].Path)), len(it.Targets))
+	// A kind with many items is one choice for all of them, at its first item's place (planGroups), as on the page
+	group := map[string]planGroup{}
+	for _, g := range planGroups(p.Items) {
+		for _, it := range g.items {
+			group[it.Key] = g
 		}
-		lines := []string{where}
-		if f, ok := about[it.FindingID]; ok {
-			lines = append(lines, modelLines(f)...)
-		}
-		c.Text(strings.Join(lines, "\n"), true)
 	}
-	c.Buttons(append([]Button{{Label: "按这个处理", Event: "scan_apply", Context: O{"plan_id": p.ID, "choices": ChoicesPath}, Primary: true}}, extra...))
+	for _, it := range p.Items {
+		g, grouped := group[it.Key]
+		switch {
+		case !grouped:
+			c.Choice(it.Key, s.itemTitle(it, about), labeled(it.Options), it.Suggested)
+		case g.items[0].Key == it.Key:
+			e := s.groupEntry(g, about)
+			if e.size != "" {
+				e.title += "（" + e.size + "）"
+			}
+			c.Choice(g.key, e.title, e.options, e.selected)
+		}
+	}
+	c.Buttons(append([]Button{{Label: "按上面的选择清理", Event: "scan_apply", Context: O{"plan_id": p.ID, "choices": ChoicesPath}, Primary: true}}, extra...))
 }
 
-// adminBody is the items that need the password, under their own heading and button on the same card.
-func (s *Service) adminBody(c *Card, a Plan) {
-	c.Divider()
-	c.Text("这几项在系统目录里，删除时会请你输入 Mac 的密码", true)
-	for _, it := range a.Items {
-		c.Choice(it.Key, withSize(it.Title, it.Bytes), labeled(it.Options), it.Suggested, "admin_choices")
-		var paths []string
-		for _, t := range it.Targets {
-			paths = append(paths, s.display(t.Path))
+// itemTitle: a plan item for the user: the finding's plain title (no path, id or rule), with its size.
+func (s *Service) itemTitle(it PlanItem, about map[string]core.Finding) string {
+	if f, ok := about[it.FindingID]; ok {
+		if t, _ := s.plain(f); t != "" {
+			for _, o := range it.Options { // 选择框已经写着「删掉（会自动重建）」：标题里不再说一遍
+				if o == ChoiceRemove {
+					t = strings.TrimSuffix(t, "，删了会自动重建")
+				}
+			}
+			if f.Bytes == nil && it.Bytes != nil {
+				return withSize(t, it.Bytes)
+			}
+			return t
 		}
-		c.Text(strings.Join(paths, "、"), true)
+	}
+	return withSize(it.Title, it.Bytes)
+}
+
+// adminBody is the items that need the password, under their own heading and button on the same card. findings:
+// the ones the items are for, so their titles are the plain ones too (none: the last round's, so a plan shown again
+// after an answer reads the same as the first time).
+func (s *Service) adminBody(c *Card, a Plan, findings []core.Finding) {
+	if findings == nil {
+		if r := s.Store.LastReport(); r != nil {
+			findings = r.Findings
+		}
+	}
+	c.Divider()
+	c.Text("这几项删除时会请你输入 Mac 的密码", true)
+	about := map[string]core.Finding{}
+	for _, f := range findings {
+		about[s.fid(f)] = f
+	}
+	for _, it := range a.Items {
+		c.Choice(it.Key, s.itemTitle(it, about), labeled(it.Options), it.Suggested, "admin_choices")
 	}
 	c.Buttons([]Button{{Label: "移到废纸篓（要输入密码）", Event: "scan_apply", Context: O{"plan_id": a.ID, "choices": AdminChoicesPath}}})
 }
@@ -530,14 +720,47 @@ func (s *Service) removeCache(it PlanItem, plan Plan, deadline time.Time) (int64
 		}
 		freed += gone
 		if err != nil {
-			if gone > 0 {
-				why = append(why, "没删完")
-			} else {
-				why = append(why, "没删成")
-			}
+			why = append(why, removeWhy(err, left))
 		}
 	}
 	return freed, why
+}
+
+// plainErr: why something could not be moved, in a few words and without its path (an *os.PathError says the whole
+// /Users/… path, and the result is shown to the user).
+func plainErr(err error) string {
+	var errno syscall.Errno
+	if !errors.As(err, &errno) {
+		if msg := err.Error(); msg != "" && !strings.Contains(msg, "/") {
+			return msg // already a reason in words (notWritten)
+		}
+		return "出错了"
+	}
+	switch errno {
+	case syscall.EACCES, syscall.EPERM:
+		return "没有权限"
+	case syscall.ENOENT:
+		return "找不到"
+	case syscall.EBUSY, syscall.ETXTBSY:
+		return "正在使用"
+	case syscall.ENOSPC:
+		return "空间不够"
+	case syscall.EXDEV:
+		return "不在同一个磁盘上"
+	}
+	return "出错了"
+}
+
+// removeWhy: what a cache's removal left and why: 「312 个文件已锁定，剩 8.1 GB」.
+func removeWhy(err error, left int64) string {
+	reason := "没删成"
+	if l, ok := err.(*core.RemoveLeft); ok {
+		reason = l.Plain()
+	}
+	if left > 0 {
+		return reason + "，剩 " + core.FormatBytes(left)
+	}
+	return reason
 }
 
 func knownCacheByRule(rule string) (core.RebuildableCache, bool) {
@@ -647,7 +870,7 @@ func (s *Service) deleteHomebrewLinks(it PlanItem, plan Plan) (ok, absentN, remo
 				continue
 			}
 			if _, _, err := s.trashAndRecord(t.Path, plan.ID, it.Rule, "Homebrew 的状态文件夹", nil, "", nil); err != nil {
-				why = append(why, "没能移进废纸篓（"+err.Error()+"）")
+				why = append(why, "没能移进废纸篓（"+plainErr(err)+"）")
 			} else {
 				ok++
 			}
@@ -726,6 +949,20 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 	if !ok {
 		return ToolOutput{}, Fail("invalid", "choices 要是对象")
 	}
+	// A kind drawn as one row sends one choice for all of its items (planGroups): each of them gets it, unless it was
+	// sent on its own too.
+	for _, g := range planGroups(plan.Items) {
+		v, has := choices[g.key]
+		if !has {
+			continue
+		}
+		delete(choices, g.key)
+		for _, it := range g.items {
+			if _, own := choices[it.Key]; !own {
+				choices[it.Key] = v
+			}
+		}
+	}
 	keys := map[string]bool{}
 	for _, it := range plan.Items {
 		keys[it.Key] = true
@@ -762,17 +999,36 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 	}
 	defer s.end(plan.ID)
 	if plan.Admin {
-		return s.applyAdmin(plan, picks, meta, false)
+		return s.applyAdmin(plan, picks, meta, false, time.Now().Add(requestLimit))
 	}
 
 	// 2. Checking and moving can take minutes; the outbox stays readable meanwhile.
-	deadline := time.Now().Add(checkBudget)
-	var moved, cloned, removedCaches []titled
-	var partly, skipped, ignored, gone, unrecorded []string
+	started := time.Now()
+	deadline := started.Add(checkBudget)
+	var moved, cloned, removedCaches, changed []titled
+	var partly, skipped, unchanged, ignored, gone, unrecorded []string
+	partlyDeleted := 0 // of partly, the caches: deleted, not moved to the Trash
 	var outcomes []outcome
 	var ignoredItems []PlanItem
+	var goneIDs []string // items with nothing left where the click found some or all of it already gone (markGone)
 	deletedLinks := 0
+	// While it works, the window shows which one it is on (luoke-scan#152: a click on 「清理」 gave no sign for minutes).
+	progress := s.Server.Progress(meta)
+	work, step := 0, 0
 	for _, it := range plan.Items {
+		if pick := picks[it.Key]; pick != ChoiceKeep && pick != ChoiceIgnore {
+			work++
+		}
+	}
+	for _, it := range plan.Items {
+		if pick := picks[it.Key]; pick != ChoiceKeep && pick != ChoiceIgnore {
+			if time.Since(started) > applyBudget {
+				skipped = append(skipped, it.Title+"：这次来不及做完，再点一次")
+				continue
+			}
+			step++
+			progress(step, work, progressLine(pick, it))
+		}
 		switch picks[it.Key] {
 		case ChoiceIgnore:
 			ignored = append(ignored, it.FindingID)
@@ -780,7 +1036,7 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 		case ChoiceClone:
 			// Nothing moves: each copy becomes a clone of the one that stays, once both are checked again.
 			if it.Original == "" {
-				skipped = append(skipped, it.Title+"：不能换成克隆")
+				skipped = append(skipped, resultName(it.Title)+"：未能清理，不能换成克隆")
 				continue
 			}
 			n := 0
@@ -791,7 +1047,7 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 					continue
 				}
 				if err := s.Config.Clone(it.Original, t.Path); err != nil {
-					why = append(why, err.Error())
+					why = append(why, "没能换成克隆（"+plainErr(err)+"）")
 					continue
 				}
 				n++
@@ -800,9 +1056,9 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 			case len(why) == 0:
 				cloned = append(cloned, titled{it.Title, it.Bytes})
 			case n > 0:
-				partly = append(partly, fmt.Sprintf("%s：换了 %d/%d，其余%s", it.Title, n, len(it.Targets), strings.Join(uniq(why), "、")))
+				partly = append(partly, fmt.Sprintf("%s：换了 %d/%d，其余%s", resultName(it.Title), n, len(it.Targets), strings.Join(uniq(why), "、")))
 			default:
-				skipped = append(skipped, it.Title+"："+strings.Join(uniq(why), "、"))
+				skipped = append(skipped, resultName(it.Title)+"：未能清理，"+strings.Join(uniq(why), "、"))
 			}
 			outcomes = append(outcomes, outcome{it, ChoiceClone, n > 0})
 		case ChoiceTrash:
@@ -836,7 +1092,7 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 				}
 				_, recorded, err := s.trashAndRecord(t.Path, plan.ID, it.Rule, it.Title, b, "", &ident{t.Device, t.Inode})
 				if err != nil {
-					why = append(why, "没能移进废纸篓（"+err.Error()+"）")
+					why = append(why, "没能移进废纸篓（"+plainErr(err)+"）")
 					continue
 				}
 				n++
@@ -850,15 +1106,18 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 			if n > 0 || len(why) > 0 {
 				outcomes = append(outcomes, outcome{it, ChoiceTrash, n > 0})
 			}
+			if len(why) == 0 && absentN > 0 {
+				goneIDs = append(goneIDs, it.FindingID)
+			}
 			switch {
 			case len(why) == 0 && n > 0:
 				moved = append(moved, titled{it.Title, it.Bytes})
 			case len(why) == 0:
-				gone = append(gone, it.Title)
+				gone = append(gone, resultName(it.Title))
 			case n > 0:
-				partly = append(partly, fmt.Sprintf("%s：移了 %d/%d，其余%s", it.Title, n, len(it.Targets)-absentN, strings.Join(uniq(why), "、")))
+				partly = append(partly, fmt.Sprintf("%s：移了 %d/%d，其余%s", resultName(it.Title), n, len(it.Targets)-absentN, strings.Join(uniq(why), "、")))
 			default:
-				skipped = append(skipped, it.Title+"："+strings.Join(uniq(why), "、"))
+				skipped = append(skipped, resultName(it.Title)+"：未能清理，"+strings.Join(uniq(why), "、"))
 			}
 		case ChoiceRemove:
 			freed, why := s.removeCache(it, plan, deadline)
@@ -867,22 +1126,36 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 			case len(why) == 0 && freed > 0:
 				removedCaches = append(removedCaches, titled{it.Title, core.Size(freed)})
 			case len(why) == 0:
-				gone = append(gone, it.Title)
+				gone = append(gone, resultName(it.Title))
+				goneIDs = append(goneIDs, it.FindingID)
 			case freed > 0:
-				partly = append(partly, it.Title+"：删了一部分，"+strings.Join(uniq(why), "、"))
+				partly = append(partly, resultName(it.Title)+"：未删完，"+strings.Join(uniq(why), "、"))
+				partlyDeleted++ // deleted for good: nothing in the Trash, nothing to put back
 			default:
-				skipped = append(skipped, it.Title+"："+strings.Join(uniq(why), "、"))
+				skipped = append(skipped, resultName(it.Title)+"：未能清理，"+strings.Join(uniq(why), "、"))
+			}
+		case ChoiceScriptsOff:
+			ok, why := s.scriptsOff(it, plan)
+			outcomes = append(outcomes, outcome{it, ChoiceScriptsOff, ok})
+			switch {
+			case ok && why != "":
+				changed = append(changed, titled{it.Title + "：" + why, nil})
+			case ok:
+				changed = append(changed, titled{it.Title, nil})
+			default:
+				unchanged = append(unchanged, it.Title+"：未能更改，"+why) // a setting, not a file: not 「未能清理」
 			}
 		case ChoiceDelete:
 			n, absentN, links, why := s.deleteHomebrewLinks(it, plan)
 			deletedLinks += links
 			switch {
 			case len(why) == 0 && n == 0:
-				gone = append(gone, it.Title)
+				gone = append(gone, resultName(it.Title))
+				goneIDs = append(goneIDs, it.FindingID)
 			case len(why) > 0 && n > 0:
-				partly = append(partly, fmt.Sprintf("%s：删了 %d/%d，其余%s", it.Title, n, len(it.Targets)-absentN, strings.Join(uniq(why), "、")))
+				partly = append(partly, fmt.Sprintf("%s：删了 %d/%d，其余%s", resultName(it.Title), n, len(it.Targets)-absentN, strings.Join(uniq(why), "、")))
 			case len(why) > 0:
-				skipped = append(skipped, it.Title+"："+strings.Join(uniq(why), "、"))
+				skipped = append(skipped, resultName(it.Title)+"：未能清理，"+strings.Join(uniq(why), "、"))
 			}
 		}
 	}
@@ -913,6 +1186,9 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 	if deletedLinks > 0 {
 		parts = append(parts, fmt.Sprintf("删掉了 %d 个失效的链接", deletedLinks))
 	}
+	if len(changed) > 0 {
+		parts = append(parts, fmt.Sprintf("改了 %d 个包管理器的设置，依赖装的时候不再跑脚本", len(changed)))
+	}
 	if len(partly) > 0 {
 		parts = append(parts, fmt.Sprintf("部分处理了 %d 项", len(partly)))
 	}
@@ -920,20 +1196,46 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 		parts = append(parts, fmt.Sprintf("以后不再提 %d 项", len(ignored)))
 	}
 	if len(gone) > 0 {
-		parts = append(parts, fmt.Sprintf("%d 项已经不在了", len(gone)))
+		parts = append(parts, fmt.Sprintf("%d 项找不到，已跳过", len(gone)))
 	}
 	if len(skipped) > 0 {
-		parts = append(parts, fmt.Sprintf("%d 项没动", len(skipped)))
+		parts = append(parts, fmt.Sprintf("%d 项未能清理", len(skipped)))
+	}
+	if len(unchanged) > 0 {
+		parts = append(parts, fmt.Sprintf("%d 项未能更改", len(unchanged)))
 	}
 	text := "没有改动什么。"
 	if len(parts) > 0 {
 		text = strings.Join(parts, "，") + "。"
 	}
 	// Done once nothing the user picked is left: what is already gone counts; what was only partly moved does not.
-	done := len(skipped) == 0 && len(partly) == 0
+	done := len(skipped) == 0 && len(unchanged) == 0 && len(partly) == 0
+	// What the answer says, besides the card: clicked on a page, the window shows only this one line (a toast), never
+	// the card's lines below it, so what was left and why goes in too when it is one or two things (luoke-scan#152)
+	said := text
+	if left := append(append(append([]string{}, partly...), skipped...), unchanged...); len(left) > 0 && len(left) <= 2 {
+		said += strings.Join(left, "；") + "。"
+	}
 	newly := s.markIgnored(ignored)
-	if done {
-		s.finish(plan)
+	s.markGone(goneIDs)
+	// The plan beside it on the card (the one that needs the password) still waits: its controls come back.
+	other := s.pendingSibling(plan)
+	// Clicked on the low-space card or the round's card in 「今天」 and something was left (a cache whose tool is
+	// running, a file it may not move): the answer has nothing to click again, so the card does not stay under 「要你决定」
+	// with nothing to decide. It settles as a plan carried out does; what was left is still in the round, on the scan page
+	// and on the next round's card. An urgent card stays, with 「再试一次」: the same plan and choices, clicked again.
+	own := ownCard(meta, plan)
+	settled := done || (other == nil && (own == "round" || own == "space"))
+	retry := !done && other == nil && own == "security"
+	// Clicked on the round's card (「清理 N 项缓存」) while other things still wait on the scan page: the card stays, as
+	// the round is now (the caches gone, 「去扫描页看 N 项」); the round is done with only when nothing is left to look at.
+	var round *redraw
+	if settled {
+		if rd := s.roundRedraw(meta); rd != nil && rd.rest > 0 {
+			round = rd
+		} else {
+			s.finish(plan)
+		}
 	}
 	report := s.Store.LastReport()
 	var fresh []PlanItem
@@ -943,8 +1245,9 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 		}
 	}
 	s.remember(append(s.cleanedRecords(plan.ID, outcomes, report), s.ignoredRecords(fresh, plan.ID, report)...))
-	// The plan beside it on the card (the one that needs the password) still waits: its controls come back.
-	other := s.pendingSibling(plan)
+	if round != nil {
+		return ToolOutput{Text: said, Card: s.answerCard(meta, false, round.card), Done: Bool(false)}, nil
+	}
 	top := s.roundTop(plan) // on the round's card, what was cleaned without a click stays on top
 	card := s.answerCard(meta, other != nil, func(c *Card) {
 		if top != nil {
@@ -957,27 +1260,83 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 		for _, m := range cloned {
 			c.Text(m.title+"：换成了克隆，几份都还在", true)
 		}
+		for _, m := range changed {
+			c.Text(m.title, true)
+		}
 		for _, p := range partly {
 			c.Text(p, true)
-		}
-		for _, g := range gone {
-			c.Text(g+"：已经不在了", true)
 		}
 		for _, x := range skipped {
 			c.Text(x, true)
 		}
-		if len(moved) > 0 || len(partly) > 0 {
+		for _, x := range unchanged {
+			c.Text(x, true)
+		}
+		trashed := len(moved) > 0 || len(partly) > partlyDeleted
+		if trashed {
 			c.Text("倒掉废纸篓才真正腾出空间。", true)
-			c.Buttons([]Button{{Label: "放回", Event: "scan_restore", Context: O{"id": plan.ID}}})
+		}
+		var buttons []Button
+		if retry {
+			again := O{}
+			for k, v := range picks {
+				if v != ChoiceKeep { // what was not sent is left alone, as now
+					again[k] = A{v}
+				}
+			}
+			buttons = append(buttons, Button{Label: "再试一次", Event: "scan_apply", Context: O{"plan_id": plan.ID, "choices": again}, Primary: true})
+		}
+		if trashed || len(changed) > 0 {
+			buttons = append(buttons, Button{Label: "放回", Event: "scan_restore", Context: O{"id": plan.ID}})
+		}
+		if len(buttons) > 0 {
+			c.Buttons(buttons)
 		}
 		if len(unrecorded) > 0 {
 			c.Text("这几项没记进清理记录，要放回得在访达里打开废纸篓："+strings.Join(unrecorded, "、"), true)
 		}
 		if other != nil {
-			s.adminBody(c, *other)
+			s.adminBody(c, *other, nil)
 		}
 	})
-	return ToolOutput{Text: text, Card: card, Done: Bool(done && other == nil)}, nil
+	return ToolOutput{Text: said, Card: card, Done: Bool(settled && other == nil)}, nil
+}
+
+// ownCard: which of the cards in 「今天」 the plan was offered on the click came from: "round" (the round's card),
+// "space" (the low-space card), "security" (an urgent card), or "" (one of this tool's pages, another card, a terminal).
+func ownCard(meta O, plan Plan) string {
+	ua, _ := meta[UserAction].(map[string]any)
+	sid, _ := ua["surfaceId"].(string)
+	id := plan.OutboxID
+	switch {
+	case sid == "":
+	case strings.HasPrefix(id, "round/") && sid == roundSurface(id):
+		return "round"
+	case strings.HasPrefix(id, "space/") && sid == "space-"+core.ShortHash(id):
+		return "space"
+	case strings.HasPrefix(id, "security/") && sid == "security-"+core.ShortHash(strings.TrimPrefix(id, "security/")):
+		return "security"
+	}
+	return ""
+}
+
+// resultName: an item's title in the result lines, without the cache's 「，删了会自动重建」 (it is done or not done now).
+func resultName(title string) string { return strings.TrimSuffix(title, "，删了会自动重建") }
+
+// progressLine is what the window shows under the clicked button while an item is being done.
+func progressLine(pick string, it PlanItem) string {
+	name := resultName(it.Title)
+	switch pick {
+	case ChoiceRemove:
+		return "正在删：" + name
+	case ChoiceClone:
+		return "正在换成克隆：" + name
+	case ChoiceScriptsOff:
+		return "正在改设置：" + name
+	case ChoiceDelete:
+		return "正在删失效的链接：" + name
+	}
+	return "正在移到废纸篓：" + name
 }
 
 // markIgnored records "以后别提" for these findings; the ones not ignored before.
@@ -998,6 +1357,23 @@ func (s *Service) markIgnored(ids []string) map[string]bool {
 		}
 	})
 	return newly
+}
+
+// markGone: what a click found already gone (State.Gone): the page, the counts and the round's card stop listing it now,
+// not a round later.
+func (s *Service) markGone(ids []string) {
+	if len(ids) == 0 {
+		return
+	}
+	at := core.Time{Time: s.now()}
+	s.mutate(func(st *State) {
+		if st.Gone == nil {
+			st.Gone = map[string]core.Time{}
+		}
+		for _, id := range ids {
+			st.Gone[id] = at
+		}
+	})
 }
 
 func contains(xs []string, x string) bool {

@@ -283,7 +283,7 @@ func (r *PostureRule) Run(ctx *Context) ([]Finding, error) {
 	if len(failed) > 0 {
 		joined := strings.Join(failed, "、")
 		out = append(out, Finding{Rule: "posture.partial", Category: CatPosture, Severity: Low, Verdict: Info,
-			Title: "有几项没查成：" + joined, Evidence: map[string]string{"skipped": joined}})
+			Title: "有几样没查成：" + joined, Evidence: map[string]string{"skipped": joined}})
 	}
 	return out, nil
 }

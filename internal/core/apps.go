@@ -226,6 +226,10 @@ func FindAppIn(id string, dirs []string) string {
 	return appIndex(dirs, low)[low]
 }
 
+// AppIndexIn: every app in dirs and one folder down by lowercased bundle id (the 「状态」 page names folders
+// with it: one read of the app folders, not one Spotlight query per id).
+func AppIndexIn(dirs []string) map[string]string { return appIndex(dirs, "") }
+
 // appIndex: the apps in dirs and one folder down by lowercased bundle id, the first found for each, in the order
 // FindAppIn looks (each folder's own entries, then those one level down). only: just that id ("" every id).
 func appIndex(dirs []string, only string) map[string]string {

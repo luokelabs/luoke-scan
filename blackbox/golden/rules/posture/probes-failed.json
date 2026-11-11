@@ -149,7 +149,7 @@
             "path": "",
             "rule": "posture.partial",
             "severity": "low",
-            "title": "有几项没查成：FileVault、防火墙、SIP、Gatekeeper、锁屏、共享服务",
+            "title": "有几样没查成：FileVault、防火墙、SIP、Gatekeeper、锁屏、共享服务",
             "verdict": "info"
           }
         ],

@@ -1,4 +1,5 @@
-# PR 说明里勾上「- [x] 跑 CI」才跑：macOS 的机器贵，不是每个 PR 都要跑。
+# PR 说明里勾上「- [x] 跑 CI」才跑：不是每个 PR 都要跑。
+# 跑在自托管的一次性 macOS 虚拟机里（标签 luoke-vm），同时最多 2 台，忙时排队。
 # 勾上的那一刻跑一次（改说明也会触发，没勾就什么都不做），之后每推一次新提交都跑；说明里没有这一行也不跑。
 #
 # 跑的是 CONTRIBUTING「提交之前」里能在 GitHub 的机器上跑的：go vet、go test、从外面测（blackbox）、
@@ -25,7 +26,7 @@ jobs:
   bench:
     name: bench 的检查
     if: contains(github.event.pull_request.body, '- [x] 跑 CI')
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, luoke-vm]
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
@@ -37,7 +38,7 @@ jobs:
   go:
     name: Go 测试和评测
     if: contains(github.event.pull_request.body, '- [x] 跑 CI')
-    runs-on: macos-26
+    runs-on: [self-hosted, luoke-vm]
     timeout-minutes: 45
     env:
       CC: /usr/bin/clang

@@ -65,8 +65,9 @@ type tool struct {
 }
 
 type resource struct {
-	spec O
-	read func() any
+	spec     O
+	read     func() any
+	readMeta func(meta O) any // read with the request's _meta (what the agent core can draw), when it matters
 }
 
 // Server answers MCP requests from its tools and resources.
@@ -75,6 +76,47 @@ type Server struct {
 	mu            sync.Mutex
 	tools         []tool
 	resources     map[string]resource
+	// out is where Serve writes: a slow tool's notifications go out on it before its answer.
+	outMu sync.Mutex
+	out   io.Writer
+}
+
+// progressMessageMax is the most a progress message says, in characters (the window draws it on one line).
+const progressMessageMax = 60
+
+// Progress reports how far a slow call has got (tool protocol §5): MCP's notifications/progress on the request's
+// progressToken, with the item being done (from 1), how many there are, and what it is doing now. A no-op when the
+// request carries no token, or when nothing is served (a test calling the tool directly).
+func (s *Server) Progress(meta O) func(n, total int, message string) {
+	token := meta["progressToken"]
+	switch t := token.(type) {
+	case string:
+		if t == "" {
+			token = nil
+		}
+	case int64, float64: // what normalizeNumbers leaves
+	default:
+		token = nil
+	}
+	if s == nil || token == nil {
+		return func(int, int, string) {}
+	}
+	return func(n, total int, message string) {
+		if r := []rune(message); len(r) > progressMessageMax {
+			message = string(r[:progressMessageMax-1]) + "…"
+		}
+		s.write(O{"jsonrpc": "2.0", "method": "notifications/progress",
+			"params": O{"progressToken": token, "progress": n, "total": total, "message": message}})
+	}
+}
+
+// write sends one message on what Serve writes to; nothing when not serving.
+func (s *Server) write(v any) {
+	s.outMu.Lock()
+	defer s.outMu.Unlock()
+	if s.out != nil {
+		writeLine(s.out, v)
+	}
 }
 
 func NewServer(name, version string) *Server {
@@ -115,7 +157,15 @@ func (s *Server) Tool(name string, t ToolSpec, run ToolFunc) {
 // Resource registers a resource.
 func (s *Server) Resource(uri, name string, read func() any) {
 	s.mu.Lock()
-	s.resources[uri] = resource{O{"uri": uri, "name": name, "mimeType": "application/json"}, read}
+	s.resources[uri] = resource{spec: O{"uri": uri, "name": name, "mimeType": "application/json"}, read: read}
+	s.mu.Unlock()
+}
+
+// ResourceMeta registers a resource read with the request's _meta: a page drawn in the forms the agent core says it
+// knows (Features).
+func (s *Server) ResourceMeta(uri, name string, read func(meta O) any) {
+	s.mu.Lock()
+	s.resources[uri] = resource{spec: O{"uri": uri, "name": name, "mimeType": "application/json"}, readMeta: read}
 	s.mu.Unlock()
 }
 
@@ -185,7 +235,12 @@ func (s *Server) Handle(message any) any {
 		if !ok {
 			return rpcError(rid, resourceMissing, "没有这个资源", O{"uri": p["uri"]})
 		}
-		v := r.read()
+		var v any
+		if r.readMeta != nil {
+			v = r.readMeta(meta)
+		} else {
+			v = r.read()
+		}
 		text, isString := v.(string)
 		if !isString {
 			text = Serialize(v)
@@ -349,6 +404,14 @@ func (p *perMessage) Read(b []byte) (int, error) {
 // per line. The exit status: 0 when every message was answered (or was a notification), 3 when the input was empty or
 // a message went past MaxMessage (then nothing more is read).
 func (s *Server) Serve(r io.Reader, w io.Writer) int {
+	s.outMu.Lock()
+	s.out = w
+	s.outMu.Unlock()
+	defer func() {
+		s.outMu.Lock()
+		s.out = nil
+		s.outMu.Unlock()
+	}()
 	in := &perMessage{r: r, max: MaxMessage}
 	dec := json.NewDecoder(in)
 	dec.UseNumber()
@@ -366,13 +429,13 @@ func (s *Server) Serve(r io.Reader, w io.Writer) int {
 			return 3
 		}
 		if err != nil {
-			writeLine(w, rpcError(nil, parseError, "不是 JSON", nil))
+			s.write(rpcError(nil, parseError, "不是 JSON", nil))
 			return 0
 		}
 		n++
 		in.n = int64(dec.Buffered().(*bytes.Reader).Len()) // what is already read belongs to the next message
 		if reply := s.Handle(normalizeNumbers(msg)); reply != nil {
-			writeLine(w, reply)
+			s.write(reply)
 		}
 	}
 }
