@@ -688,6 +688,31 @@
           "resources": [
             {
               "mimeType": "application/json",
+              "name": "一类可以清的东西",
+              "uri": "data/category"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "清理记录的数据",
+              "uri": "data/history"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "扫描页的数据",
+              "uri": "data/overview"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "扫描的设置",
+              "uri": "data/settings"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "占地方最多的文件夹",
+              "uri": "data/usage"
+            },
+            {
+              "mimeType": "application/json",
               "name": "扫描要告诉你的事",
               "uri": "luoke://luoke-scan/outbox"
             },
@@ -859,6 +884,34 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 62914560,
+                        "caches": 1,
+                        "cachesBytes": 62914560,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": true,
+                        "plan": {
+                          "caches": [
+                            "i2"
+                          ],
+                          "id": "p-000000000002"
+                        },
+                        "rest": 6,
+                        "skipped": {
+                          "fda": 9,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 6,
+                        "trash": 1
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
@@ -934,6 +987,10 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "permission": "fda",
+                      "type": "needs-access"
+                    },
                     "deadline": null,
                     "expires": null,
                     "id": "needs-access/full-disk-access",

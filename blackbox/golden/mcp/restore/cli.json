@@ -200,6 +200,34 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 62914560,
+                        "caches": 1,
+                        "cachesBytes": 62914560,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": true,
+                        "plan": {
+                          "caches": [
+                            "i1"
+                          ],
+                          "id": "p-000000000002"
+                        },
+                        "rest": 1,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 1,
+                        "trash": 1
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
@@ -668,6 +696,35 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "cloned": {
+                "bytes": 0,
+                "count": 0
+              },
+              "gone": 0,
+              "ignored": 0,
+              "left": [],
+              "links": 0,
+              "moved": {
+                "bytes": 131072000,
+                "count": 1
+              },
+              "partly": 0,
+              "password": false,
+              "removed": {
+                "bytes": 62914560,
+                "count": 1
+              },
+              "restore": "p-000000000002",
+              "retry": null,
+              "round": null,
+              "scriptsOff": 0,
+              "skipped": 0,
+              "trashed": true,
+              "type": "applied",
+              "unchanged": 0,
+              "unrecorded": []
+            },
             "done": true
           }
         }

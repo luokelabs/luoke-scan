@@ -8,7 +8,7 @@ import os
 from agent import OUTBOX, Agent
 from cases.base import build
 from fx import LOCAL, MiB, T0, Fx, days
-from harness import Run, case
+from harness import Failed, Run, case
 
 # 去掉这些，一轮的方案只剩三项：pip 的缓存（放心删）、测试留下的 25 个 wings-* 临时文件夹、推送过的老项目（要确认）。
 PLAIN_REMOVED = [
@@ -146,3 +146,35 @@ def autoclean_done(r: Run) -> None:
     a.at(at(11)).click("scan_autoclean", "关掉自动清理", item=a.item("auto-done"))
     a.read("permissions")
     a.read("page/overview")
+
+
+@case("mcp/agent/data-actions", "agent 自己拼扫描页：只读 data/…；照数据里的方案和键把一类里选中的移到废纸篓、另一类以后别再问，"
+      "再照清理记录的批次放回", quiet=False)
+def data_actions(r: Run) -> None:
+    prepared(r, remove=True, auto_kinds=True)
+    r.scan(T0)
+    a = Agent(r, at(1))
+    a.connect()
+    overview = a.read("data/overview")
+    ids = [c["id"] for c in overview["reclaimable"]]
+    if "temp" not in ids or "duplicate" not in ids:
+        raise Failed(f"data/overview 里没有临时文件夹或重复文件：{ids}")
+    temp = a.read("data/category?id=temp")["items"]
+    if len(temp) < 2:
+        raise Failed(f"临时文件夹只有 {len(temp)} 项")
+    go = temp[1:]   # 最大的一项取消了
+    a.at(at(5)).request("tools/call", {"name": "scan_apply", "arguments": {"plan_id": go[0]["plan"],
+                                                                            "choices": {it["key"]: ["trash"] for it in go}}},
+                        user_action=ua(a, "overview", "trash-selected"), note="「临时文件夹」里取消最大的一项，其余的移到废纸篓")
+    a.read("data/category?id=temp")
+    history = a.read("data/history")
+    dup = a.read("data/category?id=duplicate")["items"]
+    a.at(at(6)).request("tools/call", {"name": "scan_apply", "arguments": {"plan_id": dup[0]["plan"],
+                                                                            "choices": {it["key"]: ["ignore"] for it in dup}}},
+                        user_action=ua(a, "overview", "ignore-category"), note="「重复文件」这一类以后别再问")
+    a.read("data/settings")
+    a.read("data/overview")
+    a.at(at(10)).request("tools/call", {"name": "scan_restore", "arguments": {"id": history["batches"][0]["batch"]}},
+                         user_action=ua(a, "overview", "restore"), note="清理记录里那一批放回")
+    a.read("data/history")
+    a.read("data/usage")

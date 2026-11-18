@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -275,5 +276,64 @@ func TestScanPageOwnPluginGoesToTheTrash(t *testing.T) {
 		if it.Category == string(core.CatSkill) && !reflect.DeepEqual(choices[it.Key], []any{ChoiceTrash}) {
 			t.Errorf("plugin %s: %v", it.Key, choices[it.Key])
 		}
+	}
+}
+
+// The page's numbers add up (the walk-through of internal-1110-5: 「等你处理 23 项」 over 「可以清掉 25」): what waits is
+// what the page lists but the rebuildable caches. A plan also carries things that are only for reference (an AI plugin
+// of the user's own with a milder sign): listed under 「可以清掉」 with a choice like the rest, so counted as waiting like the rest.
+func TestWaitingCountsWhatThePageLists(t *testing.T) {
+	pc := newPageCaseWith(t, false)
+	s := pc.s
+	// A plugin of the user's own with a milder sign: only for reference and not serious, still in the plan
+	var mild core.Finding
+	for _, x := range pc.report.Findings {
+		if x.Category == core.CatSkill {
+			mild = x
+		}
+	}
+	if mild.Path == "" {
+		t.Fatal("the case has no skill finding")
+	}
+	mild.Path = filepath.Join(filepath.Dir(mild.Path), "tidy-notes")
+	if err := os.MkdirAll(mild.Path, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	os.WriteFile(filepath.Join(mild.Path, "SKILL.md"), []byte("x"), 0o644)
+	mild.Severity, mild.Title = core.Medium, "Claude Code 的 skill「tidy-notes」：往外发东西"
+	pc.report.Findings = append(pc.report.Findings, mild)
+	if err := s.Store.SaveReport(pc.report); err != nil {
+		t.Fatal(err)
+	}
+	r := s.Store.LastReport()
+	f := s.visible(*r, s.state())
+	v := s.roundView(f, *r, roundID(*r))
+	listed := false
+	for _, it := range v.plan.Items {
+		listed = listed || (len(it.Targets) == 1 && it.Targets[0].Path == mild.Path)
+	}
+	if !listed {
+		t.Fatalf("the milder plugin is not in the plan: %+v", v.plan.Items)
+	}
+	comps, _ := cardParts(t, s.page("overview", s.state()))
+	ts := texts(comps)
+	section := func(words string) int {
+		for _, x := range ts {
+			var n int
+			if _, err := fmt.Sscanf(x, words+" %d", &n); err == nil {
+				return n
+			}
+		}
+		return 0
+	}
+	clean, look := section("可以清掉"), section("要你看看")
+	if clean == 0 || len(v.caches) != 1 {
+		t.Fatalf("可以清掉 %d, caches %d: %q", clean, len(v.caches), ts)
+	}
+	if want := clean - len(v.caches) + look; v.toLook != want {
+		t.Errorf("等你处理 %d, want %d: 可以清掉 %d but its %d cache, and 要你看看 %d", v.toLook, want, clean, len(v.caches), look)
+	}
+	if indexOf(ts, fmt.Sprintf("%d 项", v.toLook)) < 0 {
+		t.Errorf("the page does not say %d 项: %q", v.toLook, ts)
 	}
 }

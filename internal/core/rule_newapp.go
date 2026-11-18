@@ -20,6 +20,66 @@ type NewAppRule struct {
 	Added func(app string) (time.Time, bool)
 	// DownloadedBy is the program that downloaded it ("" when its quarantine record names none); ok false when it has none.
 	DownloadedBy func(app string) (string, bool)
+	// Downloaded is when its quarantine record says it was downloaded, Created when the app was made: asked only of
+	// an app whose Added cannot be believed (rewrittenAdded). nil or ok false: not known.
+	Downloaded func(app string) (time.Time, bool)
+	Created    func(app string) (time.Time, bool)
+}
+
+// A batch of apps "added" at one moment is not a batch of installs: a system update, a migration or a restore writes
+// the date again for everything in the folder (luoke-scan#205: 46 of 59 apps in /Applications carried the same
+// second, apps installed over two years). Nobody drags this many apps in within two seconds.
+const (
+	rewrittenAddedApps   = 8
+	rewrittenAddedWithin = 2 * time.Second
+)
+
+// rewrittenAdded are the apps whose added date is one of such a batch: at least rewrittenAddedApps of them, each
+// within rewrittenAddedWithin of the next.
+func rewrittenAdded(added map[string]time.Time) map[string]bool {
+	apps := make([]string, 0, len(added))
+	for a := range added {
+		apps = append(apps, a)
+	}
+	sort.Slice(apps, func(i, j int) bool {
+		if !added[apps[i]].Equal(added[apps[j]]) {
+			return added[apps[i]].Before(added[apps[j]])
+		}
+		return apps[i] < apps[j]
+	})
+	out := map[string]bool{}
+	for start := 0; start < len(apps); {
+		end := start + 1
+		for end < len(apps) && added[apps[end]].Sub(added[apps[end-1]]) <= rewrittenAddedWithin {
+			end++
+		}
+		if end-start >= rewrittenAddedApps {
+			for _, a := range apps[start:end] {
+				out[a] = true
+			}
+		}
+		start = end
+	}
+	return out
+}
+
+// came is when an app came, as far as it can be believed: its added date; for one of a rewritten batch, when it was
+// downloaded (its quarantine record), else when it was made; ok false when none of these is known.
+func (r *NewAppRule) came(app string, added time.Time, rewritten bool) (time.Time, bool) {
+	if !rewritten {
+		return added, true
+	}
+	if r.Downloaded != nil {
+		if t, ok := r.Downloaded(app); ok {
+			return t, true
+		}
+	}
+	if r.Created != nil {
+		if t, ok := r.Created(app); ok {
+			return t, true
+		}
+	}
+	return time.Time{}, false
 }
 
 // TrustKind is who vouches for an app.
@@ -66,8 +126,10 @@ func init() { Register("apps.new", NewNewAppRule) }
 // NewNewAppRule is the rule for this Mac (l nil) or a fake home: there when each app came is the fakes' appsAdded, and
 // what vouches for the apps in appTrust is from there (the others are asked of codesign).
 func NewNewAppRule(l *Layout, f *Fakes) Rule {
-	r := &NewAppRule{Recent: 30 * 24 * time.Hour, Trust: AppTrustOf, Added: DateAdded, DownloadedBy: QuarantineAgent}
+	r := &NewAppRule{Recent: 30 * 24 * time.Hour, Trust: AppTrustOf, Added: DateAdded, DownloadedBy: QuarantineAgent,
+		Downloaded: QuarantineTime, Created: DateCreated}
 	if l != nil {
+		r.Downloaded, r.Created = nil, nil // a fake home's apps were made when the fixture was: only appsAdded says when they came
 		r.Added = func(app string) (time.Time, bool) {
 			t, ok := f.AppsAdded[app]
 			return t, ok
@@ -279,11 +341,23 @@ func (r *NewAppRule) Run(ctx *Context) ([]Finding, error) {
 			}
 		}
 	}()
-	for _, app := range newAppCandidates(ctx.AppDirs) {
+	candidates := newAppCandidates(ctx.AppDirs)
+	added := map[string]time.Time{}
+	for _, app := range candidates {
+		if t, ok := r.Added(app); ok {
+			added[app] = t
+		}
+	}
+	rewritten := rewrittenAdded(added)
+	for _, app := range candidates {
 		if ctx.IsCancelled() {
 			return nil, Skip(Interrupted, out...)
 		}
-		came, ok := r.Added(app)
+		at, ok := added[app]
+		if !ok || ctx.Now.Sub(at) >= r.Recent {
+			continue
+		}
+		came, ok := r.came(app, at, rewritten[app])
 		if !ok || ctx.Now.Sub(came) >= r.Recent {
 			continue
 		}

@@ -427,6 +427,16 @@ func baseOf(p string) string {
 
 func newFile(fd int) *os.File { return os.NewFile(uintptr(fd), "") }
 
+// DateCreated is when the file was made (its birth time), not following a link; ok false when not known.
+func DateCreated(path string) (time.Time, bool) {
+	var buf [4 + 16]byte // length, then crtime
+	if getattrlist(path, attrs(unix.ATTR_CMN_CRTIME, 0), buf[:], unix.FSOPT_NOFOLLOW) != nil {
+		return time.Time{}, false
+	}
+	created := time.Unix(*(*int64)(unsafe.Pointer(&buf[4])), *(*int64)(unsafe.Pointer(&buf[4+8])))
+	return created, created.Unix() > 0
+}
+
 // DateAdded is when a file came into its folder (Finder's "date added"), else when it was made; not following a link.
 func DateAdded(path string) (time.Time, bool) {
 	var buf [4 + 2*16]byte // length, then crtime and addedtime (timespecs); the returned set is not asked for

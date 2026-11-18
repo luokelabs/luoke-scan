@@ -73,9 +73,12 @@ func (r *FreeSpaceRule) Run(ctx *Context) ([]Finding, error) {
 	if free >= floor {
 		return nil, nil
 	}
-	ev := map[string]string{"free": FormatBytes(free), "total": FormatBytes(total), "threshold": FormatBytes(floor)}
+	// total_bytes, swap_bytes: the same as numbers, for what is drawn from data (the service's spaceData)
+	ev := map[string]string{"free": FormatBytes(free), "total": FormatBytes(total), "threshold": FormatBytes(floor),
+		"total_bytes": strconv.FormatInt(total, 10)}
 	if s, ok := swap(); ok {
 		ev["swap"] = FormatBytes(s)
+		ev["swap_bytes"] = strconv.FormatInt(s, 10)
 	}
 	return []Finding{{Rule: "space.low", Category: CatSpace, Severity: Medium, Verdict: Info, Path: ctx.Home, Bytes: Size(free),
 		Title: "可用空间只剩 " + FormatBytes(free), Evidence: ev}}, nil
@@ -90,14 +93,33 @@ var importantCapacity = func(path string) (int64, int64, bool) { return 0, 0, fa
 func VolumeCapacity(home string) (int64, int64, bool) { return volumeCapacity(home) }
 
 func volumeCapacity(home string) (int64, int64, bool) {
-	if free, total, ok := importantCapacity(home); ok {
-		return free, total, true
-	}
+	return mergeCapacity(importantCapacity, statfsCapacity, home)
+}
+
+// statfsCapacity is the available and total bytes statfs gives for the volume path is on.
+func statfsCapacity(path string) (int64, int64, bool) {
 	var st syscall.Statfs_t
-	if syscall.Statfs(home, &st) != nil {
+	if syscall.Statfs(path, &st) != nil {
 		return 0, 0, false
 	}
 	return int64(st.Bavail) * int64(st.Bsize), int64(st.Blocks) * int64(st.Bsize), true
+}
+
+// mergeCapacity takes the "important usage" figure when it is known, but never less than what statfs says is
+// available: purgeable space only adds to it. The system answers 0 for important usage to a process without a
+// graphical session (over ssh, a job started outside the login session); taken as it is, that reads as a full disk.
+func mergeCapacity(important, plain func(string) (int64, int64, bool), path string) (int64, int64, bool) {
+	free, total, ok := important(path)
+	avail, all, plainOK := plain(path)
+	switch {
+	case ok && plainOK && free < avail:
+		return avail, total, true
+	case ok:
+		return free, total, true
+	case plainOK:
+		return avail, all, true
+	}
+	return 0, 0, false
 }
 
 // swapUsed is the bytes of swap in use (vm.swapusage), or ok false.
@@ -236,6 +258,33 @@ func SpaceMeasuredTable(s *Store) Table[SpaceMeasured] {
 	return NewTable[SpaceMeasured](s, "measured", 1)
 }
 
+// SpaceFile is one of the biggest files directly in a measured folder: its name and allocated size.
+type SpaceFile struct {
+	Name  string `json:"name"`
+	Bytes int64  `json:"bytes"`
+}
+
+// spaceTopFiles: how many of a measured folder's own files are remembered (the biggest, from RememberAbove up).
+const spaceTopFiles = 5
+
+// SpaceTopFilesTable keeps, by a measured folder's canonical path, the biggest files directly in it as they were when
+// it was last walked (data/usage: what is in a folder, beside the subfolders in SpaceMeasuredTable).
+func SpaceTopFilesTable(s *Store) Table[[]SpaceFile] {
+	return NewTable[[]SpaceFile](s, "topfiles", 1)
+}
+
+func sameSpaceFiles(a, b []SpaceFile) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
 // spaceListEntries are a folder's entries (not following links), in the file system's order; ok false when it cannot
 // be listed.
 func spaceListEntries(dir string) ([]Entry, bool) {
@@ -318,6 +367,8 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 
 	// One watched folder's walk: what it found goes into these, and into the round's only when it finished.
 	var wRows map[string]SpaceMeasured
+	var wFiles []SpaceFile // the watched folder's own files from RememberAbove up (not its subfolders')
+	topFiles := map[string][]SpaceFile{}
 	var wListed, wSeen, wDropped map[string]bool
 	// measure is the size of path, walking only the subfolders (down to depth levels) that changed, and the oldest
 	// real measurement inside it (reused sizes keep their age, so the 7-day limit holds for them too). floor: the
@@ -345,6 +396,9 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 			}
 			if !e.IsDir {
 				total += e.Bytes
+				if depth == r.SplitDepth && e.Bytes >= r.RememberAbove {
+					wFiles = append(wFiles, SpaceFile{Name: e.Name, Bytes: e.Bytes})
+				}
 				continue
 			}
 			ck := key + "/" + e.Name
@@ -421,6 +475,7 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 			volume = &e.Device
 		}
 		wRows, wListed, wSeen, wDropped = map[string]SpaceMeasured{}, map[string]bool{}, map[string]bool{}, map[string]bool{}
+		wFiles = nil
 		bytes, oldest, ok := measure(w.path, w.key, r.SplitDepth, known[w.key].EventID, volume)
 		if !ok {
 			// Not finished: nothing under it is written, so no subfolder is remembered without its folder, and nothing
@@ -439,6 +494,16 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 		}
 		sizes[w.key] = bytes
 		rows[w.key] = SpaceMeasured{EventID: start, Inode: ino, Bytes: bytes, MeasuredAt: oldest}
+		sort.Slice(wFiles, func(i, j int) bool {
+			if wFiles[i].Bytes != wFiles[j].Bytes {
+				return wFiles[i].Bytes > wFiles[j].Bytes
+			}
+			return wFiles[i].Name < wFiles[j].Name
+		})
+		if len(wFiles) > spaceTopFiles {
+			wFiles = wFiles[:spaceTopFiles]
+		}
+		topFiles[w.key] = append([]SpaceFile{}, wFiles...) // walked again: what was remembered of its files is replaced
 		// One batch per folder: what is done survives an interruption.
 		if err := measuredTable.Apply(rows, nil, false); err != nil {
 			return nil, Skip("数据写不进去：" + err.Error())
@@ -475,6 +540,26 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 		}
 	}
 	sort.Strings(gone)
+	// The biggest files: of folders walked this round as found; of folders found unchanged, as remembered; of folders
+	// no longer watched, forgotten (kept under what could not be listed, like the sizes).
+	topTable := SpaceTopFilesTable(store)
+	topKnown := topTable.Load()
+	for k, files := range topFiles { // the same as remembered: not written again
+		if old, ok := topKnown[k]; ok && sameSpaceFiles(old, files) {
+			delete(topFiles, k)
+		}
+	}
+	var topGone []string
+	for path := range topKnown {
+		under := false
+		for _, u := range unlisted {
+			under = under || path == u || strings.HasPrefix(path, u+"/")
+		}
+		if !tops[path] && !under {
+			topGone = append(topGone, path)
+		}
+	}
+	sort.Strings(topGone)
 
 	table := spaceSizes(store)
 	history := table.Load()
@@ -492,6 +577,7 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 		// interruption is what counts: a failed write must not turn it into an error (then nothing is carried).
 		measuredTable.Apply(rows, nil, false)
 		measuredTable.Apply(nil, gone, false)
+		topTable.Apply(topFiles, nil, false)
 		table.Apply(set, nil, false)
 		return nil, Skip(Interrupted)
 	}
@@ -500,6 +586,11 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 	}
 	if err := measuredTable.Apply(nil, gone, false); err != nil {
 		return nil, Skip("数据写不进去：" + err.Error())
+	}
+	if len(topFiles) > 0 || len(topGone) > 0 {
+		if err := topTable.Apply(topFiles, topGone, false); err != nil {
+			return nil, Skip("数据写不进去：" + err.Error())
+		}
 	}
 	cut := ISODay(ctx.Now.Add(-90 * 24 * time.Hour))
 	var del []string

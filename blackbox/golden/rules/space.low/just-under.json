@@ -36,8 +36,10 @@
             "evidence": {
               "free": "21.47 GB",
               "swap": "1.07 GB",
+              "swap_bytes": "1073741824",
               "threshold": "21.47 GB",
-              "total": "107.37 GB"
+              "total": "107.37 GB",
+              "total_bytes": "107374182400"
             },
             "path": "~",
             "rule": "space.low",

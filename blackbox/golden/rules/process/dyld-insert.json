@@ -1,0 +1,175 @@
+{
+  "about": "启动时带着 DYLD_INSERT_LIBRARIES 的进程：一个库一条，带着它的进程合在一起；没人担保的高、有开发者签名的中；苹果自己的库（系统位置的、Xcode 的）、别的变量、别的用户的、读不到环境变量的不报",
+  "case": "rules/process/dyld-insert",
+  "steps": [
+    {
+      "fakes": {
+        "codesign": {
+          "~/.cache/io.example/hook.dylib": "adhoc",
+          "~/.local/lib/libproxy.dylib": "developer:FIXTURE000",
+          "~/Applications/Xcode.app/Contents/Developer/usr/lib/libMainThreadChecker.dylib": "apple"
+        },
+        "processes": [
+          {
+            "path": "/Applications/Safari.app/Contents/MacOS/Safari",
+            "pid": 400,
+            "ppid": 1,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "environment": [
+              "HOME=~",
+              "DYLD_INSERT_LIBRARIES=~/.cache/io.example/hook.dylib"
+            ],
+            "path": "~/.local/bin/shell",
+            "pid": 4200,
+            "ppid": 50,
+            "started": "2026-10-20T09:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "environment": [
+              "DYLD_INSERT_LIBRARIES=~/.cache/io.example/hook.dylib:~/.local/lib/libproxy.dylib"
+            ],
+            "path": "~/.local/bin/tool",
+            "pid": 4201,
+            "ppid": 4200,
+            "started": "2026-10-20T10:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "environment": [
+              "DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib"
+            ],
+            "path": "~/.local/bin/tool",
+            "pid": 4202,
+            "ppid": 50,
+            "started": "2026-10-20T11:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "environment": [
+              "DYLD_INSERT_LIBRARIES=~/Applications/Xcode.app/Contents/Developer/usr/lib/libMainThreadChecker.dylib"
+            ],
+            "path": "~/.local/bin/tool",
+            "pid": 4203,
+            "ppid": 50,
+            "started": "2026-10-20T11:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "environment": [
+              "DYLD_LIBRARY_PATH=/opt/lib"
+            ],
+            "path": "~/.local/bin/tool",
+            "pid": 4204,
+            "ppid": 50,
+            "started": "2026-10-20T11:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "environment": [
+              "DYLD_INSERT_LIBRARIES=~/.cache/io.example/hook.dylib"
+            ],
+            "path": "/opt/io-example/daemon",
+            "pid": 4205,
+            "ppid": 50,
+            "started": "2026-10-20T11:00:00Z",
+            "uid": 0
+          },
+          {
+            "path": "~/.local/bin/tool",
+            "pid": 4206,
+            "ppid": 50,
+            "started": "2026-10-20T11:00:00Z",
+            "uid": "$UID"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "process",
+            "evidence": {
+              "count": "1",
+              "how": "是你自己调试时设的，调完退出这些程序就好；不认得的，退出这些程序，再看看是谁设的（后台任务、shell 的启动文件）",
+              "library": "~/.local/lib/libproxy.dylib",
+              "pids": "4201",
+              "programs": "tool",
+              "signature": "开发者签名（FIXTURE000）",
+              "started": "2026-10-20",
+              "variable": "DYLD_INSERT_LIBRARIES",
+              "why": "恶意软件用它把自己的代码塞进别的程序；开发调试时也有人这样设"
+            },
+            "key": "~/.local/lib/libproxy.dylib",
+            "path": "~/.local/lib/libproxy.dylib",
+            "rule": "process.dyld-insert",
+            "severity": "medium",
+            "title": "进程 4201（tool）启动时带着 DYLD_INSERT_LIBRARIES，要先载入 libproxy.dylib",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "2",
+              "how": "是你自己调试时设的，调完退出这些程序就好；不认得的，退出这些程序，再看看是谁设的（后台任务、shell 的启动文件）",
+              "library": "~/.cache/io.example/hook.dylib",
+              "pids": "4200,4201",
+              "programs": "shell、tool",
+              "signature": "临时签名（没有开发者担保）",
+              "started": "2026-10-20",
+              "variable": "DYLD_INSERT_LIBRARIES",
+              "why": "恶意软件用它把自己的代码塞进别的程序；开发调试时也有人这样设"
+            },
+            "key": "~/.cache/io.example/hook.dylib",
+            "path": "~/.cache/io.example/hook.dylib",
+            "rule": "process.dyld-insert",
+            "severity": "high",
+            "title": "2 个进程启动时带着 DYLD_INSERT_LIBRARIES，要先载入 hook.dylib",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

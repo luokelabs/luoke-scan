@@ -94,8 +94,10 @@ func (s *Service) securityItems(r core.Report, st State) []O {
 		c.Heading(title)
 		c.Text(advice)
 		c.Buttons(s.malwareButtons(f, r, id))
-		out = append(out, s.item(id, "security", "urgent", r.FinishedAt.Time, "这一轮刚认出来；建议先不要打开", title,
-			title+"。"+advice, c.Messages(), nil, ""))
+		it := s.item(id, "security", "urgent", r.FinishedAt.Time, "这一轮刚认出来；建议先不要打开", title,
+			title+"。"+advice, c.Messages(), nil, "")
+		it["data"] = s.malwareData(f, r, id)
+		out = append(out, it)
 	}
 	return out
 }
@@ -163,8 +165,10 @@ func (s *Service) persistenceItem(f core.Finding, id string, r core.Report) O {
 	if submitted {
 		about = "这一轮新加的、在后台运行的程序（" + why + "）"
 	}
-	return s.item(id, "security", "urgent", r.FinishedAt.Time, about, title,
+	it := s.item(id, "security", "urgent", r.FinishedAt.Time, about, title,
 		title+"。"+body+advice, c.Messages(), nil, "")
+	it["data"] = s.startupData(f, r, id)
+	return it
 }
 
 // maliciousPackageItem: a project or a global install uses a known malicious package. What to do is written out (take
@@ -183,8 +187,10 @@ func (s *Service) maliciousPackageItem(f core.Finding, id string, r core.Report)
 	}
 	buttons = append(buttons, Button{Label: "处理好了，以后别提", Event: "scan_ignore", Context: O{"finding_id": s.fid(f)}})
 	c.Buttons(buttons)
-	return s.item(id, "security", "urgent", r.FinishedAt.Time, "这一轮和恶意包名单比对出来的；装过就当令牌和钥匙已经泄露", title,
+	it := s.item(id, "security", "urgent", r.FinishedAt.Time, "这一轮和恶意包名单比对出来的；装过就当令牌和钥匙已经泄露", title,
 		title+"。"+advice, c.Messages(), nil, "")
+	it["data"] = s.packageData(f)
+	return it
 }
 
 // spaceItems: low free space, with what can be freed right away (rebuildable caches) offered on the same card.
@@ -221,7 +227,8 @@ func (s *Service) spaceItems(r core.Report, st State) []O {
 		summary += "，交换文件占 " + swap
 	}
 	summary += "）。"
-	if p := s.plan(caches, r, "space", id, false); p != nil {
+	p := s.plan(caches, r, "space", id, false)
+	if p != nil {
 		line := "会自己重建的工具缓存能马上腾出 " + core.FormatBytes(bytes) + "，删了不影响使用。"
 		summary += line
 		c.Heading(low.Title)
@@ -231,7 +238,9 @@ func (s *Service) spaceItems(r core.Report, st State) []O {
 		c.Heading(low.Title)
 		c.Text(summary, true)
 	}
-	return []O{s.item(id, "space", "normal", r.FinishedAt.Time, "空间快不够了，满了会影响别的程序", low.Title, summary, c.Messages(), nil, "")}
+	it := s.item(id, "space", "normal", r.FinishedAt.Time, "空间快不够了，满了会影响别的程序", low.Title, summary, c.Messages(), nil, "")
+	it["data"] = s.spaceData(*low, bytes, p)
+	return []O{it}
 }
 
 // roundItems: the round as one item (luoke-agent#2, 10-27). auto-done when there is something on top (every
@@ -250,6 +259,7 @@ func (s *Service) roundItems(r core.Report, st State, features map[string]bool) 
 	}
 	c := NewCard(roundSurface(id)).Use(features)
 	title, summary := s.roundBody(c, r, st, told, f, decide, id)
+	data := s.roundData(r, st, told, f, decide, id)
 	if len(told) > 0 {
 		newest := told[0]
 		thisRound := newest.Round != nil && newest.Round.Equal(r.StartedAt.Time)
@@ -259,10 +269,14 @@ func (s *Service) roundItems(r core.Report, st State, features map[string]bool) 
 		}
 		created := maxTime(newest.At.Time, r.FinishedAt.Time)
 		expires := maxTime(newest.At.Add(7*24*time.Hour), r.StartedAt.Add(3*24*time.Hour))
-		return []O{s.item(id, "auto-done", "normal", created, why, title, summary, c.Messages(), &expires, "")}
+		it := s.item(id, "auto-done", "normal", created, why, title, summary, c.Messages(), &expires, "")
+		it["data"] = data
+		return []O{it}
 	}
 	expires := r.StartedAt.Add(3 * 24 * time.Hour)
-	return []O{s.item(id, "findings", "low", r.FinishedAt.Time, "扫描刚查完一轮", title, summary, c.Messages(), &expires, "")}
+	it := s.item(id, "findings", "low", r.FinishedAt.Time, "扫描刚查完一轮", title, summary, c.Messages(), &expires, "")
+	it["data"] = data
+	return []O{it}
 }
 
 func maxTime(a, b time.Time) time.Time {
@@ -415,7 +429,8 @@ func (s *Service) roundRedraw(meta O) *redraw {
 	return &redraw{body: func(c *Card) {
 		c.Divider()
 		card(c)
-	}, card: card, waits: waits, rest: s.roundRest(s.roundView(f, report, id), f, st)}
+	}, card: card, waits: waits, rest: s.roundRest(s.roundView(f, report, id), f, st),
+		data: s.roundData(report, st, told, f, below, id)}
 }
 
 // roundTop: for the answer to the plan on the round's card: the cleans on top of it again, so their [放回] stays.
@@ -441,8 +456,9 @@ type roundView struct {
 	trash       []PlanItem     // what the plan clears as suggested
 	bytes       int64          // what that frees
 	look        []core.Finding // what waits for the user outside the plans (serious ones only for reference too)
-	toLook      int            // how many things wait for the user: all but the rebuildable caches (luoke-scan#129)
+	toLook      int            // how many things wait for the user: what the scan page lists but the rebuildable caches (luoke-scan#129)
 	caches      []PlanItem     // the rebuildable caches: deleted with their own button, nothing to choose
+	cachesBytes int64          // what that one button frees: of bytes, the caches' part (luoke-scan#205)
 	cleaned     []PlanItem     // the rebuildable caches the user already had deleted this round (cachesCleaned)
 	freed       int64          // what deleting those freed
 	high        int
@@ -459,14 +475,11 @@ func (s *Service) roundView(f []core.Finding, r core.Report, id string) roundVie
 		v.count[x.Verdict]++
 	}
 	v.plan, v.admin = s.plans(f, r, "findings", id)
-	caches := 0
-	done := map[string]bool{} // finding ids of v.done
 	if v.plan != nil {
 		gone := s.cachesCleaned(*v.plan, r)
 		moved := s.itemsCleaned(*v.plan, r)
 		for _, it := range v.plan.Items {
 			if it.Suggested == ChoiceRemove {
-				caches++
 				if b, ok := gone[it.Key]; ok {
 					v.cleaned = append(v.cleaned, it)
 					v.freed += b
@@ -475,9 +488,6 @@ func (s *Service) roundView(f []core.Finding, r core.Report, id string) roundVie
 			}
 			if moved[it.Key] {
 				v.done = append(v.done, it)
-				if it.Suggested != ChoiceRemove { // the caches are not counted as waiting anyway
-					done[it.FindingID] = true
-				}
 				continue
 			}
 			if Clears(it.Suggested) {
@@ -488,6 +498,9 @@ func (s *Service) roundView(f []core.Finding, r core.Report, id string) roundVie
 			}
 			if it.Suggested == ChoiceRemove {
 				v.caches = append(v.caches, it)
+				if it.Bytes != nil {
+					v.cachesBytes += *it.Bytes
+				}
 			}
 		}
 	}
@@ -499,13 +512,9 @@ func (s *Service) roundView(f []core.Finding, r core.Report, id string) roundVie
 			}
 		}
 	}
-	gone := 0 // what done takes off toLook
 	for _, x := range f {
 		if isHighInfo(x) {
 			v.high++
-		}
-		if done[s.fid(x)] && (x.Verdict != core.Info || isHighInfo(x)) {
-			gone++
 		}
 		// Once: what the plan lists (with its own 「移到废纸篓」) is not listed again under 「要你看看」 (AI plugins, models)
 		if (x.Verdict != core.Info || isHighInfo(x)) && !inPlan[s.fid(x)] {
@@ -513,9 +522,21 @@ func (s *Service) roundView(f []core.Finding, r core.Report, id string) roundVie
 		}
 	}
 	v.look = bySeverity(v.look)
-	// What is suggested to the Trash still waits for the user's click on the scan page; only the caches do not, nor what
-	// already went this round
-	v.toLook = len(f) - v.count[core.Info] - caches + v.high - gone
+	// What waits is what the scan page lists: every item of the plans but the rebuildable caches (nothing to choose) and
+	// what already went this round, and what no plan carries (「要你看看」). Counted from those lists, not from the
+	// findings' verdicts: a plan also carries items of findings that are only for reference (AI plugins, chat templates),
+	// and the page lists them under 「可以清掉」 like the rest, so its numbers add up.
+	v.toLook = len(v.look)
+	if v.plan != nil {
+		for _, it := range v.plan.Items {
+			if it.Suggested != ChoiceRemove && !hasItem(v.done, it.Key) {
+				v.toLook++
+			}
+		}
+	}
+	if v.admin != nil {
+		v.toLook += len(v.admin.Items)
+	}
 	return v
 }
 
@@ -846,7 +867,9 @@ func (s *Service) accessItems(r core.Report) []O {
 	c.Heading("下载、文稿、桌面还没查")
 	c.Text(summary, true)
 	c.Buttons([]Button{{Label: "打开设置", Event: "scan_open_settings", Context: O{"grant": "完全磁盘访问"}, Primary: true}})
-	return []O{s.item(id, "needs-access", "low", r.FinishedAt.Time, "这一轮有一项因为它没查成", "下载、文稿、桌面还没查", summary, c.Messages(), nil, "fda")}
+	it := s.item(id, "needs-access", "low", r.FinishedAt.Time, "这一轮有一项因为它没查成", "下载、文稿、桌面还没查", summary, c.Messages(), nil, "fda")
+	it["data"] = O{"type": "needs-access", "permission": "fda"}
+	return []O{it}
 }
 
 func kindLabel(k string) string { return core.AutoKind(k).Label() }

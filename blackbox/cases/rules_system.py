@@ -160,6 +160,70 @@ def process_no_launchctl(r: Run) -> None:
     r.scan(T0)
 
 
+def with_env(p: Dict[str, Any], env: List[str]) -> Dict[str, Any]:
+    """进程启动时的环境变量（KERN_PROCARGS2 里 argv 后面那段）；不带的是读不到。"""
+    p["environment"] = env
+    return p
+
+
+@case("rules/process/dyld-insert", "启动时带着 DYLD_INSERT_LIBRARIES 的进程：一个库一条，带着它的进程合在一起；没人担保的高、"
+      "有开发者签名的中；苹果自己的库（系统位置的、Xcode 的）、别的变量、别的用户的、读不到环境变量的不报")
+def process_dyld_insert(r: Run) -> None:
+    fx = r.fx
+    shell, tool = prog(fx, "~/.local/bin/shell"), prog(fx, "~/.local/bin/tool")
+    hook = fx.file("~/.cache/io.example/hook.dylib", "not a real library\n", at=days(3))
+    proxy = fx.file("~/.local/lib/libproxy.dylib", "not a real library\n", at=days(30))
+    xcode = fx.file("~/Applications/Xcode.app/Contents/Developer/usr/lib/libMainThreadChecker.dylib", "not a real library\n",
+                    at=days(30))
+    fx.fake("codesign", {hook: "adhoc", proxy: "developer:FIXTURE000", xcode: "apple"})
+    procs(r,
+          with_env(proc(4200, 50, shell, hours(3)), ["HOME=" + fx.home, "DYLD_INSERT_LIBRARIES=" + hook]),
+          with_env(proc(4201, 4200, tool, hours(2)), ["DYLD_INSERT_LIBRARIES=" + hook + ":" + proxy]),   # shell 起的：继承了
+          with_env(proc(4202, 50, tool, hours(1)), ["DYLD_INSERT_LIBRARIES=/usr/lib/libgmalloc.dylib"]),  # 系统的 Guard Malloc
+          with_env(proc(4203, 50, tool, hours(1)), ["DYLD_INSERT_LIBRARIES=" + xcode]),                   # Xcode 调试时设的
+          with_env(proc(4204, 50, tool, hours(1)), ["DYLD_LIBRARY_PATH=/opt/lib"]),
+          with_env(proc(4205, 50, "/opt/io-example/daemon", hours(1), uid=0), ["DYLD_INSERT_LIBRARIES=" + hook]),  # 别的用户的
+          proc(4206, 50, tool, hours(1)))                                                                   # 读不到环境变量
+    r.update()
+    r.scan(T0)
+
+
+def with_libs(p: Dict[str, Any], libs: List[tuple]) -> Dict[str, Any]:
+    """进程映射成代码的文件（程序自己不算）：(路径, 是不是已经删掉)；不带的是读不到。"""
+    p["libraries"] = [{"path": path, "deleted": deleted} for path, deleted in libs]
+    return p
+
+
+@case("rules/process/libraries", "进程载入的库：临时文件夹、下载文件夹里的一个程序一条（签名对不上的高），文件已经删掉的一个程序一条；"
+      "苹果自己的、应用自己包里的（App Translocation 搬到临时文件夹的应用也是）、苹果签名的、程序本身已经删掉的、别的用户的、读不到的不报；"
+      "只是放在叫 AppTranslocation 的文件夹里的照报")
+def process_libraries(r: Run) -> None:
+    fx = r.fx
+    tool, server, other = prog(fx, "~/.local/bin/tool"), prog(fx, "~/.local/bin/server"), prog(fx, "~/.local/bin/other")
+    # 从下载里直接打开的应用：macOS 把它挪到临时文件夹下的隐藏位置再跑
+    moved = "$TMPDIR/AppTranslocation/0A1B2C3D-0000-4000-8000-000000000000/d/Viewer.app/Contents/"
+    viewer = prog(fx, moved + "MacOS/Viewer")
+    hook = fx.file("$TMPDIR/io.example-unpack/hook.dylib", "not a real library\n", at=days(1))
+    plugin = fx.file("~/Downloads/plugin.dylib", "not a real library\n", at=days(1))
+    apple = fx.file("$TMPDIR/apple-signed.dylib", "not a real library\n", at=days(1))
+    named = fx.file("$TMPDIR/io.example-named/AppTranslocation/hook.dylib", "not a real library\n", at=days(1))
+    fx.fake("codesign", {hook: "adhoc", plugin: "invalid", apple: "apple", named: "adhoc"})
+    procs(r,
+          with_libs(proc(4400, 50, tool, hours(2)), [(hook, False), (plugin, False), ("/usr/lib/libz.1.dylib", False),
+                                                     (fx.p("~/.local/lib/libfine.dylib"), False)]),
+          with_libs(proc(4401, 50, tool, hours(1)), [(hook, False)]),
+          with_libs(proc(4402, 50, server, days(3)), [(fx.p("~/.local/lib/libold.1.dylib"), True),
+                                                      ("/System/Library/Frameworks/Old.framework/Old", True)]),
+          with_libs(proc(4403, 50, viewer, hours(1)), [(fx.p(moved + "Frameworks/Kit.framework/Kit"), False)]),  # 它自己包里的
+          with_libs(proc(4404, 50, fx.p("~/.local/bin/gone"), hours(1)), [(fx.p("~/.local/lib/libgone.dylib"), True)]),
+          with_libs(proc(4405, 50, other, hours(1)), [(apple, False)]),
+          with_libs(proc(4406, 50, "/opt/io-example/daemon", hours(1), uid=0), [(hook, False)]),   # 别的用户的
+          proc(4407, 50, other, hours(1)),                                                          # 读不到
+          with_libs(proc(4408, 50, other, hours(1)), [(named, False)]))                             # 只是名字像
+    r.update()
+    r.scan(T0)
+
+
 @case("rules/process/no-process-list", "进程表是空的（读不到）：这条规则记成没扫描")
 def process_no_list(r: Run) -> None:
     r.fx.fake("processes", [])
@@ -958,6 +1022,57 @@ def malware_agent(r: Run) -> None:
     fx.plist(la + "io.example.two.plist", {"Label": "io.example.two", "Program": fx.p("~/.local/bin/agent-link")}, at=days(400))
     fx.plist(la + "io.example.three.plist", {"Label": "io.example.three", "ProgramArguments": [fx.p("~/.local/bin/clean-agent")]},
              at=days(400))
+    r.update()
+    r.scan(T0)
+    handed(r)
+
+
+def as_scan_sees(path: str) -> str:
+    """扫描拿到的假目录的根是 /var/… 的写法（没有 /private），正在运行的程序照这个写法写才算在假目录里、才交给病毒扫描。"""
+    return path[len("/private"):] if path.startswith("/private/var/") else path
+
+
+def running(p: Dict[str, Any], args: List[str], cwd: Optional[str] = None) -> Dict[str, Any]:
+    """进程的命令行（argv）和工作目录；不带工作目录的是读不到。"""
+    p["arguments"] = args
+    if cwd is not None:
+        p["cwd"] = cwd
+    return p
+
+
+@case("rules/malware/running-relative-script", "解释器用相对路径跑的脚本：在它的工作目录里找到再扫，不管多老；"
+      "读不到工作目录的、命令行上直接给代码的不扫")
+def malware_running_relative(r: Run) -> None:
+    fx = r.fx
+    watch_clamscan(fx)
+    node = as_scan_sees(prog(fx, "~/.local/bin/node"))
+    site = as_scan_sees(fx.p("~/Projects/site"))
+    fx.file("~/Projects/site/eicar-server.js", "console.log(1)\n", at=days(400))
+    fx.file("~/Projects/site/clean.js", "console.log(2)\n", at=days(400))
+    fx.file("~/Projects/site/eicar-unread.js", "console.log(3)\n", at=days(400))
+    procs(r,
+          running(proc(4300, 50, node, hours(2)), ["node", "./eicar-server.js"], cwd=site),
+          running(proc(4301, 50, node, hours(2)), ["node", "--inspect", "clean.js"], cwd=site),
+          running(proc(4302, 50, node, hours(2)), ["node", "eicar-unread.js"]),                  # 读不到工作目录
+          running(proc(4303, 50, node, hours(2)), ["node", "-e", "eicar-unread.js"], cwd=site))  # 命令行上给的代码
+    r.update()
+    r.scan(T0)
+    handed(r)
+
+
+@case("rules/malware/running-libraries", "正在运行的程序载入的库也扫，不管多老：应用自己包里的不扫（随应用来的），苹果自己的不扫；"
+      "病毒库认得的报")
+def malware_running_libraries(r: Run) -> None:
+    fx = r.fx
+    watch_clamscan(fx)
+    tool = as_scan_sees(prog(fx, "~/.local/bin/tool"))
+    viewer = as_scan_sees(prog(fx, "~/Applications/Viewer.app/Contents/MacOS/Viewer"))
+    own = as_scan_sees(fx.file("~/Applications/Viewer.app/Contents/Frameworks/Kit.framework/Kit", "x\n", at=days(400)))
+    plugin = as_scan_sees(fx.file("~/Library/Application Support/io.example/eicar-plugin.dylib", "x\n", at=days(400)))
+    clean = as_scan_sees(fx.file("~/.local/lib/libclean.dylib", "x\n", at=days(400)))
+    procs(r,
+          with_libs(proc(4500, 50, viewer, hours(1)), [(own, False), (plugin, False), ("/usr/lib/libz.1.dylib", False)]),
+          with_libs(proc(4501, 50, tool, hours(1)), [(clean, False)]))
     r.update()
     r.scan(T0)
     handed(r)

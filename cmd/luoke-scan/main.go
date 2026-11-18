@@ -255,9 +255,14 @@ func setup(fixture string, fx fixtureMode, data string, haveData bool, toolDir s
 		if !core.Exists(l.Home()) {
 			fail(fixture + " 不是假用户目录（假目录由 blackbox/fx.py 造，见 blackbox/README.md）")
 		}
-		fakes, _, err := l.LoadFakes()
+		fakes, haveFakes, err := l.LoadFakes()
 		if err != nil {
 			fail("fakes.json 读不了：" + err.Error())
+		}
+		if fixtureOnly() {
+			if why := fakeMacProblem(l, haveFakes, realHome()); why != "" {
+				fail(why)
+			}
 		}
 		s := openStore(l.Data(), true)
 		cfg := service.FixtureConfig(l, fakes)
@@ -285,6 +290,9 @@ func setup(fixture string, fx fixtureMode, data string, haveData bool, toolDir s
 		}
 		return s, cfg
 	}
+	if fixtureOnly() {
+		fail("要给 --fixture <假目录>：" + fixtureOnlyWord + "只查假 Mac")
+	}
 	if !thisMac {
 		fail("要给 --this-mac，或者 --fixture <假目录>\n\n" + usage)
 	}
@@ -311,6 +319,11 @@ func main() {
 	}
 	command := all[0]
 	args = append([]string{}, all[1:]...)
+	if fixtureOnly() {
+		if why := fixtureOnlyRefusal(command, args); why != "" {
+			fail(why)
+		}
+	}
 	devFlags := []string{"--home", "--data", "--tmp", "--projects", "--tool-dir", "--fixture", "--clock-start", "--clock", "--no-full-disk-access"}
 	if core.Packed() {
 		for _, a := range args {
@@ -340,7 +353,11 @@ func main() {
 
 	switch command {
 	case "version":
-		fmt.Printf("luoke-scan %s · rules %s\n", service.ToolVersion, core.RulePackVersion)
+		note := ""
+		if fixtureOnly() {
+			note = " · " + fixtureOnlyWord
+		}
+		fmt.Printf("luoke-scan %s · rules %s%s\n", service.ToolVersion, core.RulePackVersion, note)
 
 	case "scan":
 		homeArg, haveHome := last(take("--home"))
@@ -458,6 +475,9 @@ func main() {
 
 	case "report":
 		data, ok := last(take("--data"))
+		if !ok && fixtureOnly() {
+			fail("report 要给 --data <假目录>/data：" + fixtureOnlyWord + "不读这台 Mac 的 ~/.luoke-scan")
+		}
 		if !ok {
 			data = filepath.Join(realHome(), ".luoke-scan")
 		}

@@ -28,6 +28,7 @@ func (s *Service) registerPages() {
 		id := p.id
 		srv.ResourceMeta("page/"+id, p.title, func(meta O) any { return A(s.page(id, s.state(), Features(meta))) })
 	}
+	s.registerData()
 }
 
 // summary: {"count", "text"}: what waits for the user (the count by the sidebar) and one sentence on it. The serious

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import datetime
 import os
+import urllib.parse
 
 from fx import MiB, T0, Fx, days, iso, set_xattr
 from harness import Run, case
@@ -735,7 +736,11 @@ def stale_grants(r: Run) -> None:
             ("kTCCServiceScreenCapture", "org.present.app.helper", 0, 2),   # 装着的应用的辅助程序
             ("kTCCServiceListenEvent", present_tool, 1, 2),                 # 程序还在
             ("kTCCServiceCamera", "io.gone.denied", 0, 0),                  # 拒绝了的
-            ("kTCCServiceBluetoothAlways", "io.gone.bt", 0, 2)])            # 不在要说的权限里
+            ("kTCCServiceAddressBook", "io.gone.crm", 0, 2),
+            ("kTCCServiceCalendar", "io.gone.crm", 0, 2),
+            ("kTCCServiceBluetoothAlways", "io.gone.bt", 0, 2),
+            ("kTCCServiceSystemPolicyAppBundles", "io.gone.updater", 0, 2),  # App 管理：中等
+            ("kTCCServiceExampleNotKnown", "io.gone.odd", 0, 2)])            # 不在要说的权限里
     r.update()
     r.scan(T0)
 
@@ -754,5 +759,74 @@ def stale_grants_no_access(r: Run) -> None:
 def stale_grants_unreadable(r: Run) -> None:
     fx = r.fx
     fx.file(Fx.TCC, "not a database\n", at=days(1))
+    r.update()
+    r.scan(T0)
+
+
+APP, AGENT, LOGIN, DAEMON, DEVELOPER, LEGACY = 0x2, 0x8, 0x4, 0x10, 0x20, 0x10000
+ON, HIDDEN = 0x3, 0x4    # disposition：开着、允许；不在系统设置里显示
+
+
+@case("rules/permission.stale-grant/login-items", "已经删掉的应用还在「登录项与扩展」里：应用自己的、里面的后台项、"
+      "写明属于它的 launchd 任务（程序还在）；和它的隐私权限合成一条；装着的、挪了地方的、隐藏的、苹果的、在别的盘上的、"
+      "开发商那一层、写成文件的老式任务（看文件）、程序已经不在的不报")
+def stale_login_items(r: Run) -> None:
+    fx = r.fx
+    fx.app("~/Applications/Present.app", "org.present.app", "Present", at=OLD)
+    apps = "file://" + urllib.parse.quote(fx.p("~/Applications"))
+    vpn = program(fx, "opt/gone-vpn/vpn-helper")
+    fx.btm([
+        # 删掉的同步工具：应用自己、里面的后台项、登录时打开的辅助程序
+        {"name": "Gone Sync", "identifier": "2.io.gone.sync", "url": apps + "/Gone%20Sync.app/", "bundleIdentifier": "io.gone.sync",
+         "type": APP, "disposition": ON},
+        {"name": "Gone Sync Agent", "identifier": "8.io.gone.sync.agent", "container": "2.io.gone.sync",
+         "url": "Contents/Library/LaunchAgents/io.gone.sync.agent.plist", "bundleIdentifier": "io.gone.sync.agent",
+         "type": AGENT, "disposition": ON},
+        {"name": "Gone Sync Helper", "identifier": "4.io.gone.sync.helper", "container": "2.io.gone.sync",
+         "url": "Contents/Library/LoginItems/Gone Sync Helper.app", "bundleIdentifier": "io.gone.sync.helper",
+         "type": LOGIN, "disposition": ON},
+        # 删掉的会议软件：还拿着摄像头，还在登录项里：合成一条
+        {"name": "Gone Meet", "identifier": "2.io.gone.meet", "url": apps + "/Gone%20Meet.app/", "bundleIdentifier": "io.gone.meet",
+         "type": APP, "disposition": ON},
+        # 不报的
+        {"name": "Present", "identifier": "2.org.present.app", "url": apps + "/Present.app/", "bundleIdentifier": "org.present.app",
+         "type": APP, "disposition": ON},                                                      # 装着
+        {"name": "Present", "identifier": "2.org.present.app.old", "url": apps + "/Old/Present.app/",
+         "bundleIdentifier": "org.present.app", "type": APP, "disposition": ON},               # 挪了地方
+        {"name": "Quiet", "identifier": "2.io.gone.quiet", "url": apps + "/Quiet.app/", "bundleIdentifier": "io.gone.quiet",
+         "type": APP, "disposition": ON | HIDDEN},                                             # 隐藏的
+        {"name": "Notes", "identifier": "2.com.apple.gone", "url": apps + "/Notes%20Old.app/", "bundleIdentifier": "com.apple.gone",
+         "type": APP, "disposition": ON},                                                      # 苹果的
+        {"name": "Outside", "identifier": "2.io.gone.outside", "url": "file:///Volumes/Outside/Outside.app/",
+         "bundleIdentifier": "io.gone.outside", "type": APP, "disposition": ON},               # 别的盘上
+        {"name": "Gone Inc.", "identifier": "Gone Inc.", "type": DEVELOPER, "disposition": ON}, # 开发商那一层
+        {"name": "io.gone.vpn.helper", "identifier": "16.io.gone.vpn.helper",
+         "url": "file://" + urllib.parse.quote(fx.p("SystemLibrary/LaunchDaemons/io.gone.vpn.helper.plist")),
+         "associatedBundleIdentifiers": ["io.gone.vpn"], "type": DAEMON | LEGACY, "disposition": ON},  # 老式的：看文件
+        {"name": "Lost", "identifier": "2.io.gone.lost", "container": "2.io.nowhere", "url": "Contents/Library/LoginItems/Lost.app",
+         "bundleIdentifier": "io.gone.lost", "type": LOGIN, "disposition": ON},                # 找不到它在哪个应用里
+    ])
+    fx.tcc([("kTCCServiceCamera", "io.gone.meet", 0, 2)])
+    # 写明属于删掉的 VPN 的任务，程序还在：照样以管理员身份启动
+    fx.plist("SystemLibrary/LaunchDaemons/io.gone.vpn.helper.plist",
+             {"Label": "io.gone.vpn.helper", "Program": vpn, "AssociatedBundleIdentifiers": ["io.gone.vpn"]}, at=OLD)
+    # 不报的：属于装着的应用；程序已经不在（别的规则报）；关掉了的
+    fx.plist("SystemLibrary/LaunchAgents/org.present.app.agent.plist",
+             {"Label": "org.present.app.agent", "Program": program(fx, "opt/present/agent"), "AssociatedBundleIdentifiers": ["org.present.app"]}, at=OLD)
+    fx.plist("SystemLibrary/LaunchDaemons/io.gone.nofile.plist",
+             {"Label": "io.gone.nofile", "Program": fx.p("opt/gone-nofile/helper"), "AssociatedBundleIdentifiers": "io.gone.nofile"}, at=OLD)
+    fx.plist("~/Library/LaunchAgents/io.gone.off.plist",
+             {"Label": "io.gone.off", "Program": program(fx, "opt/gone-off/agent"), "AssociatedBundleIdentifiers": ["io.gone.off"],
+              "Disabled": True}, at=OLD)
+    r.update()
+    r.scan(T0)
+
+
+@case("rules/permission.stale-grant/login-items-unreadable", "「登录项与扩展」的记录读不懂：权限照报，另说结果不完整")
+def stale_login_items_unreadable(r: Run) -> None:
+    fx = r.fx
+    fx.file("backgroundtaskmanagement/BackgroundItems-v16.btm", "not a property list\n", at=days(1))
+    fx.file("backgroundtaskmanagement/BackgroundItems-v4.btm", "older, not read\n", at=days(400))
+    fx.tcc([("kTCCServiceCamera", "io.gone.meet", 0, 2)])
     r.update()
     r.scan(T0)

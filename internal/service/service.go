@@ -19,7 +19,7 @@ import (
 )
 
 // ToolVersion is this build's version; it must be the accessory manifest's (packaging/luoke-accessory.json).
-const ToolVersion = "0.3.30"
+const ToolVersion = "0.3.42"
 
 // ModelLink is luoke-core's model for the generate tasks.
 type ModelLink struct {
@@ -244,6 +244,7 @@ func ThisMacConfig(s *core.Store, t core.Tools, otherData bool) Config {
 	ctx.Store, ctx.Tools = s, t
 	ctx.Tmp = userTempDir()
 	ctx.SystemLibrary, ctx.Receipts = "/Library", "/var/db/receipts"
+	ctx.BackgroundItems = core.BackgroundItemsDir
 	// Not known (the probe failed some other way): as without, so a round never brings up a dialog.
 	fda := false
 	if v := FullDiskAccessNow(h); v != nil {

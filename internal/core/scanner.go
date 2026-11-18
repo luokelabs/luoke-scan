@@ -59,13 +59,32 @@ func Versions(ctx *Context) map[string]string {
 		if p == "" {
 			continue
 		}
-		if r := Run(p, []string{"--version"}, RunOpts{Timeout: 10 * time.Second}); r.Status == 0 {
-			if line := strings.SplitN(r.Stdout, "\n", 2)[0]; line != "" {
-				v[tool] = line
-			}
+		if line := toolVersion(p, ctx.IsCancelled); line != "" {
+			v[tool] = line
 		}
 	}
 	return v
+}
+
+// toolVersionTries is how often a tool is asked for its version before the report goes without it.
+const toolVersionTries = 3
+
+// toolVersion is the first line a tool prints for --version ("" when it does not answer). A tool that fails is asked
+// again, twice: on a busy machine starting it has failed once and worked the next time, and a report that drops the
+// scanner's version reads as "this scanner is not there".
+func toolVersion(path string, cancelled func() bool) string {
+	for try := 0; try < toolVersionTries; try++ {
+		if try > 0 {
+			if cancelled != nil && cancelled() {
+				break
+			}
+			time.Sleep(200 * time.Millisecond)
+		}
+		if r := Run(path, []string{"--version"}, RunOpts{Timeout: 10 * time.Second}); r.Status == 0 {
+			return strings.SplitN(r.Stdout, "\n", 2)[0]
+		}
+	}
+	return ""
 }
 
 // RunRound runs the rules. A rule that fails is reported in Skipped, never as "nothing found". In an interrupted

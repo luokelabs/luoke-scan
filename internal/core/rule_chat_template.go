@@ -19,7 +19,9 @@ func init() { Register("model.chat-template", NewChatTemplateRule) }
 
 // ChatTemplateRule: the chat templates of the models AI tools downloaded (chattemplate.go), checked for words to the
 // model the families' own templates do not have and for characters nobody sees. One finding per model with something
-// to say, only for reference: nothing is planned, cleaned or deleted, and nothing of the template is kept. Reads only
+// to say. The rule itself changes nothing and keeps nothing of the template; a model with a folder of its own can be
+// moved to the Trash from its card (service.trashableSkill: preselected when high risk, luoke-scan#152), so the
+// finding carries the folder's size. Reads only
 // the small files a template is in, within bounds, and of a GGUF file only its header; a file not changed since a
 // round read it is not read again.
 type ChatTemplateRule struct {
@@ -116,7 +118,7 @@ type chatTemplateRow struct {
 
 // chatTemplateTable keeps the rows; its version goes up when the checks change, so every file is read again.
 func chatTemplateTable(s *Store) Table[chatTemplateRow] {
-	return NewTable[chatTemplateRow](s, "chat_templates", 1)
+	return NewTable[chatTemplateRow](s, "chat_templates", 2)
 }
 
 // chatTemplateSig is a file as it is now: the rule pack, device, inode, size, and when its contents and its inode
@@ -280,8 +282,15 @@ func (r *ChatTemplateRule) checkModel(ctx *Context, m templateModel, known, seen
 	if template != "" {
 		ev["template"] = ctx.Shown(template)
 	}
+	// What moving it to the Trash would free: a model with a folder of its own (not Ollama's, whose path is a manifest
+	// and whose files are shared) is offered for the Trash as a whole (service.trashableSkill), so its size is the
+	// folder's.
+	var bytes *int64
+	if m.tool != "Ollama" && aiIsDir(m.dir) {
+		bytes = Size(AllocatedSize(m.dir))
+	}
 	// Keyed on the model and what its templates say: a later change is a new finding, not hidden by a 「以后别提」.
-	return &Finding{Rule: "model.chat-template", Category: CatSkill, Severity: sev, Verdict: Info, Path: m.dir,
+	return &Finding{Rule: "model.chat-template", Category: CatSkill, Severity: sev, Verdict: Info, Path: m.dir, Bytes: bytes,
 		Title: m.tool + " 的模型 " + name + "：" + what, Evidence: ev,
 		Key: HomeRelative(m.dir, ctx.Home) + "|" + ShortHash(strings.Join(digests, ","))}, whole
 }

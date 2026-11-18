@@ -70,3 +70,6 @@ jobs:
       - name: 给 agent 的样例（fixtures/agent）重录比对
         if: ${{ !cancelled() }}
         run: python3 -I scripts/record_agent_fixtures.py --check
+      - name: 螺壳开发实例用的扫描（package_app --fixture-only、make_fixture）
+        if: ${{ !cancelled() }}
+        run: python3 -I scripts/test_dev_build.py

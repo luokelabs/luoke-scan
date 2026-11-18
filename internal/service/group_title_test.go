@@ -45,6 +45,14 @@ func TestAGroupOfSeveralNamesIsTitledByItsKind(t *testing.T) {
 			core.Finding{Path: "/u/code/admin-ui", Evidence: map[string]string{"package": "bad-pkg"}}),
 		"process.deleted-binary": two("process.deleted-binary", core.CatProcess,
 			core.Finding{Path: "/u/bin/sync-helper"}, core.Finding{Path: "/u/bin/backup-agent"}),
+		"process.dyld-insert": two("process.dyld-insert", core.CatProcess,
+			core.Finding{Path: "/u/.cache/hook.dylib"}, core.Finding{Path: "/opt/proxy/libproxy.dylib"}),
+		"process.library-temp": two("process.library-temp", core.CatProcess,
+			core.Finding{Path: "/tmp/_MEI1/libpython.dylib", Evidence: map[string]string{"program": "/u/bin/packed-tool", "place": "临时文件夹"}},
+			core.Finding{Path: "/u/Downloads/plugin.dylib", Evidence: map[string]string{"program": "/u/bin/loader", "place": "下载文件夹"}}),
+		"process.library-deleted": two("process.library-deleted", core.CatProcess,
+			core.Finding{Path: "/u/bin/server", Evidence: map[string]string{"program": "/u/bin/server"}},
+			core.Finding{Path: "/u/bin/worker", Evidence: map[string]string{"program": "/u/bin/worker"}}),
 	}
 	for rule, fs := range cases {
 		title, _, names := s.plainGroup(lookGroup{key: groupKey(fs[0]), findings: fs})

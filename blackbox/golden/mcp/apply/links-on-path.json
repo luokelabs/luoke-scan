@@ -200,6 +200,34 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 62914560,
+                        "caches": 1,
+                        "cachesBytes": 62914560,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": true,
+                        "plan": {
+                          "caches": [
+                            "i1"
+                          ],
+                          "id": "p-000000000002"
+                        },
+                        "rest": 1,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 1,
+                        "trash": 1
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
@@ -678,6 +706,38 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "cloned": {
+                "bytes": 0,
+                "count": 0
+              },
+              "gone": 0,
+              "ignored": 0,
+              "left": [
+                "临时目录里有 25 个 wings-* 没被删掉，共 131.1 MB：移了 24/25，其余现在是一个链接",
+                "pip 的缓存：未能清理，路上有链接，或者不在它该在的位置"
+              ],
+              "links": 0,
+              "moved": {
+                "bytes": 0,
+                "count": 0
+              },
+              "partly": 1,
+              "password": false,
+              "removed": {
+                "bytes": 0,
+                "count": 0
+              },
+              "restore": "p-000000000002",
+              "retry": null,
+              "round": null,
+              "scriptsOff": 0,
+              "skipped": 1,
+              "trashed": true,
+              "type": "applied",
+              "unchanged": 0,
+              "unrecorded": []
+            },
             "done": false
           }
         }

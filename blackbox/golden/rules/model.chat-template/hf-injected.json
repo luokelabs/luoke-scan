@@ -22,6 +22,7 @@
       "json": {
         "findings": [
           {
+            "bytes": 8192,
             "category": "skill",
             "evidence": {
               "files": "chat_template.jinja",
@@ -41,6 +42,7 @@
             "verdict": "info"
           },
           {
+            "bytes": 8192,
             "category": "skill",
             "evidence": {
               "files": "tokenizer_config.json",
@@ -380,6 +382,31 @@
           "resources": [
             {
               "mimeType": "application/json",
+              "name": "一类可以清的东西",
+              "uri": "data/category"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "清理记录的数据",
+              "uri": "data/history"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "扫描页的数据",
+              "uri": "data/overview"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "扫描的设置",
+              "uri": "data/settings"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "占地方最多的文件夹",
+              "uri": "data/usage"
+            },
+            {
+              "mimeType": "application/json",
               "name": "扫描要告诉你的事",
               "uri": "luoke://luoke-scan/outbox"
             },
@@ -528,7 +555,7 @@
                       {
                         "component": "Text",
                         "id": "t10",
-                        "text": "没有",
+                        "text": "8 KB",
                         "variant": "h3"
                       },
                       {
@@ -548,7 +575,7 @@
                       {
                         "component": "Text",
                         "id": "t13",
-                        "text": "1 项",
+                        "text": "2 项",
                         "variant": "h3"
                       },
                       {
@@ -821,6 +848,7 @@
       "json": {
         "findings": [
           {
+            "bytes": 8192,
             "category": "skill",
             "evidence": {
               "files": "chat_template.jinja",
@@ -840,6 +868,7 @@
             "verdict": "info"
           },
           {
+            "bytes": 8192,
             "category": "skill",
             "evidence": {
               "files": "tokenizer_config.json",
@@ -859,6 +888,7 @@
             "verdict": "info"
           },
           {
+            "bytes": 8192,
             "category": "skill",
             "evidence": {
               "files": "tokenizer_config.json",
@@ -1014,7 +1044,7 @@
                       {
                         "component": "Text",
                         "id": "t10",
-                        "text": "没有",
+                        "text": "16 KB",
                         "variant": "h3"
                       },
                       {
@@ -1034,7 +1064,7 @@
                       {
                         "component": "Text",
                         "id": "t13",
-                        "text": "2 项",
+                        "text": "3 项",
                         "variant": "h3"
                       },
                       {

@@ -10,6 +10,7 @@ type redraw struct {
 	card  func(*Card) // the card alone, in place of an answer
 	waits bool        // something on it still waits for the user
 	rest  int         // how many things it sends to the scan page (roundRest)
+	data  O           // the card as data (roundData), for a core that draws it itself (top-level ADR 0028)
 }
 
 const (

@@ -36,7 +36,8 @@
             "evidence": {
               "free": "16.11 GB",
               "threshold": "21.47 GB",
-              "total": "107.37 GB"
+              "total": "107.37 GB",
+              "total_bytes": "107374182400"
             },
             "path": "~",
             "rule": "space.low",

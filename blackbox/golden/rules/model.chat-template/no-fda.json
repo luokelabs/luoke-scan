@@ -22,6 +22,7 @@
       "json": {
         "findings": [
           {
+            "bytes": 4096,
             "category": "skill",
             "evidence": {
               "files": "model.gguf",
@@ -41,6 +42,7 @@
             "verdict": "info"
           },
           {
+            "bytes": 8192,
             "category": "skill",
             "evidence": {
               "files": "tokenizer_config.json",
@@ -88,6 +90,7 @@
       "json": {
         "findings": [
           {
+            "bytes": 8192,
             "category": "skill",
             "evidence": {
               "files": "tokenizer_config.json",

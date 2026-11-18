@@ -24,6 +24,20 @@
           {
             "category": "permission",
             "evidence": {
+              "grants": "App 管理",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → App 管理，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy"
+            },
+            "path": "io.gone.updater",
+            "rule": "permission.stale-grant",
+            "severity": "medium",
+            "title": "io.gone.updater 已经不在这台 Mac 上，还拿着「App 管理」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
               "grants": "下载、文稿、桌面",
               "hint": "以后装上同名的东西，会直接拿到这些权限",
               "how": "系统设置 → 隐私与安全性 → 下载、文稿、桌面，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
@@ -89,6 +103,34 @@
             "rule": "permission.stale-grant",
             "severity": "low",
             "title": "io.gone.meet 已经不在这台 Mac 上，还拿着「摄像头、麦克风」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "日历、通讯录",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 日历、通讯录，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_Calendars x-apple.systempreferences:com.apple.preference.security?Privacy_Contacts"
+            },
+            "path": "io.gone.crm",
+            "rule": "permission.stale-grant",
+            "severity": "low",
+            "title": "io.gone.crm 已经不在这台 Mac 上，还拿着「日历、通讯录」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "蓝牙",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 蓝牙，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy"
+            },
+            "path": "io.gone.bt",
+            "rule": "permission.stale-grant",
+            "severity": "low",
+            "title": "io.gone.bt 已经不在这台 Mac 上，还拿着「蓝牙」",
             "verdict": "confirm"
           }
         ],

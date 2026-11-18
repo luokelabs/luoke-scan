@@ -23,6 +23,9 @@ func (l Layout) TCC() string {
 	return filepath.Join(l.Home(), "Library/Application Support/com.apple.TCC/TCC.db")
 }
 
+// BackgroundItems is the fake BackgroundItemsDir.
+func (l Layout) BackgroundItems() string { return filepath.Join(l.Root, "backgroundtaskmanagement") }
+
 // Tools are the fake scanners in tools/.
 func (l Layout) Tools() Tools {
 	d := l.ToolDir()
@@ -37,6 +40,7 @@ func (l Layout) Context(s *Store) Context {
 	c.TCCDatabases = []string{l.TCC()}
 	c.AppDirs = []string{filepath.Join(l.Home(), "Applications")}
 	c.SystemLibrary, c.Receipts = filepath.Join(l.Root, "SystemLibrary"), filepath.Join(l.Root, "receipts")
+	c.BackgroundItems = l.BackgroundItems()
 	return c
 }
 
@@ -99,13 +103,25 @@ type FakeBattery struct {
 }
 
 type FakeProcess struct {
-	PID       int32        `json:"pid"`
-	PPID      int32        `json:"ppid"`
-	UID       uint32       `json:"uid"`
-	Path      string       `json:"path"`
-	Started   time.Time    `json:"started"`
-	Arguments *[]string    `json:"arguments"`
-	Listening []FakeListen `json:"listening"`
+	PID       int32     `json:"pid"`
+	PPID      int32     `json:"ppid"`
+	UID       uint32    `json:"uid"`
+	Path      string    `json:"path"`
+	Started   time.Time `json:"started"`
+	Arguments *[]string `json:"arguments"`
+	// Environment: what it was started with (KERN_PROCARGS2 after argv); nil: not readable.
+	Environment *[]string `json:"environment"`
+	// Cwd: its working directory; nil: not readable.
+	Cwd *string `json:"cwd"`
+	// Libraries: the files it has mapped as code beside its program; nil: not readable.
+	Libraries *[]FakeLibrary `json:"libraries"`
+	Listening []FakeListen   `json:"listening"`
+}
+
+// FakeLibrary is a file a fake process has mapped as code; Deleted: removed since (no link left).
+type FakeLibrary struct {
+	Path    string `json:"path"`
+	Deleted bool   `json:"deleted"`
 }
 
 type FakeListen struct {

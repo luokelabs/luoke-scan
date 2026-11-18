@@ -107,7 +107,7 @@ What goes into Luoke Memory is only what happened: which kind you cleaned, which
 ## Security design
 
 - **Two programs**: `luoke-scan` scans and cleans; it never opens a socket or listens on the network: the tools for Luoke's agent (MCP) go over the standard input and output of `luoke-scan mcp`, which Luoke's main app starts. `luoke-scan-admin` runs only after you entered your password in Luoke's dialog, as administrator, for that one deletion.
-- Only Luoke's main app shows the password dialog: the scan hands it only which items of which plan, and the main app builds the command root runs — it copies the `luoke-scan-admin` in its own bundle into a folder only root can write, checks its signature there (Luoke's developer signature), then runs it with an empty environment; nothing the scan says becomes part of that command. You can also do it yourself in a terminal (`luoke-scan system`, through sudo, with the same signature check).
+- Only Luoke's main app shows the password dialog: the scan hands it only which items of which plan, and the main app builds the command root runs — it copies the `luoke-scan-admin` in its own bundle into a folder only root can write, checks its signature there (Luoke's developer signature), then runs it with an empty environment; nothing the scan says becomes part of that command. The installed Luoke Scan is started only by Luoke: run directly in a terminal it only shows results (`report`, `findings`, `status`, `version`). A development build you compiled yourself can do this step in a terminal (`luoke-scan system`, through sudo, with the same signature check).
 - External commands (git, clamscan, yara …) all run with time limits. Scans (the scheduled ones and the round the agent asks for) and the virus-database update lower their own priority as they start (CPU and disk both give way to the apps you are using), and the commands they start inherit it; `luoke-scan mcp`, which answers the agent (and carries out a plan you clicked), is not lowered. git runs with the repository settings that would start programs turned off (fsmonitor, hooks and the like), so a scanned repository cannot make git run a program of its own.
 - The installed .app accepts only `--this-mac`, none of the development options, and uses only the scanners that came with it.
 - The bundled third-party programs and libraries are separate processes; Luoke Scan does not link them, see [NOTICE](NOTICE).
@@ -143,7 +143,7 @@ During development always use a fake home and a data folder of your own: `--home
 ### Evaluation
 
 ```bash
-.build/go/luoke-scan eval-cleanup       # the four kinds cleaned without a click: 72 cases, must pick nothing wrong
+.build/go/luoke-scan eval-cleanup       # the four kinds cleaned without a click: 75 cases, must pick nothing wrong
 .build/go/luoke-scan eval-skills        # the AI skill checks: 33 malicious and 33 benign synthetic skills
 .build/go/luoke-scan eval-agentfiles    # the checks on files AI tools read (AGENTS.md, CLAUDE.md…): 13 malicious, 13 benign
 python3 bench/test_checks.py               # whether the evaluation's own checks are right; no model needed

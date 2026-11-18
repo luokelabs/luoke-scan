@@ -133,6 +133,29 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 0,
+                        "caches": 0,
+                        "cachesBytes": 0,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": false,
+                        "plan": null,
+                        "rest": 2,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 2,
+                        "trash": 0
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
@@ -587,6 +610,35 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "cloned": {
+                "bytes": 0,
+                "count": 0
+              },
+              "gone": 0,
+              "ignored": 0,
+              "left": [],
+              "links": 0,
+              "moved": {
+                "bytes": 0,
+                "count": 0
+              },
+              "partly": 0,
+              "password": false,
+              "removed": {
+                "bytes": 0,
+                "count": 0
+              },
+              "restore": "p-000000000002",
+              "retry": null,
+              "round": null,
+              "scriptsOff": 2,
+              "skipped": 0,
+              "trashed": false,
+              "type": "applied",
+              "unchanged": 0,
+              "unrecorded": []
+            },
             "done": true
           }
         }
@@ -899,6 +951,16 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "back": 2,
+              "before": 0,
+              "left": 0,
+              "notes": [
+                "pip 装源码包时会跑它的构建脚本：改之前没有这个文件，加的那份移到了废纸篓"
+              ],
+              "round": null,
+              "type": "restored"
+            },
             "done": true
           }
         }

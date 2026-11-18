@@ -15,11 +15,15 @@ type AutoKind = core.AutoKind
 
 var AutoKinds = core.AutoKinds
 
-// Settings pages (x-apple.systempreferences deep links) by the grant's name.
-var settingsPages = map[string]string{"完全磁盘访问": "Privacy_AllFiles", "辅助功能": "Privacy_Accessibility", "录屏": "Privacy_ScreenCapture",
-	"输入监控": "Privacy_ListenEvent", "控制电脑": "Privacy_Accessibility", "文稿": "Privacy_FilesAndFolders",
-	"下载": "Privacy_FilesAndFolders", "桌面": "Privacy_FilesAndFolders", "摄像头": "Privacy_Camera",
-	"麦克风": "Privacy_Microphone", "自动化": "Privacy_Automation", "FileVault": "FDE"}
+// Settings pages (x-apple.systempreferences deep links) by the grant's name: the grants a stale-grant finding names
+// (core.GrantPages), and FileVault.
+var settingsPages = func() map[string]string {
+	m := map[string]string{"FileVault": "FDE"}
+	for g, p := range core.GrantPages {
+		m[g] = p
+	}
+	return m
+}()
 
 const (
 	loginItemsGrant = "登录项"
@@ -250,7 +254,7 @@ func (s *Service) findings(args, meta O, st State) (ToolOutput, error) {
 func (s *Service) scanNow() (ToolOutput, error) {
 	if s.Config.StartScan != nil {
 		if s.IsScanning() {
-			return ToolOutput{Text: "已经在查了，查完结果会更新。"}, nil
+			return ToolOutput{Text: "已经在查了，查完结果会更新。", Extra: O{"data": O{"type": "scan-started", "already": true}}}, nil
 		}
 		if !s.Config.StartScan() {
 			return ToolOutput{}, Fail("failed", "没能开始查。")
@@ -259,14 +263,15 @@ func (s *Service) scanNow() (ToolOutput, error) {
 	} else {
 		lock := core.TakeLock(s.Store.Dir, "round.lock", 0)
 		if lock == nil {
-			return ToolOutput{Text: "已经在查了，查完结果会更新。"}, nil
+			return ToolOutput{Text: "已经在查了，查完结果会更新。", Extra: O{"data": O{"type": "scan-started", "already": true}}}, nil
 		}
 		go func() {
 			s.RunRound(false)
 			lock.Release()
 		}()
 	}
-	return ToolOutput{Text: "开始查了，一般几分钟；查完结果会更新。只读，不改动任何东西。"}, nil
+	return ToolOutput{Text: "开始查了，一般几分钟；查完结果会更新。只读，不改动任何东西。",
+		Extra: O{"data": O{"type": "scan-started", "already": false}}}, nil
 }
 
 func (s *Service) ignore(args, meta O) (ToolOutput, error) {
@@ -297,6 +302,14 @@ func (s *Service) ignore(args, meta O) (ToolOutput, error) {
 			}
 		}
 	}
+	// The answer as data (top-level ADR 0028): which finding, by its rule; a recognised file by its name.
+	data := O{"type": "ignored", "finding": id, "undo": undo, "rule": "", "name": ""}
+	if f != nil {
+		data["rule"] = f.Rule
+		if isMalware(*f) {
+			data["name"] = filepath.Base(f.Path)
+		}
+	}
 	name := "这一条"
 	if f != nil {
 		name = "「" + f.Title + "」"
@@ -309,7 +322,8 @@ func (s *Service) ignore(args, meta O) (ToolOutput, error) {
 			s.remember([]MemoryRecord{s.unignoredRecord(*f)})
 		}
 		text := "撤销了，" + name + "还会提醒你。"
-		return ToolOutput{Text: text, Card: s.answerCard(meta, false, func(c *Card) { c.Text(text) }), Done: Bool(true)}, nil
+		return ToolOutput{Text: text, Card: s.answerCard(meta, false, func(c *Card) { c.Text(text) }), Done: Bool(true),
+			Extra: O{"data": data}}, nil
 	}
 	if changed && f != nil {
 		s.remember([]MemoryRecord{s.ignoredRecord(*f, report)})
@@ -318,7 +332,7 @@ func (s *Service) ignore(args, meta O) (ToolOutput, error) {
 	text := "已记下：" + name + "以后不再提醒。"
 	return ToolOutput{Text: text, Card: s.answerCard(meta, false, func(c *Card) {
 		c.ButtonsAfter(text, []Button{{Label: "撤销", Event: "scan_ignore", Context: O{"finding_id": id, "undo": true}}})
-	}), Done: Bool(true)}, nil
+	}), Done: Bool(true), Extra: O{"data": data}}, nil
 }
 
 func (s *Service) setAutoclean(args, meta O) (ToolOutput, error) {
@@ -394,7 +408,27 @@ func (s *Service) setAutoclean(args, meta O) (ToolOutput, error) {
 			round.body(c)
 		}
 	})
-	return ToolOutput{Text: text, Card: card, Done: Bool(!waits)}, nil
+	// The answer as data (top-level ADR 0028): the kinds cleaned without asking from now on, and those the user put
+	// back before, which stay off; round: the round's card as it is now, when the click came from it.
+	var onCodes, offCodes []string
+	for _, k := range AutoKinds {
+		off := !on
+		for _, x := range stillOff {
+			if x == k {
+				off = true
+			}
+		}
+		if off && on {
+			offCodes = append(offCodes, string(k))
+		} else if on {
+			onCodes = append(onCodes, string(k))
+		}
+	}
+	data := O{"type": "autoclean", "on": on, "kinds": strs(onCodes), "keptOff": strs(offCodes), "round": nil}
+	if round != nil {
+		data["round"] = round.data
+	}
+	return ToolOutput{Text: text, Card: card, Done: Bool(!waits), Extra: O{"data": data}}, nil
 }
 
 func (s *Service) reveal(args O) (ToolOutput, error) {
@@ -403,14 +437,7 @@ func (s *Service) reveal(args O) (ToolOutput, error) {
 	if r := s.Store.LastReport(); r != nil {
 		for _, f := range r.Findings {
 			if s.fid(f) == id && strings.HasPrefix(f.Path, "/") {
-				target = f.Path
-				if strings.HasSuffix(target, "-*") {
-					target = dirOfPath(target)
-				}
-				// A model's chat template: the template file itself, not the model's whole folder (luoke-scan#152)
-				if t := s.expandHome(f.Evidence["template"]); strings.HasPrefix(f.Rule, "model.chat-template") && strings.HasPrefix(t, f.Path+"/") {
-					target = t
-				}
+				target = s.revealTarget(f)
 				break
 			}
 		}
@@ -422,7 +449,25 @@ func (s *Service) reveal(args O) (ToolOutput, error) {
 	if !s.front("reveal", map[string]any{"path": target}) && s.Config.Command("/usr/bin/open", []string{"-R", target}) != 0 {
 		return ToolOutput{}, Fail("failed", "访达没打开。")
 	}
-	return ToolOutput{Text: "在访达里选中了 " + s.display(target) + "。"}, nil
+	return ToolOutput{Text: "在访达里选中了 " + s.display(target) + "。",
+		Extra: O{"data": O{"type": "revealed", "path": s.display(target)}}}, nil
+}
+
+// revealTarget: what 「在访达里显示」 selects for a finding: its path; the folder of a pattern of temp folders
+// (…/wings-*); a model's chat template, the template file itself rather than the model's whole folder (luoke-scan#152).
+// "" when it has no place on the disk.
+func (s *Service) revealTarget(f core.Finding) string {
+	if !strings.HasPrefix(f.Path, "/") {
+		return ""
+	}
+	target := f.Path
+	if strings.HasSuffix(target, "-*") {
+		target = dirOfPath(target)
+	}
+	if t := s.expandHome(f.Evidence["template"]); strings.HasPrefix(f.Rule, "model.chat-template") && strings.HasPrefix(t, f.Path+"/") {
+		target = t
+	}
+	return target
 }
 
 func (s *Service) front(method string, params map[string]any) bool {
@@ -453,10 +498,12 @@ func (s *Service) openSettings(args O) (ToolOutput, error) {
 	if !s.front("open_settings", map[string]any{"pane": pane}) && s.Config.Command("/usr/bin/open", []string{url}) != 0 {
 		return ToolOutput{}, Fail("failed", "系统设置没打开。")
 	}
+	// grant: the name the button sent (a System Settings page as macOS names it, or the Activity Monitor)
+	data := O{"data": O{"type": "opened", "what": pane, "activityMonitor": grant == activityMonitorGrant}}
 	if grant == activityMonitorGrant {
-		return ToolOutput{Text: "打开了活动监视器。"}, nil
+		return ToolOutput{Text: "打开了活动监视器。", Extra: data}, nil
 	}
-	return ToolOutput{Text: "打开了系统设置的「" + grant + "」页。"}, nil
+	return ToolOutput{Text: "打开了系统设置的「" + grant + "」页。", Extra: data}, nil
 }
 
 func (s *Service) ack(args O) (ToolOutput, error) {

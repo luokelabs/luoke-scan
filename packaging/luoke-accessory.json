@@ -3,7 +3,7 @@
   "accessory": "luoke-scan",
   "bundle_id": "ai.luoke.scan",
   "name": "螺壳扫描",
-  "version": "0.3.30",
+  "version": "0.3.42",
   "type": "app",
   "entry": [],
   "resident": false,
@@ -39,6 +39,7 @@
       {"name": "scan_restore", "title": "把清理时移进废纸篓的放回原处", "writes": true},
       {"name": "scan_autoclean", "title": "开或关不用点就清的四类", "writes": true}
     ],
+    "data": ["overview", "category", "history", "settings", "usage"],
     "service": {
       "summary": true,
       "pages": [

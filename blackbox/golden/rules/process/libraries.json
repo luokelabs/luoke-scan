@@ -1,0 +1,266 @@
+{
+  "about": "进程载入的库：临时文件夹、下载文件夹里的一个程序一条（签名对不上的高），文件已经删掉的一个程序一条；苹果自己的、应用自己包里的（App Translocation 搬到临时文件夹的应用也是）、苹果签名的、程序本身已经删掉的、别的用户的、读不到的不报；只是放在叫 AppTranslocation 的文件夹里的照报",
+  "case": "rules/process/libraries",
+  "steps": [
+    {
+      "fakes": {
+        "codesign": {
+          "~/Downloads/plugin.dylib": "invalid",
+          "$TMPDIR/apple-signed.dylib": "apple",
+          "$TMPDIR/io.example-named/AppTranslocation/hook.dylib": "adhoc",
+          "$TMPDIR/io.example-unpack/hook.dylib": "adhoc"
+        },
+        "processes": [
+          {
+            "path": "/Applications/Safari.app/Contents/MacOS/Safari",
+            "pid": 400,
+            "ppid": 1,
+            "started": "2026-10-19T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "libraries": [
+              {
+                "deleted": false,
+                "path": "$TMPDIR/io.example-unpack/hook.dylib"
+              },
+              {
+                "deleted": false,
+                "path": "~/Downloads/plugin.dylib"
+              },
+              {
+                "deleted": false,
+                "path": "/usr/lib/libz.1.dylib"
+              },
+              {
+                "deleted": false,
+                "path": "~/.local/lib/libfine.dylib"
+              }
+            ],
+            "path": "~/.local/bin/tool",
+            "pid": 4400,
+            "ppid": 50,
+            "started": "2026-10-20T10:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "libraries": [
+              {
+                "deleted": false,
+                "path": "$TMPDIR/io.example-unpack/hook.dylib"
+              }
+            ],
+            "path": "~/.local/bin/tool",
+            "pid": 4401,
+            "ppid": 50,
+            "started": "2026-10-20T11:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "libraries": [
+              {
+                "deleted": true,
+                "path": "~/.local/lib/libold.1.dylib"
+              },
+              {
+                "deleted": true,
+                "path": "/System/Library/Frameworks/Old.framework/Old"
+              }
+            ],
+            "path": "~/.local/bin/server",
+            "pid": 4402,
+            "ppid": 50,
+            "started": "2026-10-17T12:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "libraries": [
+              {
+                "deleted": false,
+                "path": "$TMPDIR/AppTranslocation/0A1B2C3D-0000-4000-8000-000000000001/d/Viewer.app/Contents/Frameworks/Kit.framework/Kit"
+              }
+            ],
+            "path": "$TMPDIR/AppTranslocation/0A1B2C3D-0000-4000-8000-000000000001/d/Viewer.app/Contents/MacOS/Viewer",
+            "pid": 4403,
+            "ppid": 50,
+            "started": "2026-10-20T11:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "libraries": [
+              {
+                "deleted": true,
+                "path": "~/.local/lib/libgone.dylib"
+              }
+            ],
+            "path": "~/.local/bin/gone",
+            "pid": 4404,
+            "ppid": 50,
+            "started": "2026-10-20T11:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "libraries": [
+              {
+                "deleted": false,
+                "path": "$TMPDIR/apple-signed.dylib"
+              }
+            ],
+            "path": "~/.local/bin/other",
+            "pid": 4405,
+            "ppid": 50,
+            "started": "2026-10-20T11:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "libraries": [
+              {
+                "deleted": false,
+                "path": "$TMPDIR/io.example-unpack/hook.dylib"
+              }
+            ],
+            "path": "/opt/io-example/daemon",
+            "pid": 4406,
+            "ppid": 50,
+            "started": "2026-10-20T11:00:00Z",
+            "uid": 0
+          },
+          {
+            "path": "~/.local/bin/other",
+            "pid": 4407,
+            "ppid": 50,
+            "started": "2026-10-20T11:00:00Z",
+            "uid": "$UID"
+          },
+          {
+            "libraries": [
+              {
+                "deleted": false,
+                "path": "$TMPDIR/io.example-named/AppTranslocation/hook.dylib"
+              }
+            ],
+            "path": "~/.local/bin/other",
+            "pid": 4408,
+            "ppid": 50,
+            "started": "2026-10-20T11:00:00Z",
+            "uid": "$UID"
+          }
+        ]
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "process",
+            "evidence": {
+              "count": "1",
+              "hint": "多半是程序或它用的库升级了、程序还没重启：重启这个程序就好。不认得这个程序的话要留意：有的恶意软件载入以后就删掉自己的文件",
+              "libraries": "~/.local/lib/libold.1.dylib",
+              "library_count": "1",
+              "pids": "4402",
+              "program": "~/.local/bin/server",
+              "started": "2026-10-17"
+            },
+            "key": "~/.local/bin/server",
+            "path": "~/.local/bin/server",
+            "rule": "process.library-deleted",
+            "severity": "medium",
+            "title": "进程 4402（server）载入的库 libold.1.dylib 已经被删掉了，还在用",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "1",
+              "how": "认得这个程序就不用管（有的工具会把自带的库先解到临时文件夹再用）；不认得的，退出它，再查一遍病毒",
+              "libraries": "$TMPDIR/io.example-named/AppTranslocation/hook.dylib（临时签名（没有开发者担保））",
+              "library_count": "1",
+              "pids": "4408",
+              "place": "临时文件夹",
+              "program": "~/.local/bin/other",
+              "started": "2026-10-20",
+              "why": "正常的程序很少从临时文件夹、下载文件夹载入代码；恶意软件常把自己放在这些地方"
+            },
+            "key": "~/.local/bin/other",
+            "path": "$TMPDIR/io.example-named/AppTranslocation/hook.dylib",
+            "rule": "process.library-temp",
+            "severity": "medium",
+            "title": "进程 4408（other）载入了临时文件夹里的库 hook.dylib",
+            "verdict": "info"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "1",
+              "pids": "4404",
+              "started": "2026-10-20"
+            },
+            "path": "~/.local/bin/gone",
+            "rule": "process.deleted-binary",
+            "severity": "medium",
+            "title": "进程 4404（gone）的程序已经被删掉了，它还在跑",
+            "verdict": "confirm"
+          },
+          {
+            "category": "process",
+            "evidence": {
+              "count": "2",
+              "how": "认得这个程序就不用管（有的工具会把自带的库先解到临时文件夹再用）；不认得的，退出它，再查一遍病毒",
+              "libraries": "$TMPDIR/io.example-unpack/hook.dylib（临时签名（没有开发者担保））；~/Downloads/plugin.dylib（签名和文件对不上（签名后被改过））",
+              "library_count": "2",
+              "pids": "4400,4401",
+              "place": "临时文件夹和下载文件夹",
+              "program": "~/.local/bin/tool",
+              "started": "2026-10-20",
+              "why": "正常的程序很少从临时文件夹、下载文件夹载入代码；恶意软件常把自己放在这些地方"
+            },
+            "key": "~/.local/bin/tool",
+            "path": "$TMPDIR/io.example-unpack/hook.dylib",
+            "rule": "process.library-temp",
+            "severity": "high",
+            "title": "2 个 tool 进程载入了临时文件夹和下载文件夹里的 2 个库",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

@@ -116,6 +116,29 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 0,
+                        "caches": 0,
+                        "cachesBytes": 0,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": false,
+                        "plan": null,
+                        "rest": 1,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 1,
+                        "trash": 0
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
@@ -504,6 +527,37 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "cloned": {
+                "bytes": 0,
+                "count": 0
+              },
+              "gone": 0,
+              "ignored": 0,
+              "left": [
+                "npm 允许依赖在安装时跑脚本：未能更改，已经换成了别的文件，重新查一下再改"
+              ],
+              "links": 0,
+              "moved": {
+                "bytes": 0,
+                "count": 0
+              },
+              "partly": 0,
+              "password": false,
+              "removed": {
+                "bytes": 0,
+                "count": 0
+              },
+              "restore": null,
+              "retry": null,
+              "round": null,
+              "scriptsOff": 0,
+              "skipped": 0,
+              "trashed": false,
+              "type": "applied",
+              "unchanged": 1,
+              "unrecorded": []
+            },
             "done": false
           }
         }
@@ -613,6 +667,29 @@
                       }
                     ],
                     "created": "2026-10-20T12:10:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 0,
+                        "caches": 0,
+                        "cachesBytes": 0,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": false,
+                        "plan": null,
+                        "rest": 1,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 1,
+                        "trash": 0
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:10:00Z",
                     "id": "round/2026-10-20T12:10:00Z",
@@ -1024,6 +1101,35 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "cloned": {
+                "bytes": 0,
+                "count": 0
+              },
+              "gone": 0,
+              "ignored": 0,
+              "left": [],
+              "links": 0,
+              "moved": {
+                "bytes": 0,
+                "count": 0
+              },
+              "partly": 0,
+              "password": false,
+              "removed": {
+                "bytes": 0,
+                "count": 0
+              },
+              "restore": "p-000000000004",
+              "retry": null,
+              "round": null,
+              "scriptsOff": 1,
+              "skipped": 0,
+              "trashed": false,
+              "type": "applied",
+              "unchanged": 0,
+              "unrecorded": []
+            },
             "done": true
           }
         }
@@ -1199,6 +1305,16 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "back": 1,
+              "before": 0,
+              "left": 0,
+              "notes": [
+                "npm 允许依赖在安装时跑脚本：改了以后你又动过这个文件，没换掉它；原来那份放在旁边：.npmrc（放回）"
+              ],
+              "round": null,
+              "type": "restored"
+            },
             "done": true
           }
         }

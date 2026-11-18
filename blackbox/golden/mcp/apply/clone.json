@@ -134,6 +134,29 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 2097152,
+                        "caches": 0,
+                        "cachesBytes": 0,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": false,
+                        "plan": null,
+                        "rest": 2,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 2,
+                        "trash": 1
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
@@ -570,6 +593,35 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "cloned": {
+                "bytes": 6291456,
+                "count": 2
+              },
+              "gone": 0,
+              "ignored": 0,
+              "left": [],
+              "links": 0,
+              "moved": {
+                "bytes": 0,
+                "count": 0
+              },
+              "partly": 0,
+              "password": false,
+              "removed": {
+                "bytes": 0,
+                "count": 0
+              },
+              "restore": null,
+              "retry": null,
+              "round": null,
+              "scriptsOff": 0,
+              "skipped": 0,
+              "trashed": false,
+              "type": "applied",
+              "unchanged": 0,
+              "unrecorded": []
+            },
             "done": true
           }
         }

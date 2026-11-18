@@ -5,6 +5,7 @@
 # 仓库变量 LUOKE_RELEASE_TEAM：root 那一步核对签名用的团队标识，编进 luoke-scan，源码里不写。
 # 病毒库不在这里下载：打包用 --without-virus-db，不核「包里的 ClamAV 能不能读官方病毒库」那一项（输出里写明；EICAR 用自带的一行
 # 测试库照样扫，YARA、RAR 支持、各工具能不能起照样核）。螺壳出版时在有病毒库的机器上核这一项。
+# 跑在自托管的一次性 macOS 虚拟机里（标签 luoke-vm）：镜像里已有 Go、ClamAV、YARA、gh；出版占着虚拟机时排队等。
 name: 发行
 
 on:
@@ -25,7 +26,7 @@ defaults:
 jobs:
   release:
     name: 测试、打包、发行
-    runs-on: macos-26
+    runs-on: [self-hosted, luoke-vm]
     timeout-minutes: 60
     env:
       CC: /usr/bin/clang

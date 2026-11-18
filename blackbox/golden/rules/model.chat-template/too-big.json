@@ -22,19 +22,7 @@
       "json": {
         "findings": [
           {
-            "category": "skill",
-            "evidence": {
-              "count": "3",
-              "how": "太大的不会查；别的下一轮接着查",
-              "why": "模板文件太大（JSON 超过 4 MB、模板超过 1 MB、GGUF 文件头超过 64 MB）、模型超过 500 个，或这一轮读得够多了"
-            },
-            "path": "",
-            "rule": "model.chat-template.partial",
-            "severity": "low",
-            "title": "有 3 个模型的对话模板这一轮没查完",
-            "verdict": "info"
-          },
-          {
+            "bytes": 8192,
             "category": "skill",
             "evidence": {
               "files": "chat_template.jinja",
@@ -51,6 +39,19 @@
             "rule": "model.chat-template",
             "severity": "high",
             "title": "Hugging Face 的模型 small/url：对话模板里多了给模型的话（让模型总推荐某样东西或附上链接）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "count": "3",
+              "how": "太大的不会查；别的下一轮接着查",
+              "why": "模板文件太大（JSON 超过 4 MB、模板超过 1 MB、GGUF 文件头超过 64 MB）、模型超过 500 个，或这一轮读得够多了"
+            },
+            "path": "",
+            "rule": "model.chat-template.partial",
+            "severity": "low",
+            "title": "有 3 个模型的对话模板这一轮没查完",
             "verdict": "info"
           }
         ],

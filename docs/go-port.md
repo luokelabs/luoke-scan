@@ -27,7 +27,7 @@ FSEvents 用 cgo，要一个能用的 C 编译器：`PATH` 里第一个 `clang` 
 - **cgo 只有三处**：FSEvents（变更日志）、`CGGetEventTapList`（键盘监听）、「重要用途可用容量」（可用空间，含可清除的）。
   签名用 `/usr/bin/codesign`，按 bundle id 找应用用 `mdfind` 再自己扫应用文件夹，Spotlight 属性用 `mdls`，电源用 `pmset -g ps`，
   进程用 sysctl。
-- **要密码的一步**交给螺壳本体弹框（框上写螺壳），接口在 luoke-core 的集成 PR 里定；终端里 `system --trash` 照旧 sudo。
+- **要密码的一步**交给螺壳本体弹框（框上写螺壳），接口在 luoke-core 的集成 PR 里定；终端里 `system --trash` 照旧 sudo，只对自己编的开发版成立（装好的那一份只由螺壳起，在终端里只能跑 `report`、`findings`、`status`、`version`）。
 - **发行**：扫描仓库打 tag、出 release（不签名的 tar 包，带 ClamAV、YARA、证书、规则、提示词）。螺壳打包时不用这个 tar 包，
   按 release 的 tag 取源码自己编：内部版取最新的 release，beta、RC、正式版取顶层钉的那个（也得是 release 的 tag）；
   luoke-core 的 `app/build_app.sh` 用 `LUOKE_SCAN_SRC` 指的源码跑 `scripts/package_app.py`，编好放进螺壳.app，和别的一起签名、公证。

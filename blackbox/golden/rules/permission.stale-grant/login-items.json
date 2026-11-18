@@ -1,0 +1,145 @@
+{
+  "about": "已经删掉的应用还在「登录项与扩展」里：应用自己的、里面的后台项、写明属于它的 launchd 任务（程序还在）；和它的隐私权限合成一条；装着的、挪了地方的、隐藏的、苹果的、在别的盘上的、开发商那一层、写成文件的老式任务（看文件）、程序已经不在的不报",
+  "case": "rules/permission.stale-grant/login-items",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "permission",
+            "evidence": {
+              "app": "Gone Meet",
+              "grants": "摄像头、登录项",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 摄像头，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删；系统设置 → 通用 → 登录项与扩展：「登录时打开」里有它就选中它点「−」，「允许在后台」里有它就关掉它的开关",
+              "login_items": "Gone Meet",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
+            },
+            "path": "io.gone.meet",
+            "rule": "permission.stale-grant",
+            "severity": "low",
+            "title": "io.gone.meet 已经不在这台 Mac 上，还拿着「摄像头」，还在「登录项」里",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "app": "Gone Sync",
+              "grants": "登录项",
+              "hint": "系统设置里还留着它的开关",
+              "how": "系统设置 → 通用 → 登录项与扩展：「登录时打开」里有它就选中它点「−」，「允许在后台」里有它就关掉它的开关",
+              "login_items": "Gone Sync、Gone Sync Agent、Gone Sync Helper",
+              "settings": "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
+            },
+            "path": "io.gone.sync",
+            "rule": "permission.stale-grant",
+            "severity": "low",
+            "title": "io.gone.sync 已经不在这台 Mac 上，还在「登录项」里",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "登录项",
+              "hint": "它留下的后台程序还会以管理员（root）身份启动",
+              "how": "系统设置 → 通用 → 登录项与扩展：「登录时打开」里有它就选中它点「−」，「允许在后台」里有它就关掉它的开关",
+              "login_items": "$FIXTURE/SystemLibrary/LaunchDaemons/io.gone.vpn.helper.plist",
+              "settings": "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
+            },
+            "path": "io.gone.vpn",
+            "rule": "permission.stale-grant",
+            "severity": "medium",
+            "title": "io.gone.vpn 已经不在这台 Mac 上，还在「登录项」里",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "admin": "1",
+              "hint": "它每次启动都会失败；以后有人在这个位置放了东西，就会以管理员的身份运行",
+              "label": "io.gone.nofile",
+              "missing": "$FIXTURE/opt/gone-nofile/helper",
+              "scope": "daemon"
+            },
+            "path": "$FIXTURE/SystemLibrary/LaunchDaemons/io.gone.nofile.plist",
+            "rule": "persistence.daemon-missing",
+            "severity": "medium",
+            "title": "系统后台任务（以管理员身份运行） io.gone.nofile 指向已经不存在的程序",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "admin": "1",
+              "how": "用不到了就删掉这个系统级的后台任务；还要用的话，换成只给你自己装的版本",
+              "label": "io.gone.vpn.helper",
+              "program": "$FIXTURE/opt/gone-vpn/vpn-helper",
+              "scope": "daemon",
+              "signature": "开发者签名（FIXTURE000）",
+              "why": "它以管理员（root）身份运行：任何以你身份运行的程序都能换掉它，下次启动就拿到管理员权限"
+            },
+            "path": "$FIXTURE/SystemLibrary/LaunchDaemons/io.gone.vpn.helper.plist",
+            "rule": "persistence.daemon-writable",
+            "severity": "high",
+            "title": "系统后台任务（以管理员身份运行） io.gone.vpn.helper 运行的程序你自己就能改",
+            "verdict": "confirm"
+          },
+          {
+            "category": "persistence",
+            "evidence": {
+              "admin": "1",
+              "how": "用不到了就删掉这个系统级的后台任务；还要用的话，换成只给你自己装的版本",
+              "label": "org.present.app.agent",
+              "program": "$FIXTURE/opt/present/agent",
+              "scope": "system-agent",
+              "signature": "开发者签名（FIXTURE000）",
+              "why": "它对这台 Mac 上的每个用户都会运行：任何以你身份运行的程序都能换掉它"
+            },
+            "path": "$FIXTURE/SystemLibrary/LaunchAgents/org.present.app.agent.plist",
+            "rule": "persistence.daemon-writable",
+            "severity": "high",
+            "title": "所有用户的后台任务 org.present.app.agent 运行的程序你自己就能改",
+            "verdict": "confirm"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

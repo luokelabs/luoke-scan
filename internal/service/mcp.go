@@ -6,8 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"sort"
+	"strings"
 	"sync"
 )
 
@@ -68,6 +70,8 @@ type resource struct {
 	spec     O
 	read     func() any
 	readMeta func(meta O) any // read with the request's _meta (what the agent core can draw), when it matters
+	// readArgs: read with arguments, <uri>?<key>=<value>&… (tool protocol §4 pageArgs); none, an empty map
+	readArgs func(args map[string]string) any
 }
 
 // Server answers MCP requests from its tools and resources.
@@ -169,6 +173,30 @@ func (s *Server) ResourceMeta(uri, name string, read func(meta O) any) {
 	s.mu.Unlock()
 }
 
+// ResourceArgs registers a resource read with arguments: <uri>?<key>=<value>&… (keys in order, values percent-encoded,
+// as tool protocol §4 pageArgs has them); read with none, or with a query that does not parse, it gets an empty map.
+// A key given twice: its first value.
+func (s *Server) ResourceArgs(uri, name string, read func(args map[string]string) any) {
+	s.mu.Lock()
+	s.resources[uri] = resource{spec: O{"uri": uri, "name": name, "mimeType": "application/json"}, readArgs: read}
+	s.mu.Unlock()
+}
+
+// queryArgs: a query's keys and their first values; empty when it does not parse.
+func queryArgs(query string) map[string]string {
+	args := map[string]string{}
+	values, err := url.ParseQuery(query)
+	if err != nil {
+		return args
+	}
+	for k, v := range values {
+		if len(v) > 0 {
+			args[k] = v[0]
+		}
+	}
+	return args
+}
+
 // Handle answers one JSON-RPC message; nil for a notification.
 func (s *Server) Handle(message any) any {
 	msg, ok := message.(map[string]any)
@@ -232,13 +260,22 @@ func (s *Server) Handle(message any) any {
 	case "resources/read":
 		uri, _ := p["uri"].(string)
 		r, ok := resources[uri]
+		query := ""
+		if base, q, cut := strings.Cut(uri, "?"); !ok && cut {
+			if br, has := resources[base]; has && br.readArgs != nil { // read with arguments (§4 pageArgs)
+				r, ok, query = br, true, q
+			}
+		}
 		if !ok {
 			return rpcError(rid, resourceMissing, "没有这个资源", O{"uri": p["uri"]})
 		}
 		var v any
-		if r.readMeta != nil {
+		switch {
+		case r.readArgs != nil:
+			v = r.readArgs(queryArgs(query))
+		case r.readMeta != nil:
 			v = r.readMeta(meta)
-		} else {
+		default:
 			v = r.read()
 		}
 		text, isString := v.(string)

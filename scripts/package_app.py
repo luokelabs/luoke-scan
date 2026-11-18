@@ -5,6 +5,15 @@
     python3 scripts/package_app.py [--out build.noindex] [--tools-from /opt/homebrew] [--tarball] [--without-virus-db]
     python3 scripts/package_app.py --verify <某个 luoke-scan 文件夹>      # 只核对一个打好的
     python3 scripts/package_app.py --verify-app <螺壳.app>                # 核对螺壳.app 里扫描的那些（正式签名以后也跑）
+    LUOKE_BUNDLE_ID=ai.luoke.core.<名字>.lab python3 scripts/package_app.py --fixture-only [--out …]   # 给螺壳开发实例的那份
+
+--fixture-only（或环境变量 LUOKE_SCAN_FIXTURE_ONLY=1，luoke-core 的 build_app.sh 原样传过来）：给螺壳的开发实例
+（tools/dev_app.sh，bundle id ai.luoke.core.<名字>.lab）打的那份。luoke-scan 不编装进螺壳的标记，编「只查假 Mac」的标记：
+只认 --fixture（scripts/make_fixture.py 造的假 Mac）和它的 --clock、--no-full-disk-access，report、findings、status 要给 --data；
+--this-mac、--home、--tmp、--projects、--tool-dir 和 update、malicious-import、评测一律拒绝，不起任何东西。编进的 Info.plist
+版本号带「+fixture」，配件清单的不带：核版本的螺壳（正式版、内部版）起它时版本对不上，不起。别的照旧（Helpers、Frameworks、
+Resources 的放法，标识，核对），build_app.sh 照原样收。只在 LUOKE_BUNDLE_ID 是 ai.luoke.core.<名字>.lab 时打；给了
+LUOKE_RELEASE_TEAM、--tarball、--verify-app 都不打。--verify <文件夹> --fixture-only 按这一份核对。
 
 <out>/luoke-scan/ 里是什么，luoke-core 的 app/build_app.sh（LUOKE_SCAN_SRC）原样拷进螺壳.app 的 Contents：
   Helpers/luoke-scan          主程序（ai.luoke.scan）：读磁盘的是它，由螺壳本体起，用螺壳的「完全磁盘访问」；给 agent 的 MCP 走
@@ -35,7 +44,8 @@ freshclam.conf、根证书都在，和仓库里的一样；没有指向包外（
 列的那些（新加一个要先改这张表，即「不加第三方包」）；包里每个第三方文件都写进了第三方说明；再在读不到 Homebrew（/opt/homebrew、
 /usr/local）的条件下，四个工具都要跑得起来（freshclam 用 luoke-scan 自带的 freshclam.conf，不读 Homebrew 的），用包里的
 clamscan（自带的一行测试库和这台机器的病毒库各一遍）和 YARA 对一个 EICAR 测试文件真扫一遍、用包里的 sigtool 读一遍库，要认得出来
-（证书用从 luoke-scan 里取出来的那份）；这台机器没有病毒库就核对不过，不再跳过（只有 --without-virus-db 不核这一项，输出里写明）；包里的 luoke-scan 不收开发参数。只用标准库。
+（证书用从 luoke-scan 里取出来的那份）；这台机器没有病毒库就核对不过，不再跳过（只有 --without-virus-db 不核这一项，输出里写明）；包里的 luoke-scan 不收开发参数、
+不是只查假 Mac 的那份（--fixture-only 的反过来：只认 --fixture，别的都拒绝）。只用标准库。
 """
 from __future__ import annotations
 
@@ -91,7 +101,20 @@ SOURCE_INDEX = "https://github.com/luokelabs/luoke-releases/blob/main/licenses/c
 SOURCE_INDEX_MIRROR = "https://gitlab.com/luokelabs/luoke-releases/-/blob/main/licenses/clamav/README.md"
 NOTICE = "THIRD-PARTY.md"
 SYSTEM = ("/usr/lib/", "/System/Library/")
-EICAR = b"X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"
+# The copy for a development instance of 螺壳 (--fixture-only). FIXTURE_ONLY_WORD is in its version line and every
+# refusal (cmd/luoke-scan/fixtureonly.go); FIXTURE_ONLY_SUFFIX goes on the version linked into it, not on the
+# manifest's, so a 螺壳 that checks versions (a release, an internal build) does not start it.
+FIXTURE_ONLY_WORD = "只查假 Mac 的开发构建"
+FIXTURE_ONLY_SUFFIX = "+fixture"
+INSTANCE_ID = re.compile(r"ai\.luoke\.core\.[a-z0-9][a-z0-9-]*\.lab")   # luoke-core's AppInfo.instanceName
+# What the fixture-only copy must refuse. Run with an empty home and temporary folder of their own (a refusal that let
+# one through would find nothing of the build machine), never anything that would download or scan: a broken refusal
+# then fails on the missing folders instead.
+FIXTURE_ONLY_REFUSES = [["mcp", "--this-mac"], ["cleaned", "--this-mac"], ["report"], ["mcp", "--data", "/nonexistent"],
+                        ["scan", "--home", "/nonexistent", "--data", "/nonexistent"],
+                        ["update", "--this-mac", "--tool-dir", "/nonexistent", "--force"],
+                        ["eval-cleanup", "--cases", "/nonexistent"]]
+EICAR =b"X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"
 
 
 def log(msg: str) -> None:
@@ -251,24 +274,39 @@ def unstage_certs() -> None:
             os.remove(os.path.join(CERTS_STAGE, n))
 
 
-def build(tools_from: str) -> tuple[str, list[str]]:
-    """The two programs, built with Go into build.noindex/go-bin: luoke-scan marked as the packed copy (it then takes
-    no development flags), with the release's team for the signature checks, and with ClamAV's certificate inside;
-    each with its Info.plist linked in."""
-    log("== go build")
-    go = os.environ.get("GO") or shutil.which("go") or next((g for g in ("/usr/local/go/bin/go", "/opt/homebrew/bin/go") if os.access(g, os.X_OK)), "go")
-    out = os.path.join(ROOT, "build.noindex", "go-bin")
-    os.makedirs(out, exist_ok=True)
-    version = manifest_from_repo()["version"]
+def go_flags(fixture_only: bool, team: str) -> str:
+    """luoke-scan's -X flags: marked as the packed copy (it then takes no development flags), with the release's team for
+    the signature checks; or marked as the fixture-only copy, which never has a team (it goes into no release)."""
+    if fixture_only:
+        if team:
+            raise SystemExit("--fixture-only 不和 LUOKE_RELEASE_TEAM 一起用：只查假 Mac 的那份不进正式版、内部版")
+        return "-X main.fixtureOnlyFlag=1"
     pkg = "github.com/luokelabs/luoke-scan/internal/core"
     flags = f"-X {pkg}.packedFlag=1"
-    team = os.environ.get("LUOKE_RELEASE_TEAM", "")
     if team:
         if not re.fullmatch(r"[A-Z0-9]{10}", team):
             raise SystemExit("LUOKE_RELEASE_TEAM 要是十位的团队标识")
         flags += f" -X {pkg}.ReleaseTeam={team}"
     else:
         log("（没给 LUOKE_RELEASE_TEAM：root 那一步和扫描工具只核标识、不核团队，这个包删不了系统目录里的东西）")
+    return flags
+
+
+def linked_version(name: str, version: str, fixture_only: bool) -> str:
+    """The version linked into a program: the fixture-only luoke-scan's carries FIXTURE_ONLY_SUFFIX."""
+    return version + FIXTURE_ONLY_SUFFIX if fixture_only and name == "luoke-scan" else version
+
+
+def build(tools_from: str, fixture_only: bool = False) -> tuple[str, list[str]]:
+    """The two programs, built with Go into build.noindex/go-bin: luoke-scan with go_flags and ClamAV's certificate
+    inside; each with its Info.plist linked in. The fixture-only build uses the same folder: the linker's flags name the
+    Info.plist's path, so another folder would give luoke-scan-admin another build ID."""
+    log("== go build" + ("（只查假 Mac 的那份）" if fixture_only else ""))
+    go = os.environ.get("GO") or shutil.which("go") or next((g for g in ("/usr/local/go/bin/go", "/opt/homebrew/bin/go") if os.access(g, os.X_OK)), "go")
+    out = os.path.join(ROOT, "build.noindex", "go-bin")
+    os.makedirs(out, exist_ok=True)
+    version = manifest_from_repo()["version"]
+    flags = go_flags(fixture_only, os.environ.get("LUOKE_RELEASE_TEAM", ""))
     # cgo (FSEvents, the keyboard taps, the volume's capacity) with Apple's own compiler: a swiftly or other toolchain
     # first on PATH may answer for "clang".
     env = {**os.environ, "CGO_ENABLED": "1", "GOOS": "darwin", "GOARCH": "arm64",
@@ -278,7 +316,7 @@ def build(tools_from: str) -> tuple[str, list[str]]:
         for name, ldflags in (("luoke-scan", flags), ("luoke-scan-admin", "")):
             plist = os.path.join(out, f"{name}.Info.plist")
             with open(plist, "wb") as f:
-                f.write(info_plist(name, version))
+                f.write(info_plist(name, linked_version(name, version, fixture_only)))
             ldflags += f" -linkmode=external -extldflags '-Wl,-sectcreate,__TEXT,__info_plist,{plist}'"
             run([go, "build", "-trimpath", "-ldflags", ldflags.strip(), "-o", os.path.join(out, name), f"./cmd/{name}"],
                 cwd=ROOT, env=env)
@@ -442,9 +480,10 @@ def signature(path: str) -> dict:
             "runtime": bool(re.search(r"flags=0x[0-9a-f]*\(.*runtime.*\)", d)), "entitlements": ent}
 
 
-def verify(root: str, in_app: bool = False, smoke: bool = True, need_db: bool = True) -> list[str]:
+def verify(root: str, in_app: bool = False, smoke: bool = True, need_db: bool = True, fixture_only: bool = False) -> list[str]:
     """root is the folder this script makes (<out>/luoke-scan), or a built 螺壳.app's Contents (in_app): then only the
-    scan's own files are looked at, and every signed one must be signed by 螺壳's own team."""
+    scan's own files are looked at, and every signed one must be signed by 螺壳's own team. fixture_only: the folder is
+    the copy for a development instance (never in_app: what is in a 螺壳.app is checked as a release)."""
     bad: list[str] = []
     if os.path.islink(root) or not os.path.isdir(root):
         return [f"{root} 不是文件夹"]
@@ -518,9 +557,10 @@ def verify(root: str, in_app: bool = False, smoke: bool = True, need_db: bool = 
                 bad.append(f"{rel} 的 rpath 指向包外：{rp}")
     for name in OURS:
         info = linked_plist(os.path.join(helpers, name)) or {}
-        if info.get("CFBundleIdentifier") != IDENTIFIERS[name] or info.get("CFBundleShortVersionString") != manifest.get("version"):
+        want = linked_version(name, str(manifest.get("version")), fixture_only)
+        if info.get("CFBundleIdentifier") != IDENTIFIERS[name] or info.get("CFBundleShortVersionString") != want:
             bad.append(f"{name} 编进的 Info.plist（{info.get('CFBundleIdentifier')} {info.get('CFBundleShortVersionString')}）"
-                       f"和标识 {IDENTIFIERS[name]}、配件清单的版本 {manifest.get('version')} 对不上")
+                       f"和标识 {IDENTIFIERS[name]}、版本 {want} 对不上")
     if manifest.get("bundle_id") != BUNDLE_ID:
         bad.append(f"配件清单的 bundle_id 不是 {BUNDLE_ID}")
     with open(os.path.join(helpers, "luoke-scan"), "rb") as f:
@@ -571,14 +611,43 @@ def verify(root: str, in_app: bool = False, smoke: bool = True, need_db: bool = 
         for t in bundled:
             if t["file"] not in listed:
                 bad.append(f"第三方说明里没写 {t['file']}")
-    # The program with Full Disk Access takes no flag that points it at other programs or folders (review of #14).
-    for cmd in (["update", "--this-mac", "--tool-dir", "/nonexistent", "--force"], ["scan", "--home", "/nonexistent"],
-                ["mcp", "--fixture", "/nonexistent"]):
-        r = subprocess.run([os.path.join(helpers, "luoke-scan")] + cmd, capture_output=True, text=True, timeout=30)
-        if r.returncode != 64:
-            bad.append(f"包里的 luoke-scan 没拒绝开发参数：{' '.join(cmd)} 退出码 {r.returncode}")
+    program = os.path.join(helpers, "luoke-scan")
+    r = subprocess.run([program, "version"], capture_output=True, text=True, timeout=30)
+    marked = FIXTURE_ONLY_WORD in r.stdout
+    if r.returncode != 0:
+        bad.append(f"包里的 luoke-scan version 退出码 {r.returncode}")
+    elif marked and not fixture_only:
+        bad.append(f"包里的 luoke-scan 是{FIXTURE_ONLY_WORD}（--fixture-only），不能进正式版、内部版")
+    elif fixture_only and not marked:
+        bad.append(f"包里的 luoke-scan 不是{FIXTURE_ONLY_WORD}（version 答 {r.stdout.strip()!r}）")
+    if fixture_only:
+        bad += fixture_only_refusals(program)
+    else:
+        # The program with Full Disk Access takes no flag that points it at other programs or folders (review of #14).
+        for cmd in (["update", "--this-mac", "--tool-dir", "/nonexistent", "--force"], ["scan", "--home", "/nonexistent"],
+                    ["mcp", "--fixture", "/nonexistent"]):
+            r = subprocess.run([program] + cmd, capture_output=True, text=True, timeout=30)
+            if r.returncode != 64 or "只认 --this-mac" not in r.stderr:
+                bad.append(f"包里的 luoke-scan 没像装好的那样拒绝开发参数：{' '.join(cmd)} 退出码 {r.returncode}：{r.stderr.strip()[-200:]}")
     if smoke and not bad:
         bad += smoke_test(root, need_db)
+    return bad
+
+
+def fixture_only_refusals(program: str) -> list[str]:
+    """The fixture-only luoke-scan refuses FIXTURE_ONLY_REFUSES (exit 64, naming itself) and takes --fixture (a missing
+    fake Mac gets as far as being looked for)."""
+    bad = []
+    with tempfile.TemporaryDirectory(prefix="luoke-scan-fixture-only-") as t:
+        env = {"HOME": t, "TMPDIR": t, "PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "LANG": "en_US.UTF-8"}
+        for cmd in FIXTURE_ONLY_REFUSES:
+            r = subprocess.run([program] + cmd, capture_output=True, text=True, timeout=30, env=env, stdin=subprocess.DEVNULL)
+            if r.returncode != 64 or FIXTURE_ONLY_WORD not in r.stderr:
+                bad.append(f"只查假 Mac 的 luoke-scan 没拒绝：{' '.join(cmd)} 退出码 {r.returncode}：{r.stderr.strip()[-200:]}")
+        r = subprocess.run([program, "mcp", "--fixture", "/nonexistent"], capture_output=True, text=True, timeout=30, env=env,
+                           stdin=subprocess.DEVNULL)
+        if r.returncode != 64 or "不是假用户目录" not in r.stderr:
+            bad.append(f"只查假 Mac 的 luoke-scan 不认 --fixture：退出码 {r.returncode}：{r.stderr.strip()[-200:]}")
     return bad
 
 
@@ -678,6 +747,25 @@ def tarball(top: str, out: str) -> str:
     return path
 
 
+def fixture_only_problem(a: argparse.Namespace, env) -> str:
+    """Why --fixture-only cannot go with the rest of the command line and environment, "" when it can: it builds only
+    for a development instance of 螺壳 (LUOKE_BUNDLE_ID ai.luoke.core.<名字>.lab), never with a release's team or for
+    a release's tarball, and what is in a 螺壳.app is always checked as a release."""
+    if not a.fixture_only:
+        return ""
+    if a.verify_app:
+        return "--fixture-only 不和 --verify-app 一起用：螺壳.app 里的扫描一律按正式版核对"
+    if a.tarball:
+        return "--fixture-only 不和 --tarball 一起用：发行的包里不放只查假 Mac 的那份"
+    if env.get("LUOKE_RELEASE_TEAM"):
+        return "--fixture-only 不和 LUOKE_RELEASE_TEAM 一起用：只查假 Mac 的那份不进正式版、内部版"
+    bundle = env.get("LUOKE_BUNDLE_ID", "")
+    if not a.verify and not INSTANCE_ID.fullmatch(bundle):
+        return ("--fixture-only 只给螺壳的开发实例打包（LUOKE_BUNDLE_ID=ai.luoke.core.<名字>.lab，luoke-core 的 tools/dev_app.sh 给）；"
+                f"现在的 LUOKE_BUNDLE_ID 是 {bundle or '没给'}")
+    return ""
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--out", default=os.environ.get("LUOKE_OUT", os.path.join(ROOT, "build.noindex")))
@@ -687,27 +775,34 @@ def main() -> int:
     ap.add_argument("--tarball", action="store_true", help="再打成发行用的 tar.gz（和 .sha256）")
     ap.add_argument("--without-virus-db", action="store_true",
                     help="这台机器没有病毒库也照样核对（不核官方病毒库那一项，并在输出里写明）；只给不下载病毒库的 GitHub 发行用")
+    ap.add_argument("--fixture-only", action="store_true", default=os.environ.get("LUOKE_SCAN_FIXTURE_ONLY") == "1",
+                    help="打给螺壳开发实例的那份：luoke-scan 只查假 Mac（scripts/make_fixture.py 造的）；"
+                         "要有 LUOKE_BUNDLE_ID=ai.luoke.core.<名字>.lab。也可以设 LUOKE_SCAN_FIXTURE_ONLY=1")
     a = ap.parse_args()
     need_db = not a.without_virus_db
+    why = fixture_only_problem(a, os.environ)
+    if why:
+        log(why)
+        return 2
     if a.verify:
-        bad = verify(os.path.abspath(a.verify), need_db=need_db)
+        bad = verify(os.path.abspath(a.verify), need_db=need_db, fixture_only=a.fixture_only)
     elif a.verify_app:
         app = os.path.abspath(a.verify_app)
         bad = verify(os.path.join(app, "Contents"), in_app=True, need_db=need_db) if app.endswith(".app") else [f"{app} 不是 .app"]
         log(f"== {app}")
     else:
-        bin_dir, certs = build(a.tools_from)
+        bin_dir, certs = build(a.tools_from, a.fixture_only)
         os.makedirs(a.out, exist_ok=True)
         top = assemble(bin_dir, os.path.abspath(a.out), a.tools_from, certs)
         relink(top)
         sign(top)
-        bad = verify(top, need_db=need_db)
+        bad = verify(top, need_db=need_db, fixture_only=a.fixture_only)
         log(f"== {top}")
         if a.tarball and not bad:
             log("== " + tarball(top, os.path.abspath(a.out)))
     for b in bad:
         log("  !! " + b)
-    log("核对通过" if not bad else f"核对没过：{len(bad)} 处")
+    log(("核对通过" if not bad else f"核对没过：{len(bad)} 处") + (f"（{FIXTURE_ONLY_WORD}）" if a.fixture_only else ""))
     return 1 if bad else 0
 
 

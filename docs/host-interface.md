@@ -81,6 +81,7 @@ root 那一步也认不出 `luoke-scan-admin`。签好以后跑同一版的 `scr
     正式版不给这几个。
 - **参数**：正式版只认 `--this-mac`（打包时编进去的标记，开发用的 `--home`、`--data`、`--fixture`、`--clock` 一律拒绝）。
   开发时可以起开发版的扫描对假目录：`luoke-scan mcp --fixture <假目录> [--clock <ISO 8601>] [--no-full-disk-access]`。
+  螺壳的开发实例里打的是只查假 Mac 的那份，见 §8。
 - **退出码**：0 答完了（或只是通知）；3 没读到消息，或消息超过 1 MB；64 参数不对；别的是出错了（标准错误里有原因）。
 - **超时**：本体 300 秒还没答完就结束它。扫描自己在这之前答：执行方案（`scan_apply`）从开始算 285 秒内答完，核对和
   密码框共用这段时间；核对花得太久、剩下不到 60 秒时不弹密码框，什么都不动，答「再点一次」；弹框时等的时间也不超过剩下的（最多 280 秒）。
@@ -168,7 +169,9 @@ macOS 只让当前在前面的应用把别的应用叫到前面。用户在螺�
 - `reveal`：本体核对 `path` 是存在的绝对路径（不带换行、NUL），在主线程上 `NSWorkspace.shared.activateFileViewerSelecting`。
 - `open_settings`：`pane` 只认这几个，地址由本体拼，不收扫描给的地址：`Privacy_AllFiles`、`Privacy_Accessibility`、
   `Privacy_ScreenCapture`、`Privacy_ListenEvent`、`Privacy_FilesAndFolders`、`Privacy_Camera`、`Privacy_Microphone`、
-  `Privacy_Automation`、`FDE`（`x-apple.systempreferences:com.apple.preference.security?<pane>`），`LoginItems`
+  `Privacy_Automation`、`Privacy_Contacts`、`Privacy_Calendars`、`Privacy_Reminders`、`Privacy_Photos`、
+  `Privacy_SpeechRecognition`、`Privacy`（隐私与安全性本身：蓝牙、App 管理这些没有已知能直达的那一页，从这里点进去）、
+  `FDE`（`x-apple.systempreferences:com.apple.preference.security?<pane>`），`LoginItems`
   （`x-apple.systempreferences:com.apple.LoginItems-Settings.extension`），`Battery`
   （`x-apple.systempreferences:com.apple.Battery-Settings.extension`），`ActivityMonitor`（不是设置页，是打开应用
   `/System/Applications/Utilities/Activity Monitor.app`；含空格，本体用文件地址 `URL(fileURLWithPath:)` 开）。
@@ -262,3 +265,40 @@ NSAppleScript，把结果写回标准输出。框上的应用名是这个程序�
 - **退出码**：扫描的照传；被信号结束的是 128 加信号值。120–123 是本体自己的：120 参数不对、121 没装好或用户没开启、122 起不来、
   123 签名不对。扫描自己不用这几个（现在只用 0–4、64 和 77：不是螺壳起的，§2a），日志里才分得清是谁出的错。
 - 开发版和实验室的环境多一个 `LUOKE_HUB_SOCKET`，同 §2。
+
+## 8. 螺壳的开发实例：只查假 Mac 的那份
+
+螺壳的开发实例（luoke-core 的 `tools/dev_app.sh`，bundle id `ai.luoke.core.<名字>.lab`）里的扫描只查假 Mac：
+扫描仓库 `fixtures/agent` 里那几个场景造出来的假用户目录、假病毒库、假进程和系统设置，清理只动假目录。
+
+**打包**：`LUOKE_BUNDLE_ID=ai.luoke.core.<名字>.lab LUOKE_SCAN_FIXTURE_ONLY=1`（或 `scripts/package_app.py --fixture-only`）。
+`build_app.sh` 照原样调 `package_app.py`、照原样收：`luoke-scan/` 的放法、各程序的标识、核对都和正式的一样，差别只在 `Helpers/luoke-scan`：
+
+- 不编装进螺壳的标记，编「只查假 Mac」的标记（`main.fixtureOnlyFlag`），也不编发行团队；`luoke-scan version` 那一行带「只查假 Mac 的开发构建」。
+- 编进的 Info.plist 的版本号是 `<版本>+fixture`，配件清单（`Resources/scan/luoke-accessory.json`）的还是 `<版本>`。
+  `build_app.sh` 照清单写 `LuokeScanVersion`，所以核版本的螺壳（正式版、内部版）起它时版本对不上，不起（§1「版本」）。
+- `package_app.py` 只在 `LUOKE_BUNDLE_ID` 是 `ai.luoke.core.<名字>.lab` 时打这一份；给了 `LUOKE_RELEASE_TEAM`、`--tarball`、
+  `--verify-app` 都不打。`--verify-app` 照旧按正式版核对，这一份过不了。
+
+**它认什么**：只认 `--fixture <假 Mac>`，加上 `--clock`、`--no-full-disk-access`；`report`、`findings`、`status` 要给 `--data`。
+`--this-mac`、`--home`、`--tmp`、`--projects`、`--tool-dir` 不管写在哪都拒绝（退出码 64），`update`、`malicious-import` 和评测
+也拒绝，拒绝时什么都没读、没起。假 Mac 的 `home` 要是它自己的文件夹（不是链接、不是这台 Mac 的家目录），要有 `fakes.json`。
+不看是不是螺壳起的（§2a）。报告、清理记录、设置在 `<假 Mac>/data`，移到废纸篓的在 `<假 Mac>/Trash`；不用给 `--data`
+（给了 `--fixture` 时它不起作用）。
+
+**造假 Mac**：`python3 -I scripts/make_fixture.py <场景> <目录>`（`--list` 列出场景）。照场景造好，跑到 agent 第一次调工具之前
+（之前的几轮查过了，什么都还没点），标准输出一行参数：`--fixture <目录> --clock <时间> [--no-full-disk-access]`（`--json` 时是
+JSON 数组）。造的时候用开发版的 `luoke-scan`（没给 `--bin` 就从这个检出编一份），不碰家目录、不联网。目录要么还没有、要么是空的、
+要么是它以前造的（里面有 `make_fixture.json`，先删掉再造）；`--remove <目录>` 删掉它造的（`feedback-152` 里有锁定的文件，`rm -rf` 删不掉）。
+
+**本体在开发实例里怎么起**（本体那边定，扫描这边这样配合）：
+
+| 正式 | 开发实例 |
+|---|---|
+| `mcp --this-mac` | `mcp <make_fixture 打印的参数>` |
+| `scan --this-mac --autoclean` | `scan <参数> --autoclean` |
+| `scan --this-mac --quick` | `scan <参数> --quick` |
+| `update --this-mac` | 不跑：假 Mac 的病毒库是造好的，这一份拒绝 `update` |
+
+假 Mac 在本账户能写的地方，本账户的程序都能改它（比如把 `home` 下的某个文件夹换成指向真文件的链接），所以开发实例里起扫描
+不要借螺壳的授权（`Spawn.Access.disclaimed`）：查的、清的都在实例自己的目录里，用不到完全磁盘访问。

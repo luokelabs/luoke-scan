@@ -286,15 +286,12 @@ func TestBulkWalkMatchesLstat(t *testing.T) {
 	root := t.TempDir()
 	makeOddTree(t, root)
 	// the tree really has what it is meant to have
-	var st syscall.Stat_t
-	if syscall.Lstat(root+"/files/compressed-large.txt", &st); st.Flags&0x20 == 0 { // UF_COMPRESSED
-		t.Error("ditto --hfsCompression did not compress")
+	problems, notes := oddTreeLacks(root)
+	for _, n := range notes {
+		t.Log(n)
 	}
-	if syscall.Lstat(root+"/files/sparse", &st); st.Blocks*512 >= st.Size {
-		t.Errorf("sparse file has %d blocks for %d bytes", st.Blocks, st.Size)
-	}
-	if syscall.Lstat(root+"/files/linked", &st); st.Nlink != 4 {
-		t.Errorf("hard links: %d", st.Nlink)
+	for _, p := range problems {
+		t.Error(p)
 	}
 	if n := sameWalk(t, root); n < 3100 {
 		t.Errorf("walked %d entries; the tree has more", n)
@@ -311,6 +308,58 @@ func TestBulkWalkMatchesLstat(t *testing.T) {
 	// the walk's callers see the same too
 	if a, b := walkFactsWith(treeStat, root), walkFactsWith(Tree, root); a != b {
 		t.Errorf("facts: lstat %+v, bulk %+v", a, b)
+	}
+}
+
+// oddTreeLacks: what the tree makeOddTree built lacks of what it is meant to have (problems), and what this Mac could
+// not make, for the log (notes). A compressed file is a note, not a problem: on some Macs `ditto --hfsCompression`
+// exits 0 and leaves the copy uncompressed, and the walk is then compared without one.
+func oddTreeLacks(root string) (problems, notes []string) {
+	lstat := func(rel string) syscall.Stat_t {
+		var st syscall.Stat_t
+		syscall.Lstat(filepath.Join(root, rel), &st)
+		return st
+	}
+	if st := lstat("files/compressed-large.txt"); st.Flags&0x20 == 0 { // UF_COMPRESSED
+		notes = append(notes, "ditto --hfsCompression did not compress here: the walk is compared without a compressed file")
+	}
+	if st := lstat("files/sparse"); st.Blocks*512 >= st.Size {
+		problems = append(problems, fmt.Sprintf("sparse file has %d blocks for %d bytes", st.Blocks, st.Size))
+	}
+	if st := lstat("files/linked"); st.Nlink != 4 {
+		problems = append(problems, fmt.Sprintf("hard links: %d", st.Nlink))
+	}
+	return problems, notes
+}
+
+// A Mac where ditto --hfsCompression leaves the copy as it was (it exits 0 either way): logged, not failed; what else
+// the tree lacks still fails.
+func TestOddTreeLacksWithoutCompression(t *testing.T) {
+	root := t.TempDir()
+	files := filepath.Join(root, "files")
+	if err := os.Mkdir(files, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	write(t, files+"/compressed-large.txt", []byte(strings.Repeat("compress me, compress me well. ", 40000))) // as ditto left it
+	f, err := os.Create(files + "/sparse")
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.WriteAt([]byte("tail"), 1<<30)
+	f.Close()
+	write(t, files+"/linked", []byte("linked"))
+	for i := 0; i < 3; i++ {
+		if err := os.Link(files+"/linked", fmt.Sprintf("%s/hardlink%d", files, i)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	problems, notes := oddTreeLacks(root)
+	if len(problems) != 0 || len(notes) != 1 || !strings.Contains(notes[0], "did not compress") {
+		t.Errorf("uncompressed copy: problems %q, notes %q", problems, notes)
+	}
+	os.Remove(files + "/hardlink0")
+	if problems, _ := oddTreeLacks(root); !reflect.DeepEqual(problems, []string{"hard links: 3"}) {
+		t.Errorf("a hard link short: problems %q", problems)
 	}
 }
 

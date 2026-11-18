@@ -1,0 +1,74 @@
+{
+  "about": "「登录项与扩展」的记录读不懂：权限照报，另说结果不完整",
+  "case": "rules/permission.stale-grant/login-items-unreadable",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "permission",
+            "evidence": {
+              "grants": "摄像头",
+              "hint": "以后装上同名的东西，会直接拿到这些权限",
+              "how": "系统设置 → 隐私与安全性 → 摄像头，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删",
+              "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera"
+            },
+            "path": "io.gone.meet",
+            "rule": "permission.stale-grant",
+            "severity": "low",
+            "title": "io.gone.meet 已经不在这台 Mac 上，还拿着「摄像头」",
+            "verdict": "confirm"
+          },
+          {
+            "category": "permission",
+            "evidence": {
+              "why": "「登录项与扩展」的记录读不懂"
+            },
+            "path": "",
+            "rule": "permission.partial",
+            "severity": "low",
+            "title": "有的权限记录读不了，结果不完整",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

@@ -465,6 +465,31 @@
           "resources": [
             {
               "mimeType": "application/json",
+              "name": "一类可以清的东西",
+              "uri": "data/category"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "清理记录的数据",
+              "uri": "data/history"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "扫描页的数据",
+              "uri": "data/overview"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "扫描的设置",
+              "uri": "data/settings"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "占地方最多的文件夹",
+              "uri": "data/usage"
+            },
+            {
+              "mimeType": "application/json",
               "name": "扫描要告诉你的事",
               "uri": "luoke://luoke-scan/outbox"
             },
@@ -603,6 +628,14 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "count": 0,
+                      "finding": "supplychain.malicious/000000000002",
+                      "more": false,
+                      "package": "evil-stealer@3.2.1",
+                      "reveal": true,
+                      "type": "malicious-package"
+                    },
                     "deadline": null,
                     "expires": null,
                     "id": "security/supplychain.malicious/000000000002",
@@ -651,6 +684,29 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 0,
+                        "caches": 0,
+                        "cachesBytes": 0,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": false,
+                        "plan": null,
+                        "rest": 3,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 4,
+                        "trash": 0
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
@@ -1134,7 +1190,13 @@
             }
           ],
           "isError": false,
-          "resultType": "complete"
+          "resultType": "complete",
+          "structuredContent": {
+            "data": {
+              "path": "~/Projects/web-app/package-lock.json",
+              "type": "revealed"
+            }
+          }
         }
       },
       "user-action": {
@@ -1216,6 +1278,13 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "finding": "supplychain.malicious/000000000002",
+              "name": "",
+              "rule": "supplychain.malicious",
+              "type": "ignored",
+              "undo": false
+            },
             "done": true
           }
         }
@@ -1281,6 +1350,29 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 0,
+                        "caches": 0,
+                        "cachesBytes": 0,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": false,
+                        "plan": null,
+                        "rest": 3,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 3,
+                        "trash": 0
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",

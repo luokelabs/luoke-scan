@@ -134,6 +134,29 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 2097152,
+                        "caches": 0,
+                        "cachesBytes": 0,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": false,
+                        "plan": null,
+                        "rest": 2,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 2,
+                        "trash": 1
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
@@ -606,6 +629,38 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "cloned": {
+                "bytes": 0,
+                "count": 0
+              },
+              "gone": 0,
+              "ignored": 0,
+              "left": [
+                "3 份一样的 trip.mov（每份 2.1 MB），多占了 4.2 MB：换了 1/2，其余已经换成了别的东西",
+                "2 份一样的 report.pdf（每份 2.1 MB），多占了 2.1 MB：未能清理，没能换成克隆（两份内容已经不一样了）"
+              ],
+              "links": 0,
+              "moved": {
+                "bytes": 0,
+                "count": 0
+              },
+              "partly": 1,
+              "password": false,
+              "removed": {
+                "bytes": 0,
+                "count": 0
+              },
+              "restore": "p-000000000002",
+              "retry": null,
+              "round": null,
+              "scriptsOff": 0,
+              "skipped": 1,
+              "trashed": true,
+              "type": "applied",
+              "unchanged": 0,
+              "unrecorded": []
+            },
             "done": false
           }
         }

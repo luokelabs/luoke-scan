@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -346,6 +347,28 @@ func QuarantineAgent(path string) (string, bool) {
 		return fields[2], true
 	}
 	return "", true
+}
+
+// QuarantineTime is when the quarantine record says the file was downloaded (its second field, seconds since 1970 in
+// hex); ok false without a record or a time in it.
+func QuarantineTime(path string) (time.Time, bool) {
+	b, ok := Xattr(path, "com.apple.quarantine", 511)
+	if !ok {
+		return time.Time{}, false
+	}
+	return parseQuarantineTime(string(b))
+}
+
+func parseQuarantineTime(record string) (time.Time, bool) {
+	fields := strings.Split(record, ";")
+	if len(fields) < 2 {
+		return time.Time{}, false
+	}
+	sec, err := strconv.ParseInt(strings.TrimSpace(fields[1]), 16, 64)
+	if err != nil || sec <= 0 {
+		return time.Time{}, false
+	}
+	return time.Unix(sec, 0), true
 }
 
 // Quarantined: the browser (or whatever downloaded it) marked it for Gatekeeper.

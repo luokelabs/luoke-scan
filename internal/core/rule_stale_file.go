@@ -96,23 +96,37 @@ func thisMacStaleQuery(home string, cutoff time.Time, minBytes int64) ([]string,
 // when Spotlight does not say when it changed.
 func thisMacStaleDates(path string) (time.Time, time.Time) {
 	var used, changed time.Time
-	r := Run("/usr/bin/mdls", []string{"-raw", "-name", "kMDItemLastUsedDate", "-name", "kMDItemFSContentChangeDate", path},
+	// Not -raw: its values come in the attributes' alphabetical order, whatever the order of -name, and carry no
+	// names, so which is which could only be guessed. With the names each line says what it is.
+	r := Run("/usr/bin/mdls", []string{"-name", "kMDItemLastUsedDate", "-name", "kMDItemFSContentChangeDate", path},
 		RunOpts{Timeout: 20 * time.Second})
 	if r.Status == 0 {
-		parts := strings.Split(r.Stdout, "\x00")
-		parse := func(s string) time.Time {
-			t, err := time.Parse("2006-01-02 15:04:05 -0700", strings.TrimSpace(s))
-			if err != nil {
-				return time.Time{}
-			}
-			return t
-		}
-		if len(parts) >= 2 {
-			used, changed = parse(parts[0]), parse(parts[1])
-		}
+		used, changed = parseStaleDates(r.Stdout)
 	}
 	if changed.IsZero() {
 		changed, _ = Modified(path)
+	}
+	return used, changed
+}
+
+// parseStaleDates reads mdls's named lines (`kMDItemLastUsedDate = 2026-02-08 12:12:34 +0000`, `(null)` for none):
+// each date by its attribute's name, in whatever order the lines come. A value that is not a date is no date.
+func parseStaleDates(out string) (used, changed time.Time) {
+	for _, line := range strings.Split(out, "\n") {
+		name, value, ok := strings.Cut(line, "=")
+		if !ok {
+			continue
+		}
+		t, err := time.Parse("2006-01-02 15:04:05 -0700", strings.TrimSpace(value))
+		if err != nil {
+			continue
+		}
+		switch strings.TrimSpace(name) {
+		case "kMDItemLastUsedDate":
+			used = t
+		case "kMDItemFSContentChangeDate":
+			changed = t
+		}
 	}
 	return used, changed
 }

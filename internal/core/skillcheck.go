@@ -989,7 +989,7 @@ func skillScanFileWith(text, path string, script bool, own []string, opts skillS
 					assigned = append(keep, assignedVar{variable, ti, n})
 				}
 				intoVariable := hasVariable && skillDynamicRx(`(?:>>?|\btee\s+(?:-a\s+)?)\s*["']?\$\{?`+rxEscape(variable)+`\b`).hasRunes(s)
-				command := t.redirect.hasRunes(s) || t.copy.hasRunes(s) || (script && c.writeCall.hasRunes(s)) || intoVariable
+				command := skillRedirects(t.redirect, s, script) || skillCopies(t.copy, s, script) || (script && c.writeCall.hasRunes(s)) || intoVariable
 				words := !command && !script && t.saidSeverity != "" && t.said.hasRunes(s)
 				if !(command || words) || talk {
 					continue
@@ -1272,6 +1272,108 @@ func aiAbs(a int) int {
 	return a
 }
 
+// A redirect or a copy as the targets' patterns find one, less what only looks like it (luoke-scan#205):
+//
+//   - the `>` that closes a placeholder: `~/.claude/skills/<slug>/SKILL.md` is a path with a name left open, not
+//     something written to `/SKILL.md`;
+//   - in prose, `>` as "comes before": `existing > CLAUDE.md > ask` orders three things, no command is in the line;
+//   - in prose, "install" as a word: `every install path matching ~/.claude/skills/*/SKILL.md` runs no install(1).
+//     As a command it stands where a command does (a line's start, after `$`, sudo, `&&`, `;`, `|`, or a back quote).
+//
+// In a script every line is a command, so only the placeholder is taken out there.
+var (
+	skillPlaceholderOpen = icuCS(`<[A-Za-z_][\w .-]{0,40}$`)
+	skillShellWord       = icuCI(`\b(?:echo|printf|cat|tee|sed|awk|jq|cp|mv|curl|wget)\b|<<`)
+	skillLoneArrow       = icuCS(`\s>\s`)
+	skillInstallVerb     = icuCI(`^install\b`)
+	skillCommandStart    = icuCI(`(?:^|[$;|&\x{60}]|\bsudo|\bthen|\bdo)\s*$`)
+)
+
+func skillRedirects(re *icuRegexp, s []rune, script bool) bool {
+	ordering := !script && len(skillLoneArrow.findAll(s)) >= 2 && !skillShellWord.hasRunes(s)
+	for _, m := range re.findAll(s) {
+		lone := s[m[0]] == '>' && !(m[0]+1 < len(s) && s[m[0]+1] == '>')
+		if lone && skillPlaceholderOpen.hasRunes(s[:m[0]]) {
+			continue
+		}
+		if lone && ordering {
+			continue
+		}
+		return true
+	}
+	return false
+}
+
+func skillCopies(re *icuRegexp, s []rune, script bool) bool {
+	for _, m := range re.findAll(s) {
+		if !script && skillInstallVerb.hasRunes(s[m[0]:m[1]]) && !skillCommandStart.hasRunes(s[:m[0]]) {
+			continue
+		}
+		return true
+	}
+	return false
+}
+
+// A list of strings in a script is what the script looks for, not what it does: a guard's signatures
+// (`COMMAND_INJECTION=( 'rm -rf /' 'curl .* | bash' … )`), a linter's deny list. Lines that are nothing but a quoted
+// string, three or more in a row (blank lines and comments between them aside), are such a list, and what the
+// checks find on them is left out; unless the script runs strings somewhere (eval, sh -c, a line that is a
+// variable): then a list may be what it runs, and everything counts as before. Hidden and masked hits always count.
+var (
+	skillOnlyString  = icuCS("^\\s*(?:'[^']*'|\"(?:[^\"\\\\]|\\\\.)*\")\\s*,?\\s*(?:#.*)?$")
+	skillBlankOrNote = icuCS(`^\s*(?:#.*|//.*)?$`)
+	skillRunsString  = icuCS(`\beval\b|\b(?:ba|z|k|da)?sh\s+-c\b|^\s*"?\$\{?[A-Za-z_]\w*(?:\[[^\]]*\])?\}?"?\s*(?:$|[;&|])|\bexec\s+["']?\$|\bos\.system\s*\(|\bsubprocess\.|\bchild_process\b|\bexecSync\s*\(`)
+)
+
+func skillListedLines(text string) map[int]bool {
+	lines := strings.Split(text, "\n")
+	listed := map[int]bool{}
+	var run []int
+	flush := func() {
+		if len(run) >= 3 {
+			for _, n := range run {
+				listed[n] = true
+			}
+		}
+		run = nil
+	}
+	for i, l := range lines {
+		r := []rune(strings.TrimSuffix(l, "\r"))
+		switch {
+		case skillOnlyString.hasRunes(r):
+			run = append(run, i+1)
+		case skillBlankOrNote.hasRunes(r):
+		default:
+			flush()
+		}
+	}
+	flush()
+	if len(listed) == 0 {
+		return nil
+	}
+	for i, l := range lines {
+		if !listed[i+1] && skillRunsString.hasRunes([]rune(l)) {
+			return nil
+		}
+	}
+	return listed
+}
+
+func skillWithoutListed(hits []skillHit, text string) []skillHit {
+	listed := skillListedLines(text)
+	if listed == nil {
+		return hits
+	}
+	var out []skillHit
+	for _, h := range hits {
+		if listed[h.line] && !h.hidden && !h.masked {
+			continue
+		}
+		out = append(out, h)
+	}
+	return out
+}
+
 // SkillSignals are everything the static checks find in a skill, merged per kind, label and file.
 func SkillSignals(skill Skill) []SkillSignal {
 	c := skc()
@@ -1301,6 +1403,9 @@ func SkillSignals(skill Skill) []SkillSignal {
 		}
 		s := skillScanFile(text, f.Path, script, own)
 		hits := s.hits
+		if script {
+			hits = skillWithoutListed(hits, text)
+		}
 		// Hidden: words to the agent the user does not see are serious; commands one step more.
 		for i := range hits {
 			if !hits[i].hidden && !hits[i].masked {

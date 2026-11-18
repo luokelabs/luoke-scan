@@ -200,6 +200,34 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 62914560,
+                        "caches": 1,
+                        "cachesBytes": 62914560,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": true,
+                        "plan": {
+                          "caches": [
+                            "i1"
+                          ],
+                          "id": "p-000000000002"
+                        },
+                        "rest": 1,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 1,
+                        "trash": 1
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
@@ -240,7 +268,13 @@
             }
           ],
           "isError": false,
-          "resultType": "complete"
+          "resultType": "complete",
+          "structuredContent": {
+            "data": {
+              "already": false,
+              "type": "scan-started"
+            }
+          }
         }
       }
     },
@@ -362,6 +396,16 @@
                       }
                     ],
                     "created": "2026-10-20T12:05:00Z",
+                    "data": {
+                      "finding": "malware.clamav/000000000005",
+                      "name": "eicar-new.com",
+                      "place": "downloads",
+                      "plan": {
+                        "id": "p-000000000004",
+                        "key": "i0"
+                      },
+                      "type": "malware"
+                    },
                     "deadline": null,
                     "expires": null,
                     "id": "security/malware.clamav/000000000005",
@@ -481,6 +525,34 @@
                       }
                     ],
                     "created": "2026-10-20T12:05:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 62914560,
+                        "caches": 1,
+                        "cachesBytes": 62914560,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": true,
+                        "plan": {
+                          "caches": [
+                            "i2"
+                          ],
+                          "id": "p-000000000007"
+                        },
+                        "rest": 1,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 2,
+                        "trash": 1
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:05:00Z",
                     "id": "round/2026-10-20T12:05:00Z",

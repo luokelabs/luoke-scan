@@ -427,6 +427,18 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "keptOff": [],
+              "kinds": [
+                "cache",
+                "installer",
+                "duplicate",
+                "temp"
+              ],
+              "on": true,
+              "round": null,
+              "type": "autoclean"
+            },
             "done": true
           }
         }
@@ -1337,6 +1349,31 @@
           "resources": [
             {
               "mimeType": "application/json",
+              "name": "一类可以清的东西",
+              "uri": "data/category"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "清理记录的数据",
+              "uri": "data/history"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "扫描页的数据",
+              "uri": "data/overview"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "扫描的设置",
+              "uri": "data/settings"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "占地方最多的文件夹",
+              "uri": "data/usage"
+            },
+            {
+              "mimeType": "application/json",
               "name": "扫描要告诉你的事",
               "uri": "luoke://luoke-scan/outbox"
             },
@@ -1514,6 +1551,86 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [
+                        {
+                          "at": "2026-10-20T12:00:00Z",
+                          "batch": "auto-2026-10-20T12:00:00Z",
+                          "bytes": 62914560,
+                          "failed": [],
+                          "moved": [
+                            {
+                              "bytes": 6291456,
+                              "count": 1,
+                              "kind": "installer",
+                              "names": [
+                                {
+                                  "name": "Fixtureapp-2.0.dmg",
+                                  "tool": ""
+                                }
+                              ]
+                            },
+                            {
+                              "bytes": 2097152,
+                              "count": 1,
+                              "kind": "duplicate",
+                              "names": [
+                                {
+                                  "name": "report-2026.pdf",
+                                  "tool": ""
+                                }
+                              ]
+                            },
+                            {
+                              "bytes": 110186496,
+                              "count": 21,
+                              "kind": "temp",
+                              "names": [
+                                {
+                                  "name": "puppeteer_dev_chrome_profile-P00000",
+                                  "tool": "Puppeteer"
+                                },
+                                {
+                                  "name": "puppeteer_dev_chrome_profile-P00001",
+                                  "tool": "Puppeteer"
+                                },
+                                {
+                                  "name": "puppeteer_dev_chrome_profile-P00002",
+                                  "tool": "Puppeteer"
+                                }
+                              ]
+                            }
+                          ],
+                          "offerStop": true,
+                          "partial": [],
+                          "restorable": true,
+                          "tools": [
+                            "pip"
+                          ],
+                          "unrecorded": []
+                        }
+                      ],
+                      "decide": {
+                        "bytes": 0,
+                        "caches": 0,
+                        "cachesBytes": 0,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": false,
+                        "plan": null,
+                        "rest": 6,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 6,
+                        "trash": 0
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-27T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
@@ -2312,6 +2429,93 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "back": 23,
+              "before": 0,
+              "left": 0,
+              "notes": [],
+              "round": {
+                "cleans": [
+                  {
+                    "at": "2026-10-20T12:00:00Z",
+                    "batch": "auto-2026-10-20T12:00:00Z",
+                    "bytes": 62914560,
+                    "failed": [],
+                    "moved": [
+                      {
+                        "bytes": 6291456,
+                        "count": 1,
+                        "kind": "installer",
+                        "names": [
+                          {
+                            "name": "Fixtureapp-2.0.dmg",
+                            "tool": ""
+                          }
+                        ]
+                      },
+                      {
+                        "bytes": 2097152,
+                        "count": 1,
+                        "kind": "duplicate",
+                        "names": [
+                          {
+                            "name": "report-2026.pdf",
+                            "tool": ""
+                          }
+                        ]
+                      },
+                      {
+                        "bytes": 110186496,
+                        "count": 21,
+                        "kind": "temp",
+                        "names": [
+                          {
+                            "name": "puppeteer_dev_chrome_profile-P00000",
+                            "tool": "Puppeteer"
+                          },
+                          {
+                            "name": "puppeteer_dev_chrome_profile-P00001",
+                            "tool": "Puppeteer"
+                          },
+                          {
+                            "name": "puppeteer_dev_chrome_profile-P00002",
+                            "tool": "Puppeteer"
+                          }
+                        ]
+                      }
+                    ],
+                    "offerStop": true,
+                    "partial": [],
+                    "restorable": true,
+                    "tools": [
+                      "pip"
+                    ],
+                    "unrecorded": []
+                  }
+                ],
+                "decide": {
+                  "bytes": 0,
+                  "caches": 0,
+                  "cachesBytes": 0,
+                  "cleaned": 0,
+                  "freed": 0,
+                  "offerAuto": false,
+                  "plan": null,
+                  "rest": 6,
+                  "skipped": {
+                    "fda": 0,
+                    "other": 0,
+                    "virusDb": 0
+                  },
+                  "toLook": 6,
+                  "trash": 0
+                },
+                "failed": [],
+                "moreCleans": 0,
+                "type": "round"
+              },
+              "type": "restored"
+            },
             "done": false
           }
         }
@@ -2707,6 +2911,86 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [
+                        {
+                          "at": "2026-10-20T12:00:00Z",
+                          "batch": "auto-2026-10-20T12:00:00Z",
+                          "bytes": 62914560,
+                          "failed": [],
+                          "moved": [
+                            {
+                              "bytes": 6291456,
+                              "count": 1,
+                              "kind": "installer",
+                              "names": [
+                                {
+                                  "name": "Fixtureapp-2.0.dmg",
+                                  "tool": ""
+                                }
+                              ]
+                            },
+                            {
+                              "bytes": 2097152,
+                              "count": 1,
+                              "kind": "duplicate",
+                              "names": [
+                                {
+                                  "name": "report-2026.pdf",
+                                  "tool": ""
+                                }
+                              ]
+                            },
+                            {
+                              "bytes": 110186496,
+                              "count": 21,
+                              "kind": "temp",
+                              "names": [
+                                {
+                                  "name": "puppeteer_dev_chrome_profile-P00000",
+                                  "tool": "Puppeteer"
+                                },
+                                {
+                                  "name": "puppeteer_dev_chrome_profile-P00001",
+                                  "tool": "Puppeteer"
+                                },
+                                {
+                                  "name": "puppeteer_dev_chrome_profile-P00002",
+                                  "tool": "Puppeteer"
+                                }
+                              ]
+                            }
+                          ],
+                          "offerStop": true,
+                          "partial": [],
+                          "restorable": true,
+                          "tools": [
+                            "pip"
+                          ],
+                          "unrecorded": []
+                        }
+                      ],
+                      "decide": {
+                        "bytes": 0,
+                        "caches": 0,
+                        "cachesBytes": 0,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": false,
+                        "plan": null,
+                        "rest": 6,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 6,
+                        "trash": 0
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-27T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
@@ -2873,6 +3157,92 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "keptOff": [],
+              "kinds": [],
+              "on": false,
+              "round": {
+                "cleans": [
+                  {
+                    "at": "2026-10-20T12:00:00Z",
+                    "batch": "auto-2026-10-20T12:00:00Z",
+                    "bytes": 62914560,
+                    "failed": [],
+                    "moved": [
+                      {
+                        "bytes": 6291456,
+                        "count": 1,
+                        "kind": "installer",
+                        "names": [
+                          {
+                            "name": "Fixtureapp-2.0.dmg",
+                            "tool": ""
+                          }
+                        ]
+                      },
+                      {
+                        "bytes": 2097152,
+                        "count": 1,
+                        "kind": "duplicate",
+                        "names": [
+                          {
+                            "name": "report-2026.pdf",
+                            "tool": ""
+                          }
+                        ]
+                      },
+                      {
+                        "bytes": 110186496,
+                        "count": 21,
+                        "kind": "temp",
+                        "names": [
+                          {
+                            "name": "puppeteer_dev_chrome_profile-P00000",
+                            "tool": "Puppeteer"
+                          },
+                          {
+                            "name": "puppeteer_dev_chrome_profile-P00001",
+                            "tool": "Puppeteer"
+                          },
+                          {
+                            "name": "puppeteer_dev_chrome_profile-P00002",
+                            "tool": "Puppeteer"
+                          }
+                        ]
+                      }
+                    ],
+                    "offerStop": true,
+                    "partial": [],
+                    "restorable": true,
+                    "tools": [
+                      "pip"
+                    ],
+                    "unrecorded": []
+                  }
+                ],
+                "decide": {
+                  "bytes": 0,
+                  "caches": 0,
+                  "cachesBytes": 0,
+                  "cleaned": 0,
+                  "freed": 0,
+                  "offerAuto": false,
+                  "plan": null,
+                  "rest": 6,
+                  "skipped": {
+                    "fda": 0,
+                    "other": 0,
+                    "virusDb": 0
+                  },
+                  "toLook": 6,
+                  "trash": 0
+                },
+                "failed": [],
+                "moreCleans": 0,
+                "type": "round"
+              },
+              "type": "autoclean"
+            },
             "done": false
           }
         }

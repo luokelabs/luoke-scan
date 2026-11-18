@@ -89,8 +89,12 @@ const codesign = "/usr/bin/codesign"
 // SignatureOf checks a program's signature with codesign, offline and without hashing every resource of an app: it
 // reads who signed it (codesign -d hashes nothing), then checks the signature and Apple's requirement in one run (exit 3:
 // intact, not Apple's). Two codesign runs and one pass over the program instead of three and two.
-func SignatureOf(path string) Signature {
-	target := SignatureSubject(path)
+func SignatureOf(path string) Signature { return signatureOfFile(SignatureSubject(path)) }
+
+// LibrarySignature is a library's own signature (a .dylib, a framework's binary), not that of the app it sits in.
+func LibrarySignature(path string) Signature { return signatureOfFile(path) }
+
+func signatureOfFile(target string) Signature {
 	st, err := os.Stat(target)
 	if err != nil {
 		return Signature{Kind: SigMissing}

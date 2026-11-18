@@ -209,6 +209,16 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "finding": "malware.clamav/000000000003",
+                      "name": "eicar-test.com",
+                      "place": "downloads",
+                      "plan": {
+                        "id": "p-000000000002",
+                        "key": "i0"
+                      },
+                      "type": "malware"
+                    },
                     "deadline": null,
                     "expires": null,
                     "id": "security/malware.clamav/000000000003",
@@ -328,6 +338,34 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "cleans": [],
+                      "decide": {
+                        "bytes": 62914560,
+                        "caches": 1,
+                        "cachesBytes": 62914560,
+                        "cleaned": 0,
+                        "freed": 0,
+                        "offerAuto": true,
+                        "plan": {
+                          "caches": [
+                            "i2"
+                          ],
+                          "id": "p-000000000005"
+                        },
+                        "rest": 1,
+                        "skipped": {
+                          "fda": 0,
+                          "other": 0,
+                          "virusDb": 0
+                        },
+                        "toLook": 2,
+                        "trash": 1
+                      },
+                      "failed": [],
+                      "moreCleans": 0,
+                      "type": "round"
+                    },
                     "deadline": null,
                     "expires": "2026-10-23T12:00:00Z",
                     "id": "round/2026-10-20T12:00:00Z",
@@ -891,6 +929,35 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "cloned": {
+                "bytes": 0,
+                "count": 0
+              },
+              "gone": 0,
+              "ignored": 0,
+              "left": [],
+              "links": 0,
+              "moved": {
+                "bytes": 131072000,
+                "count": 1
+              },
+              "partly": 0,
+              "password": false,
+              "removed": {
+                "bytes": 0,
+                "count": 0
+              },
+              "restore": "p-000000000005",
+              "retry": null,
+              "round": null,
+              "scriptsOff": 0,
+              "skipped": 0,
+              "trashed": true,
+              "type": "applied",
+              "unchanged": 0,
+              "unrecorded": []
+            },
             "done": true
           }
         }
@@ -1064,6 +1131,35 @@
                 "version": "v0.9"
               }
             ],
+            "data": {
+              "cloned": {
+                "bytes": 0,
+                "count": 0
+              },
+              "gone": 1,
+              "ignored": 0,
+              "left": [],
+              "links": 0,
+              "moved": {
+                "bytes": 0,
+                "count": 0
+              },
+              "partly": 0,
+              "password": false,
+              "removed": {
+                "bytes": 0,
+                "count": 0
+              },
+              "restore": null,
+              "retry": null,
+              "round": null,
+              "scriptsOff": 0,
+              "skipped": 0,
+              "trashed": false,
+              "type": "applied",
+              "unchanged": 0,
+              "unrecorded": []
+            },
             "done": true
           }
         }
@@ -1274,6 +1370,16 @@
                       }
                     ],
                     "created": "2026-10-20T12:00:00Z",
+                    "data": {
+                      "finding": "malware.clamav/000000000003",
+                      "name": "eicar-test.com",
+                      "place": "downloads",
+                      "plan": {
+                        "id": "p-000000000002",
+                        "key": "i0"
+                      },
+                      "type": "malware"
+                    },
                     "deadline": null,
                     "expires": null,
                     "id": "security/malware.clamav/000000000003",

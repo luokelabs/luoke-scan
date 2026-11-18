@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -57,12 +58,47 @@ func helper(t *testing.T, role string, fd int) *exec.Cmd {
 	t.Helper()
 	cmd := exec.Command(os.Args[0], "-test.run=^TestFromAppHelper$")
 	cmd.Env = append(os.Environ(), helperRole+"="+role)
-	cmd.ExtraFiles = []*os.File{os.NewFile(uintptr(fd), "body")}
+	cmd.ExtraFiles = []*os.File{childEnd(t, fd)}
 	if err := cmd.Start(); err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { cmd.Process.Kill(); cmd.Wait() })
 	return cmd
+}
+
+// childEnd is fd for cmd.ExtraFiles, as a copy (dup) the test closes when it ends. An *os.File closes its descriptor
+// when it is closed or when the garbage collector finds it unused. Made straight from fd, the number had two owners:
+// pair's cleanup and that *os.File. Whichever closed it first, the other closed the same number again later, and by
+// then it could belong to another test (its TempDir cleanup then failed with "bad file descriptor").
+func childEnd(t *testing.T, fd int) *os.File {
+	t.Helper()
+	d, err := unix.FcntlInt(uintptr(fd), unix.F_DUPFD_CLOEXEC, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	f := os.NewFile(uintptr(d), "body")
+	t.Cleanup(func() { f.Close() })
+	return f
+}
+
+// The end handed to a child stays the test's own: after the child is gone and the garbage collector has run, the
+// descriptor pair gave out is still open, so pair's cleanup closes it once and not a number another test holds by then.
+func TestChildEndLeavesThePairsDescriptorOpen(t *testing.T) {
+	_, body := pair(t)
+	cmd := exec.Command("/usr/bin/true")
+	cmd.ExtraFiles = []*os.File{childEnd(t, body)}
+	if err := cmd.Run(); err != nil {
+		t.Fatal(err)
+	}
+	cmd = nil
+	for i := 0; i < 20; i++ {
+		runtime.GC()
+		time.Sleep(10 * time.Millisecond)
+		var st unix.Stat_t
+		if err := unix.Fstat(body, &st); err != nil {
+			t.Fatalf("the descriptor was closed behind the test's back: %v", err)
+		}
+	}
 }
 
 const appMainPath = "/Applications/螺壳.app/Contents/MacOS/LuokeCore"
@@ -164,7 +200,7 @@ func TestCheckLauncherRefusesAParentThatBecameTheMainBodyByExec(t *testing.T) {
 	scan, body := pair(t)
 	echo := `IFS= read -r l <&3; id=$(printf %s "$l" | sed 's/.*"id":"\([0-9a-f]*\)".*/\1/'); printf '{"id":"%s","result":{}}\n' "$id" >&3`
 	cmd := exec.Command("/bin/sh", "-c", `printf 'x\n' >&3; (sleep 0.5; `+echo+`) & exec /bin/sleep 5`)
-	cmd.ExtraFiles = []*os.File{os.NewFile(uintptr(body), "body")}
+	cmd.ExtraFiles = []*os.File{childEnd(t, body)}
 	if err := cmd.Start(); err != nil {
 		t.Fatal(err)
 	}

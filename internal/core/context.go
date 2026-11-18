@@ -20,6 +20,8 @@ type Context struct {
 	AppDirs      []string
 	// SystemLibrary is the system's /Library ("" not looked at); Receipts, /var/db/receipts.
 	SystemLibrary, Receipts string
+	// BackgroundItems is where macOS keeps Login Items & Extensions' records (BackgroundItemsDir; "" not looked at).
+	BackgroundItems string
 	// FullDiskAccess: nil not known (tests, a fixture: everything is looked at); false: the folders macOS asks about
 	// are left alone and said to be.
 	FullDiskAccess *bool

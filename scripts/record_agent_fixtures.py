@@ -75,12 +75,13 @@ class Recorder:
     """一个场景：一份假目录，一步一步跑 luoke-scan。mcp_agent.prepared() 要的 harness.Run 的那几样（fx、update、scan、
     note）这里也有：造假目录时跑的记进 `produced`、改的记进 `changes`，之后的每一轮、每个请求记进 `steps`。"""
 
-    def __init__(self, name: str, binary: str, keep: bool):
+    def __init__(self, name: str, binary: str, keep: bool, fixture: Optional[str] = None):
         self.name = name
         self.binary = binary
         self.keep = keep
         self.work = os.path.realpath(tempfile.mkdtemp(prefix=f"luoke-scan-agent-{name}-"))
-        self.fx = Fx(os.path.join(self.work, "fx"))   # 单元测试那份标准的假答案（fakes.json），和 mcp_agent 的场景一样
+        # 单元测试那份标准的假答案（fakes.json），和 mcp_agent 的场景一样；fixture：假目录造在那里（scripts/make_fixture.py）
+        self.fx = Fx(fixture or os.path.join(self.work, "fx"))
         # 「状态」页的硬盘（#124）：一块 494 GB、还剩 182 GB 的盘，剩得多，不触发「可用空间只剩」
         self.fx.fakes["volume"] = {"free": 182 * 1000 ** 3, "total": 494 * 1000 ** 3}
         # 被测的程序看到的家目录：一个空的、不是假家目录的地方（和 blackbox 一样），碰了也碰不到真的。
@@ -92,6 +93,8 @@ class Recorder:
         self.no_fda = False
         self.preparing = True
         self.rid = 0
+        # data/… 的读（和它们之后的点按）另用一段请求编号，加进来的这些不挪动别的文件里的编号
+        self.data_rid = 1000
         self.records: List[Tuple[str, dict]] = []
         self.produced: List[str] = ["blackbox/fx.py 造的假目录：blackbox/cases/base.py 的 `build`（照单元测试的 Fixture.build 摆），"
                                     "fakes.json 是 `fx.standard_fakes`（和单元测试的 Fixture.Fakes.standard 一样），另加一块 494 GB、还剩 182 GB 的硬盘"]
@@ -209,8 +212,13 @@ class Recorder:
         if any(f == file for f, _ in self.records):
             raise Failed(f"{self.name}：{file} 录了两次")
         assert self.clock is not None
-        self.rid += 1
-        req = self.message(method, params, user_action, self.rid)
+        if file.startswith("read-data-"):
+            self.data_rid += 1
+            rid = self.data_rid
+        else:
+            self.rid += 1
+            rid = self.rid
+        req = self.message(method, params, user_action, rid)
         out = self.exec(self.mcp_args(self.clock), json.dumps(req, ensure_ascii=False))
         try:
             reply = json.loads(out)
@@ -252,6 +260,30 @@ class Recorder:
         self.read("permissions", f"read-permissions{suffix}.json", "读权限的状态")
         for page in ("overview", "mac", "cleaned"):
             self.read("page/" + page, f"read-page-{page}{suffix}.json", f"读基础页 page/{page}")
+        # 只读的数据（顶层 ADR 0028：页面由 agent 自己拼，扫描只给原始数据），字段见 docs/data-resources.md
+        overview = self.read("data/overview", f"read-data-overview{suffix}.json", "读扫描页的数据 data/overview")
+        self.read("data/history", f"read-data-history{suffix}.json", "读清理记录的数据 data/history")
+        self.read("data/settings", f"read-data-settings{suffix}.json", "读设置的数据 data/settings")
+        if static:
+            for c in overview["reclaimable"]:
+                self.read(f"data/category?id={c['id']}", f"read-data-category-{c['id']}.json", f"读一类的详情 data/category?id={c['id']}")
+        self.read("data/usage", f"read-data-usage{suffix}.json", "读占地方最多的文件夹 data/usage")
+
+    def recorded(self, file: str) -> Any:
+        """录过的那个资源读到的值（JSON 文字已经解开）。"""
+        for f, obj in self.records:
+            if f == file:
+                return obj["reply"]["result"]["contents"][0]["text"]
+        raise Failed(f"{self.name}：没录过 {file}")
+
+    def act(self, file: str, what: str, tool: str, args: dict, component: str) -> dict:
+        """用户在 agent 自己拼的扫描页上点的：参数是 agent 从 data/… 里取的，带上 user-action（页 id 是 overview）。"""
+        assert self.clock is not None
+        ua = {"surfaceId": "overview", "componentId": component, "at": local(self.clock)}
+        result = self.request(file, what, "tools/call", {"name": tool, "arguments": args}, user_action=ua)
+        if result.get("isError"):
+            raise Failed(f"{self.name}：{tool} 没成：{result}")
+        return result
 
     def item(self, kind: str, title: str = "") -> dict:
         for it in self.outbox:
@@ -396,6 +428,33 @@ def autoclean_done(r: Recorder) -> None:
     r.click("call-scan_autoclean-off.json", "用户再点「关掉自动清理」", event="scan_autoclean", label="关掉自动清理", item=item)
     r.read("permissions", "read-permissions-after-off.json", "点完再读权限")
     r.read("page/overview", "read-page-overview-after-off.json", "再读概览页")
+
+
+def data_actions(r: Recorder) -> None:
+    """agent 自己拼扫描页（顶层 ADR 0028）：只读 data/…，动作照旧调工具，参数取自数据。"""
+    r.prepare(remove=True, auto_kinds=True)
+    r.first_round(T0)
+    r.snapshot()
+    temp = r.recorded("read-data-category-temp.json")["items"]
+    if len(temp) < 2:
+        raise Failed(f"{r.name}：临时文件夹只有 {len(temp)} 项")
+    go = temp[1:]   # 最大的一项取消了
+    r.at(at(5))
+    r.act("call-scan_apply-selected.json", "用户在「临时文件夹」这一类的详情里取消了最大的一项，点「把选中的移到废纸篓」："
+          "scan_apply 的 plan_id 和 choices 的键取自 data/category 每一项的 plan、key", "scan_apply",
+          {"plan_id": go[0]["plan"], "choices": {it["key"]: ["trash"] for it in go}}, "trash-selected")
+    r.read("data/category?id=temp", "read-data-category-temp-after-apply.json", "点完再读这一类：移走的不再列")
+    history = r.read("data/history", "read-data-history-after-apply.json", "点完读清理记录的数据：多了这一批")
+    dup = r.recorded("read-data-category-duplicate.json")["items"]
+    r.at(at(6))
+    r.act("call-scan_apply-ignore.json", "用户在「重复文件」这一类的详情里点「这一类以后别再问」：这一类的每一项都选 ignore",
+          "scan_apply", {"plan_id": dup[0]["plan"], "choices": {it["key"]: ["ignore"] for it in dup}}, "ignore-category")
+    r.read("data/settings", "read-data-settings-after-ignore.json", "点完读设置的数据：以后别提的列在 ignored 里")
+    r.read("data/overview", "read-data-overview-after.json", "再读扫描页的数据")
+    r.at(at(10))
+    r.act("call-scan_restore.json", "用户在清理记录里点那一批的「放回」：scan_restore 的 id 取自 data/history 的 batch",
+          "scan_restore", {"id": history["batches"][0]["batch"]}, "restore")
+    r.read("data/history", "read-data-history-after-restore.json", "放回以后再读清理记录的数据")
 
 
 def lived_in(r: Recorder) -> None:
@@ -607,6 +666,16 @@ SCENARIOS = [
               "（`{\"g-<键>\": 41}`）；不认 `countWeights` 时照旧「按上面的选择清理」。",
               "一页不超过 200 个组件。"],
              crowded, alone=True),
+    Scenario("data-actions", "agent 自己拼扫描页：只读数据，照数据点按",
+             "基础假目录去掉报毒的、坏了的、删了的应用的数据，再加三类不用点就清的（装好了的应用的安装包、文稿里也有一份的下载、"
+             "21 个 Puppeteer 临时文件夹），自动清关着。查完一轮，agent 照 data/… 拼扫描页（顶层 ADR 0028）：用户在「临时文件夹」"
+             "这一类里取消最大的一项、把其余的移到废纸篓；「重复文件」这一类点「这一类以后别再问」；再在清理记录里把那一批放回。",
+             ["扫描页由 agent 照 `data/overview` 拼：`reclaimable` 每一类一行（`id`、`bytes`、`count`、`facts`），点一行读 "
+              "`data/category?id=<类>`，逐个文件带 `path`、`bytes`、`reason`、`facts`。",
+              "「把选中的移到废纸篓」是 `scan_apply`：`plan_id` 是选中项的 `plan`，`choices` 是 `{<key>: [\"trash\"]}`，没选的不发"
+              "（当作先不动）；「这一类以后别再问」是同一份方案里这一类每一项 `[\"ignore\"]`。放回是 `scan_restore`，`id` 是 "
+              "`data/history` 一行的 `batch`。点完重读 `data/…`。"],
+             data_actions),
     Scenario("feedback-152", "一位用户的反馈（luoke-scan#152）：清理没删完、看不懂的几行",
              "基础假目录上再加 luoke-scan#152 里报的几样：Gradle、Xcode 的缓存里各有删不掉的（一个只读的文件夹、一个锁定的文件），"
              "pip 和 uv 编译过源码包，5 个 AI 插件，4 个对话模板里多了话的本机模型，已经删掉的 Discord 还拿着权限。"
@@ -641,7 +710,9 @@ def normalise(r: Recorder) -> Dict[str, str]:
         return mapping.setdefault(m.group(0), f"{len(mapping) + 1:012d}")
 
     out: Dict[str, str] = {}
-    for file, obj in r.records:
+    # data/… 的读最后编号：它们带出来的新编号排在别的后面，别的文件里的编号不跟着变
+    ordered = [x for x in r.records if not x[0].startswith("read-data-")] + [x for x in r.records if x[0].startswith("read-data-")]
+    for file, obj in ordered:
         text = json.dumps(obj, ensure_ascii=False, indent=2, sort_keys=True)
         for real, placeholder in pairs:
             text = text.replace(real, placeholder)
@@ -741,6 +812,14 @@ def describe(sc: Scenario, files: Dict[str, str], scenario: dict) -> str:
         for page in ("overview", "mac", "cleaned"):
             lines.append(f"- 基础页 `page/{page}`：")
             lines += [f"  - {x}" for x in card_lines(resource(f"read-page-{page}.json"))]
+        if "read-data-overview.json" in files:
+            ov, hist = resource("read-data-overview.json"), resource("read-data-history.json")
+            cats = "、".join(f"`{c['id']}` {c['count']} 项 {c['bytes']} 字节" for c in ov["reclaimable"]) or "没有"
+            lines += ["- 数据 `data/overview`：",
+                      f"  - 可以清的（`reclaimable`）：{cats}",
+                      f"  - 要看的（`attention`）：{ov['attention']['count']} 项，急的 {ov['attention']['urgent']} 项；"
+                      f"大文件（`largeFiles`）{ov['largeFiles']['count']} 个；自动清（`autoCleaned`）{len(ov['autoCleaned'])} 次",
+                      f"- 数据 `data/history`：{len(hist['batches'])} 批"]
         lines.append("")
     lines += ["**窗口上**", ""] + [f"- {w}" for w in sc.window] + [""]
     lines += ["**文件**（按请求的先后）", "", "| 文件 | 请求 | 什么时候 |", "|---|---|---|"]
@@ -810,6 +889,7 @@ python3 scripts/record_agent_fixtures.py --only decide-3 --keep   # 只录一个
 | `read-summary*.json` | `resources/read` `summary` |
 | `read-permissions*.json` | `resources/read` `permissions` |
 | `read-page-<页>*.json` | `resources/read` `page/overview`、`page/mac`、`page/cleaned` |
+| `read-data-<资源>*.json` | `resources/read` `data/overview`、`data/history`、`data/settings`、`data/usage`；`read-data-category-<类>.json` 是 `data/category?id=<类>`（概览里列出的每一类）。只读的原始数据，字段见 [docs/data-resources.md](../../docs/data-resources.md) |
 | `call-<工具>*.json` | `tools/call`：卡片、页上的点按（带 `ai.luoke/user-action`），或对话里模型调的只读工具 |
 
 带 `-after-…` 的是点完以后再读的。每个文件是 `{"request": …, "reply": …}`：`request` 是 agent 发的那条 JSON-RPC
@@ -832,6 +912,10 @@ JSON 按键排序、缩进两格。
 
 - agent 要问的：`tools/list`（认 `readOnlyHint`）、`luoke://luoke-scan/outbox`、`summary`、`permissions`；打开应用页时读
   `page/<页>`。`server/discover`、`resources/list` 扫描都答，agent 现在不一定问。
+- agent 自己拼扫描页时读 `data/…`（只有代号和原始数值，没有卡片、没有句子；字段和动作清单见
+  [docs/data-resources.md](../../docs/data-resources.md)）。页上的动作照旧调工具：移到废纸篓是 `scan_apply`，`plan_id`、
+  `choices` 的键取自 `data/category` 每一项的 `plan`、`key`；放回是 `scan_restore`，`id` 取自 `data/history`、
+  `data/overview` 的 `batch`。
 - 会改动东西的（`scan_apply`、`scan_ignore`、`scan_restore`、`scan_autoclean`，清单 `actions` 里的四个）只认带
   `ai.luoke/user-action`（`surfaceId` 是工具自己起的卡片编号或页 id、`componentId`、`at`）的调用，没带的答
   `isError: true`、`structuredContent.code: "needs_user_action"`。`outbox_ack` 是只读的记账。

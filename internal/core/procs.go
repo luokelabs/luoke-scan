@@ -75,11 +75,116 @@ func ProcArguments(pid int32) ([]string, bool) {
 	return parseProcargs2(buf), true
 }
 
+// ProcEnvironment is the environment a process was started with (KERN_PROCARGS2, after argv), and after it the
+// loader's own apple[] strings (ptr_munge=…, executable_cdhash=…): nothing between them tells them apart, an empty
+// string in the environment looks just like the zeros before apple[], so a check for a variable reads them all (no
+// apple[] string starts with a variable's name). As the process was started, as far as it has not written over that
+// part of its stack since. ok false when it cannot be read. macOS leaves it out for its own programs (an empty list),
+// which take no DYLD_* variables anyway.
+func ProcEnvironment(pid int32) ([]string, bool) {
+	buf, err := unix.SysctlRaw("kern.procargs2", int(pid))
+	if err != nil || len(buf) <= 4 {
+		return nil, false
+	}
+	_, env := splitProcargs2(buf)
+	return env, true
+}
+
+// struct proc_vnodepathinfo (sys/proc_info.h): the working directory's vnode_info_path, then the root directory's;
+// each a vnode_info (152 bytes) and a path of MAXPATHLEN.
+const (
+	procPidVnodePathInfo = 9 // PROC_PIDVNODEPATHINFO
+	vnodeInfoSize        = 152
+	vnodePathInfoSize    = 2 * (vnodeInfoSize + unix.PathMax)
+)
+
+// ProcCwd is a process's working directory (proc_pidinfo PROC_PIDVNODEPATHINFO); ok false when it cannot be read.
+func ProcCwd(pid int32) (string, bool) {
+	buf := make([]byte, vnodePathInfoSize)
+	n, e := procInfo(procCallPidInfo, int(pid), procPidVnodePathInfo, 0, buf)
+	if e != 0 || n != vnodePathInfoSize {
+		return "", false
+	}
+	path := buf[vnodeInfoSize : vnodeInfoSize+unix.PathMax]
+	end := 0
+	for end < len(path) && path[end] != 0 {
+		end++
+	}
+	if end == 0 {
+		return "", false
+	}
+	return procText(path[:end]), true
+}
+
+// LoadedLibrary is a file a process has mapped as code, beside its own program: a library, a framework, a plugin.
+type LoadedLibrary struct {
+	Path string
+	// Deleted: its file was removed after it was loaded (no link to it left); the code runs on.
+	Deleted bool
+}
+
+// struct proc_regionwithpathinfo (sys/proc_info.h): a proc_regioninfo (96 bytes: the protection first, the region's
+// address and size at 80 and 88), then a vnode_info_path (its vinfo_stat first: vst_nlink at 6; the path after the
+// vnode_info).
+const (
+	procPidRegionPathInfo2 = 22 // PROC_PIDREGIONPATHINFO2: PROC_PIDREGIONPATHINFO's regions, only those a file backs
+	regionInfoSize         = 96
+	regionWithPathSize     = regionInfoSize + vnodeInfoSize + unix.PathMax
+	vmProtExecute          = 4
+)
+
+// ProcLibraries are the files a process has mapped executable, each once, but its own program: its address space
+// walked region by region with proc_pidinfo PROC_PIDREGIONPATHINFO2, which passes over memory no file backs and the
+// shared cache, where macOS keeps its own libraries (so these are the others: an app's frameworks, Homebrew's, a
+// Python module, anything pushed in). ok false when it cannot be read (another user's process, one gone).
+func ProcLibraries(pid int32, program string) ([]LoadedLibrary, bool) {
+	buf := make([]byte, regionWithPathSize)
+	le := binary.LittleEndian
+	var out []LoadedLibrary
+	seen := map[string]bool{}
+	addr := uint64(0)
+	for try := 0; try < 100000; try++ {
+		n, e := procInfo(procCallPidInfo, int(pid), procPidRegionPathInfo2, addr, buf)
+		if e != 0 || n != regionWithPathSize {
+			if try == 0 {
+				return nil, false
+			}
+			break // past the last one
+		}
+		start, size := le.Uint64(buf[80:]), le.Uint64(buf[88:])
+		path := buf[regionInfoSize+vnodeInfoSize:]
+		end := 0
+		for end < len(path) && path[end] != 0 {
+			end++
+		}
+		if le.Uint32(buf[0:])&vmProtExecute != 0 && end > 0 {
+			p := procText(path[:end])
+			if p != program && !seen[p] {
+				seen[p] = true
+				out = append(out, LoadedLibrary{Path: p, Deleted: le.Uint16(buf[regionInfoSize+6:]) == 0})
+			}
+		}
+		if start+size <= addr {
+			break
+		}
+		addr = start + size
+	}
+	return out, true
+}
+
 // parseProcargs2 reads KERN_PROCARGS2's answer: argc, the program's path, its padding, then argc strings.
 func parseProcargs2(b []byte) []string {
+	args, _ := splitProcargs2(b)
+	return args
+}
+
+// splitProcargs2 reads KERN_PROCARGS2's answer: argc, the program's path, its padding, argc strings, then every
+// string after them but the empty ones: the environment's and the loader's apple[] strings (see ProcEnvironment).
+func splitProcargs2(b []byte) (args, env []string) {
 	size := len(b)
+	args, env = []string{}, []string{}
 	if size < 4 {
-		return []string{}
+		return
 	}
 	argc := int(int32(binary.LittleEndian.Uint32(b)))
 	i := 4
@@ -89,16 +194,27 @@ func parseProcargs2(b []byte) []string {
 	for i < size && b[i] == 0 { // its padding
 		i++
 	}
-	args := []string{}
-	for len(args) < argc && i < size {
+	next := func() string {
 		j := i
 		for j < size && b[j] != 0 {
 			j++
 		}
-		args = append(args, procText(b[i:j]))
+		s := procText(b[i:j])
 		i = j + 1
+		return s
 	}
-	return args
+	for len(args) < argc && i < size {
+		args = append(args, next())
+	}
+	if len(args) < argc {
+		return // cut short: what follows is not the environment
+	}
+	for i < size {
+		if s := next(); s != "" {
+			env = append(env, s)
+		}
+	}
+	return
 }
 
 // ScriptNames are the program a process runs when its executable is an interpreter: `python3.14

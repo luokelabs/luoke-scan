@@ -108,7 +108,7 @@
 ## 安全设计
 
 - **两个程序**：`luoke-scan` 做扫描和清理，从不开 socket、不监听网络：给螺壳 agent 的工具（MCP）由螺壳本体起 `luoke-scan mcp`，经它的标准输入输出说话；`luoke-scan-admin` 只在你在螺壳的密码框里输入密码以后，以管理员身份做那一次删除。
-- 要密码的那一步只由螺壳本体弹框：扫描只把「哪份方案的哪几项」交给本体，root 跑的命令由本体拼——它先把自己包里的 `luoke-scan-admin` 拷进只有 root 能写的目录、在那里核对签名（螺壳的开发者签名），再用空环境跑；扫描说的话不进那条命令。在终端里也可以自己做（`luoke-scan system`，经 sudo，同样先核对签名）。
+- 要密码的那一步只由螺壳本体弹框：扫描只把「哪份方案的哪几项」交给本体，root 跑的命令由本体拼——它先把自己包里的 `luoke-scan-admin` 拷进只有 root 能写的目录、在那里核对签名（螺壳的开发者签名），再用空环境跑；扫描说的话不进那条命令。装好的螺壳扫描只由螺壳起，终端里直接跑它只能看结果（`report`、`findings`、`status`、`version`）；自己编的开发版可以在终端里做这一步（`luoke-scan system`，经 sudo，同样先核对签名）。
 - 外部命令（git、clamscan、yara……）都带超时。扫描（定期的和 agent 叫的那一轮）和更新病毒库一开始就把自己降到低优先级（CPU 和读写磁盘都让着你在用的程序），它们起的外部命令跟着低；给 agent 答话的 `luoke-scan mcp`（你点了以后执行方案也是它）不降。git 关掉仓库配置里会运行程序的项（fsmonitor、hooks 这些），被扫描的仓库没法借 git 运行它自己的程序。
 - 装好的 .app 只认 `--this-mac`，不收开发用的参数，扫描器只用包里带的那几个。
 - 随包的第三方程序和库只是单独的进程，螺壳扫描不链接它们，见 [NOTICE](NOTICE)。
@@ -144,7 +144,7 @@ python3 -I blackbox/run.py --only base/two-rounds --keep             # 打印假
 ### 评测
 
 ```bash
-.build/go/luoke-scan eval-cleanup       # 不用点就清的四类：72 个用例，挑错必须是 0
+.build/go/luoke-scan eval-cleanup       # 不用点就清的四类：75 个用例，挑错必须是 0
 .build/go/luoke-scan eval-skills        # AI skill 的检查：33 个恶意、33 个正常的合成 skill
 .build/go/luoke-scan eval-agentfiles    # 给 AI 看的说明文件（AGENTS.md、CLAUDE.md……）的检查：13 个恶意、13 个正常
 python3 bench/test_checks.py               # 评测程序自己的检查对不对，不用模型

@@ -8,6 +8,7 @@
     <根>/fakes.json           本机状态的假答案（进程、系统设置、签名、Spotlight、磁盘……）
     <根>/data                 扫描自己的数据（被测的程序建，这里不碰）
     <根>/SystemLibrary、receipts、Shared、usr-local、opt-homebrew、etc、usr-sbin、remotes、Trash
+    <根>/backgroundtaskmanagement  「登录项与扩展」的记录（当 /private/var/db/com.apple.backgroundtaskmanagement）
 """
 from __future__ import annotations
 
@@ -155,10 +156,16 @@ def quiet_fakes(home: str) -> Dict[str, Any]:
 
 
 BROWSER_HELPER = "Applications/Browser.app/Contents/Frameworks/Helper (Renderer).app/Contents/MacOS/Helper"
+# 有意脱离父进程的 gpg-agent：在假目录的 /opt/homebrew 里（Fx 建出来），不指跑测试那台机器上装的。
+GPG_AGENT = "opt-homebrew/bin/gpg-agent"
+# 系统自带、每台 Mac 都有的程序在这些地方。进程表里本用户别的程序都要在假目录里：指机器上装的第三方程序
+# （Homebrew 的、/usr/local 里的），没装它的机器上就多报一条「程序已经被删掉了」，结果随机器变。
+SYSTEM_PROGRAMS = ("/System/", "/usr/bin/", "/usr/sbin/", "/usr/libexec/", "/bin/", "/sbin/", "/Applications/Safari.app/")
 
 
 def standard_processes(home: str) -> List[Dict[str, Any]]:
-    """程序没了的一个、一个父进程下 25 个 lsof、老的孤儿、launchd 起的、一个应用；本来就挂在 1 下面的系统服务。"""
+    """程序没了的一个、一个父进程下 25 个 lsof、老的孤儿、launchd 起的、一个应用；本来就挂在 1 下面的系统服务，
+    有意脱离父进程的 gpg-agent。"""
     me = os.getuid()
 
     def p(pid: int, ppid: int, path: str, started: datetime.datetime, uid: int = me) -> Dict[str, Any]:
@@ -173,7 +180,7 @@ def standard_processes(home: str) -> List[Dict[str, Any]]:
            p(1000, 50, "/bin/sh", days(1)),
            p(700, 1, "/System/Library/Frameworks/WebKit.framework/Versions/A/XPCServices/com.apple.WebKit.WebContent.xpc/Contents/MacOS/com.apple.WebKit.WebContent", days(5)),
            p(701, 1, "/System/Library/ExtensionKit/Extensions/WallpaperImageExtension.appex/Contents/MacOS/WallpaperImageExtension", days(5)),
-           p(702, 1, "/opt/homebrew/bin/gpg-agent", days(20)),
+           p(702, 1, os.path.join(os.path.dirname(home), GPG_AGENT), days(20)),
            p(703, 1, "/usr/bin/tail", days(6))]
     out += [p(2000 + i, 1999, home + "/" + BROWSER_HELPER, T0) for i in range(30)]
     out += [p(1001 + i, 1000, "/usr/sbin/lsof", T0) for i in range(25)]
@@ -204,6 +211,8 @@ class Fx:
         os.makedirs(self.tools, exist_ok=True)
         for name in os.listdir(TOOLS):
             shutil.copy2(os.path.join(TOOLS, name), os.path.join(self.tools, name))
+        if not quiet:   # 标准进程表里的 gpg-agent 在跑，它的程序在（不然成了「程序被删了」）
+            self.file(GPG_AGENT, "#!/bin/sh\nexit 0\n", mode=0o755, at=days(30))
 
     # 路径
 
@@ -347,6 +356,47 @@ class Fx:
         subprocess.run(["/usr/bin/sqlite3", path, sql], check=True)
         return path
 
+    BTM_USER = "0A1B2C3D-0000-4000-8000-00000000ABCD"   # 假目录里当本用户的 generated UID
+
+    def btm(self, items: Iterable[Dict[str, Any]], *, version: int = 16) -> str:
+        """「登录项与扩展」的记录：backgroundtaskmanagement/BackgroundItems-v<version>.btm，NSKeyedArchiver 存的二进制
+        属性列表（Storage → itemsByUserIdentifier → ItemRecord）。每项：name、identifier、container、url、bundleIdentifier、
+        associatedBundleIdentifiers（列表）、type、disposition，可选 user（默认 BTM_USER）。"""
+        objects: List[Any] = ["$null"]
+
+        def add(o: Any) -> plistlib.UID:
+            objects.append(o)
+            return plistlib.UID(len(objects) - 1)
+
+        classes: Dict[str, plistlib.UID] = {}
+
+        def cls(name: str, *supers: str) -> plistlib.UID:
+            if name not in classes:
+                classes[name] = add({"$classname": name, "$classes": [name, *supers, "NSObject"]})
+            return classes[name]
+
+        null = plistlib.UID(0)
+        by_user: Dict[str, List[plistlib.UID]] = {}
+        for it in items:
+            rec: Dict[str, Any] = {"$class": cls("ItemRecord"), "type": it["type"], "disposition": it["disposition"],
+                                   "generation": 1}
+            for key in ("name", "identifier", "container", "bundleIdentifier"):
+                rec[key] = add(it[key]) if it.get(key) else null
+            if it.get("url"):
+                rec["url"] = add({"$class": cls("NSURL"), "NS.base": null, "NS.relative": add(it["url"])})
+            else:
+                rec["url"] = null
+            ids = it.get("associatedBundleIdentifiers")
+            rec["associatedBundleIdentifiers"] = add({"$class": cls("NSArray"), "NS.objects": [add(x) for x in ids]}) if ids else null
+            by_user.setdefault(it.get("user", self.BTM_USER), []).append(add(rec))
+        users = add({"$class": cls("NSMutableDictionary", "NSDictionary"),
+                     "NS.keys": [add(u) for u in by_user],
+                     "NS.objects": [add({"$class": cls("NSMutableArray", "NSArray"), "NS.objects": v}) for v in by_user.values()]})
+        store = add({"$class": cls("Storage"), "itemsByUserIdentifier": users, "mdmPayloadsByIdentifier": null})
+        archive = {"$version": 100000, "$archiver": "NSKeyedArchiver", "$top": {"store": store, "version": add(version)},
+                   "$objects": objects}
+        return self.file(f"backgroundtaskmanagement/BackgroundItems-v{version}.btm", plistlib.dumps(archive, fmt=plistlib.FMT_BINARY))
+
     # 本机状态
 
     def fake(self, key: str, value: Any) -> None:
@@ -359,6 +409,13 @@ class Fx:
         self.fakes["commands"].insert(0, {"tool": tool, "args": list(args), "status": status, "output": output})
 
     def save(self) -> None:
+        me = os.getuid()
+        # 假目录的根，和扫描拿到的那种写法（/private/var/… 去掉 /private）：两种都在假目录里
+        roots = (self.root + "/", self.root[len("/private"):] + "/") if self.root.startswith("/private/") else (self.root + "/",)
+        for p in self.fakes["processes"]:
+            path = p["path"]
+            if p["uid"] == me and path and not path.startswith(roots) and not path.startswith(SYSTEM_PROGRAMS):
+                raise ValueError(f"假进程表里的 {path} 不在假目录里，也不是系统自带的：结果会随机器上装没装它变")
         with open(os.path.join(self.root, "fakes.json"), "w", encoding="utf-8") as f:
             json.dump(self.fakes, f, ensure_ascii=False, indent=2)
 

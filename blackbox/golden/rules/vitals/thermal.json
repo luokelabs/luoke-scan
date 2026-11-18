@@ -425,7 +425,14 @@
             }
           ],
           "isError": false,
-          "resultType": "complete"
+          "resultType": "complete",
+          "structuredContent": {
+            "data": {
+              "activityMonitor": true,
+              "type": "opened",
+              "what": "ActivityMonitor"
+            }
+          }
         }
       },
       "user-action": {

@@ -32,24 +32,25 @@ LUOKE_SCAN_BIN=/path/to/luoke-scan python3 blackbox/run.py   # 换一个被测�
 | `tools/` | 扫描器：`clamscan`、`freshclam`、`sigtool`、`yara`、`XProtect.yara` |
 | `data/` | 扫描自己的数据，被测的程序自己建；场景不碰 |
 | `SystemLibrary/`、`receipts/` | 当 `/Library`、`/var/db/receipts` |
+| `backgroundtaskmanagement/` | 当 `/private/var/db/com.apple.backgroundtaskmanagement`：「登录项与扩展」的记录 `BackgroundItems-v<N>.btm`（`fx.btm` 写） |
 | `Shared/`、`usr-local/`、`opt-homebrew/`、`etc/`、`usr-sbin/` | 当 `/Users/Shared`、`/usr/local`、`/opt/homebrew`、`/etc`、`/usr/sbin` |
 | `Trash/` | 废纸篓：移到废纸篓的都进这里（名字前加 8 位十六进制和 `-`） |
 | `commands.log` | 要跑的系统命令（不真跑）：一行一个 `{"tool", "args"}` |
 | `fakes.json` | 本机状态的假答案，见下 |
 
-TCC 只读 `home/Library/Application Support/com.apple.TCC/TCC.db`。不调 launchctl、不看真机的进程、Spotlight、磁盘映像、
+TCC 只读 `home/Library/Application Support/com.apple.TCC/TCC.db`；「登录项与扩展」的记录不分用户，全都算本用户的。不调 launchctl、不看真机的进程、Spotlight、磁盘映像、
 登录项、crontab。门槛比真机低，免得要造上 GB 的文件：每天涨 1 MB 就算在涨，重复文件、很久没用的大文件、系统恢复镜像 1 MB 起。
 
 `fakes.json` 每个键都写（`fx.standard_fakes` 是全部的键）：
 
 | 键 | 答的是 |
 |---|---|
-| `processes` | 进程表：`pid`、`ppid`、`uid`、`path`、`started`；可以另带 `arguments`（argv，程序在第一个；不写是读不到）和 `listening`（监听的 TCP：`port`、`address`） |
+| `processes` | 进程表：`pid`、`ppid`、`uid`、`path`、`started`；可以另带 `arguments`（argv，程序在第一个；不写是读不到）、`environment`（启动时的环境变量，`名字=值`；不写是读不到）、`cwd`（工作目录；不写是读不到）、`libraries`（映射成代码的文件，程序自己不算：`path`、`deleted`；不写是读不到）和 `listening`（监听的 TCP：`port`、`address`）。本用户的程序只能在假目录里，或在系统自带的位置（`fx.SYSTEM_PROGRAMS`：`/System`、`/usr/bin` 这些）：扫描真的看程序在不在，指机器上装的第三方程序，结果就随机器变，`Fx.save` 会报错 |
 | `launchdPIDs` | launchd 起的进程号；`null`：launchctl 没答 |
 | `commands`、`otherCommands` | 系统命令的答复（`defaults`、`launchctl`、`fdesetup`、`socketfilterfw`、`csrutil`、`spctl`、`security`、锁屏的 `/bin/sh`）：第一条 `tool` 相同、`args` 都在参数里的；都不是就用 `otherCommands`。登录项也从这里来：`launchctl print gui/<uid>` 和 `launchctl print gui/<uid>/<标签>` 的原样输出 |
 | `bootTime`、`pendingUpdates`、`xprotectUpdated` | 开机时间、等着装的系统更新、XProtect 上次更新 |
 | `signatures`、`otherSignature` | 常驻项检查看到的签名：第一条 `pathContains` 在路径里的；程序不在就是 `missing`。写法 `apple`、`developer:<团队>`、`adhoc`、`unsigned`、`invalid`、`script`、`unknown` |
-| `codesign` | 键盘监听的程序、浏览器扩展能启动的本机程序、启动钩子：`{路径: 签名}`，写法同上；没列的真跑 `codesign` |
+| `codesign` | 键盘监听的程序、浏览器扩展能启动的本机程序、启动钩子、进程启动时要先载入的库、进程从临时文件夹和下载文件夹载入的库：`{路径: 签名}`，写法同上；没列的真跑 `codesign` |
 | `appTrust` | 新应用：`{应用路径: 担保}`，`apple`、`appStore`、`notarized`、`developer:<团队>`、`adhoc`、`unsigned`、`invalid`；没列的真查 |
 | `eventTaps` | 键盘事件监听：`program`、`listenOnly`、`allApps`、`pid`；`null`：不知道 |
 | `snapshots` | Time Machine 本地快照的时间；`null`：tmutil 没答 |

@@ -410,7 +410,14 @@
             }
           ],
           "isError": false,
-          "resultType": "complete"
+          "resultType": "complete",
+          "structuredContent": {
+            "data": {
+              "activityMonitor": false,
+              "type": "opened",
+              "what": "Battery"
+            }
+          }
         }
       },
       "user-action": {

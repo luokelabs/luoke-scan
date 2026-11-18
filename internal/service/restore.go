@@ -565,7 +565,29 @@ func (s *Service) restoreTool(args, meta O) (ToolOutput, error) {
 			round.body(c)
 		}
 	})
-	return ToolOutput{Text: text, Card: card, Done: Bool(len(left) == 0 && !waits)}, nil
+	// The answer as data (top-level ADR 0028). notes: what was not put back or went somewhere else, with why (still
+	// sentences); round: the round's card as it is now, when the click came from it.
+	var notes []string
+	for _, d := range left {
+		n := d.Note
+		if n == "" {
+			n = "没放回"
+		}
+		notes = append(notes, d.Title+"："+n)
+	}
+	for _, d := range back {
+		if d.Note != "" {
+			notes = append(notes, d.Title+"："+d.Note)
+		}
+	}
+	if len(notes) > maxRestoreLines {
+		notes = notes[:maxRestoreLines]
+	}
+	data := O{"type": "restored", "back": len(back), "left": len(left), "before": len(before), "notes": strs(notes), "round": nil}
+	if round != nil {
+		data["round"] = round.data
+	}
+	return ToolOutput{Text: text, Card: card, Done: Bool(len(left) == 0 && !waits), Extra: O{"data": data}}, nil
 }
 
 // putBackOne puts one entry back, into place when given (a folder of the same batch came back under another name).

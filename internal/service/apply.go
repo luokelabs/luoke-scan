@@ -1245,8 +1245,31 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 		}
 	}
 	s.remember(append(s.cleanedRecords(plan.ID, outcomes, report), s.ignoredRecords(fresh, plan.ID, report)...))
+	// The answer as data (top-level ADR 0028): the counts and bytes of each outcome; left: what was not done, each
+	// with its reason (still sentences: the reasons have no codes yet); what the answer's buttons would do.
+	trashedAny := len(moved) > 0 || len(partly) > partlyDeleted
+	data := O{"type": "applied", "moved": O{"count": len(moved), "bytes": sumBytes(moved)},
+		"removed": O{"count": len(removedCaches), "bytes": sumBytes(removedCaches)},
+		"cloned":  O{"count": len(cloned), "bytes": sumBytes(cloned)}, "links": deletedLinks, "scriptsOff": len(changed),
+		"partly": len(partly), "ignored": len(ignored), "gone": len(gone), "skipped": len(skipped),
+		"unchanged": len(unchanged), "left": strs(append(append(append([]string{}, partly...), skipped...), unchanged...)),
+		"trashed": trashedAny, "restore": nil, "retry": nil, "unrecorded": strs(unrecorded), "password": other != nil,
+		"round": nil}
+	if trashedAny || len(changed) > 0 {
+		data["restore"] = plan.ID
+	}
+	if retry {
+		again := O{}
+		for k, v := range picks {
+			if v != ChoiceKeep {
+				again[k] = A{v}
+			}
+		}
+		data["retry"] = O{"plan": plan.ID, "choices": again}
+	}
 	if round != nil {
-		return ToolOutput{Text: said, Card: s.answerCard(meta, false, round.card), Done: Bool(false)}, nil
+		data["round"] = round.data
+		return ToolOutput{Text: said, Card: s.answerCard(meta, false, round.card), Done: Bool(false), Extra: O{"data": data}}, nil
 	}
 	top := s.roundTop(plan) // on the round's card, what was cleaned without a click stays on top
 	card := s.answerCard(meta, other != nil, func(c *Card) {
@@ -1299,7 +1322,7 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 			s.adminBody(c, *other, nil)
 		}
 	})
-	return ToolOutput{Text: said, Card: card, Done: Bool(settled && other == nil)}, nil
+	return ToolOutput{Text: said, Card: card, Done: Bool(settled && other == nil), Extra: O{"data": data}}, nil
 }
 
 // ownCard: which of the cards in 「今天」 the plan was offered on the click came from: "round" (the round's card),

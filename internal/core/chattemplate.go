@@ -460,6 +460,14 @@ var templateKnownSentences = []string{
 	"You may call one or more functions to assist with the user query.",
 	"You are provided with function signatures within <tools></tools> XML tags:",
 	"For each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:",
+	// Qwen3.5 and Qwen3-Coder (tool calls as <function=…><parameter=…>)
+	"You have access to the following functions:",
+	"If you choose to call a function ONLY reply in the following format with NO suffix:",
+	"Reminder:",
+	"- Function calls MUST follow the specified format: an inner <function=...></function> block must be nested within <tool_call></tool_call> XML tags",
+	"- Required parameters MUST be specified",
+	"- You may provide optional reasoning for your function call in natural language BEFORE the function call, but NOT after",
+	"- If there is no function call available, answer the question like normal with your current knowledge and do not tell the user about function calls",
 	// Llama 2
 	"You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe.",
 	"Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content.",

@@ -145,6 +145,52 @@ func quoted(list string) string {
 // grantAdvice: where a stale grant is taken away.
 const grantAdvice = "在系统设置中选中它，点「−」移除。"
 
+// staleGrant: what an app no longer on this Mac still holds (its privacy grants, its place in Login Items &
+// Extensions), and where that is taken away; several (n > 1) say it of them all.
+func staleGrant(fs []core.Finding) (string, string) {
+	login, privacy := false, false
+	var held []string
+	for _, f := range fs {
+		for _, g := range strings.Split(f.Evidence["grants"], "、") {
+			if g == core.LoginItemsGrant {
+				login = true
+			} else if g != "" {
+				privacy = true
+				held = append(held, g)
+			}
+		}
+	}
+	it := "它"
+	if len(fs) > 1 {
+		it = "它们"
+	}
+	advice := strings.ReplaceAll(grantAdvice, "它", it)
+	switch {
+	case login && privacy:
+		advice = strings.ReplaceAll("在系统设置中选中它，点「−」移除；「登录项与扩展」的「允许在后台」里，关掉它的开关。", "它", it)
+	case login:
+		advice = strings.ReplaceAll("在系统设置的「登录项与扩展」里：「登录时打开」中的选中它点「−」，「允许在后台」中的关掉它的开关。", "它", it)
+	}
+	if len(fs) > 1 {
+		if login {
+			return fmt.Sprintf("%d 个已删除的应用还留着权限或登录项", len(fs)), advice
+		}
+		return fmt.Sprintf("%d 个已删除的应用仍有权限", len(fs)), advice
+	}
+	f := fs[0]
+	name := grantClient(f.Path)
+	if a := f.Evidence["app"]; a != "" {
+		name = a
+	}
+	switch {
+	case login && privacy:
+		return "已删除的「" + name + "」仍有" + quoted(strings.Join(held, "、")) + "权限，还在「登录项」里", advice
+	case login:
+		return "已删除的「" + name + "」还在「登录项」里", advice
+	}
+	return "已删除的「" + name + "」仍有" + quoted(f.Evidence["grants"]) + "权限", advice
+}
+
 // fileName: a file's name as the user reads it (core.DisplayName: percent-encoded names decoded).
 func fileName(path string) string { return core.DisplayName(path) }
 
@@ -179,6 +225,9 @@ func plainSize(b *int64) string {
 	}
 	return sizeNote(b)
 }
+
+// dyldInsertAdvice: what a process started with DYLD_INSERT_LIBRARIES means, and what to do.
+const dyldInsertAdvice = "恶意软件常这样把自己的代码塞进别的程序，开发调试时也有人这样设。不是你设的，重启电脑后再查一遍。"
 
 // plain: a finding's title and one sentence for the user.
 func (s *Service) plain(f core.Finding) (string, string) {
@@ -289,7 +338,23 @@ func (s *Service) plain(f core.Finding) (string, string) {
 	case f.Rule == "space.ai-model" || f.Rule == "space.ai-models":
 		return "很久没用的 AI 模型" + size, "用不到了可以删，再用时会重新下载。"
 	case f.Category == core.CatPermission:
-		return "已删除的「" + grantClient(f.Path) + "」仍有" + quoted(f.Evidence["grants"]) + "权限", grantAdvice
+		return staleGrant([]core.Finding{f})
+	case f.Rule == "process.dyld-insert":
+		return "正在运行的程序被设成先载入「" + name + "」", dyldInsertAdvice
+	case f.Rule == "process.library-temp":
+		who, place := "有个程序", f.Evidence["place"]
+		if nm := programName(f.Evidence["program"]); nm != "" {
+			who = "「" + nm + "」"
+		}
+		if place == "" {
+			place = "临时文件夹"
+		}
+		return who + "载入了" + place + "里的代码", "正常的程序很少这样做。不认得它的话，退出它，再查一遍病毒。"
+	case f.Rule == "process.library-deleted":
+		if nm := programName(f.Evidence["program"]); nm != "" {
+			return "「" + nm + "」用着的库已经被删掉了", "多半是升级以后还没重启它，重启这个程序就好。"
+		}
+		return "有个程序用着的库已经被删掉了", "多半是升级以后还没重启它，重启这个程序就好。"
 	case f.Category == core.CatProcess:
 		if nm := appName(filepath.Base(f.Path)); f.Rule == "process.deleted-binary" && nm != "" && nm != "." {
 			return "「" + nm + "」已经删掉了却还在运行", "重启一下电脑就好。"
@@ -462,7 +527,8 @@ func (s *Service) plainGroup(g lookGroup) (string, string, string) {
 	case "persistence.daemon-missing", "persistence.path-missing", "persistence.cron-missing":
 		return fmt.Sprintf("%d 个已经删掉的程序留下的开机启动项", n), advice, ""
 	case "permission.stale-grant":
-		return fmt.Sprintf("%d 个已删除的应用仍有权限", n), strings.Replace(grantAdvice, "选中它", "选中它们", 1), nameLine
+		title, advice := staleGrant(g.findings)
+		return title, advice, nameLine
 	case "vitals.cpu":
 		return fmt.Sprintf("有 %d 个程序一直占满处理器，可能卡住了", programs), strings.Replace(advice, "它", "它们", -1), nameLine
 	// what a plan can clean, when a kind of it is one row (planGroups): the kind, not the first one's own title
@@ -491,6 +557,12 @@ func (s *Service) plainGroup(g lookGroup) (string, string, string) {
 			return fmt.Sprintf("%d 个文件可能是病毒", n), "病毒库认出了它们。建议移到废纸篓，先不要打开。", nameLine
 		case f.Rule == "supplychain.malicious":
 			return fmt.Sprintf("有 %d 处装了已知的恶意软件包", n), advice, nameLine
+		case f.Rule == "process.dyld-insert":
+			return fmt.Sprintf("正在运行的程序被设成先载入 %d 个库", n), advice, nameLine
+		case f.Rule == "process.library-temp":
+			return fmt.Sprintf("有 %d 个程序载入了临时文件夹或下载文件夹里的代码", programs), strings.Replace(advice, "它", "它们", -1), nameLine
+		case f.Rule == "process.library-deleted":
+			return fmt.Sprintf("有 %d 个程序用着已经删掉的库", programs), "多半是升级以后还没重启它们，重启这些程序就好。", nameLine
 		case f.Category == core.CatProcess:
 			return fmt.Sprintf("有 %d 个程序已经删掉了却还在运行", programs), advice, nameLine
 		}
@@ -588,6 +660,12 @@ func lookAdvice(g lookGroup, advice string) string {
 		return "不认识的可以关掉开机启动"
 	case f.Category == core.CatPermission:
 		return "应用已经删了，权限可以一起移除"
+	case f.Rule == "process.dyld-insert":
+		return "不是你调试时设的，重启电脑后再查一遍"
+	case f.Rule == "process.library-temp":
+		return "不认得的就退出它，再查一遍病毒"
+	case f.Rule == "process.library-deleted":
+		return "重启一下这个程序就好"
 	case f.Category == core.CatProcess:
 		return "重启一下电脑就好"
 	case strings.HasPrefix(f.Rule, "apps."):
