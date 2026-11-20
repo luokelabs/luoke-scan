@@ -64,7 +64,7 @@
      python3 scripts/record_agent_fixtures.py
      ```
    - `blackbox/` 是从外面测的一套：只通过命令行跑 `luoke-scan`，看输出和假目录里的文件怎么变，和 `blackbox/golden/` 里存的比（不看数据库和程序内部，换一种写法也能拿它对）。改了报出来的东西就不过；是有意的改动就 `python3 blackbox/run.py --record --only <场景>` 重录、一起提交，PR 里说清变了什么。见 [blackbox/README.md](blackbox/README.md)。
-   - GitHub 上的检查（`.github/workflows/ci.yml`）不是每个 PR 都跑：PR 说明里勾上 `- [x] 跑 CI` 才跑（模板里有这一行），之后推新提交也跑。它在自托管的一次性 macOS 虚拟机里跑 `go vet`、`go test`、下面第 4 条的三套评测、`blackbox/run.py` 和 `bench/test_checks.py`；agent 自测、模型评测还是在本机跑。
+   - GitHub 上的检查（`.github/workflows/ci.yml`）每个 PR 都跑：开的时候、每推一次新提交都跑，合之前要过。它在自托管的一次性 macOS 虚拟机里跑 `go vet`、`go test`、下面第 4 条的三套评测、`blackbox/run.py` 和 `bench/test_checks.py`；agent 自测、模型评测还是在本机跑。
 4. **改规则要跑它的评测**：
    - 不用点就清的四类（会重建的缓存、装好了的应用的安装包、下载里的重复文件、测试工具留下的临时文件夹）：`.build/go/luoke-scan eval-cleanup`，**挑错必须是 0**。加一种新的（新的缓存位置、新的临时文件夹前缀），同时加上它「看着像、但不该清」的用例。见 [evals/cleanup/README.md](evals/cleanup/README.md)。
    - AI skill 的检查：`.build/go/luoke-scan eval-skills`，恶意的要全部报出，正常的一个都不能报成高。改了 `evals/skills/` 的用例或示范，跑 `.build/go/luoke-scan make-skill-evalset` 重新生成评测集和提示词示范，一起提交。见 [evals/skills/README.md](evals/skills/README.md)。

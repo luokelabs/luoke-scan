@@ -1,6 +1,5 @@
-# PR 说明里勾上「- [x] 跑 CI」才跑：不是每个 PR 都要跑。
-# 跑在自托管的一次性 macOS 虚拟机里（标签 luoke-vm），同时最多 2 台，忙时排队。
-# 勾上的那一刻跑一次（改说明也会触发，没勾就什么都不做），之后每推一次新提交都跑；说明里没有这一行也不跑。
+# 每个 PR 都跑：开的时候、每推一次新提交、重新打开、草稿转正式的时候。合之前要这两个任务都过。
+# 跑在自托管的一次性 macOS 虚拟机里（标签 luoke-vm），同时最多 2 台，忙时排队；同一个 PR 推了新提交，旧的那次取消。
 #
 # 跑的是 CONTRIBUTING「提交之前」里能在 GitHub 的机器上跑的：go vet、go test、从外面测（blackbox）、
 # AI skill 检查的评测、给 AI 看的说明文件检查的评测、自动清理的评测、bench/test_checks.py。
@@ -9,7 +8,7 @@ name: 测试
 
 on:
   pull_request:
-    types: [opened, edited, synchronize, reopened]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: read
@@ -25,7 +24,6 @@ defaults:
 jobs:
   bench:
     name: bench 的检查
-    if: contains(github.event.pull_request.body, '- [x] 跑 CI')
     runs-on: [self-hosted, luoke-vm]
     timeout-minutes: 10
     steps:
@@ -37,7 +35,6 @@ jobs:
 
   go:
     name: Go 测试和评测
-    if: contains(github.event.pull_request.body, '- [x] 跑 CI')
     runs-on: [self-hosted, luoke-vm]
     timeout-minutes: 45
     env:

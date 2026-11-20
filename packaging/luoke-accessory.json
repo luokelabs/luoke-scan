@@ -3,7 +3,7 @@
   "accessory": "luoke-scan",
   "bundle_id": "ai.luoke.scan",
   "name": "螺壳扫描",
-  "version": "0.3.42",
+  "version": "0.3.44",
   "type": "app",
   "entry": [],
   "resident": false,
@@ -16,9 +16,9 @@
     {"name": "luoke-scan.skills", "kind": "generate", "main": false}
   ],
   "jobs": [
-    {"name": "update", "exec": "luoke-scan", "command": ["update", "--this-mac"],
+    {"name": "update", "title": "更新病毒库", "exec": "luoke-scan", "command": ["update", "--this-mac"],
      "min_interval_minutes": 1440, "uses_model": false, "memory_mb": 800, "allow_battery": false, "timeout_minutes": 20},
-    {"name": "scan", "exec": "luoke-scan", "command": ["scan", "--this-mac", "--autoclean"],
+    {"name": "scan", "title": "扫描这台 Mac", "exec": "luoke-scan", "command": ["scan", "--this-mac", "--autoclean"],
      "min_interval_minutes": 1440, "uses_model": true, "memory_mb": 1500, "allow_battery": false, "timeout_minutes": 60,
      "uses": ["fda"], "first_use": true}
   ],

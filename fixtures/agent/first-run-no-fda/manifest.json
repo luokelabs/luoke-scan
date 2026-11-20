@@ -126,6 +126,7 @@
       "min_interval_minutes": 1440,
       "name": "update",
       "timeout_minutes": 20,
+      "title": "更新病毒库",
       "uses_model": false
     },
     {
@@ -141,6 +142,7 @@
       "min_interval_minutes": 1440,
       "name": "scan",
       "timeout_minutes": 60,
+      "title": "扫描这台 Mac",
       "uses": [
         "fda"
       ],
@@ -170,5 +172,5 @@
   ],
   "type": "app",
   "ui_element": true,
-  "version": "0.3.42"
+  "version": "0.3.44"
 }
