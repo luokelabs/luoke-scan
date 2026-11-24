@@ -66,8 +66,11 @@ func (s *Service) register() {
 	srv.Tool("scan_plan", ToolSpec{Title: "出清理方案", Description: "按上一轮的发现出一份清理方案，每项可以选移到废纸篓、先不动、以后别提", ReadOnly: true,
 		Properties: O{"scope": O{"type": "string", "enum": A{"all", "cache"}}}},
 		func(args O, _ O) (ToolOutput, error) { return s.planTool(args, s.state()) })
-	srv.Tool("scan_apply", ToolSpec{Title: "执行清理方案", Description: "执行用户在卡片上点过的方案：只做方案里列的、用户选的",
-		Properties: O{"plan_id": O{"type": "string"}, "choices": O{"type": "object"}}, Required: []string{"plan_id", "choices"}, Destructive: true},
+	srv.Tool("scan_apply", ToolSpec{Title: "执行清理方案", Description: "执行用户在卡片上点过的方案：只做方案里列的、用户选的；重复文件可以选留哪一份（keep）",
+		Properties: O{"plan_id": O{"type": "string"}, "choices": O{"type": "object"},
+			"keep": O{"type": "object", "additionalProperties": O{"type": "string"},
+				"description": "可选：重复文件留哪一份，{\"<项的键>\": \"<这一组里一份的绝对路径>\"}，路径取自 data/category 那一项的 facts.members；那一项在 choices 里要选 trash，这一组别的几份（含默认留的那份）移到废纸篓"}},
+		Required: []string{"plan_id", "choices"}, Destructive: true},
 		func(args O, meta O) (ToolOutput, error) { return s.apply(args, meta) })
 	srv.Tool("scan_ignore", ToolSpec{Title: "以后别提这一条", Description: "把一条发现标成不用管，以后不再报；undo 为真时撤销，照样提醒",
 		Properties: O{"finding_id": O{"type": "string"}, "undo": O{"type": "boolean", "description": "撤销刚才的「以后别提」"}}, Required: []string{"finding_id"}},

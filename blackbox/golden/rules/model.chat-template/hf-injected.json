@@ -208,10 +208,17 @@
                 "destructiveHint": true,
                 "readOnlyHint": false
               },
-              "description": "执行用户在卡片上点过的方案：只做方案里列的、用户选的",
+              "description": "执行用户在卡片上点过的方案：只做方案里列的、用户选的；重复文件可以选留哪一份（keep）",
               "inputSchema": {
                 "properties": {
                   "choices": {
+                    "type": "object"
+                  },
+                  "keep": {
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "description": "可选：重复文件留哪一份，{\"<项的键>\": \"<这一组里一份的绝对路径>\"}，路径取自 data/category 那一项的 facts.members；那一项在 choices 里要选 trash，这一组别的几份（含默认留的那份）移到废纸篓",
                     "type": "object"
                   },
                   "plan_id": {

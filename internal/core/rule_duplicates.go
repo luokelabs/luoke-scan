@@ -35,6 +35,9 @@ func NewDuplicateRule(l *Layout, f *Fakes) Rule {
 	return r
 }
 
+// duplicatesKey starts the key of a duplicates finding; the SHA-256 its copies share follows it.
+const duplicatesKey = "space.duplicates:"
+
 // duplicatesLeftOut follows the places in the reason the rule gives for those it left out (NotLooked).
 const duplicatesLeftOut = " 里的重复文件"
 
@@ -42,6 +45,21 @@ const duplicatesLeftOut = " 里的重复文件"
 // hidden files and folders, node_modules, packages (an app, a photo library: one file in Finder), links, a file with
 // another name too (a hard link), one kept only in iCloud, and what is on another volume mounted inside a folder.
 var DuplicatesNever = []string{"hidden", "node_modules", "package", "symlink", "hard-link", "icloud-only", "other-volume"}
+
+// DuplicatesHash is the SHA-256 (hex) a duplicates finding's copies were found to share, from its key; ok false when
+// the finding has none.
+func DuplicatesHash(f Finding) (string, bool) {
+	h, ok := strings.CutPrefix(f.Key, duplicatesKey)
+	if !ok || len(h) != 64 {
+		return "", false
+	}
+	for _, c := range h {
+		if (c < '0' || c > '9') && (c < 'a' || c > 'f') {
+			return "", false
+		}
+	}
+	return h, true
+}
 
 // DuplicatesNotLooked are the places a round's rule left out for want of Full Disk Access, read back from the reason it
 // was skipped with: its own (NotLooked), or one an interrupted round carried over with an earlier round's findings.
@@ -269,7 +287,7 @@ func (r *DuplicateRule) Run(ctx *Context) ([]Finding, error) {
 			Evidence: map[string]string{"keep": HomeRelative(keep.path, ctx.Home), "copies": strings.Join(rel, "；"),
 				"targets": strings.Join(targets, "\n"), "sha256": short,
 				"how": "留一份、把别的移到废纸篓；或者都留着、换成克隆：几份共用一份数据，以后改了其中一份，别的不受影响"},
-			Key: "space.duplicates:" + hash})
+			Key: duplicatesKey + hash})
 	}
 	var partial, left []string
 	for _, p := range r.Places {

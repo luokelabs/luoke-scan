@@ -34,7 +34,10 @@
                 },
                 {
                   "category": null,
-                  "facts": null,
+                  "facts": {
+                    "grant": "FileVault",
+                    "setting": "filevault"
+                  },
                   "finding": "posture.filevault",
                   "modelNotes": [],
                   "path": null,
@@ -89,7 +92,14 @@
                 },
                 {
                   "category": null,
-                  "facts": null,
+                  "facts": {
+                    "count": 1,
+                    "pids": [
+                      100
+                    ],
+                    "program": "~/Applications/Gone.app/Contents/MacOS/gone",
+                    "started": "2026-10-18"
+                  },
                   "finding": "process.deleted-binary/000000000018",
                   "modelNotes": [],
                   "path": "~/Applications/Gone.app/Contents/MacOS/gone",

@@ -295,12 +295,19 @@ func (s *Service) dataItem(it PlanItem, plan Plan, f *core.Finding, r *core.Repo
 	if f != nil {
 		info = s.itemFacts(*f, len(it.Targets))
 		path, reveal = f.Path, s.revealTarget(*f)
-		// A duplicates item: every copy of the group, the one the rule keeps first and then the plan's targets in the
-		// rule's order (luoke-scan#234). Which one stays is the rule's alone.
+		// A duplicates item: every copy of the group, the one kept by default first (the rule's order), so the user can
+		// choose which one stays (scan_apply's keep, luoke-scan#234)
 		if it.Rule == "space.duplicates" {
-			members := A{f.Path}
-			for _, t := range it.Targets {
-				members = append(members, t.Path)
+			members := A{}
+			if len(it.Members) > 0 {
+				for _, m := range it.Members {
+					members = append(members, m.Path)
+				}
+			} else {
+				members = append(members, f.Path)
+				for _, t := range it.Targets {
+					members = append(members, t.Path)
+				}
 			}
 			info.facts["members"] = members
 		}
@@ -629,6 +636,14 @@ func (s *Service) attentionFacts(f core.Finding) any {
 	// A skill's and a chat template's: the same facts their items in data/category have.
 	if (strings.HasPrefix(f.Rule, "skill.") || f.Rule == "model.chat-template") && !strings.HasSuffix(f.Rule, ".partial") {
 		return s.itemFacts(f, 0).facts
+	}
+	switch {
+	case strings.HasPrefix(f.Rule, "posture."):
+		return postureFacts(f)
+	case strings.HasPrefix(f.Rule, "process."):
+		return processFacts(f)
+	case strings.HasPrefix(f.Rule, "keyboard."):
+		return keyboardFacts(f)
 	}
 	return nil
 }

@@ -19,7 +19,7 @@ import (
 )
 
 // ToolVersion is this build's version; it must be the accessory manifest's (packaging/luoke-accessory.json).
-const ToolVersion = "0.3.46"
+const ToolVersion = "0.3.47"
 
 // ModelLink is luoke-core's model for the generate tasks.
 type ModelLink struct {

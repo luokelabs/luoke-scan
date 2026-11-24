@@ -925,7 +925,8 @@ JSON 按键排序、缩进两格。
   `page/<页>`。`server/discover`、`resources/list` 扫描都答，agent 现在不一定问。
 - agent 自己拼扫描页时读 `data/…`（只有代号和原始数值，没有卡片、没有句子；字段和动作清单见
   [docs/data-resources.md](../../docs/data-resources.md)）。页上的动作照旧调工具：移到废纸篓是 `scan_apply`，`plan_id`、
-  `choices` 的键取自 `data/category` 每一项的 `plan`、`key`；放回是 `scan_restore`，`id` 取自 `data/history`、
+  `choices` 的键取自 `data/category` 每一项的 `plan`、`key`；重复文件要留指定的那一份时另带 `keep`
+  （`{"<key>": "<facts.members 里的一份>"}`，那一项选 `trash`）；放回是 `scan_restore`，`id` 取自 `data/history`、
   `data/overview` 的 `batch`。
 - 会改动东西的（`scan_apply`、`scan_ignore`、`scan_restore`、`scan_autoclean`，清单 `actions` 里的四个）只认带
   `ai.luoke/user-action`（`surfaceId` 是工具自己起的卡片编号或页 id、`componentId`、`at`）的调用，没带的答

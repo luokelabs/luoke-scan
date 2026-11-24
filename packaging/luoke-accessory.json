@@ -3,7 +3,7 @@
   "accessory": "luoke-scan",
   "bundle_id": "ai.luoke.scan",
   "name": "螺壳扫描",
-  "version": "0.3.46",
+  "version": "0.3.47",
   "type": "app",
   "entry": [],
   "resident": false,

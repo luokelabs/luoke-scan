@@ -592,7 +592,8 @@ func (s *Service) cachesCleaned(p Plan, r core.Report) map[string]int64 {
 // the next round looks again; offered again they would only come back 「找不到，已跳过」. Either way:
 //   - every place the item would move or change has a record in the clean-up record since the round started, by a plan
 //     (not automatic cleaning), the same rule, not put back; matched by where it was (as written, or its folders' links
-//     resolved as the record has it) or by what it was (device and inode, when the plan has them);
+//     resolved as the record has it) or by what it was (device and inode, when the plan has them); of a duplicates item
+//     whose plan knows its copies, every copy but one (the one kept, by default or the user's choice);
 //   - or a click found it already gone (State.Gone, deleted outside this tool) since the round started, and nothing of
 //     it was put back since.
 func (s *Service) itemsCleaned(p Plan, r core.Report) map[string]bool {
@@ -622,18 +623,27 @@ func (s *Service) itemsCleaned(p Plan, r core.Report) map[string]bool {
 		return out
 	}
 	for _, it := range p.Items {
-		all := len(it.Targets) > 0
+		// Every target went; a duplicates item that knows its copies: all but one, whichever the user kept (scan_apply's
+		// keep, luoke-scan#234)
+		list, need := it.Targets, len(it.Targets)
+		if len(it.Members) > 0 {
+			list, need = it.Members, len(it.Members)-1
+		}
+		went := 0
 		var putBack time.Time
-		for _, t := range it.Targets {
+		for _, t := range list {
 			canonical := core.Canonical(filepath.Dir(t.Path)) + "/" + filepath.Base(t.Path)
 			rule, known := by[ident{t.Device, t.Inode}]
-			all = all && (at[it.Rule+"\x00"+t.Path] || at[it.Rule+"\x00"+canonical] || t.Inode != 0 && known && rule == it.Rule)
+			if at[it.Rule+"\x00"+t.Path] || at[it.Rule+"\x00"+canonical] || t.Inode != 0 && known && rule == it.Rule {
+				went++
+			}
 			for _, k := range []string{it.Rule + "\x00" + t.Path, it.Rule + "\x00" + canonical} {
 				if back[k].After(putBack) {
 					putBack = back[k]
 				}
 			}
 		}
+		all := len(it.Targets) > 0 && went >= need
 		g, wasGone := gone[it.FindingID]
 		if all || wasGone && !g.Before(r.StartedAt.Time) && !putBack.After(g.Time) {
 			out[it.Key] = true

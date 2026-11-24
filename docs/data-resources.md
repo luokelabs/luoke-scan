@@ -99,7 +99,7 @@
 
 | 键 | 是什么 |
 |---|---|
-| `members` | 这一组每一份的绝对路径：第一份是留下的那份（和 `keep` 一样），后面是要移走的几份（方案里的，和 `paths` 同一个顺序，就是上面的先后）；全部列出，不受 `paths` 最多 20 处的限制。只是给页面看的：留哪一份由规则定，`scan_apply` 没有换一份留的参数 |
+| `members` | 这一组每一份的绝对路径，按上面的先后排，第一份就是默认留的（和 `keep` 一样）；全部列出，不受 `paths` 最多 20 处的限制。用户要自己选留哪一份时从这里挑，原样发给 `scan_apply` 的 `keep` |
 
 `data/category?id=duplicate` 的最上层另有 `compared`：这一轮比了哪些地方、怎么比的（整类一份，不在每一项里；别的类没有这个键；
 还没查过一轮是 `null`）。只有代号和数，怎么说由读的一方写。一组里列出的份数比用户知道的少，多半是另几份在这些地方以外，或在不比的东西里。
@@ -194,7 +194,7 @@
 | `urgent` | 是不是急事（和 outbox 的 `security` 一样的判断） |
 | `category` | 也能从哪一类里清掉（病毒是 `malware`）；只能看的是 `null` |
 | `path`、`reveal` | 在哪；在访达中显示时选中哪里。没有位置的是 `null` |
-| `facts` | 这条规则查到的事实（代号、名字、数、是或否，不带句子），按规则各有各的字段，见下；还没给事实的规则是 `null` |
+| `facts` | 这条规则查到的事实（代号、名字、数、是或否，不带句子），按规则各有各的字段，见下；还没给事实的规则是 `null`（`permission.stale-grant`、`skill.*`、`model.chat-template`、`posture.*`、`process.*`、`keyboard.*` 都给了） |
 | `modelNotes` | 本机模型对这一项的说明，见「本机模型的说明」；没有是 `[]` |
 
 `skill.*`（`skill.partial` 除外）和 `model.chat-template` 的 `facts` 和它们在 `data/category?id=ai-plugin` 里那一项的 `facts` 一样
@@ -215,6 +215,37 @@
 | `loginItems.root` | 还会启动的里面有没有以 root 身份跑的 |
 
 `starts`、`root` 在升级前扫的那一轮里是 `null`（那一轮没记），下一轮扫完就有。
+
+安全设置（`posture.*`）的 `facts`：
+
+| 字段 | 是什么 |
+|---|---|
+| `setting` | 哪一项，规则名去掉 `posture.`：`filevault`、`firewall`、`stealth`、`sip`、`gatekeeper`、`screen-lock`、`screen-lock-delay`、`autoupdate`、`pending-updates`、`xprotect-stale`、`remote-login`、`screen-sharing`、`file-sharing`、`internet-sharing`、`airdrop-everyone`、`auto-login`、`guest`、`trusted-roots`、`partial` |
+| `grant` | 能原样作 `scan_open_settings` 的 `grant`、打开改它的那一页的（现在只有 `FileVault`）；没有是 `null` |
+| `delaySeconds` | `screen-lock-delay`：屏保或关屏后几秒才要密码 |
+| `uptimeDays`、`pending` | `pending-updates`：几天没重启、几个系统更新没装 |
+| `updated` | `xprotect-stale`：XProtect 上次更新的日子（`2006-01-02`） |
+| `certs`、`certsMore` | `trusted-roots`：被设成信任的根证书的名字，最多 10 个；没列的几个 |
+| `skipped` | `partial`：没查成的几项，代号同 `setting`（共享服务是 `sharing`） |
+
+进程（`process.*`）的 `facts`：
+
+| 字段 | 是什么 |
+|---|---|
+| `count`、`pids`、`started` | 几个进程、进程号（最多 20 个）、最早的那个哪天起的；没有是 `null` 或 `[]` |
+| `program` | 哪个程序（绝对路径）：`deleted-binary`（程序已经删了还在跑的）、`pile-up`、`library-temp`、`library-deleted` |
+| `library`、`signature`、`programs` | `dyld-insert`：要先载入的库、它的签名、带着它启动的程序的名字（最多 10 个） |
+| `place`、`libraries`、`libraryCount` | `library-temp`：库在哪（`temp` / `downloads` / `temp-and-downloads`）、载入的库（最多 10 个，每个 `path` 和 `signature`，没查签名是 `null`）、一共几个 |
+| `libraries`、`libraryCount` | `library-deleted`：已经删掉的库的路径（最多 10 个）、一共几个 |
+| `parent`、`parentPid` | `pile-up`：父进程的程序（认不出是 `null`）和进程号 |
+| `oldest` | `orphan`：最早的 10 个，每个 `name`、`pid`、`hours`（跑了几小时） |
+| `skipped` | `partial`：`launchctl`（没答复，这一轮没查孤儿进程）；只有这一个字段 |
+
+在看键盘的程序（`keyboard.*`）的 `facts`：`keyboard.watchers` 是 `{"programs": [有开发者担保的程序的名字]}`；
+`keyboard.unvouched` 是 `program`（绝对路径；程序文件已经不在了是 `null`）、`signature`、`interpreter`（`true`：苹果签名的解释器在跑某个脚本）。
+
+`signature` 是 `{"kind", "team"}`：`kind` 是 `apple`、`developer`（`team` 是开发者的 Team ID）、`adhoc`、`unsigned`、`invalid`（签名后被改过）、
+`script`、`missing`、`unknown`（在要先问的文件夹里、没有完全磁盘访问，没看）、`deleted`（文件已经删掉）；别的 `team` 是 `null`。
 
 示例（`fixtures/agent/full-report`，删掉了一部分）：
 
@@ -854,6 +885,7 @@ APFS 上拷贝一个文件可以不占新地方（克隆：`cp -c`、访达的�
 | 动作 | 工具和参数 | 改不改东西 | 能不能撤回 |
 |---|---|---|---|
 | 把选中的移到废纸篓 | `scan_apply`：`plan_id` 是选中项的 `plan`，`choices` 是 `{"<key>": ["trash"]}`，每个选中的一个；没发的项当作先不动。会重建的缓存选项里只有 `remove`（直接删），重复文件还可以 `clone`。要密码的项（`password: true`）在另一份方案里，要另发一次，由本体弹密码框 | 改 | `trash` 能：`scan_restore` 整批放回（编号是 `plan`，`data/history` 里那一批）。`remove`、`delete` 撤不回，删掉的缓存工具会重建。要密码移走的不在这里放回 |
+| 重复文件留指定的那一份 | `scan_apply`：`choices` 里这一项 `["trash"]`，另加 `keep` `{"<key>": "<members 里的一份>"}`（可以给几项，每项一份）。这一组别的几份（含默认留的那份）移到废纸篓，选的那份留着。`keep` 只认重复文件、选了 `trash` 的项，路径要和 `members` 里的一份一字不差；不合的整次答 `invalid`、什么都不动。动手前这一组每一份再核一遍（不跟随链接，还是方案记下的那个文件，内容的 SHA-256 还是这一轮查到的，选的那份还在），有一份不对整次答 `stale`、什么都不动，重读再选。不给 `keep` 照旧留 `facts.keep` 那一份 | 改 | 能：`scan_restore` 整批放回，原来默认留的那份也一起放回 |
 | 这一类以后别再问 | `scan_apply`：同一份方案里这一类每一项 `["ignore"]`；或者每一项各调一次 `scan_ignore` `{"finding_id": "<finding>"}` | 改（只记下，不动文件） | 能：`scan_ignore` `{"finding_id": …, "undo": true}`；记下的在 `data/settings` 的 `ignored` 里 |
 | 放回 | `scan_restore` `{"id": "<batch>"}`（`data/history`、`data/overview` 的 `autoCleaned` 里的 `batch`） | 改 | 放回的东西可以再清。放回一次自动清，那几类以后先问（`data/settings` 的 `kinds[].off`） |
 | 在访达中显示 | 窗口自己做，选中 `reveal`。旧的 `scan_reveal` `{"finding_id": …}` 照旧在 | 不改 | — |

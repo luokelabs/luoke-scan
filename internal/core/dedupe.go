@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"io"
 	"os"
+	"syscall"
 
 	"golang.org/x/sys/unix"
 )
@@ -91,13 +92,36 @@ func fileDigest(path string, cancelled func() bool) (string, bool) {
 		return "", false
 	}
 	defer f.Close()
+	return readDigest(f, cancelled)
+}
+
+// DigestOf is the SHA-256 of the file at path, read only when what the path names (its last name not followed) is a
+// plain file with this device and inode: the file checked is the file read. ok false otherwise, when it cannot be read,
+// or once stop says so.
+func DigestOf(path string, device int64, inode uint64, stop func() bool) (string, bool) {
+	// Not blocking: a FIFO put in its place is refused below, not waited on.
+	fd, err := syscall.Open(path, syscall.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK|syscall.O_CLOEXEC, 0)
+	if err != nil {
+		return "", false
+	}
+	f := os.NewFile(uintptr(fd), path)
+	defer f.Close()
+	var st syscall.Stat_t
+	if syscall.Fstat(fd, &st) != nil || st.Mode&syscall.S_IFMT != syscall.S_IFREG || int64(st.Dev) != device || st.Ino != inode {
+		return "", false
+	}
+	return readDigest(f, stop)
+}
+
+// readDigest is the SHA-256 of what r holds, 1 MiB at a time; ok false when a read fails or cancelled says stop.
+func readDigest(r io.Reader, cancelled func() bool) (string, bool) {
 	h := sha256.New()
 	buf := make([]byte, 1<<20)
 	for {
 		if cancelled != nil && cancelled() {
 			return "", false
 		}
-		n, err := io.ReadFull(f, buf)
+		n, err := io.ReadFull(r, buf)
 		h.Write(buf[:n])
 		if err == io.EOF || err == io.ErrUnexpectedEOF {
 			break

@@ -696,6 +696,8 @@ type skillFileScan struct {
 	tagLines, bidiLines, zeroWidthLines []int
 	zeroWidth                           int
 	commentLines, blobLines             []int
+	// fencedLines: the lines of code inside a fenced code block of prose (a Markdown file's examples).
+	fencedLines map[int]bool
 }
 
 var skillProseExt = aiSet("md", "markdown", "mdx", "txt", "rst", "text", "")
@@ -893,6 +895,12 @@ func skillScanFileWith(text, path string, script bool, own []string, opts skillS
 				}
 			}
 			around = sectionTopic || sectionNeg || fenceTalk || listTalk || lead
+			if fenced {
+				if out.fencedLines == nil {
+					out.fencedLines = map[int]bool{}
+				}
+				out.fencedLines[n] = true
+			}
 			talkTopic = c.topic.hasRunes(visibleR) || sectionTopic || fenceTalk || listTalk || lead
 			talkNeg = sectionNeg
 		}
@@ -1566,6 +1574,19 @@ func SkillSignals(skill Skill) []SkillSignal {
 				hits[i].label += "（中间夹着看不见的字符）"
 			}
 		}
+		// A reference document's code examples (references/…/patterns.md): what the agent may look up while it helps
+		// with that product, not steps the skill tells it to take. One step lighter than the same line in SKILL.md or
+		// in a script; what is hidden is not an example. Only fetching and running, and sending out: the usual lines of a
+		// product's examples. Switching a protection off, erasing a disk, writing the agent's own instructions and the
+		// rest stay as they are wherever they are written (a prompt in a JSON block is read as steps too).
+		if skillReferenceDoc(f.Path, script) {
+			for i := range hits {
+				if s.fencedLines[hits[i].line] && !hits[i].hidden && !hits[i].masked && hits[i].severity != "" &&
+					(hits[i].kind == SignalDownloadExec || hits[i].kind == SignalExfil) {
+					hits[i].severity = skillLighter(hits[i].severity)
+				}
+			}
+		}
 		if len(s.tagLines) > 0 {
 			add(SignalInjection, High, "藏着看不见的字符（Unicode 标签字符，AI 读得到）", f.Path, s.tagLines)
 		}
@@ -1816,6 +1837,23 @@ func aiUniqueInts(a []int) []int {
 	}
 	sort.Ints(out)
 	return out
+}
+
+// skillReferenceDoc: a Markdown file in a folder of the skill (references/, docs/, examples/…), not its SKILL.md.
+func skillReferenceDoc(path string, script bool) bool {
+	return !script && strings.Contains(path, "/") && skillProseExt[strings.ToLower(aiNSExt(aiNSLast(path)))] &&
+		aiNSExt(aiNSLast(path)) != ""
+}
+
+// skillLighter: one step lighter, low staying low.
+func skillLighter(s Severity) Severity {
+	switch s {
+	case High:
+		return Medium
+	case Medium:
+		return Low
+	}
+	return s
 }
 
 func skillSevOrLow(s Severity) Severity {

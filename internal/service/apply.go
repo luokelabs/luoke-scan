@@ -289,11 +289,28 @@ func (s *Service) planItem(f core.Finding, key string, admin bool) *PlanItem {
 		Targets: targets, Suggested: suggested, Options: options, Label: f.Evidence["label"]}
 	if f.Rule == "space.duplicates" {
 		it.Original = f.Path
+		it.Members, it.Hash = s.duplicateMembers(f, targets)
 	}
 	if f.Rule == "leftover.app-data" {
 		it.BundleID = f.Evidence["bundle_id"]
 	}
 	return &it
+}
+
+// duplicateMembers: every copy of a duplicates finding as a plan sees it, the one kept by default first and then the
+// item's targets (the rule's order), and the SHA-256 the round found them to share: what scan_apply's keep chooses from
+// and checks again (luoke-scan#234). None when the round's hash is not known, or the copy kept by default is not one a
+// plan could move (where this round may not look, outside the home, gone, a link): the user may choose it to go.
+func (s *Service) duplicateMembers(f core.Finding, targets []Target) ([]Target, string) {
+	hash, ok := core.DuplicatesHash(f)
+	if !ok || !s.Config.Context.MayLook(f.Path) || !s.inside(f.Path) {
+		return nil, ""
+	}
+	dev, ino, link, there := identity(f.Path)
+	if !there || link {
+		return nil, ""
+	}
+	return append([]Target{{Path: f.Path, Device: dev, Inode: ino}}, targets...), hash
 }
 
 // plan: the same findings in the same report give the same plan (the id comes from the findings alone, so reading
@@ -454,9 +471,10 @@ func withAuto(it *PlanItem, auto map[string]core.AutoHow) {
 
 // suggestAgain: a plan an older version of this tool saved (luoke-scan#129: 14:37's plan kept every installer at
 // 「先不动」 after the update that preselects them) takes this version's defaults, from the same round's findings: the
-// same items and targets as the round found them (nothing is looked at on disk again), each preselected as this version
-// would. The plan records no choice of the user's (those live on the card, and the page sends its defaults on every
-// read), so there is nothing of theirs to keep. Saved, so it happens once.
+// same items and targets as the round found them (nothing is looked at on disk again but the copy a duplicates item
+// keeps by default, for its members), each preselected as this version would. The plan records no choice of the user's
+// (those live on the card, and the page sends its defaults on every read), so there is nothing of theirs to keep. Saved,
+// so it happens once.
 func (s *Service) suggestAgain(p *Plan, candidates []core.Finding, admin bool, scope string) {
 	byID := map[string]core.Finding{}
 	for _, f := range candidates {
@@ -471,6 +489,11 @@ func (s *Service) suggestAgain(p *Plan, candidates []core.Finding, admin bool, s
 		}
 		it.Suggested = baseSuggestion(f)
 		withAuto(it, auto)
+		// A duplicates item saved before plans recorded its copies gets them, so the user may choose which one stays:
+		// the one kept by default looked at once, the targets as they were recorded
+		if it.Rule == "space.duplicates" && len(it.Members) == 0 && !admin {
+			it.Members, it.Hash = s.duplicateMembers(f, it.Targets)
+		}
 	}
 	p.Tool = ToolVersion
 	p.Save(s.plansDir())
@@ -996,6 +1019,12 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 		}
 		picks[it.Key] = pick
 	}
+	// Which copy of a duplicates item stays, where the user chose (luoke-scan#234): only what the plan allows, or nothing
+	// of the call is done.
+	keeps, err := keptCopies(args, plan, picks)
+	if err != nil {
+		return ToolOutput{}, err
+	}
 	if !s.begin(plan.ID) {
 		return ToolOutput{}, Fail("not_ready", "这份方案正在处理，等一下再看结果。")
 	}
@@ -1007,6 +1036,15 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 	// 2. Checking and moving can take minutes; the outbox stays readable meanwhile.
 	started := time.Now()
 	deadline := started.Add(checkBudget)
+	// Every copy of a group the user chose which one of to keep is checked before anything of the call moves: one that is
+	// not the file the plan saw, or no longer has the contents the round found, and nothing is done.
+	for _, it := range plan.Items {
+		if k, chosen := keeps[it.Key]; chosen {
+			if why := s.checkKeep(it, k, deadline); why != "" {
+				return ToolOutput{}, Fail("stale", "「"+resultName(it.Title)+"」"+why+"，这次什么都没动。重新查一下再选。")
+			}
+		}
+	}
 	var moved, cloned, removedCaches, changed []titled
 	var partly, skipped, unchanged, ignored, gone, unrecorded []string
 	partlyDeleted := 0 // of partly, the caches: deleted, not moved to the Trash
@@ -1064,9 +1102,16 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 			}
 			outcomes = append(outcomes, outcome{it, ChoiceClone, n > 0})
 		case ChoiceTrash:
+			// A duplicates item whose kept copy the user chose: its other copies go instead of its targets, the one kept
+			// by default among them (checked above, all of them)
+			targets, original := it.Targets, it.Original
+			k, chosen := keeps[it.Key]
+			if chosen {
+				targets, original = k.trash, k.keep.Path
+			}
 			n, absentN := 0, 0
 			var why []string
-			for _, t := range it.Targets {
+			for _, t := range targets {
 				if r := s.refuse(t, it, plan, deadline); r != "" {
 					if r == absent {
 						absentN++ // already gone: nothing left to do
@@ -1075,10 +1120,12 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 					}
 					continue
 				}
-				// One of several copies goes only while the one that stays is still there with the same contents.
+				// One of several copies goes only while the one that stays is still there with the same contents (the one
+				// the user chose: still the file the plan saw).
 				if it.Rule == "space.duplicates" {
-					_, _, link, there := identity(it.Original)
-					if it.Original == "" || !there || link || !core.SameContents(it.Original, t.Path) {
+					dev, ino, link, there := identity(original)
+					other := chosen && (dev != k.keep.Device || ino != k.keep.Inode)
+					if original == "" || !there || link || other || !core.SameContents(original, t.Path) {
 						why = append(why, "要留的那份已经不在或改过了")
 						continue
 					}
@@ -1089,7 +1136,7 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 				}
 				// Written down as it goes, so "放回" finds it.
 				var b *int64
-				if len(it.Targets) == 1 {
+				if len(targets) == 1 {
 					b = it.Bytes
 				}
 				_, recorded, err := s.trashAndRecord(t.Path, plan.ID, it.Rule, it.Title, b, "", &ident{t.Device, t.Inode})
@@ -1117,7 +1164,7 @@ func (s *Service) apply(args, meta O) (ToolOutput, error) {
 			case len(why) == 0:
 				gone = append(gone, resultName(it.Title))
 			case n > 0:
-				partly = append(partly, fmt.Sprintf("%s：移了 %d/%d，其余%s", resultName(it.Title), n, len(it.Targets)-absentN, strings.Join(uniq(why), "、")))
+				partly = append(partly, fmt.Sprintf("%s：移了 %d/%d，其余%s", resultName(it.Title), n, len(targets)-absentN, strings.Join(uniq(why), "、")))
 			default:
 				skipped = append(skipped, resultName(it.Title)+"：未能清理，"+strings.Join(uniq(why), "、"))
 			}
@@ -1399,6 +1446,96 @@ func (s *Service) markGone(ids []string) {
 			st.Gone[id] = at
 		}
 	})
+}
+
+// keptCopy: the copy of a duplicates item the user chose to keep (scan_apply's keep, luoke-scan#234), and the item's
+// other copies, which go instead of its targets: the one kept by default among them.
+type keptCopy struct {
+	keep  Target
+	trash []Target
+}
+
+// keptCopies: scan_apply's keep, {"<item key>": "<path>"}, checked against the plan alone: only for a duplicates item
+// the call moves to the Trash (not with clone, keep or ignore), and only a path the plan recorded as one of its copies
+// (what is sent is matched against those and never used itself). Any that does not fit refuses the whole call.
+func keptCopies(args O, plan Plan, picks map[string]string) (map[string]keptCopy, error) {
+	v, has := args["keep"]
+	if !has || v == nil {
+		return nil, nil
+	}
+	sent, ok := v.(map[string]any)
+	if !ok {
+		return nil, Fail("invalid", `keep 要是对象：{"<项的键>": "<留下的那一份的路径>"}`)
+	}
+	items := map[string]PlanItem{}
+	for _, it := range plan.Items {
+		items[it.Key] = it
+	}
+	var keys []string
+	for k := range sent {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	out := map[string]keptCopy{}
+	for _, k := range keys {
+		it, ok := items[k]
+		switch {
+		case !ok:
+			return nil, Fail("invalid", "keep 里的这一项方案里没有："+k)
+		case it.Rule != "space.duplicates":
+			return nil, Fail("invalid", "只有重复文件能选留哪一份："+k)
+		case picks[k] != ChoiceTrash:
+			return nil, Fail("invalid", "选了留哪一份的项，choices 里要选 trash："+k)
+		case len(it.Members) == 0 || it.Hash == "":
+			return nil, Fail("invalid", "这份方案没记下这一组的每一份，等下一轮查完再选："+k)
+		}
+		path, _ := sent[k].(string)
+		var c keptCopy
+		found := false
+		for _, m := range it.Members {
+			if !found && path != "" && m.Path == path {
+				c.keep, found = m, true
+			} else {
+				c.trash = append(c.trash, m)
+			}
+		}
+		if !found {
+			return nil, Fail("invalid", "keep 给的不是这一组里的一份："+k)
+		}
+		out[k] = c
+	}
+	return out, nil
+}
+
+// checkKeep: every copy of a group the user chose which one of to keep, before anything of the call moves. Each still
+// the file the plan saw (looked at without following a link: not a link, the same device and inode) with the contents
+// the round found them to share (its SHA-256, read again from the file opened without following a link, the one
+// checked); the one to keep there. A copy already gone is one fewer to move, as a target found gone. Why not, or "".
+func (s *Service) checkKeep(it PlanItem, k keptCopy, deadline time.Time) string {
+	late := func() bool { return time.Now().After(deadline) }
+	for _, m := range it.Members {
+		dev, ino, link, there := identity(m.Path)
+		switch {
+		case !there && m.Path == k.keep.Path:
+			return "要留的那份已经不在了"
+		case !there:
+			continue
+		case link:
+			return "有一份现在是一个链接"
+		case dev != m.Device || ino != m.Inode:
+			return "有一份已经换成了别的东西"
+		}
+		hash, ok := core.DigestOf(m.Path, m.Device, m.Inode, late)
+		switch {
+		case !ok && late():
+			return "太大了，这次来不及核对完"
+		case !ok:
+			return "有一份读不了，或者已经换成了别的东西"
+		case hash != it.Hash:
+			return "有一份查过以后改过"
+		}
+	}
+	return ""
 }
 
 func contains(xs []string, x string) bool {

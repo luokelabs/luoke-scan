@@ -244,6 +244,12 @@ type PlanItem struct {
 	BundleID  string   `json:"bundleID,omitempty"`
 	// Tool: the package manager whose user config 改成不跑 writes (core.ScriptsTools).
 	Tool string `json:"tool,omitempty"`
+	// Members: a duplicates item's every copy as the plan saw it, the one kept by default (Original) first, then the
+	// targets in the rule's order; Hash: the SHA-256 the round found them to share. What scan_apply's keep chooses from
+	// and checks again (luoke-scan#234). None in a plan saved before, or when the copy kept by default could not be
+	// planned (keep is refused then).
+	Members []Target `json:"members,omitempty"`
+	Hash    string   `json:"hash,omitempty"`
 }
 
 // Plan is a clean-up the tool offered: only these items, only these choices, done only after the user clicks.
