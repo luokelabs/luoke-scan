@@ -14,7 +14,8 @@ import (
 
 // The curated lists are data files, rules/*.json at the repository's root, carried inside the program (assets.FS) and
 // read once at start: the rebuildable caches, the temp folder prefixes of test tools, where VM and AI tools keep their
-// space, the folders a project's tools make again, and the settings files that say what browsers and AI tools run.
+// space, the folders a project's tools make again, the settings files that say what browsers and AI tools run, and what the
+// folders of a home are (whose, the user's own or not, what deleting one loses).
 // Lists only: how serious a finding is, what is urgent, what may go without a click (autoCaches, autoTemp) and the
 // checks made before anything is removed stay in code.
 //
@@ -27,7 +28,7 @@ const rulesVersion = 1
 
 // rulesFiles are the files read, in the order the tests check them.
 var rulesFiles = []string{"rules/caches.json", "rules/temp-folders.json", "rules/space-tools.json", "rules/build-artifacts.json",
-	"rules/settings-files.json"}
+	"rules/settings-files.json", "rules/folders.json"}
 
 // The files as read (with why and samples, for the tests), and what came of reading each.
 var (
@@ -36,8 +37,9 @@ var (
 	spaceRules    spaceList
 	artifactRules artifactsList
 	settingsRules settingsList
+	foldersRules  foldersList
 
-	cachesErr, tempErr, spaceErr, artifactsErr, settingsErr error
+	cachesErr, tempErr, spaceErr, artifactsErr, settingsErr, foldersErr error
 )
 
 // The files are read here rather than in the variables' initializers: the checks use package-level values (regular
@@ -48,13 +50,18 @@ func init() {
 	spaceRules, spaceErr = readRules[spaceList]("rules/space-tools.json")
 	artifactRules, artifactsErr = readRules[artifactsList]("rules/build-artifacts.json")
 	settingsRules, settingsErr = readRules[settingsList]("rules/settings-files.json")
+	foldersRules, foldersErr = readRules[foldersList]("rules/folders.json")
 
 	KnownCaches, CacheUsers = cachesRules.known(), cachesRules.users()
 	AutoKnownTemp = tempRules.tools()
 	vmTools, vmMarkers, aiTools = spaceRules.vmTools(), spaceRules.vmMarkers(), spaceRules.aiTools()
 	staleArtifactKinds = artifactRules.kinds()
 	chromiumBrowsers, mcpConfigs = settingsRules.browsers(), settingsRules.mcpConfigs()
+	fileKinds = foldersRules.kinds()
 }
+
+// fileKinds: a file's extension (lowercase) → its kind.
+var fileKinds map[string]string
 
 // rulesMissing is why a check did not run: a list it needs could not be read.
 func rulesMissing(file string) error {
@@ -741,6 +748,299 @@ func (f settingsList) mcpConfigs() []mcpConfig {
 	var out []mcpConfig
 	for _, m := range f.MCP {
 		out = append(out, mcpConfig{tool: m.Tool, path: m.Path, key: m.Key})
+	}
+	return out
+}
+
+// ---------------------------------------------------------------- rules/folders.json
+
+type foldersList struct {
+	rulesHead
+	Kinds   []kindEntry   `json:"kinds"`
+	Actions []actionEntry `json:"actions"`
+	Folders []folderEntry `json:"folders"`
+}
+
+// actionEntry: a way to make room in a folder that is not the scan's own cleaning: where it is done, and what with.
+type actionEntry struct {
+	ID       string `json:"id"`
+	By       string `json:"by"`
+	Pane     string `json:"pane,omitempty"`
+	App      string `json:"app,omitempty"`
+	BundleID string `json:"bundleId,omitempty"`
+	Command  string `json:"command,omitempty"`
+	Why      string `json:"why"`
+}
+
+// Where an action is done (FolderAction.By). ActionByScan is not in the list: the scan's own cleaning, which
+// data/usage gives from the plans.
+const (
+	ActionByFinder   = "finder"
+	ActionBySettings = "system-settings"
+	ActionByApp      = "app"
+	ActionByCommand  = "command"
+	ActionByScan     = "scan"
+)
+
+// ActionClean is the id of the scan's own cleaning; no entry of the list may take it.
+const ActionClean = "clean"
+
+// ActionEmptyTrash empties the whole Trash: an action for the Trash itself, not for one thing in it.
+const ActionEmptyTrash = "empty-trash"
+
+// kindEntry: a kind of file, told by its extension (lowercase, without the dot).
+type kindEntry struct {
+	ID         string   `json:"id"`
+	Extensions []string `json:"extensions"`
+	Why        string   `json:"why"`
+}
+
+// KindOther is the kind of a file whose extension is in no entry.
+const KindOther = "other"
+
+var extensionShape = regexp.MustCompile(`^[a-z0-9]+(-[a-z0-9]+)*$`)
+
+type folderEntry struct {
+	Path      string   `json:"path"`
+	Owner     string   `json:"owner,omitempty"`
+	Content   string   `json:"content"`
+	IfDeleted string   `json:"ifDeleted"`
+	Actions   []string `json:"actions,omitempty"`
+	Why       string   `json:"why"`
+	Samples   []string `json:"samples"`
+}
+
+// What a folder holds (FolderWhat.Content) and what deleting it loses (FolderWhat.IfDeleted): the codes data/usage
+// gives, described in rules/folders.json and docs/data-resources.md.
+const (
+	ContentUser     = "user"
+	ContentAppData  = "app-data"
+	ContentCache    = "cache"
+	ContentDownload = "download"
+	ContentSystem   = "system"
+	ContentTemp     = "temp" // not in the list: the temporary folder is not under the home
+
+	DeletedLost       = "lost"
+	DeletedSynced     = "synced"
+	DeletedRedownload = "redownload"
+	DeletedRebuilds   = "rebuilds"
+	DeletedResets     = "resets"
+)
+
+func (f *foldersList) check() error {
+	if err := f.rulesHead.check(); err != nil {
+		return err
+	}
+	if len(f.Folders) == 0 {
+		return errors.New("folders 不能是空的")
+	}
+	if len(f.Kinds) == 0 {
+		return errors.New("kinds 不能是空的")
+	}
+	ids, exts := map[string]bool{}, map[string]bool{}
+	for i, k := range f.Kinds {
+		fail := func(format string, args ...any) error { return rulesError("kinds", i, k.ID, format, args...) }
+		if !cacheIDShape.MatchString(k.ID) || k.ID == KindOther {
+			return fail("id 是小写字母、数字和连字符的代号，不能是 other")
+		}
+		if ids[k.ID] {
+			return fail("id 重了")
+		}
+		ids[k.ID] = true
+		if k.Why == "" || len(k.Extensions) == 0 {
+			return fail("extensions、why 都要写")
+		}
+		for _, x := range k.Extensions {
+			if !extensionShape.MatchString(x) {
+				return fail("扩展名 %q 要小写、不带点", x)
+			}
+			if exts[x] {
+				return fail("扩展名 %s 已经归了别的种类", x)
+			}
+			exts[x] = true
+		}
+	}
+	if len(f.Actions) == 0 {
+		return errors.New("actions 不能是空的")
+	}
+	acts := map[string]bool{}
+	for i, a := range f.Actions {
+		fail := func(format string, args ...any) error { return rulesError("actions", i, a.ID, format, args...) }
+		if !cacheIDShape.MatchString(a.ID) || a.ID == ActionClean {
+			return fail("id 是小写字母、数字和连字符的代号，不能是 clean")
+		}
+		if acts[a.ID] {
+			return fail("id 重了")
+		}
+		acts[a.ID] = true
+		if a.Why == "" {
+			return fail("要写 why")
+		}
+		// each place has its own fields, and only those
+		var ok bool
+		switch a.By {
+		case ActionByFinder:
+			ok = a.Pane == "" && a.App == "" && a.BundleID == "" && a.Command == ""
+		case ActionBySettings:
+			ok = oneOf(a.Pane, "storage", "icloud") && a.App == "" && a.BundleID == "" && a.Command == ""
+		case ActionByApp:
+			ok = a.App != "" && a.Pane == "" && a.Command == "" && (a.BundleID == "" || LooksLikeBundleID(a.BundleID))
+		case ActionByCommand:
+			ok = a.Command != "" && strings.TrimSpace(a.Command) == a.Command && a.Pane == "" && a.App == "" && a.BundleID == ""
+		default:
+			return fail("by 只能是 finder、system-settings、app、command")
+		}
+		if !ok {
+			return fail("by 是 %s 时该写的字段不对（system-settings 写 pane，app 写 app、可以带 bundleId，command 写 command，别的不写）", a.By)
+		}
+	}
+	paths := map[string]bool{}
+	for i, e := range f.Folders {
+		fail := func(format string, args ...any) error { return rulesError("folders", i, e.Path, format, args...) }
+		used := map[string]bool{}
+		for _, id := range e.Actions {
+			if !acts[id] || used[id] {
+				return fail("actions 里的 %s 不在 actions 清单里，或者写了两遍", id)
+			}
+			used[id] = true
+		}
+		if err := checkRelative(e.Path); err != nil {
+			return fail("path：%v", err)
+		}
+		if paths[e.Path] {
+			return fail("path 重了")
+		}
+		paths[e.Path] = true
+		if e.Owner != "" && !cacheIDShape.MatchString(e.Owner) {
+			return fail("owner 是小写字母、数字和连字符的代号")
+		}
+		if !oneOf(e.Content, ContentUser, ContentAppData, ContentCache, ContentDownload, ContentSystem) {
+			return fail("content 不认得")
+		}
+		if !oneOf(e.IfDeleted, DeletedLost, DeletedSynced, DeletedRedownload, DeletedRebuilds, DeletedResets) {
+			return fail("ifDeleted 不认得")
+		}
+		if e.Why == "" {
+			return fail("要写 why")
+		}
+		if len(e.Samples) == 0 {
+			return fail("要有 samples")
+		}
+		for _, s := range e.Samples {
+			if err := checkRelative(s); err != nil {
+				return fail("samples：%v", err)
+			}
+		}
+	}
+	// a sample falls on its own entry: not outside it, not on a deeper one
+	for i, e := range f.Folders {
+		for _, s := range e.Samples {
+			if got, ok := f.what(s); !ok || got.Path != e.Path {
+				return rulesError("folders", i, e.Path, "样例 %s 没落在这一条上", s)
+			}
+		}
+	}
+	return nil
+}
+
+// FolderWhat: what a folder of the home is: whose (a code; "" for a place many apps share), what it holds, what
+// deleting it loses. Path: the entry of rules/folders.json it comes from, relative to the home.
+type FolderWhat struct{ Path, Owner, Content, IfDeleted string }
+
+// what: the deepest entry rel (relative to the home) is, or is inside.
+func (f foldersList) what(rel string) (FolderWhat, bool) {
+	best := -1
+	for i, e := range f.Folders {
+		if within(rel, e.Path) && (best < 0 || len(e.Path) > len(f.Folders[best].Path)) {
+			best = i
+		}
+	}
+	if best < 0 {
+		return FolderWhat{}, false
+	}
+	e := f.Folders[best]
+	return FolderWhat{Path: e.Path, Owner: e.Owner, Content: e.Content, IfDeleted: e.IfDeleted}, true
+}
+
+// WhatFolder: what the folder (or file) at rel, relative to the home and slash-separated, is, by the deepest entry of
+// rules/folders.json it is or is inside; ok false when no entry covers it (or the list could not be read).
+func WhatFolder(rel string) (FolderWhat, bool) { return foldersRules.what(rel) }
+
+func (f foldersList) kinds() map[string]string {
+	out := map[string]string{}
+	for _, k := range f.Kinds {
+		for _, x := range k.Extensions {
+			out[x] = k.ID
+		}
+	}
+	return out
+}
+
+// FileKind: the kind of the file called name, by its extension alone (rules/folders.json's kinds); KindOther for an
+// extension in no entry, and for a name without one.
+func FileKind(name string) string {
+	i := strings.LastIndexByte(name, '.')
+	if i <= 0 || i == len(name)-1 {
+		return KindOther
+	}
+	ext := name[i+1:]
+	if k, ok := fileKinds[ext]; ok {
+		return k
+	}
+	if k, ok := fileKinds[strings.ToLower(ext)]; ok {
+		return k
+	}
+	return KindOther
+}
+
+// FolderAction is a way to make room in a folder, done outside the scan: its id, where it is done (By), and by that
+// the settings pane (a code), the app (its name, its bundle id when known) or the command.
+type FolderAction struct{ ID, By, Pane, App, BundleID, Command string }
+
+// FolderActions: what can be done about the folder (or file) at rel, relative to the home: the actions of the deepest
+// entry of rules/folders.json it is or is inside, in the entry's order; none without an entry.
+func FolderActions(rel string) []FolderAction {
+	w, ok := foldersRules.what(rel)
+	if !ok {
+		return nil
+	}
+	var out []FolderAction
+	for _, e := range foldersRules.Folders {
+		if e.Path == w.Path {
+			out = foldersRules.actionsOf(e, out)
+		}
+	}
+	return out
+}
+
+// FolderActionsBelow: the actions of the entries strictly inside rel, each once, in the list's order. For a folder that
+// is measured a level above where the list's entries are (~/.ollama holds models/, which is the entry): what can be
+// done about what is in it.
+func FolderActionsBelow(rel string) []FolderAction {
+	var out []FolderAction
+	for _, e := range foldersRules.Folders {
+		if e.Path != rel && within(e.Path, rel) {
+			out = foldersRules.actionsOf(e, out)
+		}
+	}
+	return out
+}
+
+// actionsOf adds an entry's actions to out, leaving out the ones already there.
+func (f foldersList) actionsOf(e folderEntry, out []FolderAction) []FolderAction {
+	for _, id := range e.Actions {
+		seen := false
+		for _, o := range out {
+			seen = seen || o.ID == id
+		}
+		if seen {
+			continue
+		}
+		for _, a := range f.Actions {
+			if a.ID == id {
+				out = append(out, FolderAction{a.ID, a.By, a.Pane, a.App, a.BundleID, a.Command})
+			}
+		}
 	}
 	return out
 }

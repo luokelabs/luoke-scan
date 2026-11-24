@@ -22,6 +22,19 @@ var args []string
 // freeToRun are the commands the installed luoke-scan runs for anyone: they only read the last report it wrote.
 var freeToRun = map[string]bool{"version": true, "report": true, "findings": true, "status": true}
 
+// noTeamWord is in the version line of a packed copy built without the release's team (scripts/package_app.py looks
+// for it): the copy for development builds of 螺壳. It checks the channel and the program that started it but no
+// signature against a team, and cannot remove anything from the system's folders.
+const noTeamWord = "没编发布团队的开发构建"
+
+// noTeamNote is what the version line adds for a packed copy without a release team, "" for every other build.
+func noTeamNote(packed bool, team string) string {
+	if packed && team == "" {
+		return " · " + noTeamWord
+	}
+	return ""
+}
+
 func fail(msg string, code ...int) {
 	os.Stderr.WriteString(msg + "\n")
 	c := 64
@@ -356,6 +369,8 @@ func main() {
 		note := ""
 		if fixtureOnly() {
 			note = " · " + fixtureOnlyWord
+		} else {
+			note = noTeamNote(core.Packed(), core.ReleaseTeam)
 		}
 		fmt.Printf("luoke-scan %s · rules %s%s\n", service.ToolVersion, core.RulePackVersion, note)
 

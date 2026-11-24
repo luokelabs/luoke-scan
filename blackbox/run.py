@@ -3,7 +3,10 @@
 
     python3 blackbox/run.py                    跑全部场景，和 golden 比；不一样就列出差别、退出码 1
     python3 blackbox/run.py --record           重录 golden（先确认差别是该有的）
-        [--bin <luoke-scan>] [--only <场景前缀>]… [--keep] [-j <并行数>] [--list]
+        [--bin <luoke-scan>] [--only <场景前缀>]… [--keep] [-j <并行数>] [--slow <N>] [--list]
+
+并行数不给时按这台机器定：核数（Mac 上只算性能核）减去起跑时已经在忙的，至少 2 个。
+--slow N：跑完在标准错误里列出同时跑了几个、一共多久、最慢的 N 个场景各用了几秒。
 
 被测的程序：--bin，或环境变量 LUOKE_SCAN_BIN，默认 .build/go/luoke-scan（Go 版）。只用标准库；不碰家目录、不连主控、
 不跑 --this-mac。说明见 blackbox/README.md。
@@ -17,6 +20,7 @@ import importlib
 import os
 import subprocess
 import sys
+import time
 import traceback
 from typing import List, Optional, Tuple
 
@@ -26,6 +30,8 @@ GOLDEN = os.path.join(HERE, "golden")
 sys.path.insert(0, HERE)
 
 import harness  # noqa: E402
+
+TOOK: dict = {}   # 场景名 → 用了几秒
 
 
 def load_cases() -> None:
@@ -37,6 +43,7 @@ def load_cases() -> None:
 def run_one(c: harness.Case, binary: str, keep: bool) -> Tuple[str, Optional[str], Optional[str]]:
     """(场景名, golden 文字, 出错时的说明)。"""
     r = harness.Run(c, binary, keep)
+    began = time.monotonic()
     try:
         c.run(r)
         return c.name, harness.golden(r), None
@@ -48,9 +55,28 @@ def run_one(c: harness.Case, binary: str, keep: bool) -> Tuple[str, Optional[str
             detail += f"\n  走到第 {len(r.steps)} 步：{r.steps[-1].get('run') or r.steps[-1].get('do')}"
         return c.name, None, detail
     finally:
+        TOOK[c.name] = time.monotonic() - began
         if keep:
             print(f"  {c.name} 的假目录留在 {r.work}", file=sys.stderr)
         r.close()
+
+
+def default_jobs() -> int:
+    """同时跑几个场景：这台机器的核数（Mac 上只算性能核）减去起跑时已经在忙的（最近一分钟的负载），至少 2 个。"""
+    cores = os.cpu_count() or 4
+    if sys.platform == "darwin":
+        try:
+            out = subprocess.run(["/usr/sbin/sysctl", "-n", "hw.perflevel0.physicalcpu"], stdout=subprocess.PIPE,
+                                 stderr=subprocess.DEVNULL, text=True, timeout=5).stdout.strip()
+            if out.isdigit() and int(out) > 0:
+                cores = int(out)
+        except (OSError, subprocess.SubprocessError):
+            pass
+    try:
+        busy = os.getloadavg()[0]
+    except OSError:
+        busy = 0.0
+    return max(2, min(cores, int(cores - busy)))
 
 
 def main() -> int:
@@ -59,8 +85,9 @@ def main() -> int:
     ap.add_argument("--record", action="store_true")
     ap.add_argument("--only", action="append", default=[])
     ap.add_argument("--keep", action="store_true")
-    ap.add_argument("-j", type=int, default=min(8, os.cpu_count() or 4))
+    ap.add_argument("-j", type=int, default=0)
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--slow", type=int, default=0, metavar="N")
     a = ap.parse_args()
 
     load_cases()
@@ -80,7 +107,9 @@ def main() -> int:
     v = subprocess.run([binary, "version"], stdout=subprocess.PIPE, text=True).stdout.split()
     harness.TOOL_VERSION = v[1] if len(v) > 1 and v[0] == "luoke-scan" else None
     failed: List[str] = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, a.j)) as pool:
+    jobs = a.j if a.j > 0 else default_jobs()
+    started = time.monotonic()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
         results = list(pool.map(lambda c: run_one(c, binary, a.keep), cases))
     for name, text, err in results:
         path = os.path.join(GOLDEN, name + ".json")
@@ -113,6 +142,10 @@ def main() -> int:
             diff = difflib.unified_diff(want.splitlines(), text.splitlines(), "golden/" + name + ".json", "这次", lineterm="", n=2)
             lines = list(diff)
             print(f"✘ {name}：和 golden 不一样\n" + "\n".join(lines[:120]) + ("\n…" if len(lines) > 120 else ""))
+    if a.slow:
+        print(f"\n同时跑 {jobs} 个，一共 {time.monotonic() - started:.0f} 秒；最慢的：", file=sys.stderr)
+        for name, secs in sorted(TOOK.items(), key=lambda x: -x[1])[:a.slow]:
+            print(f"  {secs:6.1f} 秒  {name}", file=sys.stderr)
     if not a.record:
         recorded = {os.path.relpath(os.path.join(d, f), GOLDEN)[:-5] for d, _, fs in os.walk(GOLDEN) for f in fs if f.endswith(".json")}
         stale = sorted(recorded - set(harness.CASES))

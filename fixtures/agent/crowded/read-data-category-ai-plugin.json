@@ -29,6 +29,39 @@
                 "bytes": null,
                 "facts": {
                   "agent": "Claude Code",
+                  "hits": [
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "download-exec"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "high"
+                    },
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "escalation"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "low"
+                    }
+                  ],
+                  "hitsMore": 0,
                   "kinds": [
                     "download-exec",
                     "escalation"
@@ -39,6 +72,7 @@
                 "finding": "skill.download-exec/000000000009",
                 "group": "skill",
                 "key": "i2",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",
@@ -63,6 +97,39 @@
                 "bytes": null,
                 "facts": {
                   "agent": "Claude Code",
+                  "hits": [
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "download-exec"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "high"
+                    },
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "escalation"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "low"
+                    }
+                  ],
+                  "hitsMore": 0,
                   "kinds": [
                     "download-exec",
                     "escalation"
@@ -73,6 +140,7 @@
                 "finding": "skill.download-exec/000000000010",
                 "group": "skill",
                 "key": "i3",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",
@@ -97,6 +165,39 @@
                 "bytes": null,
                 "facts": {
                   "agent": "Claude Code",
+                  "hits": [
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "download-exec"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "high"
+                    },
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "escalation"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "low"
+                    }
+                  ],
+                  "hitsMore": 0,
                   "kinds": [
                     "download-exec",
                     "escalation"
@@ -107,6 +208,7 @@
                 "finding": "skill.download-exec/000000000011",
                 "group": "skill",
                 "key": "i4",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",
@@ -131,6 +233,39 @@
                 "bytes": null,
                 "facts": {
                   "agent": "Claude Code",
+                  "hits": [
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "download-exec"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "high"
+                    },
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "escalation"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "low"
+                    }
+                  ],
+                  "hitsMore": 0,
                   "kinds": [
                     "download-exec",
                     "escalation"
@@ -141,6 +276,7 @@
                 "finding": "skill.download-exec/000000000012",
                 "group": "skill",
                 "key": "i5",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",
@@ -165,6 +301,39 @@
                 "bytes": null,
                 "facts": {
                   "agent": "Claude Code",
+                  "hits": [
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "download-exec"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "high"
+                    },
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "escalation"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "low"
+                    }
+                  ],
+                  "hitsMore": 0,
                   "kinds": [
                     "download-exec",
                     "escalation"
@@ -175,6 +344,7 @@
                 "finding": "skill.download-exec/000000000013",
                 "group": "skill",
                 "key": "i6",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",

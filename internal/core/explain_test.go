@@ -3,6 +3,7 @@ package core
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -221,5 +222,16 @@ func TestIdentifyOnlySureNamesShown(t *testing.T) {
 	}
 	if !IdentifyAsks(Finding{Rule: "space.growth", Category: CatSpace, Severity: Medium, Verdict: Info, Path: "/tmp/la-home/.qx7", Bytes: Size(1), Title: "t"}, home) {
 		t.Error("a folder nobody knows")
+	}
+}
+
+// The Login Items facts of a stale grant are for the window (data/overview), not for the model: its input is as before.
+func TestExplainInputLeavesOutTheLeftBehindFacts(t *testing.T) {
+	ev := map[string]string{"grants": "摄像头、登录项", "login_items": "Gone Meet"}
+	f := Finding{Rule: "permission.stale-grant", Verdict: Confirm, Title: "t", Evidence: ev}
+	before := ExplainInput(f, "")
+	ev[LeftItemsKey], ev[LeftStartsKey], ev[LeftDaemonKey] = "Gone Meet", "1", "0"
+	if after := ExplainInput(f, ""); !reflect.DeepEqual(before, after) {
+		t.Errorf("input changed: %v", after)
 	}
 }

@@ -41,6 +41,10 @@ type SkillSignal struct {
 	// File is relative to the skill's folder; several are joined with "、".
 	File  string
 	Lines []int
+	// Files: each of several files apart (the first few), where File joins them.
+	Files []string
+	// Declared: what was found is what the skill says it is for (the label says so too).
+	Declared bool
 }
 
 type skillRole int
@@ -81,6 +85,9 @@ type skillPattern struct {
 	unless      *icuRegexp
 	test        func(line []rune, m []int) bool
 	outsideCode bool
+	// piped: re names what a stage of a pipeline does; the pattern matches when a later stage runs what comes in
+	// (shellPiped, skillcommands.go).
+	piped bool
 }
 
 func (p skillPattern) sev(prose bool) Severity {
@@ -96,6 +103,7 @@ func spRole(r skillRole) spOpt                { return func(p *skillPattern) { p
 func spScope(s patScope) spOpt                { return func(p *skillPattern) { p.scope = s } }
 func spUnless(u string) spOpt                 { return func(p *skillPattern) { p.unless = icuCI(u) } }
 func spOutsideCode() spOpt                    { return func(p *skillPattern) { p.outsideCode = true } }
+func spPiped() spOpt                          { return func(p *skillPattern) { p.piped = true } }
 func spProse(s Severity) spOpt                { return func(p *skillPattern) { p.proseSet, p.proseSev = true, s } }
 func spTest(t func([]rune, []int) bool) spOpt { return func(p *skillPattern) { p.test = t } }
 
@@ -118,7 +126,7 @@ func rxGroupText(line []rune, m []int, g int) string {
 }
 
 type skillChecks struct {
-	existence, message, readVerb, packs                              *icuRegexp
+	existence, message, readVerb, packs, official                    *icuRegexp
 	patterns                                                         []skillPattern
 	targets                                                          []skillTarget
 	varRedirect, writeCall                                           *icuRegexp
@@ -171,6 +179,7 @@ func buildSkillChecks() *skillChecks {
 	c.readVerb = icuCI(`\bcat\b|<\s*\S|\$\(|\bopen\s*\(|\bread\w*\b|\bbase64\b|\btar\b|\bzip\b|\bcp\b|\bxxd\b|\bsecurity\b`)
 	// Packing up or reading a whole folder.
 	c.packs = icuCI(`\b(?:tar|zip|7z|ditto|cp|cat|base64|rsync|scp|xxd|open|read\w*|walk|glob|listdir|readdir\w*|copytree|make_archive)\b`)
+	c.official = icuCI(officialInstaller)
 	skillChecksBuilt = c // the secret patterns' tests read it while it is being built
 
 	injection := []skillPattern{
@@ -291,6 +300,14 @@ func buildSkillChecks() *skillChecks {
 			`\b(?:curl|wget)\b[^\n]*`+officialInstaller+`[^\n]*(?:\|\s*`+stdinRunner+`|\))`),
 		skillPat(SignalDownloadExec, High, "把编码过的内容解开直接运行", needleList("base64", "openssl", "xxd"),
 			`\b(?:base64\s+(?:-d|-D|--decode)|openssl\s+(?:base64|enc)\b[^|\n]*\s-d\b|xxd\s+-r)[^|\n]*\|\s*`+stdinRunner),
+		// The same three by a pipeline's stages (skillcommands.go): the download or the decoding in one stage, and any
+		// later stage that ends up running what comes in, also behind xargs, env, nohup, timeout, sudo and the like.
+		skillPat(SignalDownloadExec, High, "从网上下载代码直接运行", needleList("curl", "wget"), `\b(?:curl|wget)\b`, spPiped(),
+			spTest(func(line []rune, m []int) bool { return !skc().official.hasRunes(line[m[0]:m[1]]) })),
+		skillPat(SignalSupplyChain, Low, "运行官方网站上的安装脚本", needleList("curl", "wget"), `\b(?:curl|wget)\b`, spPiped(),
+			spTest(func(line []rune, m []int) bool { return skc().official.hasRunes(line[m[0]:m[1]]) })),
+		skillPat(SignalDownloadExec, High, "把编码过的内容解开直接运行", needleList("base64", "openssl", "xxd"),
+			`\b(?:base64\s+(?:-d|-D|--decode)|openssl\s+(?:base64|enc)\b[^|\n]*\s-d\b|xxd\s+-r)`, spPiped()),
 		skillPat(SignalDownloadExec, High, "把编码过的内容解开直接运行", needleList("exec", "eval"),
 			`\b(?:exec|eval)\s*\(\s*(?:compile\s*\(\s*)?(?:base64\.|codecs\.|zlib\.|marshal\.|bytes\.)?(?:b64decode|b32decode|b85decode|a85decode|decodebytes|fromhex|decode|decompress|loads)\s*\(|\b(?:exec|eval)\s*\(\s*__import__\s*\(\s*['"](?:base64|zlib|marshal|codecs)`),
 		skillPat(SignalDownloadExec, High, "从网上下载代码直接运行", needleList("exec", "eval"),
@@ -571,6 +588,9 @@ func skillTargetOf(kind SignalKind, sev Severity, label string, needles []string
 	return t
 }
 
+// skillLabelCommands: writing a tool's custom (slash) commands (the instruction files' check names it too).
+const skillLabelCommands = "写 AI 工具的自定义命令（.claude/commands）"
+
 func buildSkillTargets() []skillTarget {
 	return []skillTarget{
 		skillTargetOf(SignalPersistence, High, "在 LaunchAgents 里放东西（开机自己运行）", needleList("launchagents", "launchdaemons"), `Library/Launch(?:Agents|Daemons)\b`),
@@ -588,8 +608,12 @@ func buildSkillTargets() []skillTarget {
 			tgPurpose(`\b(?:settings|config(?:ure|uration)?|hooks?|mcp|permissions?|setup|set\s+up)\b|设置|配置|钩子`)),
 		skillTargetOf(SignalAgentTamper, High, "改 AI 的记忆或长期指令（CLAUDE.md 之类）",
 			needleList("claude", "agents.md", "gemini.md", "cursorrules", "cursor/rules", "windsurfrules", "copilot-instructions"),
-			`(?:^|[\s"'/(\x{60}~])(?:CLAUDE(?:\.local)?|AGENTS|GEMINI)\.md\b|\.cursorrules\b|\.cursor/rules/|\.windsurfrules\b|copilot-instructions\.md\b|\.claude/(?:agents|commands|memory)/`,
+			`(?:^|[\s"'/(\x{60}~])(?:CLAUDE(?:\.local)?|AGENTS|GEMINI)\.md\b|\.cursorrules\b|\.cursor/rules/|\.windsurfrules\b|copilot-instructions\.md\b|\.claude/(?:agents|memory)/`,
 			tgPurpose(`\b(?:memory|memories|remember|claude\.md|agents\.md|gemini\.md|instructions?|rules|init(?:iali[sz]e)?|onboard\w*|conventions)\b|记忆|项目说明|规则|指令`)),
+		// A slash command runs when the user calls it, not in every session: not the agent's memory. Of the settings' kind,
+		// with a purpose of its own (a skill that teaches writing commands writes them).
+		skillTargetOf(SignalAgentTamper, High, skillLabelCommands, needleList("commands"), `\.claude/commands/`,
+			tgPurpose(`\bslash[- ]?commands?\b|\bcustom\s+commands?\b|\bcommands?[- ](?:development|authoring|frontmatter)\b|\.claude/commands\b|斜杠命令|自定义命令`)),
 		// A SKILL.md, or skills by wildcard; copying a skill into a skills folder is how one is installed.
 		skillTargetOf(SignalAgentTamper, High, "改别的 skill", needleList("skills", "skill.md"),
 			`\bSKILL\.md\b|(?:\.claude|\.cursor|\.gemini|\.copilot|\.codex|\.agents|\.github)/skills/\*`, tgSaid(""), tgNotOwn(),
@@ -743,12 +767,18 @@ func skillScanFileWith(text, path string, script bool, own []string, opts skillS
 	markdown := !script && skillProseExt[strings.ToLower(aiNSExt(name))]
 	lines := strings.Split(text, "\n")
 	inComment, inFence, fenceTalk, sectionTopic, sectionNeg, listTalk := false, false, false, false, false, false
+	fenceShell, fenceText := false, false
+	shell, shellBlock := script && opts.code == nil && skillShellScript(path, text), false
 	var recent []string
 	var assigned []assignedVar
 
+	since := 0
 	for index, raw := range lines {
-		if opts.cancelled != nil && index%64 == 0 && opts.cancelled() {
-			return out
+		// Asked every 64 lines, and sooner where the lines are long: a few of those can take as long as many short ones.
+		if since += len(raw); opts.cancelled != nil && (index%64 == 0 || since > 16<<10) {
+			if since = 0; opts.cancelled() {
+				return out
+			}
 		}
 		n := index + 1
 		inv := skillInvisible([]rune(strings.TrimSuffix(raw, "\r")), index == 0)
@@ -805,6 +835,8 @@ func skillScanFileWith(text, path string, script bool, own []string, opts skillS
 			var only bool
 			if opts.code != nil {
 				code, only = opts.code(visible)
+			} else if shell {
+				code, only = shellScriptCode(visible, &shellBlock)
 			} else {
 				code, only = scriptCode(visible)
 			}
@@ -818,16 +850,20 @@ func skillScanFileWith(text, path string, script bool, own []string, opts skillS
 		trimmed := aiTrimWS(visible)
 		visibleR := []rune(visible)
 		talkNeg, talkTopic, commentLine := false, false, false
+		// fenced: a line of code inside a fenced code block of prose (not of a block of plain text, not a table's row);
+		// around: what stands around the block talks.
+		fenced, around := false, false
 		if script {
 			commentLine = scriptComment
 			talkTopic = c.topic.hasRunes(visibleR) || c.patternLine.hasRunes(visibleR)
 		} else {
 			lastTalks := func(l string) bool { return c.topic.has(l) || c.negation.has(l) }
+			fenced = inFence && !fenceText && !strings.HasPrefix(trimmed, "|")
 			if c.fence.hasRunes(visibleR) {
-				if inFence {
+				if fenced = false; inFence {
 					inFence, fenceTalk = false, false
 				} else {
-					inFence = true
+					inFence, fenceShell, fenceText = true, skillFenceShell(visible), skillFenceText(visible)
 					fenceTalk = len(recent) > 0 && lastTalks(recent[len(recent)-1])
 				}
 			}
@@ -856,6 +892,7 @@ func skillScanFileWith(text, path string, script bool, own []string, opts skillS
 					lead = true
 				}
 			}
+			around = sectionTopic || sectionNeg || fenceTalk || listTalk || lead
 			talkTopic = c.topic.hasRunes(visibleR) || sectionTopic || fenceTalk || listTalk || lead
 			talkNeg = sectionNeg
 		}
@@ -877,6 +914,12 @@ func skillScanFileWith(text, path string, script bool, own []string, opts skillS
 			if c.notWorry.hasRunes(s) {
 				quiet = c.notWorry.replaceAll(s, "")
 			}
+			// How this line's commands are told apart when a match is judged (skillcommands.go).
+			// A code block of the instructions is read by command too: as a shell's, or as another script's.
+			byFence := fenced && !hidden && !decoded
+			read := skillReading{c: c, s: s, shell: shell || (byFence && fenceShell), prose: byFence}
+			byCommand := script && opts.talks == nil
+			first := len(out.hits)
 			for _, p := range c.patterns {
 				switch p.scope {
 				case scopeCode:
@@ -899,54 +942,122 @@ func skillScanFileWith(text, path string, script bool, own []string, opts skillS
 				if !aiContainsAny(lower, p.needles) {
 					continue
 				}
-				m := p.re.find(s, 0)
-				if m == nil {
-					continue
-				}
-				if p.unless != nil && p.unless.hasRunes(s) {
-					continue
-				}
-				if p.test != nil && !p.test(s, m) {
-					continue
-				}
-				if p.outsideCode && !script && !decoded {
-					ticks := 0
-					for _, r := range s[:m[0]] {
-						if r == '`' {
-							ticks++
+				// try looks for the pattern in v from index from on, and says whether that settles it for this line.
+				try := func(v []rune, from int) bool {
+					find := func(from int) []int {
+						if p.piped {
+							return read.piped(v, p.re, from)
 						}
+						return p.re.find(v, from)
 					}
-					if inFence || ticks%2 == 1 {
-						continue
+					next := func(m []int) int {
+						if p.piped || m[1] <= m[0] {
+							return m[0] + 1
+						}
+						return m[1]
 					}
-				}
-				if !decoded {
-					if words {
-						if hidden {
-							if c.topic.hasRunes(s) {
-								continue
-							}
-						} else if talkTopic {
+					for m := find(from); m != nil; m = find(next(m)) {
+						// In prose, a match that is one of a list of examples is passed over for the next one (skillmention.go).
+						if !script && !words && !hidden && !decoded && !masked && skillNamedInList(v, m) {
 							continue
 						}
-					} else if !hidden {
-						if opts.talks != nil {
-							if opts.talks(s, m) {
+						// A pattern's own conditions are read from the pipeline the match stands in (the innermost one, for a
+						// match inside a quoted string that holds several): another one on the line may meet them.
+						unit := v
+						if !words && !p.piped {
+							unit = read.unit(v, m)
+						}
+						if p.unless != nil && p.unless.hasRunes(unit) {
+							if read.shell {
 								continue
 							}
-						} else if before := aiPrefixUTF16(quiet, aiUTF16Len(s[:m[0]])); talkTopic || talkNeg || c.negation.hasRunes(before) {
-							continue
+							return false
 						}
-					} else if c.topic.hasRunes(s) || c.negation.hasRunes(s) {
-						continue
+						if p.test != nil && !p.test(unit, m) {
+							if read.shell {
+								continue
+							}
+							return false
+						}
+						if p.outsideCode && !script && !decoded {
+							ticks := 0
+							for _, r := range v[:m[0]] {
+								if r == '`' {
+									ticks++
+								}
+							}
+							if inFence || ticks%2 == 1 {
+								return false
+							}
+						}
+						if !decoded {
+							if words {
+								if hidden {
+									if c.topic.hasRunes(s) {
+										return false
+									}
+								} else if talkTopic {
+									return false
+								}
+							} else if !hidden {
+								if opts.talks != nil {
+									if opts.talks(s, m) {
+										return false
+									}
+								} else if byCommand {
+									// Talked about in its own command: the next match may be the real one.
+									if read.talks(m) {
+										continue
+									}
+								} else if byFence {
+									// What stands around the block speaks for all of it; the line's own words only for
+									// the command they stand in.
+									if around {
+										return false
+									}
+									if read.talks(m) {
+										continue
+									}
+								} else if before := aiPrefixUTF16(quiet, aiUTF16Len(s[:m[0]])); talkTopic || talkNeg || c.negation.hasRunes(before) {
+									return false
+								}
+							} else if c.topic.hasRunes(s) || c.negation.hasRunes(s) {
+								return false
+							}
+						}
+						sev := p.sev(!script)
+						if p.role == roleConceal && c.action.hasRunes(s) {
+							sev = Medium
+						}
+						hit := skillHit{label: p.label, kind: p.kind, severity: sev, role: p.role, line: n,
+							hidden: hidden || decoded, masked: masked}
+						for _, h := range out.hits[first:] {
+							if h == hit {
+								return true // found by another pattern of the same kind already
+							}
+						}
+						out.hits = append(out.hits, hit)
+						return true
+					}
+					return false
+				}
+				// A shell's line is read one pipeline at a time; words to the agent, and a pattern that goes by the
+				// pipeline's stages itself, see the whole line.
+				if words || p.piped {
+					try(s, 0)
+					continue
+				}
+				for _, pipeline := range read.pipelines() {
+					from := pipeline.from
+					if from > 0 {
+						from-- // the blank before it stands for what a pattern wants before a command
+					}
+					found := try(read.show(pipeline), from)
+					read.hide(pipeline)
+					if found {
+						break
 					}
 				}
-				sev := p.sev(!script)
-				if p.role == roleConceal && c.action.hasRunes(s) {
-					sev = Medium
-				}
-				out.hits = append(out.hits, skillHit{label: p.label, kind: p.kind, severity: sev, role: p.role, line: n,
-					hidden: hidden || decoded, masked: masked})
 			}
 			if !commands {
 				return
@@ -958,10 +1069,16 @@ func skillScanFileWith(text, path string, script bool, own []string, opts skillS
 					continue
 				}
 				var talk bool
-				if opts.talks != nil {
-					talk = !hidden && !decoded && opts.talks(s, t.path.find(s, 0))
-				} else {
-					talk = !hidden && !decoded && (talkTopic || talkNeg || c.negation.hasRunes(quiet))
+				switch {
+				case hidden || decoded:
+				case opts.talks != nil:
+					talk = opts.talks(s, t.path.find(s, 0))
+				case byCommand:
+					talk = read.writeTalks(t)
+				case byFence && !around:
+					// Judged below: a command that writes by its own command, words that say to write as a sentence.
+				default:
+					talk = talkTopic || talkNeg || skillNegatedBefore(c, s, skillWriteStart(t, s, false))
 				}
 				if script && commentLine {
 					continue
@@ -991,6 +1108,13 @@ func skillScanFileWith(text, path string, script bool, own []string, opts skillS
 				intoVariable := hasVariable && skillDynamicRx(`(?:>>?|\btee\s+(?:-a\s+)?)\s*["']?\$\{?`+rxEscape(variable)+`\b`).hasRunes(s)
 				command := skillRedirects(t.redirect, s, script) || skillCopies(t.copy, s, script) || (script && c.writeCall.hasRunes(s)) || intoVariable
 				words := !command && !script && t.saidSeverity != "" && t.said.hasRunes(s)
+				if byFence && !around {
+					if command {
+						talk = read.writeTalks(t)
+					} else {
+						talk = read.lineWriteTalks(t, s)
+					}
+				}
 				if !(command || words) || talk {
 					continue
 				}
@@ -1319,6 +1443,7 @@ func skillCopies(re *icuRegexp, s []rune, script bool) bool {
 // string, three or more in a row (blank lines and comments between them aside), are such a list, and what the
 // checks find on them is left out; unless the script runs strings somewhere (eval, sh -c, a line that is a
 // variable): then a list may be what it runs, and everything counts as before. Hidden and masked hits always count.
+// What a script compares with and what prose lists as examples: skillmention.go.
 var (
 	skillOnlyString  = icuCS("^\\s*(?:'[^']*'|\"(?:[^\"\\\\]|\\\\.)*\")\\s*,?\\s*(?:#.*)?$")
 	skillBlankOrNote = icuCS(`^\s*(?:#.*|//.*)?$`)
@@ -1327,6 +1452,15 @@ var (
 
 func skillListedLines(text string) map[int]bool {
 	lines := strings.Split(text, "\n")
+	listed := skillStringRuns(lines)
+	if len(listed) == 0 || skillRunsStrings(lines, listed) {
+		return nil
+	}
+	return listed
+}
+
+// skillStringRuns are the lines (from 1) of a script's lists of strings.
+func skillStringRuns(lines []string) map[int]bool {
 	listed := map[int]bool{}
 	var run []int
 	flush := func() {
@@ -1348,15 +1482,17 @@ func skillListedLines(text string) map[int]bool {
 		}
 	}
 	flush()
-	if len(listed) == 0 {
-		return nil
-	}
+	return listed
+}
+
+// skillRunsStrings says whether a script runs strings somewhere outside its lists.
+func skillRunsStrings(lines []string, listed map[int]bool) bool {
 	for i, l := range lines {
 		if !listed[i+1] && skillRunsString.hasRunes([]rune(l)) {
-			return nil
+			return true
 		}
 	}
-	return listed
+	return false
 }
 
 func skillWithoutListed(hits []skillHit, text string) []skillHit {
@@ -1401,10 +1537,18 @@ func SkillSignals(skill Skill) []SkillSignal {
 			add(SignalUnreadable, Low, "带着压缩过的代码，读不出它做什么", f.Path, []int{})
 			continue
 		}
-		s := skillScanFile(text, f.Path, script, own)
+		// A command continued over several lines is read on its first line (skillcommands.go); what a shell script
+		// only compares with is not read (skillmention.go).
+		scanned := text
+		if script && skillShellScript(f.Path, text) {
+			scanned = skillWithoutCompared(skillJoinContinued(text, true))
+		} else if !script {
+			scanned = skillJoinContinued(text, false)
+		}
+		s := skillScanFile(scanned, f.Path, script, own)
 		hits := s.hits
 		if script {
-			hits = skillWithoutListed(hits, text)
+			hits = skillWithoutListed(hits, scanned)
 		}
 		// Hidden: words to the agent the user does not see are serious; commands one step more.
 		for i := range hits {
@@ -1483,7 +1627,7 @@ func SkillSignals(skill Skill) []SkillSignal {
 				verified = true
 			}
 		}
-		lines := strings.Split(text, "\n")
+		lines := strings.Split(scanned, "\n")
 		linked := func(d, ch skillHit) bool {
 			if aiAbs(ch.line-d.line) > 15 || ch.line > len(lines) || d.line > len(lines) {
 				return false
@@ -1569,23 +1713,33 @@ func SkillSignals(skill Skill) []SkillSignal {
 		}
 		return s
 	}
+	// The same files apart (hits.go gives them as a list).
+	addFiles := func(sev Severity, label string, fs []SkillFile) {
+		add(SignalUnreadable, sev, label, names(fs), []int{})
+		for i, f := range fs {
+			if i >= 5 {
+				break
+			}
+			out[len(out)-1].Files = append(out[len(out)-1].Files, f.Path)
+		}
+	}
 	if len(compiled) > 0 {
-		add(SignalUnreadable, Medium, "带着编译过的程序，看不到里面写了什么", names(compiled), []int{})
+		addFiles(Medium, "带着编译过的程序，看不到里面写了什么", compiled)
 	}
 	if len(packed) > 0 {
-		add(SignalUnreadable, Low, "带着压缩包，里面没看", names(packed), []int{})
+		addFiles(Low, "带着压缩包，里面没看", packed)
 	}
 	if len(opaque) > 0 {
-		add(SignalUnreadable, Low, "带着认不出格式的文件", names(opaque), []int{})
+		addFiles(Low, "带着认不出格式的文件", opaque)
 	}
 	if len(large) > 0 {
-		add(SignalUnreadable, Low, "有文件太大或读不了，没看", names(large), []int{})
+		addFiles(Low, "有文件太大或读不了，没看", large)
 	}
 	if len(links) > 0 {
-		add(SignalUnreadable, Low, "有链接指向 skill 文件夹外面，没跟过去", names(links), []int{})
+		addFiles(Low, "有链接指向 skill 文件夹外面，没跟过去", links)
 	}
 	if len(deps) > 0 {
-		add(SignalUnreadable, Low, "带着依赖文件夹，里面没逐个看", names(deps), []int{})
+		addFiles(Low, "带着依赖文件夹，里面没逐个看", deps)
 	}
 	if skill.Unlisted > 0 {
 		add(SignalUnreadable, Low, "文件太多，有 "+strconv.Itoa(skill.Unlisted)+" 个没看", "", []int{})
@@ -1626,6 +1780,7 @@ func SkillSignals(skill Skill) []SkillSignal {
 				if t.purpose != nil && t.purpose.hasRunes(about) {
 					out[i].Severity = Low
 					out[i].Label += "（它说自己就是做这个的）"
+					out[i].Declared = true
 				}
 				break
 			}

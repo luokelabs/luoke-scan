@@ -56,6 +56,11 @@
 - **讲这些事**只认写成匹配规则的：命中的字在 JS 的正则字面量（`/…/`）里，或者在直接交给正则的字符串里（`RegExp(`、`re.compile(`、`re.search(` 这类）。词一律不算，在哪都不算：变量名叫 `flags`、同一个字符串里写 `never` 或正则的 `\s`、另一条语句里的 `malicious`，都是安装脚本加一个词就能把命令藏起来的写法（`const s = 'curl … | sh # never'; execSync(s)`）。注释先去掉，注释里的不算匹配规则。
 - `| sh` 后面跟注释（`curl … | sh # …`）也算下载就运行（skill 的检查也一样）。
 
+脚本一行一行读，另有两样和 skill 的检查共用（`skillcommands.go`，见 [skills.md](skills.md)「怎么读脚本」）：
+
+- **续行**：行尾用 `\` 接到下一行的命令（shell 的命令、钩子里的几行、JavaScript 和 Python 里跨行的字符串），除了一行一行读，再接成一行读一遍（`installReadings`）：`curl … \` 换行 `| sh` 照报，行号是这条命令开始的那一行。两遍查到的合在一起，各行自己查得到的不会少。整行是注释的不往下接。钩子里跟到哪个文件也这样读（`node \` 换行 `evil.js`）。
+- **管道按段看**：前面一段是下载或解码，后面任何一段最终跑的是 shell 或解释器就算下载就运行，隔着 `xargs`、`env`、`nohup`、`timeout`、`sudo` 这类包装也算：`curl … | xargs -I{} bash -c "{}"`、`| env X=1 sh`、`| nohup timeout 60 bash -s`。shell 的安装脚本、钩子的命令、JavaScript 和 Python 交给 `exec`、`os.system` 的字符串里（`execSync("curl … | xargs sh")`）都查。后面的段不跑进来的内容的不算（`| xargs rm -f`、`| xargs grep`、`| tar xz`、`| xargs -n1 python3 check.py`、`| jq .`）；官方安装脚本隔着包装也还是官方安装脚本，不报。在正则字面量和交给正则的字符串里的照旧不算。
+
 脚本里有不合 UTF-8 的字节或 NUL 也照查（node 照样运行这种文件）：坏字节换成替换字符，NUL 当空格。不查的只有钩子**自己运行**（`./bin/x`）、开头真是程序（Mach-O、ELF 的开头，而且前 80 个字节里第一个换行之前有 NUL：系统运行不了的文件会交给 sh 当脚本跑，bash 只在看到这个时才拒绝）的文件；只是开头像程序的（`\xCF\xFA\xED\xFE` 后面跟一行命令）照查，经 `sh`、`node` 跑的不管开头是什么都照查。压缩过的代码（一行几千字）按语句切成小段再查，行号照原来的。
 
 ## 发现长什么样
@@ -105,6 +110,7 @@
 - 被跟到的文件再 `require` 的别的文件；钩子运行的是编译过的程序；超过 1 MB 的脚本（真实的投毒包有把几 MB 的打包代码放在 `postinstall` 里的：这类只算进 partial）。
 - 加密的载荷（用包的描述当钥匙解开再运行这类）：只有「一大段编码和运行代码在同一行」能认出来。
 - 把命令写成正则字面量再取出来运行（`execSync(/curl … | sh/.source)` 这类）：正则里的字一律当成在讲这件事。
+- 一条命令拆在几个字符串里拼起来的（`'curl … | ' + 'sh'`、Python 里相邻的两个字符串）；不用行尾的 `\` 而靠括号、引号跨行的命令：只按各行查。
 - 不经安装钩子、在被 `require` 时才跑的恶意代码：那是名单和病毒扫描的事。
 - Yarn PnP 的 zip 缓存、Bun 的全局包：还没看。
 - 以后再做：钩子里用 perl、ruby 跑的文件；`node .`（跑 `package.json` 的 `main`）；没写 `install` 时 npm 对有 `binding.gyp` 的包自动跑的 `node-gyp rebuild`（构建配置里能带命令）；git 依赖装的时候跑的 `prepare`。

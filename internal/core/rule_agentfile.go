@@ -24,13 +24,14 @@ func (r *AgentFileRule) ID() string      { return "agentfile" }
 func (r *AgentFileRule) Emits() []string { return []string{"agentfile"} }
 
 // adjustedSignals: what instruction files do as a matter of course, and a skill does not: say how to keep themselves
-// and the other agent files up to date, where the project's skills live (context only), how the project's own agent
-// settings are set up (low).
+// and the other agent files up to date, where the project's skills and slash commands live (context only), how the
+// project's own agent settings are set up (low).
 func adjustedSignals(signals []SkillSignal) []SkillSignal {
 	out := make([]SkillSignal, len(signals))
 	for i, s := range signals {
 		if s.Kind == SignalAgentTamper {
-			if strings.HasPrefix(s.Label, "改 AI 的记忆或长期指令") || strings.HasPrefix(s.Label, "改别的 skill") {
+			if strings.HasPrefix(s.Label, "改 AI 的记忆或长期指令") || strings.HasPrefix(s.Label, skillLabelCommands) ||
+				strings.HasPrefix(s.Label, "改别的 skill") {
 				s.Severity = ""
 			} else if s.Severity != "" {
 				s.Severity = Low

@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -158,5 +159,154 @@ func TestSpaceRemembersTheBiggestFilesOfAFolder(t *testing.T) {
 	}
 	if _, ok := top[Canonical(filepath.Join(home, "Projects"))]; ok {
 		t.Errorf("a folder that is gone is still remembered: %v", top)
+	}
+}
+
+// Listing a folder's entries stops when asked (luoke-scan#213: a huge folder was stat'ed to the end after SIGTERM).
+func TestSpaceListEntriesStopsWhenAsked(t *testing.T) {
+	dir := t.TempDir()
+	for i := 0; i < 3*spaceListStopEvery; i++ {
+		if err := os.WriteFile(filepath.Join(dir, fmt.Sprintf("f%05d", i)), nil, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if all, ok := spaceListEntries(dir, nil); !ok || len(all) != 3*spaceListStopEvery {
+		t.Fatalf("whole listing: %d %v", len(all), ok)
+	}
+	// how often it asks depends on how the folder is read: every spaceListStopEvery entries one by one, between the
+	// system calls in bulk
+	asked := 0
+	if got, ok := spaceListEntries(dir, func() bool { asked++; return false }); !ok || len(got) != 3*spaceListStopEvery || asked < 2 {
+		t.Errorf("not stopped: %d entries, ok %v, asked %d times", len(got), ok, asked)
+	}
+	asked = 0
+	if got, ok := spaceListEntries(dir, func() bool { asked++; return asked == 2 }); ok || got != nil || asked != 2 {
+		t.Errorf("stopped at the second ask: %d entries, ok %v, asked %d times", len(got), ok, asked)
+	}
+}
+
+// What a measured folder is made of is remembered when it is walked (data/usage's mix): every file under it, however
+// deep, by kind and by the year it was last changed, and the biggest of them by their path under the folder; a
+// remembered subfolder has its own; forgotten with the folder.
+func TestSpaceRemembersWhatAFolderIsMadeOf(t *testing.T) {
+	root := t.TempDir()
+	home := filepath.Join(root, "home")
+	now := time.Now()
+	write := func(rel string, mb int, year int) int64 {
+		p := filepath.Join(home, rel)
+		os.MkdirAll(filepath.Dir(p), 0o755)
+		if err := os.WriteFile(p, bytes.Repeat([]byte("x"), mb<<20), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		when := time.Date(year, 6, 1, 12, 0, 0, 0, time.Local)
+		if err := os.Chtimes(p, when, when); err != nil {
+			t.Fatal(err)
+		}
+		e, _ := Item(p)
+		return e.Bytes
+	}
+	this, last := now.Year(), now.Year()-1
+	photo := write("Library/Messages/Attachments/0a/10/IMG_1.HEIC", 3, last)
+	video := write("Library/Messages/Attachments/0b/11/x/y/clip.mov", 5, last)
+	db := write("Library/Messages/chat.db", 2, this)
+	plain := write("Library/Messages/Attachments/0a/noext", 1, this)
+	future := write("Library/Messages/Attachments/0a/later.pdf", 1, this+2)
+	write("Projects/a.zip", 1, this)
+	store, err := OpenStore(filepath.Join(root, "data"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx := NewContext(home)
+	ctx.Store, ctx.Now, ctx.Tmp = store, now, ""
+	rule := &SpaceRule{MinGrowthPerDay: 1 << 20, Window: 7, Budget: time.Minute, Journal: NewJournalSource(), SplitDepth: 2,
+		RememberAbove: 1 << 20}
+	if _, err := rule.Run(&ctx); err != nil {
+		t.Fatal(err)
+	}
+	mixes := SpaceMixTable(store).Load()
+	key := Canonical(filepath.Join(home, "Library/Messages"))
+	m, ok := mixes[key]
+	if !ok {
+		t.Fatalf("no mix for Library/Messages: %v", mixes)
+	}
+	wantKinds := map[string]SpaceTally{"photo": {photo, 1}, "video": {video, 1}, "database": {db, 1}, "document": {future, 1},
+		KindOther: {plain, 1}}
+	if !reflect.DeepEqual(m.Kinds, wantKinds) {
+		t.Errorf("kinds: %v, want %v", m.Kinds, wantKinds)
+	}
+	wantYears := map[string]int64{strconv.Itoa(last): photo + video, strconv.Itoa(this): db + plain, "": future}
+	if !reflect.DeepEqual(m.Years, wantYears) {
+		t.Errorf("years: %v, want %v", m.Years, wantYears)
+	}
+	var paths []string
+	for _, f := range m.Top {
+		paths = append(paths, f.Path)
+	}
+	if want := []string{"Attachments/0b/11/x/y/clip.mov", "Attachments/0a/10/IMG_1.HEIC", "chat.db", "Attachments/0a/later.pdf",
+		"Attachments/0a/noext"}; !reflect.DeepEqual(paths, want) {
+		t.Errorf("the biggest files: %v, want %v", paths, want)
+	}
+	if m.Top[0].Modified != fmt.Sprintf("%d-06-01", last) || m.Unknown != 0 {
+		t.Errorf("the biggest file's day %s, unknown %d", m.Top[0].Modified, m.Unknown)
+	}
+	// a remembered subfolder has its own, by its own paths
+	sub, ok := mixes[key+"/Attachments/0b"]
+	if !ok || len(sub.Top) != 1 || sub.Top[0].Path != "11/x/y/clip.mov" || sub.Kinds["video"].Bytes != video {
+		t.Errorf("Attachments/0b: %v %v", sub, ok)
+	}
+	if _, ok := mixes[Canonical(filepath.Join(home, "Projects"))]; !ok {
+		t.Error("no mix for Projects")
+	}
+
+	// a folder that is gone: forgotten, with its subfolders; the others walked again and kept
+	os.RemoveAll(filepath.Join(home, "Projects"))
+	os.RemoveAll(filepath.Join(home, "Library/Messages/Attachments/0b"))
+	if err := SpaceMeasuredTable(store).Apply(nil, nil, true); err != nil {
+		t.Fatal(err)
+	}
+	ctx.Now = ctx.Now.Add(time.Hour)
+	if _, err := rule.Run(&ctx); err != nil {
+		t.Fatal(err)
+	}
+	mixes = SpaceMixTable(store).Load()
+	if _, ok := mixes[Canonical(filepath.Join(home, "Projects"))]; ok {
+		t.Error("a folder that is gone still has a mix")
+	}
+	if _, ok := mixes[key+"/Attachments/0b"]; ok {
+		t.Error("a subfolder that is gone still has a mix")
+	}
+	if m := mixes[key]; m.Kinds["video"].Count != 0 || m.Kinds["photo"].Bytes != photo {
+		t.Errorf("after the change: %v", m.Kinds)
+	}
+}
+
+// A mix takes in a subfolder's: the kinds and years added, the files by their path through the subfolder, the
+// biggest kept; what the subfolder did not know stays unknown.
+func TestSpaceMixAdd(t *testing.T) {
+	now := time.Now()
+	var m SpaceMix
+	m.file("a.mp4", 5<<20, now, now)
+	sub := SpaceMix{Kinds: map[string]SpaceTally{"video": {8 << 20, 2}, "photo": {1 << 20, 4}}, Years: map[string]int64{"2020": 9 << 20},
+		Top: []SpaceBigFile{{"x/b.mov", 6 << 20, "2020-01-02"}}, Unknown: 7}
+	m.add(sub, "sub")
+	if m.Kinds["video"] != (SpaceTally{13 << 20, 3}) || m.Kinds["photo"].Count != 4 || m.Years["2020"] != 9<<20 || m.Unknown != 7 {
+		t.Errorf("%+v", m)
+	}
+	if len(m.Top) != 2 || m.Top[0] != (SpaceBigFile{"sub/x/b.mov", 6 << 20, "2020-01-02"}) || m.Top[1].Path != "a.mp4" {
+		t.Errorf("top: %v", m.Top)
+	}
+	for i := 0; i < 200; i++ {
+		m.file(fmt.Sprintf("f%03d.bin", i), int64(i+1)<<20, now, now)
+	}
+	m.file("tiny.bin", 100, now, now)
+	m.trim()
+	if len(m.Top) != spaceMixTop || m.Top[0].Path != "f199.bin" {
+		t.Errorf("top after many: %v", m.Top)
+	}
+	for name, want := range map[string]string{"a.JPG": "photo", "Docker.raw": "disk-image", "x.tar.gz": "archive", "noext": KindOther,
+		".hidden": KindOther, "a.": KindOther, "m.gguf": "model", "weird.zzz": KindOther} {
+		if got := FileKind(name); got != want {
+			t.Errorf("FileKind(%s) = %s, want %s", name, got, want)
+		}
 	}
 }

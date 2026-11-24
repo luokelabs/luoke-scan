@@ -33,6 +33,7 @@
                 "finding": "stale.large-file/000000000012",
                 "group": "large-file",
                 "key": "i12",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",
@@ -61,6 +62,7 @@
                 "finding": "stale.large-file/000000000013",
                 "group": "large-file",
                 "key": "i13",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",
@@ -89,6 +91,7 @@
                 "finding": "stale.large-file/000000000014",
                 "group": "large-file",
                 "key": "i14",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",

@@ -67,7 +67,7 @@ func (r *InstallScriptRule) ID() string      { return "deps.install-script" }
 func (r *InstallScriptRule) Emits() []string { return []string{"deps.install-script"} }
 
 // installRulesVersion: bumped when the checks change, so what was read is read again.
-const installRulesVersion = "2"
+const installRulesVersion = "3"
 
 // InstallScan is what was last found in a file: a package.json's hooks and the files they run, or what a script does.
 type InstallScan struct {

@@ -10,14 +10,123 @@
             "complete": true,
             "folders": [
               {
+                "actions": [
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "scan",
+                    "categories": [
+                      "cache"
+                    ],
+                    "command": null,
+                    "id": "clean",
+                    "pane": null
+                  },
+                  {
+                    "app": "Xcode",
+                    "bundleId": "com.apple.dt.Xcode",
+                    "by": "app",
+                    "categories": null,
+                    "command": null,
+                    "id": "xcode-archives",
+                    "pane": null
+                  },
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "command",
+                    "categories": null,
+                    "command": "huggingface-cli delete-cache",
+                    "id": "huggingface-delete-cache",
+                    "pane": null
+                  }
+                ],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 358612992,
                 "day": "2026-10-20",
+                "exclusiveBytes": 358612992,
                 "grew7d": null,
                 "holds": null,
                 "id": null,
                 "kind": "dev-caches",
+                "mix": {
+                  "bytes": 358612992,
+                  "count": 8,
+                  "files": [
+                    {
+                      "bytes": 62914560,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "blob",
+                      "path": "~/Library/Caches/pip/http/blob"
+                    },
+                    {
+                      "bytes": 60817408,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/Library/Caches/go-build/00/a"
+                    },
+                    {
+                      "bytes": 58720256,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/.cache/uv/archive-v0/a"
+                    },
+                    {
+                      "bytes": 56623104,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/.npm/_cacache/content-v2/a"
+                    },
+                    {
+                      "bytes": 55574528,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/Library/Developer/Xcode/DerivedData/App-abc/Build/a"
+                    },
+                    {
+                      "bytes": 54525952,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/.bun/install/cache/a"
+                    },
+                    {
+                      "bytes": 8388608,
+                      "kind": "other",
+                      "modified": "2026-09-25",
+                      "name": "a",
+                      "path": "~/.cache/huggingface/hub/models--example--tts-small/blobs/a"
+                    },
+                    {
+                      "bytes": 1048576,
+                      "kind": "other",
+                      "modified": "2026-10-17",
+                      "name": "x",
+                      "path": "~/.cargo/registry/cache/index/x"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 358612992,
+                      "count": 8,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 358612992,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "~/Library/Caches/pip",
@@ -30,164 +139,745 @@
                   "~/.cargo"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 349175808,
+                  "categories": [
+                    {
+                      "bytes": 349175808,
+                      "count": 6,
+                      "id": "cache"
+                    }
+                  ],
+                  "count": 6
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 62914560,
                     "dir": true,
+                    "exclusiveBytes": 62914560,
                     "name": "pip",
-                    "path": "~/Library/Caches/pip"
+                    "path": "~/Library/Caches/pip",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 60817408,
                     "dir": true,
+                    "exclusiveBytes": 60817408,
                     "name": "go-build",
-                    "path": "~/Library/Caches/go-build"
+                    "path": "~/Library/Caches/go-build",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 58720256,
                     "dir": true,
+                    "exclusiveBytes": 58720256,
                     "name": "uv",
-                    "path": "~/.cache/uv"
+                    "path": "~/.cache/uv",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 56623104,
                     "dir": true,
+                    "exclusiveBytes": 56623104,
                     "name": ".npm",
-                    "path": "~/.npm"
+                    "path": "~/.npm",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [
+                      {
+                        "app": "Xcode",
+                        "bundleId": "com.apple.dt.Xcode",
+                        "by": "app",
+                        "categories": null,
+                        "command": null,
+                        "id": "xcode-archives",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 55574528,
                     "dir": true,
+                    "exclusiveBytes": 55574528,
                     "name": "Xcode",
-                    "path": "~/Library/Developer/Xcode"
+                    "path": "~/Library/Developer/Xcode",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "cache",
+                  "ifDeleted": "rebuilds",
+                  "owner": null
+                }
               },
               {
+                "actions": [
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "scan",
+                    "categories": [
+                      "temp"
+                    ],
+                    "command": null,
+                    "id": "clean",
+                    "pane": null
+                  }
+                ],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 262156288,
                 "day": "2026-10-20",
+                "exclusiveBytes": 262156288,
                 "grew7d": null,
                 "holds": null,
                 "id": null,
                 "kind": "temp",
+                "mix": {
+                  "bytes": 262156288,
+                  "count": 53,
+                  "files": [
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00000/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00001/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00002/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00003/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00004/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00005/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00006/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00007/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00008/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00009/x"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 131072000,
+                      "count": 25,
+                      "id": "code"
+                    },
+                    {
+                      "bytes": 131084288,
+                      "count": 28,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 262156288,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "$TMPDIR"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 131072000,
+                  "categories": [
+                    {
+                      "bytes": 131072000,
+                      "count": 1,
+                      "id": "temp"
+                    }
+                  ],
+                  "count": 1
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 5242880,
                     "dir": true,
+                    "exclusiveBytes": 5242880,
                     "name": "busy-B00000",
-                    "path": "$TMPDIR/busy-B00000"
+                    "path": "$TMPDIR/busy-B00000",
+                    "what": {
+                      "content": "temp",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 5242880,
                     "dir": true,
+                    "exclusiveBytes": 5242880,
                     "name": "busy-B00001",
-                    "path": "$TMPDIR/busy-B00001"
+                    "path": "$TMPDIR/busy-B00001",
+                    "what": {
+                      "content": "temp",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 5242880,
                     "dir": true,
+                    "exclusiveBytes": 5242880,
                     "name": "busy-B00002",
-                    "path": "$TMPDIR/busy-B00002"
+                    "path": "$TMPDIR/busy-B00002",
+                    "what": {
+                      "content": "temp",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 5242880,
                     "dir": true,
+                    "exclusiveBytes": 5242880,
                     "name": "busy-B00003",
-                    "path": "$TMPDIR/busy-B00003"
+                    "path": "$TMPDIR/busy-B00003",
+                    "what": {
+                      "content": "temp",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 5242880,
                     "dir": true,
+                    "exclusiveBytes": 5242880,
                     "name": "busy-B00004",
-                    "path": "$TMPDIR/busy-B00004"
+                    "path": "$TMPDIR/busy-B00004",
+                    "what": {
+                      "content": "temp",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "temp",
+                  "ifDeleted": "rebuilds",
+                  "owner": null
+                }
               },
               {
+                "actions": [
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "scan",
+                    "categories": [
+                      "installer",
+                      "large-file",
+                      "malware"
+                    ],
+                    "command": null,
+                    "id": "clean",
+                    "pane": null
+                  },
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "finder",
+                    "categories": null,
+                    "command": null,
+                    "id": "review",
+                    "pane": null
+                  }
+                ],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 31469568,
                 "day": "2026-10-20",
+                "exclusiveBytes": 31469568,
                 "grew7d": null,
                 "holds": null,
                 "id": "Downloads",
                 "kind": "known",
+                "mix": {
+                  "bytes": 31469568,
+                  "count": 4,
+                  "files": [
+                    {
+                      "bytes": 31457280,
+                      "kind": "installer",
+                      "modified": "2025-09-15",
+                      "name": "macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg",
+                      "path": "~/Downloads/macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 31457280,
+                      "count": 1,
+                      "id": "installer"
+                    },
+                    {
+                      "bytes": 4096,
+                      "count": 1,
+                      "id": "archive"
+                    },
+                    {
+                      "bytes": 8192,
+                      "count": 2,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 12288,
+                      "year": 2026
+                    },
+                    {
+                      "before": false,
+                      "bytes": 31457280,
+                      "year": 2025
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "~/Downloads"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 62922752,
+                  "categories": [
+                    {
+                      "bytes": 31457280,
+                      "count": 1,
+                      "id": "installer"
+                    },
+                    {
+                      "bytes": 31457280,
+                      "count": 1,
+                      "id": "large-file"
+                    },
+                    {
+                      "bytes": 8192,
+                      "count": 2,
+                      "id": "malware"
+                    }
+                  ],
+                  "count": 4
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 31457280,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg",
-                    "path": "~/Downloads/macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg"
+                    "path": "~/Downloads/macOS Sonoma 安装程序 备份 2023 年 3 月最终版 (1).dmg",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "user",
+                  "ifDeleted": "lost",
+                  "owner": "user"
+                }
               },
               {
+                "actions": [
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "scan",
+                    "categories": [
+                      "large-file"
+                    ],
+                    "command": null,
+                    "id": "clean",
+                    "pane": null
+                  },
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "finder",
+                    "categories": null,
+                    "command": null,
+                    "id": "review",
+                    "pane": null
+                  }
+                ],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 20971520,
                 "day": "2026-10-20",
+                "exclusiveBytes": 20971520,
                 "grew7d": null,
                 "holds": null,
                 "id": "Movies",
                 "kind": "known",
+                "mix": {
+                  "bytes": 20971520,
+                  "count": 1,
+                  "files": [
+                    {
+                      "bytes": 20971520,
+                      "kind": "video",
+                      "modified": "2025-02-27",
+                      "name": "二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4",
+                      "path": "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 20971520,
+                      "count": 1,
+                      "id": "video"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 20971520,
+                      "year": 2025
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "~/Movies"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 20971520,
+                  "categories": [
+                    {
+                      "bytes": 20971520,
+                      "count": 1,
+                      "id": "large-file"
+                    }
+                  ],
+                  "count": 1
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 20971520,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4",
-                    "path": "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4"
+                    "path": "~/Movies/二零二三年大学毕业典礼全程录像（含校长致辞和学生代表发言）完整版.mp4",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "user",
+                  "ifDeleted": "lost",
+                  "owner": "user"
+                }
               },
               {
+                "actions": [
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "scan",
+                    "categories": [
+                      "large-file"
+                    ],
+                    "command": null,
+                    "id": "clean",
+                    "pane": null
+                  },
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "finder",
+                    "categories": null,
+                    "command": null,
+                    "id": "review",
+                    "pane": null
+                  }
+                ],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 12582912,
                 "day": "2026-10-20",
+                "exclusiveBytes": 12582912,
                 "grew7d": null,
                 "holds": null,
                 "id": "Pictures",
                 "kind": "known",
+                "mix": {
+                  "bytes": 12582912,
+                  "count": 1,
+                  "files": [
+                    {
+                      "bytes": 12582912,
+                      "kind": "video",
+                      "modified": "2018-09-22",
+                      "name": "IMG_8519.MOV",
+                      "path": "~/Pictures/Trip/IMG_8519.MOV"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 12582912,
+                      "count": 1,
+                      "id": "video"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 12582912,
+                      "year": 2018
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "~/Pictures"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 12582912,
+                  "categories": [
+                    {
+                      "bytes": 12582912,
+                      "count": 1,
+                      "id": "large-file"
+                    }
+                  ],
+                  "count": 1
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 12582912,
                     "dir": true,
+                    "exclusiveBytes": 12582912,
                     "name": "Trip",
-                    "path": "~/Pictures/Trip"
+                    "path": "~/Pictures/Trip",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "user",
+                  "ifDeleted": "lost",
+                  "owner": "user"
+                }
               },
               {
+                "actions": [],
                 "apps": 5,
                 "bundleId": null,
                 "bytes": 11534336,
                 "day": "2026-10-20",
+                "exclusiveBytes": 11534336,
                 "grew7d": null,
                 "holds": null,
                 "id": null,
                 "kind": "removed-apps",
+                "mix": {
+                  "bytes": 11534336,
+                  "count": 6,
+                  "files": [
+                    {
+                      "bytes": 2097152,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "data.bin",
+                      "path": "~/Library/Application Support/io.example.removed/data.bin"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "code",
+                      "modified": "2026-08-21",
+                      "name": "k.json",
+                      "path": "~/Library/Application Support/io.parity.ethereum/keys/k.json"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "h.bin",
+                      "path": "~/Library/Application Support/org.present.oldhelper/h.bin"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "c.bin",
+                      "path": "~/Library/Caches/com.apple.example/c.bin"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "c.bin",
+                      "path": "~/Library/Caches/io.example.stillused/c.bin"
+                    },
+                    {
+                      "bytes": 1048576,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "c.bin",
+                      "path": "~/Library/Containers/ABCDE12345.io.example.removed/c.bin"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 2097152,
+                      "count": 1,
+                      "id": "code"
+                    },
+                    {
+                      "bytes": 9437184,
+                      "count": 5,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 11534336,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "~/Library/Application Support/io.example.removed",
@@ -198,146 +888,448 @@
                   "~/Library/Containers/ABCDE12345.io.example.removed"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 0,
+                  "categories": [],
+                  "count": 0
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": true,
+                    "exclusiveBytes": 2097152,
                     "name": "io.example.removed",
-                    "path": "~/Library/Application Support/io.example.removed"
+                    "path": "~/Library/Application Support/io.example.removed",
+                    "what": {
+                      "content": "app-data",
+                      "ifDeleted": "lost",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": true,
+                    "exclusiveBytes": 2097152,
                     "name": "io.parity.ethereum",
-                    "path": "~/Library/Application Support/io.parity.ethereum"
+                    "path": "~/Library/Application Support/io.parity.ethereum",
+                    "what": {
+                      "content": "app-data",
+                      "ifDeleted": "lost",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": true,
+                    "exclusiveBytes": 2097152,
                     "name": "org.present.oldhelper",
-                    "path": "~/Library/Application Support/org.present.oldhelper"
+                    "path": "~/Library/Application Support/org.present.oldhelper",
+                    "what": {
+                      "content": "app-data",
+                      "ifDeleted": "lost",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": true,
+                    "exclusiveBytes": 2097152,
                     "name": "com.apple.example",
-                    "path": "~/Library/Caches/com.apple.example"
+                    "path": "~/Library/Caches/com.apple.example",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": true,
+                    "exclusiveBytes": 2097152,
                     "name": "io.example.stillused",
-                    "path": "~/Library/Caches/io.example.stillused"
+                    "path": "~/Library/Caches/io.example.stillused",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "app-data",
+                  "ifDeleted": "lost",
+                  "owner": null
+                }
               },
               {
+                "actions": [],
                 "apps": null,
                 "bundleId": "com.tencent.xinWeChat",
                 "bytes": 9437184,
                 "day": "2026-10-20",
+                "exclusiveBytes": 9437184,
                 "grew7d": null,
                 "holds": "data",
                 "id": null,
                 "kind": "app",
+                "mix": {
+                  "bytes": 9437184,
+                  "count": 1,
+                  "files": [
+                    {
+                      "bytes": 9437184,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/Library/Containers/com.tencent.xinWeChat/Data/Library/a"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 9437184,
+                      "count": 1,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 9437184,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": "微信",
                 "paths": [
                   "~/Library/Containers/com.tencent.xinWeChat"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 0,
+                  "categories": [],
+                  "count": 0
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 9437184,
                     "dir": true,
+                    "exclusiveBytes": 9437184,
                     "name": "Data",
-                    "path": "~/Library/Containers/com.tencent.xinWeChat/Data"
+                    "path": "~/Library/Containers/com.tencent.xinWeChat/Data",
+                    "what": {
+                      "content": "app-data",
+                      "ifDeleted": null,
+                      "owner": null
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "app-data",
+                  "ifDeleted": null,
+                  "owner": null
+                }
               },
               {
+                "actions": [],
                 "apps": null,
                 "bundleId": "com.microsoft.teams2",
                 "bytes": 5242880,
                 "day": "2026-10-20",
+                "exclusiveBytes": 5242880,
                 "grew7d": null,
                 "holds": "cache",
                 "id": null,
                 "kind": "app",
+                "mix": {
+                  "bytes": 5242880,
+                  "count": 1,
+                  "files": [
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/Library/Caches/com.microsoft.teams2/a"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 5242880,
+                      "count": 1,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 5242880,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": "Microsoft Teams",
                 "paths": [
                   "~/Library/Caches/com.microsoft.teams2"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 0,
+                  "categories": [],
+                  "count": 0
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 5242880,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "a",
-                    "path": "~/Library/Caches/com.microsoft.teams2/a"
+                    "path": "~/Library/Caches/com.microsoft.teams2/a",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "cache",
+                  "ifDeleted": "rebuilds",
+                  "owner": null
+                }
               },
               {
+                "actions": [
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "scan",
+                    "categories": [
+                      "project"
+                    ],
+                    "command": null,
+                    "id": "clean",
+                    "pane": null
+                  }
+                ],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 3371008,
                 "day": "2026-10-20",
+                "exclusiveBytes": 3371008,
                 "grew7d": null,
                 "holds": null,
                 "id": null,
                 "kind": "folder",
+                "mix": {
+                  "bytes": 3371008,
+                  "count": 294,
+                  "files": [
+                    {
+                      "bytes": 2097152,
+                      "kind": "document",
+                      "modified": "2025-09-15",
+                      "name": "notes.txt",
+                      "path": "~/Projects/unpacked/notes.txt"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 2146304,
+                      "count": 13,
+                      "id": "document"
+                    },
+                    {
+                      "bytes": 8192,
+                      "count": 2,
+                      "id": "code"
+                    },
+                    {
+                      "bytes": 4096,
+                      "count": 1,
+                      "id": "photo"
+                    },
+                    {
+                      "bytes": 1212416,
+                      "count": 278,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 4096,
+                      "year": 2026
+                    },
+                    {
+                      "before": false,
+                      "bytes": 2170880,
+                      "year": 2025
+                    },
+                    {
+                      "before": false,
+                      "bytes": 1196032,
+                      "year": null
+                    }
+                  ]
+                },
                 "name": "Projects",
                 "paths": [
                   "~/Projects"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 147456,
+                  "categories": [
+                    {
+                      "bytes": 147456,
+                      "count": 1,
+                      "id": "project"
+                    }
+                  ],
+                  "count": 1
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 2101248,
                     "dir": true,
+                    "exclusiveBytes": 2101248,
                     "name": "unpacked",
-                    "path": "~/Projects/unpacked"
+                    "path": "~/Projects/unpacked",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "user",
+                  "ifDeleted": "lost",
+                  "owner": "user"
+                }
               },
               {
+                "actions": [],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 3145728,
                 "day": "2026-10-20",
+                "exclusiveBytes": 3145728,
                 "grew7d": null,
                 "holds": null,
                 "id": "Library/Group Containers",
                 "kind": "known",
+                "mix": {
+                  "bytes": 3145728,
+                  "count": 2,
+                  "files": [
+                    {
+                      "bytes": 2097152,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "g.bin",
+                      "path": "~/Library/Group Containers/group.org.present.app.shared/g.bin"
+                    },
+                    {
+                      "bytes": 1048576,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "g.bin",
+                      "path": "~/Library/Group Containers/ABCDE12345.io.example.removed/g.bin"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 3145728,
+                      "count": 2,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 3145728,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "~/Library/Group Containers"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 0,
+                  "categories": [],
+                  "count": 0
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": true,
+                    "exclusiveBytes": 2097152,
                     "name": "group.org.present.app.shared",
-                    "path": "~/Library/Group Containers/group.org.present.app.shared"
+                    "path": "~/Library/Group Containers/group.org.present.app.shared",
+                    "what": {
+                      "content": null,
+                      "ifDeleted": null,
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 1048576,
                     "dir": true,
+                    "exclusiveBytes": 1048576,
                     "name": "ABCDE12345.io.example.removed",
-                    "path": "~/Library/Group Containers/ABCDE12345.io.example.removed"
+                    "path": "~/Library/Group Containers/ABCDE12345.io.example.removed",
+                    "what": {
+                      "content": null,
+                      "ifDeleted": null,
+                      "owner": null
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": null,
+                  "ifDeleted": null,
+                  "owner": null
+                }
               }
             ],
             "listedBytes": 718524416,
             "measuredBytes": 720621568,
             "more": 1,
+            "reconcile": null,
             "scanned": {
               "finished": "2026-10-20T12:00:00Z",
               "started": "2026-10-20T12:00:00Z"
             },
             "schema": 1,
+            "shareUncheckedBytes": 0,
             "unseen": []
           },
           "uri": "data/usage"

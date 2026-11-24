@@ -12,7 +12,9 @@
               "items": [
                 {
                   "category": "malware",
+                  "facts": null,
                   "finding": "malware.clamav/000000000003",
+                  "modelNotes": [],
                   "path": "~/Downloads/eicar-test.com",
                   "reveal": "~/Downloads/eicar-test.com",
                   "rule": "malware.clamav",
@@ -21,7 +23,9 @@
                 },
                 {
                   "category": "malware",
+                  "facts": null,
                   "finding": "malware.yara.luoke_fake_password_dialog/000000000006",
+                  "modelNotes": [],
                   "path": "~/Downloads/update.scpt",
                   "reveal": "~/Downloads/update.scpt",
                   "rule": "malware.yara.luoke_fake_password_dialog",
@@ -30,7 +34,50 @@
                 },
                 {
                   "category": null,
+                  "facts": {
+                    "agent": "Claude Code 插件",
+                    "hits": [
+                      {
+                        "declared": false,
+                        "files": [
+                          "SKILL.md"
+                        ],
+                        "kinds": [
+                          "download-exec"
+                        ],
+                        "lines": [
+                          5
+                        ],
+                        "linesMore": 0,
+                        "part": null,
+                        "severity": "high"
+                      },
+                      {
+                        "declared": false,
+                        "files": [
+                          "SKILL.md"
+                        ],
+                        "kinds": [
+                          "escalation"
+                        ],
+                        "lines": [
+                          5
+                        ],
+                        "linesMore": 0,
+                        "part": null,
+                        "severity": "low"
+                      }
+                    ],
+                    "hitsMore": 0,
+                    "kinds": [
+                      "download-exec",
+                      "escalation"
+                    ],
+                    "scope": "personal",
+                    "skill": "command-development"
+                  },
                   "finding": "skill.download-exec/000000000016",
+                  "modelNotes": [],
                   "path": "~/.claude/plugins/marketplaces/example-market/plugins/plugin-dev/skills/command-development",
                   "reveal": "~/.claude/plugins/marketplaces/example-market/plugins/plugin-dev/skills/command-development",
                   "rule": "skill.download-exec",
@@ -39,7 +86,50 @@
                 },
                 {
                   "category": null,
+                  "facts": {
+                    "agent": "Claude Code 插件",
+                    "hits": [
+                      {
+                        "declared": false,
+                        "files": [
+                          "SKILL.md"
+                        ],
+                        "kinds": [
+                          "download-exec"
+                        ],
+                        "lines": [
+                          5
+                        ],
+                        "linesMore": 0,
+                        "part": null,
+                        "severity": "high"
+                      },
+                      {
+                        "declared": false,
+                        "files": [
+                          "SKILL.md"
+                        ],
+                        "kinds": [
+                          "escalation"
+                        ],
+                        "lines": [
+                          5
+                        ],
+                        "linesMore": 0,
+                        "part": null,
+                        "severity": "low"
+                      }
+                    ],
+                    "hitsMore": 0,
+                    "kinds": [
+                      "download-exec",
+                      "escalation"
+                    ],
+                    "scope": "personal",
+                    "skill": "hook-development"
+                  },
                   "finding": "skill.download-exec/000000000017",
+                  "modelNotes": [],
                   "path": "~/.claude/plugins/marketplaces/example-market/plugins/plugin-dev/skills/hook-development",
                   "reveal": "~/.claude/plugins/marketplaces/example-market/plugins/plugin-dev/skills/hook-development",
                   "rule": "skill.download-exec",
@@ -48,7 +138,9 @@
                 },
                 {
                   "category": null,
+                  "facts": null,
                   "finding": "posture.filevault",
+                  "modelNotes": [],
                   "path": null,
                   "reveal": null,
                   "rule": "posture.filevault",
@@ -57,7 +149,9 @@
                 },
                 {
                   "category": null,
+                  "facts": null,
                   "finding": "process.deleted-binary/000000000018",
+                  "modelNotes": [],
                   "path": "~/Applications/Gone.app/Contents/MacOS/gone",
                   "reveal": "~/Applications/Gone.app/Contents/MacOS/gone",
                   "rule": "process.deleted-binary",
@@ -66,7 +160,17 @@
                 },
                 {
                   "category": null,
+                  "facts": {
+                    "app": null,
+                    "client": "/opt/gone/tool",
+                    "clientType": "path",
+                    "grants": [
+                      "录屏"
+                    ],
+                    "loginItems": null
+                  },
                   "finding": "permission.stale-grant/000000000019",
+                  "modelNotes": [],
                   "path": "/opt/gone/tool",
                   "reveal": "/opt/gone/tool",
                   "rule": "permission.stale-grant",
@@ -75,7 +179,18 @@
                 },
                 {
                   "category": null,
+                  "facts": {
+                    "app": null,
+                    "client": "com.hnc.Discord",
+                    "clientType": "bundle",
+                    "grants": [
+                      "录屏",
+                      "麦克风"
+                    ],
+                    "loginItems": null
+                  },
                   "finding": "permission.stale-grant/000000000020",
+                  "modelNotes": [],
                   "path": null,
                   "reveal": null,
                   "rule": "permission.stale-grant",
@@ -84,7 +199,17 @@
                 },
                 {
                   "category": null,
+                  "facts": {
+                    "app": null,
+                    "client": "io.example.removed",
+                    "clientType": "bundle",
+                    "grants": [
+                      "完全磁盘访问"
+                    ],
+                    "loginItems": null
+                  },
                   "finding": "permission.stale-grant/000000000021",
+                  "modelNotes": [],
                   "path": null,
                   "reveal": null,
                   "rule": "permission.stale-grant",
@@ -97,6 +222,7 @@
             "autoCleaned": [],
             "autoclean": false,
             "disk": {
+              "available": 182000000000,
               "free": 182000000000,
               "total": 494000000000
             },
@@ -244,30 +370,6 @@
               },
               {
                 "auto": null,
-                "bytes": 0,
-                "count": 2,
-                "facts": {
-                  "apps": [],
-                  "appsInstalled": 0,
-                  "appsMissing": 0,
-                  "groups": {
-                    "install-scripts": 2
-                  },
-                  "password": 0,
-                  "rebuilds": 0,
-                  "tools": [
-                    "pip",
-                    "uv"
-                  ],
-                  "userFiles": "none"
-                },
-                "files": 2,
-                "id": "install-scripts",
-                "suggested": 0,
-                "suggestedBytes": 0
-              },
-              {
-                "auto": null,
                 "bytes": 8192,
                 "count": 2,
                 "facts": {
@@ -294,6 +396,32 @@
             },
             "scanning": null,
             "schema": 1,
+            "settings": [
+              {
+                "auto": null,
+                "bytes": 0,
+                "count": 2,
+                "facts": {
+                  "apps": [],
+                  "appsInstalled": 0,
+                  "appsMissing": 0,
+                  "groups": {
+                    "install-scripts": 2
+                  },
+                  "password": 0,
+                  "rebuilds": 0,
+                  "tools": [
+                    "pip",
+                    "uv"
+                  ],
+                  "userFiles": "none"
+                },
+                "files": 0,
+                "id": "install-scripts",
+                "suggested": 0,
+                "suggestedBytes": 0
+              }
+            ],
             "skipped": [],
             "virusDb": {
               "date": "2026-10-20",

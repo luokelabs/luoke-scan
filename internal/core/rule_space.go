@@ -25,7 +25,12 @@ type FreeSpaceRule struct {
 	MinFreeBytes    int64
 	MinFreeFraction float64
 	// Volume is the free and total bytes of the volume home is on; ok false when not known. nil: this Mac's.
+	// free counts what the system says it can purge (what the Finder shows).
 	Volume func(home string) (free, total int64, ok bool)
+	// Available is what can be written right now (statfs), without what the system may purge later; ok false when
+	// not known, then free is taken. nil: this Mac's. Low space is judged by this (luoke-scan#210: a disk the Finder
+	// showed 200 GB free on had 2 GB to write, and writes failed).
+	Available func(home string) (int64, bool)
 	// Swap is the bytes of swap in use; ok false when not known. nil: this Mac's.
 	Swap func() (int64, bool)
 }
@@ -41,6 +46,12 @@ func NewFreeSpaceRule(l *Layout, f *Fakes) Rule {
 			}
 			return v.Free, v.Total, true
 		}
+		r.Available = func(string) (int64, bool) {
+			if v == nil {
+				return 0, false
+			}
+			return v.available(), true
+		}
 		r.Swap = func() (int64, bool) {
 			if v == nil || v.Swap == nil {
 				return 0, false
@@ -55,9 +66,12 @@ func (r *FreeSpaceRule) ID() string      { return "space.low" }
 func (r *FreeSpaceRule) Emits() []string { return []string{"space.low"} }
 
 func (r *FreeSpaceRule) Run(ctx *Context) ([]Finding, error) {
-	volume, swap := r.Volume, r.Swap
+	volume, swap, available := r.Volume, r.Swap, r.Available
 	if volume == nil {
 		volume = volumeCapacity
+	}
+	if available == nil {
+		available = VolumeAvailable
 	}
 	if swap == nil {
 		swap = swapUsed
@@ -70,12 +84,22 @@ func (r *FreeSpaceRule) Run(ctx *Context) ([]Finding, error) {
 	if f := int64(float64(total) * r.MinFreeFraction); f > floor {
 		floor = f
 	}
+	// What counts is what can be written now: purgeable space is freed when the system gets to it, not when a write
+	// needs it. purgeable: how much more the system says it could free.
+	var purgeable int64
+	if avail, ok := available(ctx.Home); ok && avail < free {
+		purgeable, free = free-avail, avail
+	}
 	if free >= floor {
 		return nil, nil
 	}
-	// total_bytes, swap_bytes: the same as numbers, for what is drawn from data (the service's spaceData)
+	// total_bytes, swap_bytes, purgeable_bytes: the same as numbers, for what is drawn from data (the service's spaceData)
 	ev := map[string]string{"free": FormatBytes(free), "total": FormatBytes(total), "threshold": FormatBytes(floor),
 		"total_bytes": strconv.FormatInt(total, 10)}
+	if purgeable > 0 {
+		ev["purgeable"] = FormatBytes(purgeable)
+		ev["purgeable_bytes"] = strconv.FormatInt(purgeable, 10)
+	}
 	if s, ok := swap(); ok {
 		ev["swap"] = FormatBytes(s)
 		ev["swap_bytes"] = strconv.FormatInt(s, 10)
@@ -91,6 +115,13 @@ var importantCapacity = func(path string) (int64, int64, bool) { return 0, 0, fa
 // volumeCapacity is this Mac's free and total bytes of the volume home is on.
 // VolumeCapacity is the free and total bytes of the volume home is on (the 「状态」 page reads it when drawn).
 func VolumeCapacity(home string) (int64, int64, bool) { return volumeCapacity(home) }
+
+// VolumeAvailable is what can be written to the volume home is on right now (statfs's available blocks): without the
+// purgeable space VolumeCapacity's free counts.
+func VolumeAvailable(home string) (int64, bool) {
+	avail, _, ok := statfsCapacity(home)
+	return avail, ok
+}
 
 func volumeCapacity(home string) (int64, int64, bool) {
 	return mergeCapacity(importantCapacity, statfsCapacity, home)
@@ -273,6 +304,10 @@ func SpaceTopFilesTable(s *Store) Table[[]SpaceFile] {
 	return NewTable[[]SpaceFile](s, "topfiles", 1)
 }
 
+// SpaceMixTable keeps, by canonical path, what a measured folder is made of (SpaceMix), for the watched folders and
+// the subfolders SpaceMeasuredTable remembers, as they were when last walked (data/usage: a row's mix).
+func SpaceMixTable(s *Store) Table[SpaceMix] { return NewTable[SpaceMix](s, "mix", 1) }
+
 func sameSpaceFiles(a, b []SpaceFile) bool {
 	if len(a) != len(b) {
 		return false
@@ -285,11 +320,34 @@ func sameSpaceFiles(a, b []SpaceFile) bool {
 	return true
 }
 
+// spaceListStopEvery: how many entries spaceListEntries looks at between asking whether to stop.
+const spaceListStopEvery = 1000
+
 // spaceListEntries are a folder's entries (not following links), in the file system's order; ok false when it cannot
 // be listed.
-func spaceListEntries(dir string) ([]Entry, bool) {
+// stop (may be nil) is asked every spaceListStopEvery entries: a folder of a million files takes many seconds to stat
+// one by one, and the round has to stop within a few when luoke-core says so (luoke-scan#213).
+func spaceListEntries(dir string, stop func() bool) ([]Entry, bool) {
 	if !mayOpen(dir) {
 		return nil, false
+	}
+	// APFS: one bulk read, which also says what each file's blocks share (Entry.Shares); the folders in it are
+	// lstat'ed as below. When it cannot be read that way, the plain way, without the sharing.
+	if volumeType(dir) == "apfs" {
+		if fd, err := openFolder(dir); err == nil {
+			stopped := false
+			out, ok := readBulk(fd, dir, true, func() bool {
+				stopped = stop != nil && stop()
+				return stopped
+			})
+			syscall.Close(fd)
+			if ok {
+				return out, true
+			}
+			if stopped {
+				return nil, false
+			}
+		}
 	}
 	f, err := os.Open(dir)
 	if err != nil {
@@ -301,7 +359,10 @@ func spaceListEntries(dir string) ([]Entry, bool) {
 		return nil, false
 	}
 	out := make([]Entry, 0, len(names))
-	for _, n := range names {
+	for i, n := range names {
+		if stop != nil && i%spaceListStopEvery == spaceListStopEvery-1 && stop() {
+			return nil, false
+		}
 		if e, ok := Item(dir + "/" + n); ok {
 			out = append(out, e)
 		}
@@ -321,6 +382,10 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 	// without telling.
 	measuredTable := SpaceMeasuredTable(store)
 	known := measuredTable.Load()
+	mixTable := SpaceMixTable(store)
+	mixKnown := mixTable.Load()
+	cloneTable := SpaceClonesTable(store)
+	cloneKnown := cloneTable.Load()
 	roots := []string{ctx.Home}
 	if ctx.Tmp != "" {
 		roots = append(roots, ctx.Tmp)
@@ -342,7 +407,13 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 		}
 	}
 	inc, err := BeginIncrement(ctx, "fsevents.journal", roots, minEventID(ids), r.Journal, func() error {
-		known = map[string]SpaceMeasured{}
+		known, mixKnown, cloneKnown = map[string]SpaceMeasured{}, map[string]SpaceMix{}, map[string]SpaceClones{}
+		if err := mixTable.Apply(nil, nil, true); err != nil {
+			return err
+		}
+		if err := cloneTable.Apply(nil, nil, true); err != nil {
+			return err
+		}
 		return measuredTable.Apply(nil, nil, true)
 	})
 	if err != nil {
@@ -370,32 +441,48 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 	var wFiles []SpaceFile // the watched folder's own files from RememberAbove up (not its subfolders')
 	topFiles := map[string][]SpaceFile{}
 	var wListed, wSeen, wDropped map[string]bool
+	// What each folder walked is made of: the watched folder's and its remembered subfolders', written with wRows.
+	var wMix map[string]SpaceMix
+	mixWritten := map[string]bool{}
+	// Which of each folder's files share blocks (SpaceClones): kept for the same folders as the mixes, written with them.
+	var wClones map[string]SpaceClones
+	clonesWritten := map[string]bool{}
 	// measure is the size of path, walking only the subfolders (down to depth levels) that changed, and the oldest
 	// real measurement inside it (reused sizes keep their age, so the 7-day limit holds for them too). floor: the
 	// folder's own event id from before this round. ok false when the round was cancelled meanwhile.
-	var measure func(path, key string, depth int, floor uint64, volume *int32) (int64, time.Time, bool)
-	measure = func(path, key string, depth int, floor uint64, volume *int32) (int64, time.Time, bool) {
+	// The mix is the folder's, all the way down: its own files, what was walked under it, and for a subfolder found
+	// unchanged the mix remembered with its size (none remembered: its bytes count as SpaceMix.Unknown).
+	// The clones are the folder's the same way (none remembered for an unchanged subfolder: SpaceClones.Unchecked).
+	var measure func(path, key string, depth int, floor uint64, volume *int32) (int64, time.Time, SpaceMix, SpaceClones, bool)
+	measure = func(path, key string, depth int, floor uint64, volume *int32) (int64, time.Time, SpaceMix, SpaceClones, bool) {
+		var mix SpaceMix
+		var clones SpaceClones
 		var items []Entry
 		ok := false
 		if depth > 0 {
-			items, ok = spaceListEntries(path)
+			items, ok = spaceListEntries(path, ctx.IsCancelled)
+		}
+		if ctx.IsCancelled() { // also when the listing itself was stopped: not walked whole instead
+			return 0, time.Time{}, mix, clones, false
 		}
 		if !ok {
-			f, ok := WalkFacts(path, time.Time{}, ctx.IsCancelled)
-			return f.Bytes, ctx.Now, ok
+			b, m, c, ok := WalkClones(path, ctx.Now, ctx.IsCancelled)
+			return b, ctx.Now, m, c, ok
 		}
 		wListed[key] = true
 		var total int64
 		oldest := ctx.Now
 		for _, e := range items {
 			if ctx.IsCancelled() {
-				return 0, time.Time{}, false
+				return 0, time.Time{}, mix, clones, false
 			}
 			if e.IsLink {
 				continue
 			}
 			if !e.IsDir {
 				total += e.Bytes
+				mix.file(e.Name, e.Bytes, e.Modified, ctx.Now)
+				clones.file(e)
 				if depth == r.SplitDepth && e.Bytes >= r.RememberAbove {
 					wFiles = append(wFiles, SpaceFile{Name: e.Name, Bytes: e.Bytes})
 				}
@@ -410,6 +497,16 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 			wSeen[ck] = true
 			if k, ok := unchanged(ck, ino, floor); ok {
 				total += k.Bytes
+				if m, ok := mixKnown[ck]; ok {
+					mix.add(m, e.Name)
+				} else {
+					mix.Unknown += k.Bytes
+				}
+				if c, ok := cloneKnown[ck]; ok {
+					clones.add(c)
+				} else {
+					clones.Unchecked += k.Bytes
+				}
 				if k.MeasuredAt.Before(oldest) {
 					oldest = k.MeasuredAt
 				}
@@ -422,21 +519,27 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 			if k, ok := known[ck]; ok {
 				sub = max(k.EventID, floor)
 			}
-			b, o, ok := measure(e.Path, ck, depth-1, sub, volume)
+			b, o, m, c, ok := measure(e.Path, ck, depth-1, sub, volume)
 			if !ok {
-				return 0, time.Time{}, false
+				return 0, time.Time{}, mix, clones, false
 			}
 			total += b
+			mix.add(m, e.Name)
+			clones.add(c)
 			if o.Before(oldest) {
 				oldest = o
 			}
 			if b >= r.RememberAbove {
 				wRows[ck] = SpaceMeasured{EventID: start, Inode: ino, Bytes: b, MeasuredAt: o}
+				wMix[ck] = m
+				wClones[ck] = c
 			} else if _, ok := known[ck]; ok {
 				wDropped[ck] = true
 			}
 		}
-		return total, oldest, true
+		mix.trim()
+		clones.trim()
+		return total, oldest, mix, clones, true
 	}
 
 	// Never measured first, then the ones measured longest ago: a folder skipped last time is not skipped again, and
@@ -475,8 +578,8 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 			volume = &e.Device
 		}
 		wRows, wListed, wSeen, wDropped = map[string]SpaceMeasured{}, map[string]bool{}, map[string]bool{}, map[string]bool{}
-		wFiles = nil
-		bytes, oldest, ok := measure(w.path, w.key, r.SplitDepth, known[w.key].EventID, volume)
+		wFiles, wMix, wClones = nil, map[string]SpaceMix{}, map[string]SpaceClones{}
+		bytes, oldest, mix, clones, ok := measure(w.path, w.key, r.SplitDepth, known[w.key].EventID, volume)
 		if !ok {
 			// Not finished: nothing under it is written, so no subfolder is remembered without its folder, and nothing
 			// under it is forgotten either (what the walk did not reach was not found gone).
@@ -504,7 +607,28 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 			wFiles = wFiles[:spaceTopFiles]
 		}
 		topFiles[w.key] = append([]SpaceFile{}, wFiles...) // walked again: what was remembered of its files is replaced
-		// One batch per folder: what is done survives an interruption.
+		wMix[w.key] = mix
+		// The walk stays on the folder's volume: every record of it is of that volume.
+		wClones[w.key] = clones
+		volumeID := VolumeID(w.path)
+		for k, c := range wClones {
+			c.Volume = volumeID
+			wClones[k] = c
+		}
+		// One batch per folder: what is done survives an interruption. The mixes first: a size remembered without its
+		// mix would count as unknown until the folder is walked again.
+		if err := mixTable.Apply(wMix, nil, false); err != nil {
+			return nil, Skip("数据写不进去：" + err.Error())
+		}
+		for k := range wMix {
+			mixWritten[k] = true
+		}
+		if err := cloneTable.Apply(wClones, nil, false); err != nil {
+			return nil, Skip("数据写不进去：" + err.Error())
+		}
+		for k := range wClones {
+			clonesWritten[k] = true
+		}
 		if err := measuredTable.Apply(rows, nil, false); err != nil {
 			return nil, Skip("数据写不进去：" + err.Error())
 		}
@@ -560,6 +684,41 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 		}
 	}
 	sort.Strings(topGone)
+	// The mixes go with the sizes they were remembered with: of a subfolder forgotten, forgotten; of a folder no
+	// longer watched, forgotten (kept under what could not be listed).
+	forgotten := map[string]bool{}
+	for _, g := range gone {
+		forgotten[g] = true
+	}
+	// alsoGone: which of the rows kept beside the sizes (by the same paths) go with them.
+	alsoGone := func(path string, written map[string]bool) bool {
+		if forgotten[path] {
+			return true
+		}
+		if _, ok := known[path]; ok || tops[path] || written[path] {
+			return false
+		}
+		for _, u := range unlisted {
+			if path == u || strings.HasPrefix(path, u+"/") {
+				return false
+			}
+		}
+		return true
+	}
+	var mixGone, clonesGone []string
+	for path := range mixKnown {
+		if alsoGone(path, mixWritten) {
+			mixGone = append(mixGone, path)
+		}
+	}
+	sort.Strings(mixGone)
+	// The clones the same way.
+	for path := range cloneKnown {
+		if alsoGone(path, clonesWritten) {
+			clonesGone = append(clonesGone, path)
+		}
+	}
+	sort.Strings(clonesGone)
 
 	table := spaceSizes(store)
 	history := table.Load()
@@ -577,6 +736,8 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 		// interruption is what counts: a failed write must not turn it into an error (then nothing is carried).
 		measuredTable.Apply(rows, nil, false)
 		measuredTable.Apply(nil, gone, false)
+		mixTable.Apply(nil, mixGone, false)
+		cloneTable.Apply(nil, clonesGone, false)
 		topTable.Apply(topFiles, nil, false)
 		table.Apply(set, nil, false)
 		return nil, Skip(Interrupted)
@@ -586,6 +747,16 @@ func (r *SpaceRule) Run(ctx *Context) ([]Finding, error) {
 	}
 	if err := measuredTable.Apply(nil, gone, false); err != nil {
 		return nil, Skip("数据写不进去：" + err.Error())
+	}
+	if len(mixGone) > 0 {
+		if err := mixTable.Apply(nil, mixGone, false); err != nil {
+			return nil, Skip("数据写不进去：" + err.Error())
+		}
+	}
+	if len(clonesGone) > 0 {
+		if err := cloneTable.Apply(nil, clonesGone, false); err != nil {
+			return nil, Skip("数据写不进去：" + err.Error())
+		}
 	}
 	if len(topFiles) > 0 || len(topGone) > 0 {
 		if err := topTable.Apply(topFiles, topGone, false); err != nil {

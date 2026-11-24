@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """螺壳开发实例用的扫描：scripts/package_app.py --fixture-only 什么时候打、怎么标，scripts/make_fixture.py 造在哪、
-造出来的假 Mac 能不能查。
+造出来的假 Mac 能不能查；发行里给开发构建用的包（--dev）叫什么、什么时候不打。
 
     python3 -I scripts/test_dev_build.py      # 有 .build/go/luoke-scan（或 LUOKE_SCAN_BIN）时连造假 Mac 一起测
 
@@ -72,6 +72,26 @@ class PackageApp(unittest.TestCase):
         r = script("package_app.py", "--out", "/nonexistent", env={**env, "LUOKE_BUNDLE_ID": "ai.luoke.core"})
         self.assertEqual(r.returncode, 2, r.stderr)
         self.assertIn("ai.luoke.core.<名字>.lab", r.stderr)
+
+    def test_dev_package(self):
+        """The package for development builds of 螺壳: its own name, never with a release team."""
+        self.assertEqual(package_app.tarball_name("0.3.40"), "luoke-scan-0.3.40-macos-arm64.tar.gz")
+        self.assertEqual(package_app.tarball_name("0.3.40", True), "luoke-scan-0.3.40-macos-arm64-dev.tar.gz")
+        dev = {"dev": True, "fixture_only": False}
+        self.assertEqual(package_app.dev_problem(args(**dev), {}), "")
+        self.assertEqual(package_app.dev_problem(args(**dev, tarball=True), {}), "")
+        self.assertEqual(package_app.dev_problem(args(**dev, verify="/x"), {}), "")
+        self.assertEqual(package_app.dev_problem(args(dev=False, fixture_only=False), {"LUOKE_RELEASE_TEAM": "ABCDE12345"}), "")
+        self.assertNotEqual(package_app.dev_problem(args(**dev), {"LUOKE_RELEASE_TEAM": "ABCDE12345"}), "")
+        self.assertNotEqual(package_app.dev_problem(args(dev=True), {}), "")   # with --fixture-only
+        self.assertNotEqual(package_app.dev_problem(args(**dev, verify_app="/x.app"), {}), "")
+        r = script("package_app.py", "--dev", "--tarball", "--out", "/nonexistent",
+                   env={"PATH": "/usr/bin:/bin", "LUOKE_RELEASE_TEAM": "ABCDE12345"})
+        self.assertEqual(r.returncode, 2, r.stderr)
+        self.assertIn("LUOKE_RELEASE_TEAM", r.stderr)
+        with open(os.path.join(ROOT, "cmd", "luoke-scan", "main.go"), encoding="utf-8") as f:
+            self.assertIn(f'const noTeamWord = "{package_app.DEV_WORD}"', f.read())
+        self.assertIn(package_app.DEV_WORD, package_app.DEV_NOTE_TEXT)
 
     def test_word_matches_the_program(self):
         with open(os.path.join(ROOT, "cmd", "luoke-scan", "fixtureonly.go"), encoding="utf-8") as f:

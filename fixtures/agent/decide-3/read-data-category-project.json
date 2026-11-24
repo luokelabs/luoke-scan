@@ -34,6 +34,7 @@
                 "finding": "stale.project/000000000010",
                 "group": "project",
                 "key": "i3",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",

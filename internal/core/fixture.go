@@ -41,6 +41,7 @@ func (l Layout) Context(s *Store) Context {
 	c.AppDirs = []string{filepath.Join(l.Home(), "Applications")}
 	c.SystemLibrary, c.Receipts = filepath.Join(l.Root, "SystemLibrary"), filepath.Join(l.Root, "receipts")
 	c.BackgroundItems = l.BackgroundItems()
+	c.VolumeRoot = filepath.Join(l.Root, "volume")
 	return c
 }
 
@@ -157,7 +158,23 @@ type FakeVolume struct {
 	Free  int64  `json:"free"`
 	Total int64  `json:"total"`
 	Swap  *int64 `json:"swap"`
+	// Available: what can be written now, when less than Free (the rest is purgeable); nil: the same as Free.
+	Available *int64 `json:"available"`
+	// Used: everything taken on the disk right now, for the account of the disk (space.reconcile); nil: not known,
+	// then no account is made. System: the part of it on the system's own volumes; nil: not known.
+	Used   *int64 `json:"used"`
+	System *int64 `json:"system"`
 }
+
+func (v *FakeVolume) available() int64 {
+	if v.Available != nil && *v.Available < v.Free {
+		return *v.Available
+	}
+	return v.Free
+}
+
+// AvailableNow is what the fake volume can take right now.
+func (v *FakeVolume) AvailableNow() int64 { return v.available() }
 
 type FakeSpotlit struct {
 	Path    string     `json:"path"`

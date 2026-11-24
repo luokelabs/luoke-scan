@@ -48,7 +48,7 @@ skill 是 AI 工具（Claude Code、Cursor、Gemini CLI、Codex……）照着�
 
 ## 十类检查
 
-都写在 `internal/core/skillcheck.go`（Go 的正则没有前后查找，原样照 ICU 的写法跑在 `skillre.go` 的小匹配器上）。一行一行看说明和脚本；有几类要把同一个文件里的几处合起来看。
+都写在 `internal/core/skillcheck.go`（Go 的正则没有前后查找，原样照 ICU 的写法跑在 `skillre.go` 的小匹配器上）。说明文字一行一行看；shell 脚本和说明里的代码块先切成一条条命令再看（见下面「怎么读脚本」）；有几类要把同一个文件里的几处合起来看。
 
 | 类（规则名） | 查什么 | 轻重 |
 |---|---|---|
@@ -56,7 +56,7 @@ skill 是 AI 工具（Claude Code、Cursor、Gemini CLI、Codex……）照着�
 | 下载直接运行（`skill.download-exec`） | `curl … \| sh/bash/python/…`、`bash <(curl …)`、`sh -c "$(curl …)"`、`eval "$(curl …)"`、`base64 -d \| sh`、Python 的 `exec(b64decode(…))`、`exec(urlopen(…))`、JS 的 `eval(atob(…))`；下载到文件再 `chmod +x` 同一个文件 | 高；下载加执行权限、文件里核对了校验和或签名的，降成中（算供应链）；官方安装脚本（rustup、uv、Homebrew 这类，表在 `officialInstaller`）低 |
 | 提权和关保护（`skill.escalation`） | `sudo`（低；Linux 装包的 `sudo apt-get` 这类不算）；把密码喂给 `sudo -S`、`with administrator privileges`、改隐私权限数据库（TCC.db 的写语句）、去掉隔离标记（`xattr -d/-c`）、`spctl --master-disable`、`csrutil disable`、关 LSQuarantine、关防火墙、改 sudoers、把账户加进管理员组、改启动参数 | 高；只提到 TCC、`tccutil reset` 为中 |
 | 自启动（`skill.persistence`） | 往 `~/Library/LaunchAgents`（`LaunchDaemons`）里写（只用文字说的低一档）、`launchctl load/bootstrap/enable`、改 crontab、往 shell 的启动文件（`.zshrc`、`.bash_profile`……）里写、AppleScript 加登录项、往 `~/.ssh/authorized_keys` 里加钥匙、系统的定时任务和启动脚本 | 高；往启动文件里只加 PATH、alias、工具自己的 `eval "$(x init)"` 为低；`launchctl kickstart`、注册后台程序的 API 为中 |
-| 改 AI 自己（`skill.agent-tamper`） | 往 AI 工具的设置里写（只用文字说的为中）（`~/.claude/settings.json` 的钩子、各家的 MCP 设置、Codex 的 `config.toml`……）、写 AI 的记忆和长期指令（`CLAUDE.md`、`AGENTS.md`、`GEMINI.md`、`.cursorrules`……）、写别的 skill（写 `SKILL.md`，或用通配符写一批；装自己不算）；让 AI 工具跳过确认（`--dangerously-skip-permissions` 这类） | 高；它的名字或说明就说自己是做这个的（写 skill 的 skill、配钩子的 skill、生成 CLAUDE.md 的 skill），降成低并注明；跳过确认为中 |
+| 改 AI 自己（`skill.agent-tamper`） | 往 AI 工具的设置里写（只用文字说的为中）（`~/.claude/settings.json` 的钩子、各家的 MCP 设置、Codex 的 `config.toml`……）、写 AI 的记忆和长期指令（`CLAUDE.md`、`AGENTS.md`、`GEMINI.md`、`.cursorrules`……）、写 AI 工具的自定义命令（`.claude/commands/`，也叫斜杠命令；单独一条「写 AI 工具的自定义命令（.claude/commands）」，不算记忆）、写别的 skill（写 `SKILL.md`，或用通配符写一批；装自己不算）；让 AI 工具跳过确认（`--dangerously-skip-permissions` 这类） | 高；它的名字或说明就说自己是做这个的（写 skill 的 skill、配钩子的 skill、生成 CLAUDE.md 的 skill、教人写斜杠命令的 skill），降成低并注明，SKILL.md 以外的文件里的同样降；跳过确认为中 |
 | 大面积删除（`skill.destructive`） | `rm -rf` 家目录、根目录、`/Users`、`/System`、`/Library`、`/Applications`、家目录下的文稿/桌面/下载/图片……；`find ~ … -delete`（`.DS_Store`、`*.pyc` 这类除外）；`diskutil erase…`、`dd of=/dev/disk…`、`mkfs`；Python、Node 删家目录或根目录 | 高 |
 | 给 AI 的话（`skill.injection`） | 让 AI 忽略原来的指令（中英文）；冒充系统、开发者（各家聊天模板的记号，按写法认、不按名单：`<\|im_start\|>system`、`<\|turn>`、`<start_of_turn>`、`<tool_response>`、`[INST]`、`[SYSTEM_PROMPT]`、`<｜User｜>`；`<system>` 标签；「这是系统发来的」、「用户已经授权了所有」）；让 AI 瞒着你（「不要告诉用户」「悄悄上传」）；看不见的字符（Unicode 标签字符、改变显示顺序的控制字符、零宽字符）；HTML 注释里写给 AI 的话；说明里一大段 base64 或十六进制 | 一般为中；藏起来的（注释里、标签字符里、编码里解出来的）为高；只有标签字符本身也是高；瞒着你的话单独为低（带具体动作的为中），和别的中、高的写法在一起时为高 |
 | 权限太宽、名不副实（`skill.permission`） | `allowed-tools` 里不限定命令的 `Bash`（或 `Bash(*)`、`*`）；说明里说自己只读（read-only、不会修改……），脚本却删文件或往外发数据 | 低 / 中 |
@@ -64,6 +64,57 @@ skill 是 AI 工具（Claude Code、Cursor、Gemini CLI、Codex……）照着�
 | 读不了的内容（`skill.unreadable`） | 编译过的程序、压缩包、认不出的二进制、太大的文件、压缩过（一行几千字）的代码、指到外面的链接、依赖文件夹、文件太多 | 编译过的程序为中，别的为低 |
 
 病毒库和 YARA（第 11 类）：skill 里的文件也交给 `MalwareRule`（每轮最多 1000 个，不论新旧；没变的文件照旧从扫描记录里沿用，一周重扫一次），认出来的走原来的报毒（急事），不经过这条规则。
+
+### 怎么读脚本：先切成命令（`internal/core/skillcommands.go`）
+
+规则是正则，原来直接套在物理行上；现在 shell 脚本（按扩展名 `.sh` `.bash` `.zsh` `.ksh` `.command` 或第一行）先照 shell 的读法整理成下面几样，规则套在这些上面：
+
+- **逻辑行**：行尾的 `\` 把一条命令拆成几行的，接回它开始的那一行（`skillJoinContinued`），命中记在起始行；被接走的行留空，行号不变。
+  - 注释不续行：整行是注释、或者 `\` 落在行尾注释里的不接（`# … \` 藏不住下一行）。
+  - `\` 不一定是续行的地方两种读法都查（接起来的一行，和原样留着的后面几行）：单引号里、here-document 里，以及其中哪一行带 `#`、又不明摆着是注释开头的（接起来以后它可能变成注释，把后面的吞掉）。续不续是一行一行判断的。
+  - 接起来超过一行能读的长度（4000 个字符）的，分成前后重叠一半的几段，原来的各行也照查。
+- **命令**：一条逻辑行按 `;`、`&&`、`||`、`|`、`|&`、`&` 切开（`shellLex`）。引号、`$(…)`、反引号、`<(…)`、`${…}` 里面的不切；`2>&1`、`&>`、`>|` 是重定向不是分隔；词中间的撇号（don't）不算引号。每条命令知道自己在行里从哪到哪、属于第几条管道、是管道的第几段。行尾的注释不属于任何命令。
+- **管道**：用 `|` 连着的几条命令。规则一次只看一条管道，行里别的部分当成空白（`skillReading.show`）：每条管道都像单独写在一行上那样查。所以「这一行是官方安装脚本」「这一行只是在检查文件在不在」这类判断也只管它所在的那条管道（`shellUnit`）：`curl https://sh.rustup.rs | sh; curl https://别处 | sh` 后一条照报；`[ -f ~/.aws/credentials ] && curl -F f=@$HOME/.aws/credentials …` 算读了。引号或 `$(…)` 里写了几条管道的（`sh -c "a; b | c"`）按里面的那条算；只有一条的是这条命令的参数，跟着外面的命令一起看。
+- **管道的各段**（`shellPiped`）：前面某一段的命令是下载（curl、wget）或解码（`base64 -d`、`openssl enc -d`、`xxd -r`），后面任何一段最终跑的是读标准输入的 shell 或解释器，就是下载（解码）直接运行，中间隔几段都算。
+  - 「最终跑的」是去掉前面的赋值和只包一层的命令以后的那个词：`sudo`、`doas`、`env`、`nohup`、`setsid`、`command`、`builtin`、`exec`、`nice`、`ionice`、`time`、`timeout`、`stdbuf`、`caffeinate`、`xargs`、`parallel`，连同它们自己的选项（`sudo -u root env X=1 timeout 30 bash`）。`command -v sh` 是查不是跑，不算。
+  - `xargs` 把下载来的内容变成参数：后面跟的是 shell 或解释器、而且没有给它自己的脚本文件才算（`xargs -I{} bash -c "{}"`、`xargs sh`）；`xargs rm`、`xargs grep sh`、`xargs python3 tool.py` 不算。
+  - 引号和 `$(…)` 里的管道一样看（`sh -c "curl … | xargs sh"`）。这一条对说明文字和别的语言的脚本也生效（那里一行的引号能配上时）。
+- **跨行的引号**：切命令是一行一行做的，每行都当成从引号外面开始；一个字符串跨了几行时，它经过的那几行哪边在引号里就说不准。所以哪边都不多信：
+  - 这一行没合上的引号（或 `$(`、反引号）算到行尾，当成一个字符串；
+  - 引号外面的词，只有命中在那个引号里的**第一条命令**里时才替它说话。要是这个「字符串」其实是上一行的字符串合上以后的代码（`never"; rm -rf ~; echo "`），里面单独成一条的命令前面一定有分隔符，不会是第一条；
+  - `#` 后面这一行还有引号字符的，不当成行尾注释的开头。
+
+不是 shell 的脚本（Python、JavaScript……）不套 shell 的切法：只按引号外的 `;` 分语句（`scriptStatement`，行尾 `#`、`//` 注释跟着最后一条语句），否定词和讲风险的词只管自己那条语句；语句里面照旧，不分引号内外。
+
+说明文字（`SKILL.md` 和别的不是脚本的文件）一行一行、按句子判断，不切命令；「管道的各段」那一条对它也生效。**围栏代码块（` ``` `、`~~~`）里的行**是叫 AI 去跑的命令，照脚本那样读：
+
+- 行尾 `\` 的续行接成一行再查。
+- 围栏没写语言，或者写的是 shell（`bash`、`sh`、`zsh`、`shell`、`console`、`terminal` 这类，`skillFenceShell`）的，照 shell 脚本切成命令、一次看一条管道，规则自己的条件也只管命中所在的那条管道；写了别的语言（`python`、`js`、`yaml`……）的，照不是 shell 的脚本按 `;` 分语句。
+- 两种行不当命令、照说明文字按句子读：围栏写的是 `text`、`txt`、`plain`、`plaintext`、`markdown`、`md`、`mdx` 的代码块（`skillFenceText`，里面是一段文字）；以 `|` 开头的行（表格的一行，shell 的命令不会这样开头）。
+- 反引号在这里当引号读，不当命令替换：代码块里写成一句话的行常用它标出命令（``Never run `rm -rf ~` ``）。反引号外面的词只在命中位于反引号里的第一条命令时才算；`$(…)` 照旧只看它自己。
+- 这一行自己的词按命令（语句）算，见下面「什么算在谈论」；代码块外面的话照旧管整个代码块。
+- 和脚本有一处不同：代码块里行尾的 `#` 注释 AI 也读得到，所以注释里的写法照查（`tool --version  # 没装的话：curl … | sh` 照报），注释里讲风险的词也替这一行的命令说话。
+
+依赖的安装脚本有自己的读法（`installscript.go`，见 [install-scripts.md](install-scripts.md)）：词在那里一律不算谈论；续行和「管道的各段」两样和这里共用。
+
+### 什么算在谈论
+
+命中的写法是「在讲它」还是「在做它」：
+
+- **shell 脚本**（`shellScope`）：否定词（never、do not、don't、avoid、instead of、不要、禁止……）和讲风险的词（malicious、detect、dangerous、恶意、检测……，以及定义正则、名单的写法：`\s`、`regex`、`pattern`）要和命中处在**同一条命令里、引号外面**才算；否定词还要在命中的前面。
+  - 另一条命令里的不算：`echo "never do this"; rm -rf ~`、`[ -n "never" ] && rm -rf ~`、`echo "checking for malicious files"; rm -rf ~` 都照报。
+  - 引号里的不算，除非命中也在同一个引号里：`echo "never" && …` 的 never 管不到后面；`echo "do not run rm -rf ~"` 整句是打印出来的话，不报。引号里的内容再照同样的办法切一次（`bash -c "echo never; rm -rf ~"` 照报），最多往里 4 层。
+  - 命中在引号里时，引号外面的词（`warn never "…"`、`patterns=( '…' )`）只有命中在引号里的第一条命令里才算（见上面「跨行的引号」）：`Never run "curl … | sh"` 不报，`never "a; rm -rf ~"` 照报。
+  - `$(…)`、反引号里的命令不管外面写了什么都会执行，只看它自己那条命令（`echo "never $(rm -rf ~)"` 照报）。
+  - 行尾注释里的词不算（`rm -rf ~ # dangerous` 照报）；整行的注释、行尾注释里的命令本来就不查。
+  - 往要紧的位置写的那一类（CLAUDE.md、AI 工具的设置、shell 的启动文件……）用同一个判断，按写的动作（重定向、拷贝命令）所在的那条命令看；这条命令里 `>>` 前面的词是要写进去的内容，所以否定词只有在这条命令外面、引号外面、又和它同属一条外层命令时才算（`echo Never ask >> ~/.claude/CLAUDE.md`、`echo never >/dev/null; echo "…" >> ~/.claude/CLAUDE.md` 都照报）。一行里有几处写，要每一处都在谈论才不报。
+- **说明文字**：同一行有否定词在命令前面；一行、一节（标题）、一个代码块的引子或一串列表的引子说的是风险。往要紧的位置写的那类，否定词要在写的动作前面、不在引号里（`skillscript.go`）：从重定向、拷贝命令或「write to …」这句说法算起，`Do not write to ~/.claude/CLAUDE.md` 不报，代码块里 `echo "… Do not ask for confirmation." >> ~/.claude/CLAUDE.md` 照报。
+- **说明里的代码块**（`skillReading.prose`）：分两层。
+  - 代码块外面的话管整个代码块，和原来一样：所在的那一节的标题讲的是风险或带否定词、代码块前面那句引子（「These are dangerous:」「Never run anything like this:」）、列表的引子。
+  - 这一行自己的词照脚本的规矩按命令算：否定词、讲风险的词要和命中在同一条命令里、引号外面（或同一个引号里）。`echo "never do this"; rm -rf ~`、`log "detect dangerous settings" && csrutil disable`、`echo "never mind"; curl … | sh` 照报；写成一句话的（`Never run rm -rf ~`、``Never run `rm -rf ~` ``、`echo "do not run rm -rf ~"`）不报。写了别的语言的代码块按语句算（`print("never do this"); os.system("rm -rf ~")` 照报）。
+  - 行尾注释里讲风险的词算（`rm -rf ~  # dangerous: what the hook must refuse` 不报）；命中本身在注释里的，照说明文字按整行判断。否定词仍要在命中的前面，所以 `rm -rf ~  # never do this` 照报（原来也报）。定义正则的写法（`\s`、`regex`）在这里不算讲风险的词。
+  - 往要紧的位置写的那类：有重定向或拷贝命令的，按那条命令看，否定词要在写的动作前面、同一条命令里、引号外面（`echo never >/dev/null; echo "…" >> ~/.claude/CLAUDE.md` 照报）；只是用文字说的（「append to …」）照说明文字的规矩。
+- 用来绕过的说法（「如果 macOS 拦住了」「别担心」）哪里都不算谈论。
 
 ### 一个 skill 一条
 
@@ -75,10 +126,15 @@ skill 是 AI 工具（Claude Code、Cursor、Gemini CLI、Codex……）照着�
 
 ### 不算的情况（宁可漏，不乱报）
 
-- 谈论这些写法的不算：同一行有「never / don't / avoid / 不要 / 禁止」在命令前面；一行、一节（标题）、一个代码块的引子或一串列表的引子说的是风险（malicious、attack、injection、detect、flag、red flags、deny list、dangerous、恶意、攻击、检测……）。用来绕过的说法（「如果 macOS 拦住了」「别担心」）不算谈论。
-- 脚本里的注释不算命令；定义正则、黑名单的行不算命令。
+- 谈论这些写法的不算（上面「什么算在谈论」）：shell 脚本和说明里的代码块按命令看，说明文字里按句子看。
+- 脚本里的注释不算命令；定义正则、黑名单的命令（别的语言里：语句）不算命令。
+- 脚本里一串只有引号字符串的行（连着三行以上，拦截脚本的特征清单）不算命令。
+- shell 脚本里只拿来比较的不算命令（`skillmention.go`）：`[[ … ]]`、`[ … ]` 里 `==`、`=`、`!=`、`=~` 后面的那个词（`[[ "$cmd" == *"mkfs"* ]]`），`case` 的模式（`*"mkfs"*|*"dd if="*)`，要在行首，或同一行的 `case … in` 后面）。只去掉这个词和模式，同一行后面的命令照旧算（`[[ "$m" == dry ]] || dd if=/dev/zero of=/dev/rdisk2`）。拿不准就照旧算：这一行有 `$(…)`、反引号、`$'…'`，引号没合上，那个词里有引号外的 `;`、`&`、`|`、`<`、`>`、括号，或者有非 ASCII 的字符。只对 shell 脚本（按扩展名或第一行）。
+- 上面两条，脚本里有 `eval`、`sh -c`、把变量当命令跑的，都照旧算。
+- 说明文字里举例的清单不算要做的步骤：括号里用逗号隔开的三项以上，最后一项是 etc、and so on、等等这类，其余每项只是命令名（最多四个词，不带路径、网址、管道、赋值），如 `(rm -rf, dd, mkfs, etc)`。清单外面的、清单后面同一行再出现的照旧算。光有这个形状不够，清单所在的那一句还得读得出是举例：这一句讲的是识别、拦截、避免（detect、block、deny、refuse、avoid、never、look for、识别、拦截、禁止、避免……），或者有 such as、e.g.、例如、比如，或者清单紧跟在一个类别的名字后面（`Destructive operations (…)`、`危险操作（…）`；名字里有 setup、required、first、步骤这类词的不算）。这一句里有叫人去做的动词（run、execute、do、perform、invoke、call、use、apply、start、运行、执行、跑……）就照旧算（`run the setup steps (csrutil disable, spctl --master-disable, etc)`），除非这个动词前面紧挨着管它的是拦截、避免那类词（`refuse to run`、`never use`；中间隔了逗号、冒号、and、then 的不算）。拿不准的照旧算。
+- 以 `*` 开头的行当成块注释里的一行（`/* … */` 中间的 ` * …`）；shell 脚本（按扩展名或第一行）除外：shell 没有块注释，`*)`、`*.txt)`、`/*)` 开头的是 `case` 的分支，照常查（`*) rm -rf ~ ;;`）。shell 脚本里只有前面有一行没闭合的 `/*`（here-document 里的 C、JS）时，`*` 开头的行才当注释，长得像 `case` 分支的仍照常查。
 - 只检查一个文件在不在（`[ -f ~/.aws/credentials ]`）、只打印一句提示的，不算读密钥。
-- 把数据交给程序处理（`curl … | jq`、`| python3 -c '…'`）不算下载运行，只有交给 shell 或解释器直接执行才算。
+- 把数据交给程序处理（`curl … | jq`、`| python3 -c '…'`、`| xargs rm`、`| env LC_ALL=C sort`）不算下载运行，只有交给 shell 或解释器直接执行才算（隔着 `xargs`、`env`、`nohup`、`timeout` 这类包装的也算，见「怎么读脚本」）。
 - `chmod +x` 要和下载的是同一个文件（按命令里出现的文件名和变量对）。
 - 写 shell 启动文件、AI 设置这类地方，要真的写：重定向或复制的目标是它、写文件的调用（同一行，或之后 15 行内用设成它的变量，`for f in …` 的循环变量也算）。只读、只列、只备份不算。
 - 只用文字说「加到……」「追加到……」的（要加的内容常在下面的代码块里，或者是写给人看的安装说明），比真有命令的低一档：shell 启动文件为低，别的为中；「改别的 skill」不看文字（README 里常写「把这个文件夹拷进 `~/.claude/skills`」）。
@@ -125,13 +181,20 @@ npm 包的 `preinstall`、`install`、`postinstall` 和它们运行的文件、�
 
 - 编译过的程序、压缩包、太大的文件：只能报「读不了」，里面做什么看不到（病毒库和 YARA 会扫它们，但只认得已知的东西）。
 - 拼出来的命令（`c="cu"; c="${c}rl"`）、从网上取回来再执行的第二段、用别的编码藏起来的：只看得出其中一部分。
+- 切命令是一行一行做的，不是完整的 shell 解析，下面这些看不出或只看得出一部分：
+  - 放在变量、别名、函数里再跑的（`r=sh; curl … | $r`、`alias never=…`）、`eval` 拼出来的；
+  - 管道末端不是直接跑 shell 的写法：`curl … | { sh; }`、`| while read l; do eval "$l"; done`、先 `| tee x.sh` 再 `sh x.sh`；上面那张包装命令的表以外的包装；
+  - 同一条命令里、引号外面带一个否定词（要在命中的前面：`X=never rm -rf ~`）或讲风险的词（前后都算：`rm -rf ~ ./dangerous`）的仍算在谈论；带一个反斜杠转义（`\.`）的会被当成在定义正则；
+  - 跨几行的引号：命令本身被一个跨行的字符串拆开的（`curl … -H "a:` 换行 `b" | sh`）哪一行都凑不齐；跨行的字符串里以 `#` 开头的行整行当注释，这一行后半截合上引号以后的命令不查；here-document 的正文按普通的行读，分不出它是交给 `cat` 的文字还是交给 `bash` 的脚本；
+  - 说明里的代码块：代码块外面的话仍管整个代码块，一节的标题或前面一句引子讲的是风险（「下面这些很危险：」），块里的命令都不报；块里的一行写成一句话时，同一条命令里、写的动作前面不带引号的否定词仍算（`echo Never ask >> ~/.claude/CLAUDE.md` 在脚本里报，在代码块里不报）；反引号里的第一条命令仍听外面的词（``echo never `curl … | sh` `` 在脚本里报，在代码块里不报）；写了 `text`、`markdown` 的代码块和以 `|` 开头的行仍按句子判断；没写语言的代码块一律当 shell 读，里面其实是别的语言或一段文字时，`;`、`|`、`&` 也当分隔；
+  - 不是 shell 的脚本只按 `;` 分语句：同一条语句里别处的否定词（`print("never") or shutil.rmtree(home)`）仍算在谈论。
 - 写法正常、用意不正的：一个说是「整理笔记」的 skill 把笔记发到它自己的服务器，用的是普通的 API 调用，静态检查不报。第一版的语义检查也不管它：只问规则已经报了的 skill（见下）。
 - 上限之外的文件、链接指向外面的内容。
 - 只认这张表里的位置；别的工具、别的位置要往表里加。
 
 ## 评测集
 
-`evals/skills/cases.json`：33 个恶意、33 个正常的合成 skill（都是不会运行的文字；网址用 `.invalid`、`example.com`、文档专用的 IP）。测试 `skill评测` 要求恶意的全部报出、并且不低于它写的轻重和类别；正常的一个都不能报成高，也不能超过它写的上限。命令行 `luoke-scan eval-skills` 跑同一份（只给开发版，只写临时目录）。说明见 `evals/skills/README.md`。
+`evals/skills/cases.json`：45 个恶意、44 个正常的合成 skill（都是不会运行的文字；网址用 `.invalid`、`example.com`、文档专用的 IP）。测试 `skill评测` 要求恶意的全部报出、并且不低于它写的轻重和类别；正常的一个都不能报成高，也不能超过它写的上限。命令行 `luoke-scan eval-skills` 跑同一份（只给开发版，只写临时目录）。说明见 `evals/skills/README.md`。
 
 ## 语义检查
 

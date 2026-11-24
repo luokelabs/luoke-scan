@@ -90,6 +90,21 @@ func GrantSettingsURL(grant string) string {
 	return ""
 }
 
+// What a stale-grant finding says of the Login Items entries left behind, as facts (not for the model: explain.go):
+// the items one a line (a name, or a launchd job's plist), whether one of them goes on starting, and whether as root.
+const (
+	LeftItemsKey  = "left_items"
+	LeftStartsKey = "left_starts"
+	LeftDaemonKey = "left_daemon"
+)
+
+func flag(b bool) string {
+	if b {
+		return "1"
+	}
+	return "0"
+}
+
 type tccGrant struct {
 	service, client string
 	isPath          bool
@@ -288,6 +303,9 @@ func (r *PermissionRule) Run(ctx *Context) ([]Finding, error) {
 				}
 			}
 			ev["login_items"] = strings.Join(shown, "、")
+			// The same as facts, for data/overview: each item as it is, and what the hint below says in words.
+			ev[LeftItemsKey] = strings.Join(l.items, "\n")
+			ev[LeftStartsKey], ev[LeftDaemonKey] = flag(l.starts), flag(l.daemon)
 			// Only a launchd job whose program is still there goes on starting (launchdLeftovers).
 			switch {
 			case l.daemon:

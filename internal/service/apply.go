@@ -56,6 +56,11 @@ func (s *Service) plannable(f core.Finding) bool {
 	if trashableSkill(f) {
 		return true // in the plan, a high-risk one to the Trash by default (baseSuggestion); not just a button to the Finder (luoke-scan#152)
 	}
+	if f.Rule == core.InstallScriptsRuleID {
+		// A package manager's user config that one appended line changes (scripts-off): only for reference, and still
+		// something scan_apply can do when asked.
+		return f.Evidence["append"] != ""
+	}
 	if f.Verdict == core.Info {
 		return false
 	}
@@ -74,9 +79,6 @@ func (s *Service) plannable(f core.Finding) bool {
 		return f.Rule == "persistence.launchagent-missing" || (f.Rule == "persistence.new" && f.Evidence["scope"] == "user-agent")
 	case core.CatMalware:
 		return isMalware(f)
-	case core.CatPosture:
-		// A package manager's user config that one appended line fixes (改成不跑).
-		return f.Rule == core.InstallScriptsRuleID && f.Evidence["append"] != ""
 	}
 	return false
 }

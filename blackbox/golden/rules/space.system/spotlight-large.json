@@ -1,0 +1,63 @@
+{
+  "about": "用户的 Spotlight 索引 11 GiB（门槛 10 GiB）：报一条，只说怎么让系统重建",
+  "case": "rules/space.system/spotlight-large",
+  "steps": [
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 11811160064,
+            "category": "space",
+            "evidence": {
+              "how": "让系统重建索引：系统设置 → Spotlight → 搜索隐私，把这块硬盘加进去再移除；或者在终端运行 sudo mdutil -E /（要管理员密码）。重建要一段时间，这期间搜索不全。别直接删这个文件夹；扫描不会自己做这件事",
+              "threshold": "10.74 GB",
+              "why": "这是邮件、备忘录、信息等应用交给 Spotlight 用来搜索的索引，平常不会这么大；大成这样可能是索引出了问题"
+            },
+            "path": "~/Library/Metadata/CoreSpotlight",
+            "rule": "space.spotlight-index",
+            "severity": "low",
+            "title": "Spotlight 的索引占了 11.81 GB",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    }
+  ]
+}

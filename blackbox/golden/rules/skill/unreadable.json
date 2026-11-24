@@ -25,40 +25,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
-              "kinds": "unreadable",
-              "scope": "personal",
-              "skill": "un-all",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：带着编译过的程序，看不到里面写了什么（bin/x）；带着压缩过的代码，读不出它做什么（lib.min.js）；带着压缩包，里面没看（data.zip）；带着认不出格式的文件（blob.dat）；有文件太大或读不了，没看（notes.md）；有链接指向 skill 文件夹外面，没跟过去（shared）；带着依赖文件夹，里面没逐个看（node_modules/）"
-            },
-            "key": "~/.claude/skills/un-all|d5586b9ee0964abe",
-            "path": "~/.claude/skills/un-all",
-            "rule": "skill.unreadable",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「un-all」：带着编译过的程序，看不到里面写了什么，另有 6 处要看",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
-              "kinds": "unreadable",
-              "scope": "personal",
-              "skill": "un-archive",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：带着压缩包，里面没看（bundle.tgz）"
-            },
-            "key": "~/.claude/skills/un-archive|cf1ae95f84cff97b",
-            "path": "~/.claude/skills/un-archive",
-            "rule": "skill.unreadable",
-            "severity": "low",
-            "title": "Claude Code 的 skill「un-archive」：带着压缩包，里面没看",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"unreadable\"],\"severity\":\"low\",\"files\":[\"a/b/c/d/e/f/g/h/i/\"]}]",
               "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
               "kinds": "unreadable",
               "scope": "personal",
@@ -76,6 +43,43 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"unreadable\"],\"severity\":\"low\",\"files\":[\"bundle.tgz\"]}]",
+              "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
+              "kinds": "unreadable",
+              "scope": "personal",
+              "skill": "un-archive",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：带着压缩包，里面没看（bundle.tgz）"
+            },
+            "key": "~/.claude/skills/un-archive|cf1ae95f84cff97b",
+            "path": "~/.claude/skills/un-archive",
+            "rule": "skill.unreadable",
+            "severity": "low",
+            "title": "Claude Code 的 skill「un-archive」：带着压缩包，里面没看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"unreadable\"],\"severity\":\"low\",\"files\":[\"env/\"]}]",
+              "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
+              "kinds": "unreadable",
+              "scope": "personal",
+              "skill": "un-venv",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：带着依赖文件夹，里面没逐个看（env/）"
+            },
+            "key": "~/.claude/skills/un-venv|81ff32ef172d77ba",
+            "path": "~/.claude/skills/un-venv",
+            "rule": "skill.unreadable",
+            "severity": "low",
+            "title": "Claude Code 的 skill「un-venv」：带着依赖文件夹，里面没逐个看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"unreadable\"],\"severity\":\"low\",\"files\":[]}]",
               "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
               "kinds": "unreadable",
               "scope": "personal",
@@ -93,6 +97,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"unreadable\"],\"severity\":\"medium\",\"files\":[\"__pycache__/b.cpython-312.pyc\"]}]",
               "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
               "kinds": "unreadable",
               "scope": "personal",
@@ -110,17 +115,18 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"unreadable\"],\"severity\":\"medium\",\"files\":[\"bin/x\"]},{\"kinds\":[\"unreadable\"],\"severity\":\"low\",\"files\":[\"lib.min.js\"]},{\"kinds\":[\"unreadable\"],\"severity\":\"low\",\"files\":[\"data.zip\"]},{\"kinds\":[\"unreadable\"],\"severity\":\"low\",\"files\":[\"blob.dat\"]},{\"kinds\":[\"unreadable\"],\"severity\":\"low\",\"files\":[\"notes.md\"]},{\"kinds\":[\"unreadable\"],\"severity\":\"low\",\"files\":[\"shared\"]},{\"kinds\":[\"unreadable\"],\"severity\":\"low\",\"files\":[\"node_modules/\"]}]",
               "how": "里面有文字检查看不到的内容；不认识它的来源，就把这个 skill 的文件夹移到废纸篓",
               "kinds": "unreadable",
               "scope": "personal",
-              "skill": "un-venv",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：带着依赖文件夹，里面没逐个看（env/）"
+              "skill": "un-all",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：带着编译过的程序，看不到里面写了什么（bin/x）；带着压缩过的代码，读不出它做什么（lib.min.js）；带着压缩包，里面没看（data.zip）；带着认不出格式的文件（blob.dat）；有文件太大或读不了，没看（notes.md）；有链接指向 skill 文件夹外面，没跟过去（shared）；带着依赖文件夹，里面没逐个看（node_modules/）"
             },
-            "key": "~/.claude/skills/un-venv|81ff32ef172d77ba",
-            "path": "~/.claude/skills/un-venv",
+            "key": "~/.claude/skills/un-all|d5586b9ee0964abe",
+            "path": "~/.claude/skills/un-all",
             "rule": "skill.unreadable",
-            "severity": "low",
-            "title": "Claude Code 的 skill「un-venv」：带着依赖文件夹，里面没逐个看",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「un-all」：带着编译过的程序，看不到里面写了什么，另有 6 处要看",
             "verdict": "info"
           }
         ],

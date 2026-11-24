@@ -25,176 +25,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
-              "kinds": "persistence",
-              "scope": "personal",
-              "skill": "per-authorized-keys",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：往 SSH 的 authorized_keys 里加钥匙（别人能远程登录这台 Mac）（a.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/per-authorized-keys|af7aef50f596c118",
-            "path": "~/.claude/skills/per-authorized-keys",
-            "rule": "skill.persistence",
-            "severity": "high",
-            "title": "Claude Code 的 skill「per-authorized-keys」：往 SSH 的 authorized_keys 里加钥匙（别人能远程登录这台 Mac）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
-              "kinds": "persistence",
-              "scope": "personal",
-              "skill": "per-bash-profile",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 shell 的启动文件（每开一个终端都会运行）（a.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/per-bash-profile|180b0a01a1945245",
-            "path": "~/.claude/skills/per-bash-profile",
-            "rule": "skill.persistence",
-            "severity": "high",
-            "title": "Claude Code 的 skill「per-bash-profile」：改 shell 的启动文件（每开一个终端都会运行）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
-              "kinds": "persistence",
-              "scope": "personal",
-              "skill": "per-crontab",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改定时任务（crontab）（a.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/per-crontab|67f1cc2e329fe5ae",
-            "path": "~/.claude/skills/per-crontab",
-            "rule": "skill.persistence",
-            "severity": "high",
-            "title": "Claude Code 的 skill「per-crontab」：改定时任务（crontab）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
-              "kinds": "persistence",
-              "scope": "personal",
-              "skill": "per-kickstart",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：重启或改动后台服务（launchctl）（a.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/per-kickstart|85ff99d45ee95981",
-            "path": "~/.claude/skills/per-kickstart",
-            "rule": "skill.persistence",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「per-kickstart」：重启或改动后台服务（launchctl）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
-              "kinds": "persistence",
-              "scope": "personal",
-              "skill": "per-launchagents",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：在 LaunchAgents 里放东西（开机自己运行）（a.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/per-launchagents|4d0b8245c78908f8",
-            "path": "~/.claude/skills/per-launchagents",
-            "rule": "skill.persistence",
-            "severity": "high",
-            "title": "Claude Code 的 skill「per-launchagents」：在 LaunchAgents 里放东西（开机自己运行）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
-              "kinds": "persistence",
-              "scope": "personal",
-              "skill": "per-launchctl",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把程序登记成开机自己运行（launchctl）（a.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/per-launchctl|b976089e18e1a34e",
-            "path": "~/.claude/skills/per-launchctl",
-            "rule": "skill.persistence",
-            "severity": "high",
-            "title": "Claude Code 的 skill「per-launchctl」：把程序登记成开机自己运行（launchctl）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
-              "kinds": "persistence",
-              "scope": "personal",
-              "skill": "per-login-item",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：加登录项（登录时自己打开）（a.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/per-login-item|ff59ceafaaafb60e",
-            "path": "~/.claude/skills/per-login-item",
-            "rule": "skill.persistence",
-            "severity": "high",
-            "title": "Claude Code 的 skill「per-login-item」：加登录项（登录时自己打开）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
-              "kinds": "persistence",
-              "scope": "personal",
-              "skill": "per-login-service",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：注册登录项或后台程序（Helper.swift 第 2 行）"
-            },
-            "key": "~/.claude/skills/per-login-service|71c366328f34ab79",
-            "path": "~/.claude/skills/per-login-service",
-            "rule": "skill.persistence",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「per-login-service」：注册登录项或后台程序",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
-              "kinds": "persistence",
-              "scope": "personal",
-              "skill": "per-path-only",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：往 shell 的启动文件里加 PATH 之类的设置（a.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/per-path-only|fed2c0a95ee03322",
-            "path": "~/.claude/skills/per-path-only",
-            "rule": "skill.persistence",
-            "severity": "low",
-            "title": "Claude Code 的 skill「per-path-only」：往 shell 的启动文件里加 PATH 之类的设置",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
-              "kinds": "persistence",
-              "scope": "personal",
-              "skill": "per-periodic",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改系统的定时任务或启动脚本（a.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/per-periodic|5df5c62aa90a1dfa",
-            "path": "~/.claude/skills/per-periodic",
-            "rule": "skill.persistence",
-            "severity": "high",
-            "title": "Claude Code 的 skill「per-periodic」：改系统的定时任务或启动脚本",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"high\",\"files\":[\"a.py\"],\"lines\":[2]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
               "kinds": "persistence",
               "scope": "personal",
@@ -212,23 +43,151 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
               "kinds": "persistence",
               "scope": "personal",
-              "skill": "per-said-launchagents",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：在 LaunchAgents 里放东西（开机自己运行）（SKILL.md 第 5 行）"
+              "skill": "per-authorized-keys",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：往 SSH 的 authorized_keys 里加钥匙（别人能远程登录这台 Mac）（a.sh 第 2 行）"
             },
-            "key": "~/.claude/skills/per-said-launchagents|4d59ffaf37ab5a48",
-            "path": "~/.claude/skills/per-said-launchagents",
+            "key": "~/.claude/skills/per-authorized-keys|af7aef50f596c118",
+            "path": "~/.claude/skills/per-authorized-keys",
             "rule": "skill.persistence",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「per-said-launchagents」：在 LaunchAgents 里放东西（开机自己运行）",
+            "severity": "high",
+            "title": "Claude Code 的 skill「per-authorized-keys」：往 SSH 的 authorized_keys 里加钥匙（别人能远程登录这台 Mac）",
             "verdict": "info"
           },
           {
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
+              "kinds": "persistence",
+              "scope": "personal",
+              "skill": "per-bash-profile",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 shell 的启动文件（每开一个终端都会运行）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/per-bash-profile|180b0a01a1945245",
+            "path": "~/.claude/skills/per-bash-profile",
+            "rule": "skill.persistence",
+            "severity": "high",
+            "title": "Claude Code 的 skill「per-bash-profile」：改 shell 的启动文件（每开一个终端都会运行）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
+              "kinds": "persistence",
+              "scope": "personal",
+              "skill": "per-crontab",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改定时任务（crontab）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/per-crontab|67f1cc2e329fe5ae",
+            "path": "~/.claude/skills/per-crontab",
+            "rule": "skill.persistence",
+            "severity": "high",
+            "title": "Claude Code 的 skill「per-crontab」：改定时任务（crontab）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
+              "kinds": "persistence",
+              "scope": "personal",
+              "skill": "per-launchagents",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：在 LaunchAgents 里放东西（开机自己运行）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/per-launchagents|4d0b8245c78908f8",
+            "path": "~/.claude/skills/per-launchagents",
+            "rule": "skill.persistence",
+            "severity": "high",
+            "title": "Claude Code 的 skill「per-launchagents」：在 LaunchAgents 里放东西（开机自己运行）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
+              "kinds": "persistence",
+              "scope": "personal",
+              "skill": "per-launchctl",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：把程序登记成开机自己运行（launchctl）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/per-launchctl|b976089e18e1a34e",
+            "path": "~/.claude/skills/per-launchctl",
+            "rule": "skill.persistence",
+            "severity": "high",
+            "title": "Claude Code 的 skill「per-launchctl」：把程序登记成开机自己运行（launchctl）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
+              "kinds": "persistence",
+              "scope": "personal",
+              "skill": "per-login-item",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：加登录项（登录时自己打开）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/per-login-item|ff59ceafaaafb60e",
+            "path": "~/.claude/skills/per-login-item",
+            "rule": "skill.persistence",
+            "severity": "high",
+            "title": "Claude Code 的 skill「per-login-item」：加登录项（登录时自己打开）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
+              "kinds": "persistence",
+              "scope": "personal",
+              "skill": "per-periodic",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改系统的定时任务或启动脚本（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/per-periodic|5df5c62aa90a1dfa",
+            "path": "~/.claude/skills/per-periodic",
+            "rule": "skill.persistence",
+            "severity": "high",
+            "title": "Claude Code 的 skill「per-periodic」：改系统的定时任务或启动脚本",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
+              "kinds": "persistence",
+              "scope": "personal",
+              "skill": "per-sh-var",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 shell 的启动文件（每开一个终端都会运行）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/per-sh-var|3e74fd1f3782a32c",
+            "path": "~/.claude/skills/per-sh-var",
+            "rule": "skill.persistence",
+            "severity": "high",
+            "title": "Claude Code 的 skill「per-sh-var」：改 shell 的启动文件（每开一个终端都会运行）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"low\",\"files\":[\"README.md\"],\"lines\":[1]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
               "kinds": "persistence",
               "scope": "personal",
@@ -246,17 +205,72 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"low\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
               "kinds": "persistence",
               "scope": "personal",
-              "skill": "per-sh-var",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 shell 的启动文件（每开一个终端都会运行）（a.sh 第 2 行）"
+              "skill": "per-path-only",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：往 shell 的启动文件里加 PATH 之类的设置（a.sh 第 2 行）"
             },
-            "key": "~/.claude/skills/per-sh-var|3e74fd1f3782a32c",
-            "path": "~/.claude/skills/per-sh-var",
+            "key": "~/.claude/skills/per-path-only|fed2c0a95ee03322",
+            "path": "~/.claude/skills/per-path-only",
             "rule": "skill.persistence",
-            "severity": "high",
-            "title": "Claude Code 的 skill「per-sh-var」：改 shell 的启动文件（每开一个终端都会运行）",
+            "severity": "low",
+            "title": "Claude Code 的 skill「per-path-only」：往 shell 的启动文件里加 PATH 之类的设置",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"medium\",\"files\":[\"Helper.swift\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
+              "kinds": "persistence",
+              "scope": "personal",
+              "skill": "per-login-service",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：注册登录项或后台程序（Helper.swift 第 2 行）"
+            },
+            "key": "~/.claude/skills/per-login-service|71c366328f34ab79",
+            "path": "~/.claude/skills/per-login-service",
+            "rule": "skill.persistence",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「per-login-service」：注册登录项或后台程序",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
+              "kinds": "persistence",
+              "scope": "personal",
+              "skill": "per-said-launchagents",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：在 LaunchAgents 里放东西（开机自己运行）（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/per-said-launchagents|4d59ffaf37ab5a48",
+            "path": "~/.claude/skills/per-said-launchagents",
+            "rule": "skill.persistence",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「per-said-launchagents」：在 LaunchAgents 里放东西（开机自己运行）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"persistence\"],\"severity\":\"medium\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 ~/Library/LaunchAgents、crontab -l 和 shell 的启动文件里有没有多出来的东西",
+              "kinds": "persistence",
+              "scope": "personal",
+              "skill": "per-kickstart",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：重启或改动后台服务（launchctl）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/per-kickstart|85ff99d45ee95981",
+            "path": "~/.claude/skills/per-kickstart",
+            "rule": "skill.persistence",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「per-kickstart」：重启或改动后台服务（launchctl）",
             "verdict": "info"
           }
         ],

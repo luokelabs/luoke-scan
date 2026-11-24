@@ -36,6 +36,7 @@
                 "finding": "leak.temp-prefix/000000000076",
                 "group": "temp",
                 "key": "i8",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",

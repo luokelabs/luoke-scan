@@ -44,6 +44,7 @@
                 "finding": "leftover.installer/000000000007",
                 "group": "installer",
                 "key": "i3",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",

@@ -384,7 +384,7 @@ func TestScriptsOffNotForAHardLink(t *testing.T) {
 	if p := m.plan(); p != nil {
 		t.Errorf("plan for a hard-linked config: %+v", p)
 	}
-	if f := m.report.Findings[0]; f.Evidence["append"] != "" || !strings.Contains(f.Evidence["how"], "共用一个文件") {
+	if f := m.report.Findings[0]; f.Evidence["append"] != "" || f.Evidence["manual"] != "link" {
 		t.Errorf("evidence %+v", f.Evidence)
 	}
 	m = newScriptsSetup(t, "registry=x\n")

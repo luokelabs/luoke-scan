@@ -26,6 +26,7 @@
             "category": "skill",
             "evidence": {
               "files": "chat_template.jinja",
+              "hits": "[{\"kinds\":[\"steer\"],\"files\":[\"chat_template.jinja\"],\"part\":\"template\"}]",
               "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download small/url`）；拿不准就先别用这个模型",
               "kinds": "steer",
               "model": "small/url",

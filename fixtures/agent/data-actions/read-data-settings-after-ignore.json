@@ -17,6 +17,7 @@
                 "at": "2026-10-20T12:06:00Z",
                 "category": "duplicate",
                 "finding": "space.duplicates/000000000008",
+                "name": null,
                 "path": "~/Documents/report-2026.pdf",
                 "rule": "space.duplicates"
               }

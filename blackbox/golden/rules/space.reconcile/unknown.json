@@ -1,0 +1,93 @@
+{
+  "about": "不知道盘上一共用了多少（volume 里没有 used）：不对账，数据里是 null",
+  "case": "rules/space.reconcile/unknown",
+  "steps": [
+    {
+      "fakes": {
+        "volume": {
+          "free": 214748364800,
+          "swap": null,
+          "total": 536870912000
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "data/usage"
+      },
+      "reply": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "complete": true,
+                "folders": [],
+                "listedBytes": 0,
+                "measuredBytes": 0,
+                "more": 0,
+                "reconcile": null,
+                "scanned": {
+                  "finished": "2026-10-20T12:00:00Z",
+                  "started": "2026-10-20T12:00:00Z"
+                },
+                "schema": 1,
+                "shareUncheckedBytes": 0,
+                "unseen": []
+              },
+              "uri": "data/usage"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    }
+  ]
+}

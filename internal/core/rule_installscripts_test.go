@@ -45,7 +45,7 @@ func (h *scriptsHome) run() map[string]Finding {
 	}
 	out := map[string]Finding{}
 	for _, x := range f {
-		if x.Rule != InstallScriptsRuleID || x.Verdict != Confirm || x.Category != CatPosture {
+		if x.Rule != InstallScriptsRuleID || x.Verdict != Info || x.Severity != Low || x.Category != CatPosture || x.Path != "" {
 			h.t.Errorf("unexpected finding %+v", x)
 		}
 		if _, dup := out[x.Key]; dup {
@@ -88,10 +88,10 @@ func TestInstallScriptsNpm(t *testing.T) {
 				t.Fatalf("finding %v, want %v: %+v", has, c.want, got)
 			}
 			if has && (got.Evidence["append"] != "") != c.fix {
-				t.Errorf("fix offered %v, want %v: %s", got.Evidence["append"] != "", c.fix, got.Evidence["how"])
+				t.Errorf("fix offered %v, want %v: %s", got.Evidence["append"] != "", c.fix, got.Evidence["manual"])
 			}
-			if has && got.Path != filepath.Join(h.l.Home(), ".npmrc") {
-				t.Errorf("path %s", got.Path)
+			if has && got.Evidence["config"] != filepath.Join(h.l.Home(), ".npmrc") {
+				t.Errorf("config %s", got.Evidence["config"])
 			}
 		})
 	}
@@ -110,7 +110,7 @@ func TestInstallScriptsNeedsUseAndVersion(t *testing.T) {
 		t.Errorf("npm of unknown version reported: %+v", f)
 	}
 	h.put("~/.nvm/versions/node/v20.1.0/lib/node_modules/npm/package.json", `{"version":"10.2.0"}`)
-	if f := h.run()["npm"]; !strings.Contains(f.Evidence["why"], "10.2.0") || !strings.Contains(f.Evidence["why"], "~/.nvm/") {
+	if f := h.run()["npm"]; f.Evidence["reason"] != "default-on" || f.Evidence["version"] != "10.2.0" || !strings.HasPrefix(f.Evidence["where"], "~/.nvm/") {
 		t.Errorf("nvm's npm: %+v", f.Evidence)
 	}
 }
@@ -140,11 +140,11 @@ func TestInstallScriptsListsPackagesWithScripts(t *testing.T) {
 	h.put("~/Projects/web/pnpm-lock.yaml", "")
 	h.put("~/Projects/web/node_modules/.pnpm/core-js@3.0.0/node_modules/core-js/package.json", `{"name":"core-js","scripts":{"postinstall":"echo"}}`)
 	f := h.run()["npm"]
-	if f.Evidence["packages"] != "@img/sharp、esbuild、native" {
+	if f.Evidence["packages"] != "@img/sharp, esbuild, native" {
 		t.Errorf("packages %q", f.Evidence["packages"])
 	}
-	if !strings.Contains(f.Evidence["how"], "npm rebuild @img/sharp esbuild native --ignore-scripts=false") {
-		t.Errorf("how %q", f.Evidence["how"])
+	if f.Evidence["allow"] != "npm rebuild @img/sharp esbuild native --ignore-scripts=false" {
+		t.Errorf("allow %q", f.Evidence["allow"])
 	}
 	// Bounded: no project looked at past the limit.
 	r := NewInstallScriptsRule(&h.l, nil).(*InstallScriptsRule)
@@ -162,7 +162,7 @@ func TestInstallScriptsLinkedConfigIsNotChanged(t *testing.T) {
 	real := h.put("dotfiles/npmrc", "registry=x\n")
 	os.Symlink(real, filepath.Join(h.l.Home(), ".npmrc"))
 	f := h.run()["npm"]
-	if f.Evidence["append"] != "" || !strings.Contains(f.Evidence["how"], "是个链接") {
+	if f.Evidence["append"] != "" || f.Evidence["manual"] != "link" {
 		t.Errorf("linked config: %+v", f.Evidence)
 	}
 	os.WriteFile(real, []byte("ignore-scripts=true\n"), 0o600) // read through the link
@@ -174,7 +174,7 @@ func TestInstallScriptsLinkedConfigIsNotChanged(t *testing.T) {
 func TestInstallScriptsPnpm(t *testing.T) {
 	h := newScriptsHome(t)
 	h.dir("~/Library/pnpm/store/v3")
-	if f := h.run()["pnpm"]; f.Evidence["append"] != "" || !strings.Contains(f.Evidence["why"], "v3") {
+	if f := h.run()["pnpm"]; f.Evidence["append"] != "" || f.Evidence["reason"] != "old-store" || !strings.HasSuffix(f.Evidence["store"], "/v3") || f.Evidence["manual"] != "upgrade" {
 		t.Errorf("old store: %+v", f)
 	}
 	h.dir("~/Library/pnpm/store/v10")
@@ -182,13 +182,13 @@ func TestInstallScriptsPnpm(t *testing.T) {
 		t.Error("pnpm 10 reported")
 	}
 	h.put("~/Library/Preferences/pnpm/config.yaml", "dangerouslyAllowAllBuilds: true # all of them\n")
-	if f := h.run()["pnpm"]; !strings.Contains(f.Title, "所有依赖") {
+	if f := h.run()["pnpm"]; !strings.Contains(f.Title, "every dependency") {
 		t.Errorf("allow-all: %+v", f)
 	}
 	h = newScriptsHome(t)
 	h.dir("~/Library/pnpm")
 	h.put("opt-homebrew/lib/node_modules/pnpm/package.json", `{"version":"9.15.0"}`)
-	if f := h.run()["pnpm"]; !strings.Contains(f.Evidence["why"], "9.15.0") {
+	if f := h.run()["pnpm"]; f.Evidence["reason"] != "default-on" || f.Evidence["version"] != "9.15.0" {
 		t.Errorf("old global pnpm: %+v", f)
 	}
 }
@@ -206,7 +206,7 @@ func TestInstallScriptsYarn(t *testing.T) {
 		t.Error("yarn 4.14 reported")
 	}
 	h.put("~/.yarnrc.yml", "enableScripts: 'true'\n")
-	if f := h.run()["yarn"]; f.Evidence["append"] != "" || !strings.Contains(f.Evidence["why"], "enableScripts: true") {
+	if f := h.run()["yarn"]; f.Evidence["append"] != "" || f.Evidence["reason"] != "setting-on" || f.Evidence["manual"] != "change-value" {
 		t.Errorf("turned on by the user: %+v", f)
 	}
 	h.put("~/.yarnrc.yml", "enableScripts: false\n")
@@ -224,11 +224,11 @@ func TestInstallScriptsPip(t *testing.T) {
 	}
 	h.put("~/Library/Caches/pip/wheels/ab/cd/Some_Pkg-1.0-py3-none-any.whl", "x")
 	f, has := h.run()["pip"]
-	if !has || f.Evidence["append"] == "" || !strings.Contains(f.Evidence["why"], "some-pkg") {
+	if !has || f.Evidence["append"] == "" || f.Evidence["reason"] != "built-from-source" || f.Evidence["built"] != "some-pkg" {
 		t.Fatalf("pip: %+v", f)
 	}
-	if f.Path != filepath.Join(h.l.Home(), ".config/pip/pip.conf") {
-		t.Errorf("path %s", f.Path)
+	if f.Evidence["config"] != filepath.Join(h.l.Home(), ".config/pip/pip.conf") || f.Evidence["config_exists"] != "0" {
+		t.Errorf("config %s (%s)", f.Evidence["config"], f.Evidence["config_exists"])
 	}
 	for text, want := range map[string]bool{
 		"[global]\nonly-binary = :all:\n":                                 false,
@@ -248,8 +248,8 @@ func TestInstallScriptsPip(t *testing.T) {
 		t.Error("one line at the end would land in [freeze]")
 	}
 	h.dir("~/Library/Application Support/pip")
-	if f := h.run()["pip"]; f.Path != filepath.Join(h.l.Home(), "Library/Application Support/pip/pip.conf") {
-		t.Errorf("macOS folder there: %s", f.Path)
+	if f := h.run()["pip"]; f.Evidence["config"] != filepath.Join(h.l.Home(), "Library/Application Support/pip/pip.conf") {
+		t.Errorf("macOS folder there: %s", f.Evidence["config"])
 	}
 }
 
@@ -312,7 +312,7 @@ func TestInstallScriptsNpmSections(t *testing.T) {
 		t.Errorf("a line in a section counted, or a button offered: %v %+v", has, f.Evidence)
 	}
 	h.put("~/.npmrc", "registry=x\n[foo]\nbar=1\n")
-	if f := h.run()["npm"]; f.Evidence["append"] != "" || !strings.Contains(f.Evidence["how"], "最前面") {
+	if f := h.run()["npm"]; f.Evidence["append"] != "" || f.Evidence["manual"] != "add-at-top" {
 		t.Errorf("appended into a section: %+v", f.Evidence)
 	}
 	if _, ok, _ := ScriptsOffContent("npm", []byte("registry=x\n[foo]\n"), true); ok {
@@ -380,7 +380,7 @@ func TestInstallScriptsPipPrecedence(t *testing.T) {
 	}
 }
 
-// The card says what else the change stops.
+// The finding says what else the change stops, as a code.
 func TestInstallScriptsCardSaysTheCost(t *testing.T) {
 	h := newScriptsHome(t)
 	h.dir("~/.npm")
@@ -388,9 +388,39 @@ func TestInstallScriptsCardSaysTheCost(t *testing.T) {
 	h.put("~/Library/Caches/pip/wheels/a/x-1.0-py3-none-any.whl", "x")
 	h.dir("~/.cache/uv/sdists-v9/pypi/x")
 	f := h.run()
-	for tool, want := range map[string]string{"npm": "husky", "pip": "本地的项目", "uv": "你自己的项目照样会构建"} {
-		if !strings.Contains(f[tool].Evidence["how"], want) {
-			t.Errorf("%s card lacks %q: %s", tool, want, f[tool].Evidence["how"])
+	for tool, want := range map[string]string{"npm": "own-scripts-off", "pip": "no-wheel-fails", "uv": "no-wheel-deps-fail"} {
+		if f[tool].Evidence["cost"] != want {
+			t.Errorf("%s cost %q, want %q", tool, f[tool].Evidence["cost"], want)
+		}
+	}
+}
+
+// A finding is a setting's state: no sentence in its evidence, and an English title that starts with the tool's name.
+func TestInstallScriptsFindingsCarryNoSentences(t *testing.T) {
+	h := newScriptsHome(t)
+	h.dir("~/.npm")
+	h.npm("11.6.2")
+	h.put("~/Library/Caches/pip/wheels/a/x-1.0-py3-none-any.whl", "x")
+	han := func(s string) bool {
+		for _, r := range s {
+			if r >= 0x4e00 && r <= 0x9fff {
+				return true
+			}
+		}
+		return false
+	}
+	f := h.run()
+	if len(f) != 2 {
+		t.Fatalf("findings %+v", f)
+	}
+	for tool, x := range f {
+		for k, v := range x.Evidence {
+			if han(v) {
+				t.Errorf("%s evidence %s has words for people: %q", tool, k, v)
+			}
+		}
+		if han(x.Title) || !strings.HasPrefix(x.Title, x.Evidence["name"]+" runs ") {
+			t.Errorf("%s title %q", tool, x.Title)
 		}
 	}
 }

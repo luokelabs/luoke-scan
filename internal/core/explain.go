@@ -52,7 +52,7 @@ func ExplainInput(f Finding, place string) Value {
 	}
 	var keys []string
 	for k, v := range f.Evidence {
-		if !strings.HasPrefix(k, "model_") && k != "targets" && v != "" {
+		if !strings.HasPrefix(k, "model_") && !strings.HasPrefix(k, "left_") && k != "targets" && v != "" {
 			keys = append(keys, k)
 		}
 	}

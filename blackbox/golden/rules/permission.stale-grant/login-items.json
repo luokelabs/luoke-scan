@@ -28,6 +28,9 @@
               "grants": "摄像头、登录项",
               "hint": "以后装上同名的东西，会直接拿到这些权限",
               "how": "系统设置 → 隐私与安全性 → 摄像头，选中它点「−」（会要你的密码）。应用卸载以后用命令行（tccutil）删不掉，只能在这一页删；系统设置 → 通用 → 登录项与扩展：「登录时打开」里有它就选中它点「−」，「允许在后台」里有它就关掉它的开关",
+              "left_daemon": "0",
+              "left_items": "Gone Meet",
+              "left_starts": "0",
               "login_items": "Gone Meet",
               "settings": "x-apple.systempreferences:com.apple.preference.security?Privacy_Camera x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
             },
@@ -44,6 +47,9 @@
               "grants": "登录项",
               "hint": "系统设置里还留着它的开关",
               "how": "系统设置 → 通用 → 登录项与扩展：「登录时打开」里有它就选中它点「−」，「允许在后台」里有它就关掉它的开关",
+              "left_daemon": "0",
+              "left_items": "Gone Sync\nGone Sync Agent\nGone Sync Helper",
+              "left_starts": "0",
               "login_items": "Gone Sync、Gone Sync Agent、Gone Sync Helper",
               "settings": "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
             },
@@ -59,6 +65,9 @@
               "grants": "登录项",
               "hint": "它留下的后台程序还会以管理员（root）身份启动",
               "how": "系统设置 → 通用 → 登录项与扩展：「登录时打开」里有它就选中它点「−」，「允许在后台」里有它就关掉它的开关",
+              "left_daemon": "1",
+              "left_items": "$FIXTURE/SystemLibrary/LaunchDaemons/io.gone.vpn.helper.plist",
+              "left_starts": "1",
               "login_items": "$FIXTURE/SystemLibrary/LaunchDaemons/io.gone.vpn.helper.plist",
               "settings": "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
             },

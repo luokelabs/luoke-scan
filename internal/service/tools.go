@@ -83,6 +83,9 @@ func (s *Service) register() {
 	srv.Tool("scan_reveal", ToolSpec{Title: "在访达里显示", Description: "在访达里选中一条发现指的文件或文件夹", ReadOnly: true,
 		Properties: O{"finding_id": O{"type": "string"}}, Required: []string{"finding_id"}, MacOnly: true},
 		func(args O, _ O) (ToolOutput, error) { return s.reveal(args) })
+	srv.Tool("scan_explain", ToolSpec{Title: "让本机模型说说这一项", Description: "请这台 Mac 上的模型用一两句话解释一条发现（只是说明，不改结论；要几秒到几十秒）", ReadOnly: true,
+		Properties: O{"finding_id": O{"type": "string"}}, Required: []string{"finding_id"}},
+		func(args O, _ O) (ToolOutput, error) { return s.explainOne(args) })
 	srv.Tool("scan_open_settings", ToolSpec{Title: "打开系统设置", Description: "打开系统设置里对应的页面（隐私与安全性的某个权限、「登录项」或「电池」），或者打开活动监视器", ReadOnly: true,
 		Properties: O{"grant": O{"type": "string"}}, Required: []string{"grant"}, MacOnly: true},
 		func(args O, _ O) (ToolOutput, error) { return s.openSettings(args) })

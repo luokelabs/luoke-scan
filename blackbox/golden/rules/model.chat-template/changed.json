@@ -26,6 +26,7 @@
             "category": "skill",
             "evidence": {
               "files": "tokenizer_config.json",
+              "hits": "[{\"kinds\":[\"conceal\",\"steer\"],\"files\":[\"tokenizer_config.json\"],\"part\":\"template\"}]",
               "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download Qwen/Qwen2.5-7B-Instruct`）；拿不准就先别用这个模型",
               "kinds": "conceal,steer",
               "model": "Qwen/Qwen2.5-7B-Instruct",
@@ -74,6 +75,7 @@
             "category": "skill",
             "evidence": {
               "files": "tokenizer_config.json",
+              "hits": "[{\"kinds\":[\"conceal\",\"steer\"],\"files\":[\"tokenizer_config.json\"],\"part\":\"template\"}]",
               "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download Qwen/Qwen2.5-7B-Instruct`）；拿不准就先别用这个模型",
               "kinds": "conceal,steer",
               "model": "Qwen/Qwen2.5-7B-Instruct",
@@ -156,6 +158,7 @@
             "category": "skill",
             "evidence": {
               "files": "tokenizer_config.json",
+              "hits": "[{\"kinds\":[\"steer\"],\"files\":[\"tokenizer_config.json\"],\"part\":\"template\"}]",
               "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download Qwen/Qwen2.5-7B-Instruct`）；拿不准就先别用这个模型",
               "kinds": "steer",
               "model": "Qwen/Qwen2.5-7B-Instruct",

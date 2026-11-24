@@ -115,6 +115,9 @@ func TestDataOverviewByCategory(t *testing.T) {
 	if !reflect.DeepEqual(order, []string{"cache", "installer", "large-file", "ai-plugin"}) {
 		t.Fatalf("categories %v", order)
 	}
+	if s, ok := ov["settings"].([]any); !ok || len(s) != 0 {
+		t.Errorf("settings with no install-scripts: %v (want an empty list)", ov["settings"])
+	}
 	cats := byID(t, ov["reclaimable"])
 	cache, installer, large := cats["cache"], cats["installer"], cats["large-file"]
 	if cache["count"] != float64(1) || cache["bytes"] != float64(62_900_000) || cache["auto"] != "cache" || cache["suggested"] != float64(1) {
@@ -150,6 +153,13 @@ func TestDataOverviewAttention(t *testing.T) {
 	}
 	for _, x := range items {
 		m := x.(map[string]any)
+		facts, _ := m["facts"].(map[string]any) // a skill's: what its item in data/category has, and where it was found
+		if hits, _ := facts["hits"].([]any); facts["skill"] != "sync-notes" || len(hits) == 0 {
+			t.Errorf("facts of %v", m)
+		}
+		if notes, has := m["modelNotes"].([]any); !has || len(notes) != 0 {
+			t.Errorf("modelNotes of %v", m)
+		}
 		if !strings.HasPrefix(m["rule"].(string), "skill.") || m["category"] != nil || m["urgent"] != false || m["finding"] == "" {
 			t.Errorf("item %v", m)
 		}
@@ -281,7 +291,7 @@ func TestDataAutoCleanedAndSettings(t *testing.T) {
 	if len(ig) != 1 {
 		t.Fatalf("ignored %v", ig)
 	}
-	if m := ig[0].(map[string]any); m["finding"] != s.fid(pc.big) || m["rule"] != "stale.large-file" || m["category"] != "large-file" || m["path"] != pc.big.Path {
+	if m := ig[0].(map[string]any); m["finding"] != s.fid(pc.big) || m["rule"] != "stale.large-file" || m["category"] != "large-file" || m["path"] != pc.big.Path || m["name"] != nil {
 		t.Errorf("ignored %v", m)
 	}
 	if _, has := byID(t, readData(t, s, "data/overview")["reclaimable"])["large-file"]; has {
@@ -311,6 +321,9 @@ func TestDataHasNoSentences(t *testing.T) {
 					}
 				case string:
 					if key == "path" || key == "paths" || key == "reveal" || key == "keep" || key == "template" {
+						return
+					}
+					if key == "agent" { // a name: the AI tool a skill is for, as the rule names it (「Claude Code 插件」)
 						return
 					}
 					for _, r := range x {
@@ -391,9 +404,29 @@ func TestDataFactsPathsAbsolute(t *testing.T) {
 	s := newPageCase(t).s
 	home := s.Config.Context.Home
 	f := core.Finding{Rule: "persistence.new", Category: core.CatPersistence, Severity: core.Medium, Verdict: core.Confirm,
-		Path: filepath.Join(home, "Library/LaunchAgents/io.example.job.plist"),
+		Path:     filepath.Join(home, "Library/LaunchAgents/io.example.job.plist"),
 		Evidence: map[string]string{"label": "io.example.job", "program": "~/bin/job", "scope": "user-agent"}}
 	if got := s.itemFacts(f, 1).facts["program"]; got != filepath.Join(home, "bin/job") {
 		t.Errorf("program %v", got)
+	}
+}
+
+// disk: free counts what the system can purge; available is what can be written now, never more than free, null when
+// not known (luoke-scan#210).
+func TestDataOverviewDiskAvailable(t *testing.T) {
+	s := newPageCaseWith(t, false).s
+	s.Config.Volume = func(string) (int64, int64, bool) { return 300, 1000, true }
+	s.Config.Available = func(string) (int64, bool) { return 100, true }
+	disk := readData(t, s, "data/overview")["disk"].(map[string]any)
+	if disk["free"] != float64(300) || disk["available"] != float64(100) || disk["total"] != float64(1000) {
+		t.Errorf("disk: %v", disk)
+	}
+	s.Config.Available = func(string) (int64, bool) { return 400, true }
+	if disk := readData(t, s, "data/overview")["disk"].(map[string]any); disk["available"] != float64(300) {
+		t.Errorf("available above free: %v", disk)
+	}
+	s.Config.Available = func(string) (int64, bool) { return 0, false }
+	if disk := readData(t, s, "data/overview")["disk"].(map[string]any); disk["available"] != nil || disk["free"] != float64(300) {
+		t.Errorf("not known: %v", disk)
 	}
 }

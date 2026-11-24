@@ -25,6 +25,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",
@@ -42,6 +43,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Cursor",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",
@@ -59,6 +61,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Gemini CLI",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",
@@ -104,6 +107,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Gemini CLI",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",

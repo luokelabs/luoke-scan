@@ -25,6 +25,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]},{\"kinds\":[\"exfil\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
               "kinds": "exfil,injection",
               "scope": "personal",
@@ -42,23 +43,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "conceal-action",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 瞒着你（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/conceal-action|169ff18b5562c74d",
-            "path": "~/.claude/skills/conceal-action",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「conceal-action」：让 AI 瞒着你",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"low\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
               "kinds": "injection",
               "scope": "personal",
@@ -76,142 +61,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "conceal-zh",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 瞒着你（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/conceal-zh|2b234c7d32e8c6f4",
-            "path": "~/.claude/skills/conceal-zh",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「conceal-zh」：让 AI 瞒着你",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "inj-devmode",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：冒充系统或开发者说话（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/inj-devmode|72eee91b2ab63457",
-            "path": "~/.claude/skills/inj-devmode",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「inj-devmode」：冒充系统或开发者说话",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "inj-ignore-all",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 忽略原来的指令或规矩（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/inj-ignore-all|871530a1765b246f",
-            "path": "~/.claude/skills/inj-ignore-all",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「inj-ignore-all」：让 AI 忽略原来的指令或规矩",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "inj-ignore-en",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 忽略原来的指令或规矩（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/inj-ignore-en|d864fe14d14f803c",
-            "path": "~/.claude/skills/inj-ignore-en",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「inj-ignore-en」：让 AI 忽略原来的指令或规矩",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "inj-ignore-zh",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 忽略原来的指令或规矩（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/inj-ignore-zh|bf992a8f834c0922",
-            "path": "~/.claude/skills/inj-ignore-zh",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「inj-ignore-zh」：让 AI 忽略原来的指令或规矩",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "inj-markers",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：冒充系统或开发者说话（SKILL.md 第 6 行）"
-            },
-            "key": "~/.claude/skills/inj-markers|76ed8b32dc37b091",
-            "path": "~/.claude/skills/inj-markers",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「inj-markers」：冒充系统或开发者说话",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "inj-markers-deepseek",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：冒充系统或开发者说话（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/inj-markers-deepseek|a6b53fb785e77187",
-            "path": "~/.claude/skills/inj-markers-deepseek",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「inj-markers-deepseek」：冒充系统或开发者说话",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "inj-markers-mistral",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：冒充系统或开发者说话（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/inj-markers-mistral|30e063a71378708b",
-            "path": "~/.claude/skills/inj-markers-mistral",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「inj-markers-mistral」：冒充系统或开发者说话",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5,6]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
               "kinds": "injection",
               "scope": "personal",
@@ -229,6 +79,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5,6]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
               "kinds": "injection",
               "scope": "personal",
@@ -240,6 +91,168 @@
             "rule": "skill.injection",
             "severity": "medium",
             "title": "Claude Code 的 skill「inj-official-zh」：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "conceal-action",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 瞒着你（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/conceal-action|169ff18b5562c74d",
+            "path": "~/.claude/skills/conceal-action",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「conceal-action」：让 AI 瞒着你",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "conceal-zh",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 瞒着你（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/conceal-zh|2b234c7d32e8c6f4",
+            "path": "~/.claude/skills/conceal-zh",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「conceal-zh」：让 AI 瞒着你",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "inj-devmode",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：冒充系统或开发者说话（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/inj-devmode|72eee91b2ab63457",
+            "path": "~/.claude/skills/inj-devmode",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「inj-devmode」：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "inj-ignore-all",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 忽略原来的指令或规矩（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/inj-ignore-all|871530a1765b246f",
+            "path": "~/.claude/skills/inj-ignore-all",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「inj-ignore-all」：让 AI 忽略原来的指令或规矩",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "inj-ignore-en",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 忽略原来的指令或规矩（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/inj-ignore-en|d864fe14d14f803c",
+            "path": "~/.claude/skills/inj-ignore-en",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「inj-ignore-en」：让 AI 忽略原来的指令或规矩",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "inj-ignore-zh",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 忽略原来的指令或规矩（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/inj-ignore-zh|bf992a8f834c0922",
+            "path": "~/.claude/skills/inj-ignore-zh",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「inj-ignore-zh」：让 AI 忽略原来的指令或规矩",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "inj-markers-deepseek",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：冒充系统或开发者说话（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/inj-markers-deepseek|a6b53fb785e77187",
+            "path": "~/.claude/skills/inj-markers-deepseek",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「inj-markers-deepseek」：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "inj-markers-mistral",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：冒充系统或开发者说话（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/inj-markers-mistral|30e063a71378708b",
+            "path": "~/.claude/skills/inj-markers-mistral",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「inj-markers-mistral」：冒充系统或开发者说话",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[6]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "inj-markers",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：冒充系统或开发者说话（SKILL.md 第 6 行）"
+            },
+            "key": "~/.claude/skills/inj-markers|76ed8b32dc37b091",
+            "path": "~/.claude/skills/inj-markers",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「inj-markers」：冒充系统或开发者说话",
             "verdict": "info"
           }
         ],

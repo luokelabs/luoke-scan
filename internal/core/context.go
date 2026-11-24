@@ -22,6 +22,9 @@ type Context struct {
 	SystemLibrary, Receipts string
 	// BackgroundItems is where macOS keeps Login Items & Extensions' records (BackgroundItemsDir; "" not looked at).
 	BackgroundItems string
+	// VolumeRoot is the top of the data volume ("" not looked at): the account of the disk measures the folders there
+	// outside the home.
+	VolumeRoot string
 	// FullDiskAccess: nil not known (tests, a fixture: everything is looked at); false: the folders macOS asks about
 	// are left alone and said to be.
 	FullDiskAccess *bool

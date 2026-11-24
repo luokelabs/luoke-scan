@@ -25,74 +25,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
-              "kinds": "supply-chain",
-              "scope": "personal",
-              "skill": "sc-extra-index",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：直接从 git 仓库或网址装包（setup.sh 第 2 行）；从额外的源装包（可能被同名的包冒充）（setup.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/sc-extra-index|a2179ffd7a278554",
-            "path": "~/.claude/skills/sc-extra-index",
-            "rule": "skill.supply-chain",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「sc-extra-index」：直接从 git 仓库或网址装包，另有 1 处要看",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
-              "kinds": "supply-chain",
-              "scope": "personal",
-              "skill": "sc-git-prose",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：直接从 git 仓库或网址装包（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/sc-git-prose|a6d8f304b936ed1a",
-            "path": "~/.claude/skills/sc-git-prose",
-            "rule": "skill.supply-chain",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「sc-git-prose」：直接从 git 仓库或网址装包",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
-              "kinds": "supply-chain",
-              "scope": "personal",
-              "skill": "sc-git-script",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：直接从 git 仓库或网址装包（setup.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/sc-git-script|6a65db600145a15e",
-            "path": "~/.claude/skills/sc-git-script",
-            "rule": "skill.supply-chain",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「sc-git-script」：直接从 git 仓库或网址装包",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
-              "kinds": "supply-chain",
-              "scope": "personal",
-              "skill": "sc-insecure",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从不加密或不核对的源装包（setup.sh 第 2、3 行）；直接从 git 仓库或网址装包（setup.sh 第 3 行）；装包时没写版本号（每次装到的是当时最新的）（setup.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/sc-insecure|ccca5ff444990a2c",
-            "path": "~/.claude/skills/sc-insecure",
-            "rule": "skill.supply-chain",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「sc-insecure」：从不加密或不核对的源装包，另有 2 处要看",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"supply-chain\"],\"severity\":\"low\",\"files\":[\"setup.sh\"],\"lines\":[2,3,4,5]}]",
               "how": "认得的话，让它装包时写上版本号（例如 包名==1.2.3、包名@1.2.3）；不认识就移到废纸篓",
               "kinds": "supply-chain",
               "scope": "personal",
@@ -110,6 +43,25 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"supply-chain\"],\"severity\":\"low\",\"files\":[\"setup.sh\"],\"lines\":[2,3,4]},{\"kinds\":[\"supply-chain\"],\"severity\":\"low\",\"files\":[\"setup.sh\"],\"lines\":[5]}]",
+              "how": "认得的话，让它装包时写上版本号（例如 包名==1.2.3、包名@1.2.3）；不认识就移到废纸篓",
+              "kinds": "supply-chain",
+              "scope": "personal",
+              "skill": "sc-runtime",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：运行时从网上取包，没写版本号（setup.sh 第 2、3、4 行）；装包时没写版本号（每次装到的是当时最新的）（setup.sh 第 5 行）"
+            },
+            "key": "~/.claude/skills/sc-runtime|6d4fcbdfbcce6dda",
+            "path": "~/.claude/skills/sc-runtime",
+            "rule": "skill.supply-chain",
+            "severity": "low",
+            "title": "Claude Code 的 skill「sc-runtime」：运行时从网上取包，没写版本号，另有 1 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"supply-chain\"],\"severity\":\"low\",\"files\":[\"setup.sh\"],\"lines\":[2]}]",
               "how": "认得的话，让它装包时写上版本号（例如 包名==1.2.3、包名@1.2.3）；不认识就移到废纸篓",
               "kinds": "supply-chain",
               "scope": "personal",
@@ -127,17 +79,72 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "认得的话，让它装包时写上版本号（例如 包名==1.2.3、包名@1.2.3）；不认识就移到废纸篓",
+              "hits": "[{\"kinds\":[\"supply-chain\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
               "kinds": "supply-chain",
               "scope": "personal",
-              "skill": "sc-runtime",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：运行时从网上取包，没写版本号（setup.sh 第 2、3、4 行）；装包时没写版本号（每次装到的是当时最新的）（setup.sh 第 5 行）"
+              "skill": "sc-git-prose",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：直接从 git 仓库或网址装包（SKILL.md 第 5 行）"
             },
-            "key": "~/.claude/skills/sc-runtime|6d4fcbdfbcce6dda",
-            "path": "~/.claude/skills/sc-runtime",
+            "key": "~/.claude/skills/sc-git-prose|a6d8f304b936ed1a",
+            "path": "~/.claude/skills/sc-git-prose",
             "rule": "skill.supply-chain",
-            "severity": "low",
-            "title": "Claude Code 的 skill「sc-runtime」：运行时从网上取包，没写版本号，另有 1 处要看",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「sc-git-prose」：直接从 git 仓库或网址装包",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"supply-chain\"],\"severity\":\"medium\",\"files\":[\"setup.sh\"],\"lines\":[2,3]},{\"kinds\":[\"supply-chain\"],\"severity\":\"medium\",\"files\":[\"setup.sh\"],\"lines\":[3]},{\"kinds\":[\"supply-chain\"],\"severity\":\"low\",\"files\":[\"setup.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
+              "kinds": "supply-chain",
+              "scope": "personal",
+              "skill": "sc-insecure",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从不加密或不核对的源装包（setup.sh 第 2、3 行）；直接从 git 仓库或网址装包（setup.sh 第 3 行）；装包时没写版本号（每次装到的是当时最新的）（setup.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/sc-insecure|ccca5ff444990a2c",
+            "path": "~/.claude/skills/sc-insecure",
+            "rule": "skill.supply-chain",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「sc-insecure」：从不加密或不核对的源装包，另有 2 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"supply-chain\"],\"severity\":\"medium\",\"files\":[\"setup.sh\"],\"lines\":[2]},{\"kinds\":[\"supply-chain\"],\"severity\":\"low\",\"files\":[\"setup.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
+              "kinds": "supply-chain",
+              "scope": "personal",
+              "skill": "sc-extra-index",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：直接从 git 仓库或网址装包（setup.sh 第 2 行）；从额外的源装包（可能被同名的包冒充）（setup.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/sc-extra-index|a2179ffd7a278554",
+            "path": "~/.claude/skills/sc-extra-index",
+            "rule": "skill.supply-chain",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「sc-extra-index」：直接从 git 仓库或网址装包，另有 1 处要看",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"supply-chain\"],\"severity\":\"medium\",\"files\":[\"setup.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
+              "kinds": "supply-chain",
+              "scope": "personal",
+              "skill": "sc-git-script",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：直接从 git 仓库或网址装包（setup.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/sc-git-script|6a65db600145a15e",
+            "path": "~/.claude/skills/sc-git-script",
+            "rule": "skill.supply-chain",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「sc-git-script」：直接从 git 仓库或网址装包",
             "verdict": "info"
           }
         ],

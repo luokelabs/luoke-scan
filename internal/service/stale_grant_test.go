@@ -1,8 +1,11 @@
 package service
 
 import (
+	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/luokelabs/luoke-scan/internal/core"
 )
@@ -57,5 +60,73 @@ func TestEveryGrantOpensItsSettingsPage(t *testing.T) {
 	}
 	if pane, url, ok := settingsPane(core.LoginItemsGrant); !ok || pane != "LoginItems" || url != core.LoginItemsURL {
 		t.Errorf("login items: %q %q", pane, url)
+	}
+}
+
+// data/overview says of each stale grant whose it is, which grants it still holds and what it left in Login Items &
+// Extensions, as names and yes-or-no: the window lists them an app a line (luoke-scan#212). No sentences.
+func TestDataOverviewStaleGrantFacts(t *testing.T) {
+	m := newModelSetup(t)
+	tool := "/opt/gone/tool"
+	plist := "/Library/LaunchDaemons/io.gone.vpn.helper.plist"
+	with := func(f core.Finding, more map[string]string) core.Finding {
+		f.Severity, f.Verdict, f.Title = core.Low, core.Confirm, "title: "+f.Path
+		f.Evidence["hint"], f.Evidence["how"] = "hint words", "how words"
+		for k, v := range more {
+			f.Evidence[k] = v
+		}
+		return f
+	}
+	fs := []core.Finding{
+		with(staleFinding("io.gone.docs", "文稿、下载", ""), nil),
+		with(staleFinding("io.gone.sync", "登录项", "Gone Sync"), map[string]string{"login_items": "Gone Sync、Gone Sync Agent",
+			core.LeftItemsKey: "Gone Sync\nGone Sync Agent", core.LeftStartsKey: "0", core.LeftDaemonKey: "0"}),
+		with(staleFinding("io.gone.vpn", "完全磁盘访问、登录项", ""), map[string]string{"login_items": plist,
+			core.LeftItemsKey: plist, core.LeftStartsKey: "1", core.LeftDaemonKey: "1"}),
+		with(staleFinding(tool, "录屏", ""), nil),
+		// a round from before the rule kept the facts apart: the items as shown, starting not known
+		with(staleFinding("io.gone.old", "登录项", ""), map[string]string{"login_items": "~/Library/LaunchAgents/io.gone.old.plist"}),
+	}
+	now := core.Time{Time: time.Now()}
+	s := m.service(nil, nil)
+	if err := s.Store.SaveReport(core.Report{StartedAt: now, FinishedAt: now, Findings: fs}); err != nil {
+		t.Fatal(err)
+	}
+	got := map[string]map[string]any{}
+	for _, x := range readData(t, s, "data/overview")["attention"].(map[string]any)["items"].([]any) {
+		it := x.(map[string]any)
+		for _, k := range []string{"title", "hint", "how"} {
+			if _, has := it[k]; has {
+				t.Errorf("%s in %v", k, it)
+			}
+		}
+		if it["rule"] == "permission.stale-grant" {
+			facts := it["facts"].(map[string]any)
+			got[facts["client"].(string)] = facts
+		}
+	}
+	login := func(starts, root any, items ...any) map[string]any {
+		return map[string]any{"grant": "登录项", "items": items, "starts": starts, "root": root}
+	}
+	want := map[string]map[string]any{
+		"io.gone.docs": {"client": "io.gone.docs", "clientType": "bundle", "app": nil, "grants": []any{"文稿", "下载"}, "loginItems": nil},
+		"io.gone.sync": {"client": "io.gone.sync", "clientType": "bundle", "app": "Gone Sync", "grants": []any{},
+			"loginItems": login(false, false, "Gone Sync", "Gone Sync Agent")},
+		"io.gone.vpn": {"client": "io.gone.vpn", "clientType": "bundle", "app": nil, "grants": []any{"完全磁盘访问"},
+			"loginItems": login(true, true, plist)},
+		tool: {"client": tool, "clientType": "path", "app": nil, "grants": []any{"录屏"}, "loginItems": nil},
+		"io.gone.old": {"client": "io.gone.old", "clientType": "bundle", "app": nil, "grants": []any{},
+			"loginItems": login(nil, nil, filepath.Join(m.ctx.Home, "Library/LaunchAgents/io.gone.old.plist"))},
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("facts\n got %v\nwant %v", got, want)
+	}
+	// Each grant is a name scan_open_settings takes.
+	for _, facts := range got {
+		for _, g := range facts["grants"].([]any) {
+			if _, _, ok := settingsPane(g.(string)); !ok {
+				t.Errorf("no settings page for %v", g)
+			}
+		}
 	}
 }

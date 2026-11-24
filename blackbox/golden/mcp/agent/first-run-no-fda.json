@@ -621,6 +621,26 @@
               "title": "在访达里显示"
             },
             {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "请这台 Mac 上的模型用一两句话解释一条发现（只是说明，不改结论；要几秒到几十秒）",
+              "inputSchema": {
+                "properties": {
+                  "finding_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "finding_id"
+                ],
+                "type": "object"
+              },
+              "name": "scan_explain",
+              "title": "让本机模型说说这一项"
+            },
+            {
               "_meta": {
                 "ai.luoke/where": "mac"
               },
@@ -690,6 +710,11 @@
               "mimeType": "application/json",
               "name": "一类可以清的东西",
               "uri": "data/category"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "一项发现和它命中的依据",
+              "uri": "data/finding"
             },
             {
               "mimeType": "application/json",

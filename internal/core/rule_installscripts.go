@@ -579,47 +579,60 @@ func (r *InstallScriptsRule) Run(ctx *Context) ([]Finding, error) {
 		return sortedKeys(scripted[tool])
 	}
 	var out []Finding
-	// finding: one tool's. config is the user config the fix writes ("" none); fix whether one appended line does it;
-	// why the facts, then the line to add (when not offered), the packages to let through and how, and later advice.
-	finding := func(tool, title, config, used, why string, fix bool, manual string, pkgs []string, allow, later string) {
+	// finding: one tool's, as a setting's state (nothing is wrong with a file: Path is empty). Evidence carries facts
+	// and codes only, no sentences: who shows it writes the words in its reader's language, and a script reads the
+	// codes. The title is in English, as this command line's output for people is to be.
+	//   reason       why it is said: default-on, setting-on, allow-all-builds, old-store, built-from-source
+	//   config       the user config the setting goes in ("" none), config_exists 1 or 0
+	//   line         the line that turns it off; append: the same when appending it is enough (scan_apply scripts-off)
+	//   manual       why appending is not enough or not done: link, link-on-path, change-value, add-at-top,
+	//                add-in-global, remove-setting, upgrade
+	//   packages     installed dependencies that need their script; built: packages built from source here
+	//   allow        the command (or the snippet, in allow_in) that lets one package through afterwards
+	//   cost         what turning it off breaks: own-scripts-off, no-wheel-fails, no-wheel-deps-fail
+	//   delay        the setting that makes new versions wait a day (delay_since: from which version);
+	//   fixed_in     the version whose default is off
+	finding := func(tool, reason, config string, fix bool, manual string, more map[string]string) {
 		t := ScriptsTools[tool]
-		ev := map[string]string{"tool": tool, "used": used, "why": why}
-		var how []string
+		ev := map[string]string{"tool": tool, "name": t.Name, "risk": "third-party-code-at-install", "reason": reason}
+		if config != "" {
+			ev["config"], ev["config_exists"] = config, "0"
+			if _, err := os.Lstat(config); err == nil {
+				ev["config_exists"] = "1"
+			}
+			ev["line"] = t.Line
+		}
 		if fix {
 			ev["append"] = t.Line
-			if _, err := os.Lstat(config); err == nil {
-				how = append(how, "点「关闭自动运行」会在 "+shown(config)+" 末尾加一行 "+t.Line+"；原来那份移到废纸篓，能放回。")
-			} else {
-				how = append(how, "点「关闭自动运行」会新建 "+shown(config)+"，写上 "+t.Line+"；放回时把它移走。")
-			}
 		} else if manual != "" {
-			how = append(how, manual)
+			ev["manual"] = manual
 		}
-		if len(pkgs) > 0 {
-			ev["packages"] = strings.Join(pkgs, "、")
-			how = append(how, "已装的依赖里 "+nameList(pkgs, "、")+" 要跑安装脚本，改了以后装它们要单独放行："+allow+"。")
-		} else if strings.HasSuffix(allow, "。") {
-			how = append(how, allow) // the tool's own sentence
-		} else if allow != "" {
-			how = append(how, "以后有包真要跑脚本，单独放行："+allow+"。")
+		for k, v := range more {
+			if v != "" {
+				ev[k] = v
+			}
 		}
-		if later != "" {
-			how = append(how, later)
+		title := t.Name + " runs the install scripts that packages bring with them"
+		switch reason {
+		case "allow-all-builds":
+			title = t.Name + " lets every dependency run scripts when it is installed"
+		case "built-from-source":
+			title = t.Name + " runs a package's own build script when it installs from source"
 		}
-		ev["how"] = strings.Join(how, "")
-		out = append(out, Finding{Rule: InstallScriptsRuleID, Category: CatPosture, Severity: Medium, Verdict: Confirm,
-			Path: config, Title: title, Evidence: ev, Key: tool})
+		out = append(out, Finding{Rule: InstallScriptsRuleID, Category: CatPosture, Severity: Low, Verdict: Info,
+			Title: title, Evidence: ev, Key: tool})
 	}
-	// linkWhy: why the file is not changed from here when a link is in the way; "" none.
-	linkWhy := func(config string, link bool) string {
+	// blockedBy: why the file is not changed from here when a link is in the way; "" none.
+	blockedBy := func(config string, link bool) string {
 		switch {
 		case link:
-			return shown(config) + " 是个链接（或者和别的文件名共用一个文件），螺壳不改它"
+			return "link"
 		case LinkOnPath(home, config):
-			return "放它的文件夹路上有链接，螺壳不往链接里写"
+			return "link-on-path"
 		}
 		return ""
 	}
+	list := func(xs []string) string { return strings.Join(xs, ", ") }
 
 	// npm: dependency scripts run by default before npm 12; ignore-scripts=true in ~/.npmrc turns them off.
 	if used := usedBy(ctx, home, ".npmrc", ".npm"); used != "" {
@@ -636,40 +649,37 @@ func (r *InstallScriptsRule) Run(ctx *Context) ([]Finding, error) {
 		off := strings.EqualFold(last(top), "true")
 		if v, ok := newest(r.globalVersions(ctx, "npm")); read && ok && v.before(12, 0) && !off {
 			names := needs("npm")
-			allow := "npm rebuild " + strings.Join(firstN(names, 6, "<包名>"), " ") + " --ignore-scripts=false"
-			later := ""
+			more := map[string]string{"used": used, "version": v.text, "where": shown(v.where), "packages": list(names),
+				"allow": "npm rebuild " + strings.Join(firstN(names, 6, "<package>"), " ") + " --ignore-scripts=false",
+				// the line also stops the project's own prepare and pre/post scripts (husky's git hooks): npm run <script>
+				"cost": "own-scripts-off", "fixed_in": "npm 12"}
 			if !v.before(11, 10) {
-				later = "也可以让新版本晚一天再装：在 " + shown(cfg) + " 加一行 min-release-age=1。"
-			} else {
-				later = "升到 npm 12 以后默认就不跑依赖的安装脚本，也能设新版本晚几天再装（min-release-age）。"
+				more["delay"], more["delay_since"] = "min-release-age=1", "npm 11.10"
 			}
-			later = "这一行也会让项目自己的 prepare 和 pre、post 脚本不跑（比如 husky 装 git 钩子），要跑时用 npm run <脚本名>。" + later
-			blocked := linkWhy(cfg, link)
-			fix := blocked == "" && len(values) == 0 && len(iniSections(text)) == 0
-			manual := ""
+			manual := blockedBy(cfg, link)
+			fix := manual == "" && len(values) == 0 && len(iniSections(text)) == 0
 			switch {
-			case blocked != "":
-				manual = blocked + "；你可以自己加一行 ignore-scripts=true。"
+			case manual != "":
 			case len(top) > 0:
-				manual = "把 " + shown(cfg) + " 里的 ignore-scripts 改成 true。"
+				manual = "change-value"
 			case !fix:
-				manual = "在 " + shown(cfg) + " 最前面（任何 [节] 之前）加一行 ignore-scripts=true。"
+				manual = "add-at-top"
 			}
-			finding("npm", "npm 允许依赖在安装时跑脚本", cfg, used,
-				"装着的 npm "+v.text+"（"+shown(v.where)+"）默认会跑依赖的安装脚本，"+shown(cfg)+" 里没有关掉", fix, manual, names, allow, later)
+			finding("npm", "default-on", cfg, fix, manual, more)
 		}
 	}
 
 	// pnpm: off by default since 10. Older stores (v3) or an old global pnpm: on; dangerouslyAllowAllBuilds: on.
 	if used := usedBy(ctx, home, "Library/pnpm", "Library/Preferences/pnpm", ".config/pnpm", ".local/share/pnpm", "Library/Caches/pnpm"); used != "" {
-		var why string
+		reason, more := "", map[string]string{"used": used, "fixed_in": "pnpm 10",
+			"allow": "allowBuilds", "allow_in": "pnpm-workspace.yaml"}
 		vs := r.globalVersions(ctx, "pnpm")
 		if v, ok := newest(vs); ok && v.before(10, 0) {
-			why = "装着的 pnpm " + v.text + "（" + shown(v.where) + "）默认会跑依赖的安装脚本"
+			reason, more["version"], more["where"] = "default-on", v.text, shown(v.where)
 		} else if len(vs) == 0 {
 			for _, store := range []string{"Library/pnpm/store", ".local/share/pnpm/store"} {
 				if dirAt(filepath.Join(home, store, "v3")) && !dirAt(filepath.Join(home, store, "v10")) && !dirAt(filepath.Join(home, store, "v11")) {
-					why = "~/" + store + " 只有 pnpm 9 或更早用的 v3 仓库，这些版本默认会跑依赖的安装脚本"
+					reason, more["store"] = "old-store", "~/"+store+"/v3"
 					break
 				}
 			}
@@ -687,15 +697,18 @@ func (r *InstallScriptsRule) Run(ctx *Context) ([]Finding, error) {
 				all = append(all, "~/"+c)
 			}
 		}
+		more["packages"] = ""
 		switch {
 		case len(all) > 0:
-			finding("pnpm", "pnpm 允许所有依赖在安装时跑脚本", "", used, strings.Join(all, "、")+" 里打开了 dangerouslyAllowAllBuilds",
-				false, "从 "+strings.Join(all, "、")+" 里删掉 dangerouslyAllowAllBuilds 那一行。", needs("pnpm"),
-				"在项目的 pnpm-workspace.yaml 的 allowBuilds 里写上它（pnpm 10 是 onlyBuiltDependencies）", "")
-		case why != "":
-			finding("pnpm", "pnpm 允许依赖在安装时跑脚本", "", used, why, false,
-				"升到 pnpm 10 或更新：默认不跑依赖的安装脚本，pnpm 11 起新版本还默认晚一天才装。", needs("pnpm"),
-				"在项目的 pnpm-workspace.yaml 的 allowBuilds 里写上它（pnpm 10 是 onlyBuiltDependencies）", "")
+			more["packages"], more["files"], more["setting"] = list(needs("pnpm")), list(all), "dangerouslyAllowAllBuilds"
+			delete(more, "version")
+			delete(more, "where")
+			delete(more, "store")
+			delete(more, "fixed_in")
+			finding("pnpm", "allow-all-builds", "", false, "remove-setting", more)
+		case reason != "":
+			more["packages"] = list(needs("pnpm"))
+			finding("pnpm", reason, "", false, "upgrade", more)
 		}
 	}
 
@@ -705,24 +718,22 @@ func (r *InstallScriptsRule) Run(ctx *Context) ([]Finding, error) {
 		text, _, link, read := userConfig(cfg)
 		values, _ := topValues(text, "enableScripts", ":")
 		setting := strings.ToLower(last(values))
-		var why string
+		reason, more := "", map[string]string{"used": used, "fixed_in": "Yarn 4.14",
+			"allow": `"dependenciesMeta": {"<package>": {"built": true}}`, "allow_in": "package.json",
+			"delay": `npmMinimalAgeGate: "1d"`, "delay_since": "Yarn 4.10"}
 		if setting == "true" {
-			why = shown(cfg) + " 里写着 enableScripts: true"
+			reason, more["setting"] = "setting-on", "enableScripts: true"
 		} else if v, ok := newest(r.yarnVersions(ctx)); ok && v.before(4, 14) && setting != "false" {
-			why = "用着的 Yarn " + v.text + "（" + shown(v.where) + "）默认会跑依赖的安装脚本，" + shown(cfg) + " 里没有关掉"
+			reason, more["version"], more["where"] = "default-on", v.text, shown(v.where)
 		}
-		if why != "" && read {
-			blocked := linkWhy(cfg, link)
-			fix := blocked == "" && len(values) == 0
-			manual := ""
-			if blocked != "" {
-				manual = blocked + "；你可以自己加一行 enableScripts: false。"
-			} else if len(values) > 0 {
-				manual = "把 " + shown(cfg) + " 里的 enableScripts 改成 false。"
+		if reason != "" && read {
+			manual := blockedBy(cfg, link)
+			fix := manual == "" && len(values) == 0
+			if manual == "" && len(values) > 0 {
+				manual = "change-value"
 			}
-			finding("yarn", "Yarn 允许依赖在安装时跑脚本", cfg, used, why, fix, manual, needs("yarn"),
-				"在项目的 package.json 里写 \"dependenciesMeta\": {\"<包名>\": {\"built\": true}}",
-				"也可以让新版本晚一天再装：Yarn 4.10 起在 "+shown(cfg)+" 加一行 npmMinimalAgeGate: \"1d\"。")
+			more["packages"] = list(needs("yarn"))
+			finding("yarn", reason, cfg, fix, manual, more)
 		}
 	}
 
@@ -756,19 +767,15 @@ func (r *InstallScriptsRule) Run(ctx *Context) ([]Finding, error) {
 			secs := iniSections(text)
 			// One line does it when it lands in [global] or [install] (the file's last section is one of them) and no
 			// only-binary anywhere in the user's pip configs could win over it.
-			blocked := linkWhy(cfg, link)
-			fix := blocked == "" && !anywhere && (!there || (len(secs) > 0 && (last(secs) == "global" || last(secs) == "install")))
-			manual := ""
-			if !fix {
-				manual = "在 " + shown(cfg) + " 的 [global] 里加一行 only-binary = :all:（[install] 里有 only-binary 的话，改那一行）。"
-				if blocked != "" {
-					manual = blocked + "；" + manual
-				}
+			manual := blockedBy(cfg, link)
+			fix := manual == "" && !anywhere && (!there || (len(secs) > 0 && (last(secs) == "global" || last(secs) == "install")))
+			if !fix && manual == "" {
+				manual = "add-in-global"
 			}
-			finding("pip", "pip 装源码包时会跑它的构建脚本", cfg, "~/Library/Caches/pip",
-				"pip 在这台 Mac 上从源码编译过 "+nameList(built, "、")+"，编译时会运行包自带的 setup.py", fix, manual, nil,
-				"改了以后，没有现成安装包（wheel）的包会装不上，本地的项目（pip install .）也可能装不上；要装时单独放行：pip install --only-binary :none: <包名>。",
-				"也可以让新版本晚一天再装：pip 26.1 起在 [global] 加 uploaded-prior-to = P1D。")
+			finding("pip", "built-from-source", cfg, fix, manual, map[string]string{"used": "~/Library/Caches/pip",
+				"built": list(built), "runs": "setup.py", "cost": "no-wheel-fails",
+				"allow": "pip install --only-binary :none: <package>",
+				"delay": "uploaded-prior-to = P1D", "delay_since": "pip 26.1"})
 		}
 	}
 
@@ -778,19 +785,15 @@ func (r *InstallScriptsRule) Run(ctx *Context) ([]Finding, error) {
 		text, _, link, read := userConfig(cfg)
 		values, tables := topValues(text, "no-build", "=")
 		if read && !strings.EqualFold(last(values), "true") {
-			blocked := linkWhy(cfg, link)
-			fix := blocked == "" && len(values) == 0 && !tables
-			manual := ""
-			if !fix {
-				manual = "在 " + shown(cfg) + " 最前面（任何 [表] 之前）加一行 no-build = true。"
-				if blocked != "" {
-					manual = blocked + "；" + manual
-				}
+			manual := blockedBy(cfg, link)
+			fix := manual == "" && len(values) == 0 && !tables
+			if !fix && manual == "" {
+				manual = "add-at-top"
 			}
-			finding("uv", "uv 装源码包时会跑它的构建脚本", cfg, "~/.cache/uv",
-				"uv 在这台 Mac 上从源码编译过 "+nameList(built, "、")+"，编译时会运行包自带的构建脚本", fix, manual, nil,
-				"改了以后，依赖里没有现成安装包（wheel）的会装不上（你自己的项目照样会构建）；uv 不能按包放行，要装时那一次加 --no-config（不读这份配置）。",
-				"也可以让新版本晚一天再装：在 "+shown(cfg)+" 加一行 exclude-newer = \"1 day\"。")
+			// uv cannot let one package through: --no-config for that one install (the user's own project still builds)
+			finding("uv", "built-from-source", cfg, fix, manual, map[string]string{"used": "~/.cache/uv",
+				"built": list(built), "cost": "no-wheel-deps-fail", "allow": "--no-config",
+				"delay": `exclude-newer = "1 day"`})
 		}
 	}
 	if len(left) > 0 {

@@ -25,57 +25,25 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]},{\"kinds\":[\"injection\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec,injection",
               "scope": "personal",
-              "skill": "hid-bidi-prose",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：有改变文字显示顺序的控制字符（看到的和实际的不一样）（SKILL.md 第 5 行）"
+              "skill": "hid-tags-cmd",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（藏起来了）（SKILL.md 第 5 行）；藏着看不见的字符（Unicode 标签字符，AI 读得到）（SKILL.md 第 5 行）"
             },
-            "key": "~/.claude/skills/hid-bidi-prose|d6983c782a4fd1bc",
-            "path": "~/.claude/skills/hid-bidi-prose",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「hid-bidi-prose」：有改变文字显示顺序的控制字符（看到的和实际的不一样）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "hid-bidi-script",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：有改变文字显示顺序的控制字符（看到的和实际的不一样）（a.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/hid-bidi-script|77cb69e8932c0c6c",
-            "path": "~/.claude/skills/hid-bidi-script",
-            "rule": "skill.injection",
+            "key": "~/.claude/skills/hid-tags-cmd|e1c0b0c6270095e8",
+            "path": "~/.claude/skills/hid-tags-cmd",
+            "rule": "skill.download-exec",
             "severity": "high",
-            "title": "Claude Code 的 skill「hid-bidi-script」：有改变文字显示顺序的控制字符（看到的和实际的不一样）",
+            "title": "Claude Code 的 skill「hid-tags-cmd」：从网上下载代码直接运行（藏起来了），另有 1 处要看",
             "verdict": "info"
           },
           {
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "hid-blob",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：说明里有一大段编码过的内容（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/hid-blob|660cc0aee51714d0",
-            "path": "~/.claude/skills/hid-blob",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「hid-blob」：说明里有一大段编码过的内容",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]},{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
               "kinds": "injection",
               "scope": "personal",
@@ -93,57 +61,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "hid-comment-ai",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：HTML 注释里藏着给 AI 的话（你看不到，AI 看得到）（SKILL.md 第 6 行）"
-            },
-            "key": "~/.claude/skills/hid-comment-ai|9cde8732fa302e74",
-            "path": "~/.claude/skills/hid-comment-ai",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「hid-comment-ai」：HTML 注释里藏着给 AI 的话（你看不到，AI 看得到）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "hid-comment-ignore",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 忽略原来的指令或规矩（藏起来了）（SKILL.md 第 6 行）"
-            },
-            "key": "~/.claude/skills/hid-comment-ignore|e2bb9a9abe796a60",
-            "path": "~/.claude/skills/hid-comment-ignore",
-            "rule": "skill.injection",
-            "severity": "high",
-            "title": "Claude Code 的 skill「hid-comment-ignore」：让 AI 忽略原来的指令或规矩（藏起来了）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
-              "kinds": "injection",
-              "scope": "personal",
-              "skill": "hid-hex",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：说明里有一大段编码过的内容（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/hid-hex|aecabf257da0bc03",
-            "path": "~/.claude/skills/hid-hex",
-            "rule": "skill.injection",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「hid-hex」：说明里有一大段编码过的内容",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
               "kinds": "injection",
               "scope": "personal",
@@ -161,6 +79,97 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[6]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "hid-comment-ignore",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 忽略原来的指令或规矩（藏起来了）（SKILL.md 第 6 行）"
+            },
+            "key": "~/.claude/skills/hid-comment-ignore|e2bb9a9abe796a60",
+            "path": "~/.claude/skills/hid-comment-ignore",
+            "rule": "skill.injection",
+            "severity": "high",
+            "title": "Claude Code 的 skill「hid-comment-ignore」：让 AI 忽略原来的指令或规矩（藏起来了）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "hid-bidi-script",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：有改变文字显示顺序的控制字符（看到的和实际的不一样）（a.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/hid-bidi-script|77cb69e8932c0c6c",
+            "path": "~/.claude/skills/hid-bidi-script",
+            "rule": "skill.injection",
+            "severity": "high",
+            "title": "Claude Code 的 skill「hid-bidi-script」：有改变文字显示顺序的控制字符（看到的和实际的不一样）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "hid-bidi-prose",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：有改变文字显示顺序的控制字符（看到的和实际的不一样）（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/hid-bidi-prose|d6983c782a4fd1bc",
+            "path": "~/.claude/skills/hid-bidi-prose",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「hid-bidi-prose」：有改变文字显示顺序的控制字符（看到的和实际的不一样）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "hid-blob",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：说明里有一大段编码过的内容（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/hid-blob|660cc0aee51714d0",
+            "path": "~/.claude/skills/hid-blob",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「hid-blob」：说明里有一大段编码过的内容",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
+              "scope": "personal",
+              "skill": "hid-hex",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：说明里有一大段编码过的内容（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/hid-hex|aecabf257da0bc03",
+            "path": "~/.claude/skills/hid-hex",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「hid-hex」：说明里有一大段编码过的内容",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
               "kinds": "injection",
               "scope": "personal",
@@ -178,17 +187,18 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
-              "kinds": "download-exec,injection",
+              "hits": "[{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[6]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；可以用文本编辑器打开那个文件，看看那几行",
+              "kinds": "injection",
               "scope": "personal",
-              "skill": "hid-tags-cmd",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（藏起来了）（SKILL.md 第 5 行）；藏着看不见的字符（Unicode 标签字符，AI 读得到）（SKILL.md 第 5 行）"
+              "skill": "hid-comment-ai",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：HTML 注释里藏着给 AI 的话（你看不到，AI 看得到）（SKILL.md 第 6 行）"
             },
-            "key": "~/.claude/skills/hid-tags-cmd|e1c0b0c6270095e8",
-            "path": "~/.claude/skills/hid-tags-cmd",
-            "rule": "skill.download-exec",
-            "severity": "high",
-            "title": "Claude Code 的 skill「hid-tags-cmd」：从网上下载代码直接运行（藏起来了），另有 1 处要看",
+            "key": "~/.claude/skills/hid-comment-ai|9cde8732fa302e74",
+            "path": "~/.claude/skills/hid-comment-ai",
+            "rule": "skill.injection",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「hid-comment-ai」：HTML 注释里藏着给 AI 的话（你看不到，AI 看得到）",
             "verdict": "info"
           }
         ],

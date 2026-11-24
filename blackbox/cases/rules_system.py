@@ -774,6 +774,7 @@ def handed(r: Run) -> None:
 def replace_tool(fx: Fx, name: str, script: str) -> None:
     """假目录里的一个扫描器换成另一个小脚本（坏掉的扫描器）。"""
     path = os.path.join(fx.tools, name)
+    os.remove(path)   # 假目录里的扫描器是硬链接到共用的那一份的（fx.shared_tools）：先删再写，不改到别的场景的
     with open(path, "w") as f:
         f.write(script)
     os.chmod(path, 0o755)

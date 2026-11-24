@@ -12,7 +12,9 @@
               "items": [
                 {
                   "category": "malware",
+                  "facts": null,
                   "finding": "malware.clamav/000000000003",
+                  "modelNotes": [],
                   "path": "~/Downloads/eicar-test.com",
                   "reveal": "~/Downloads/eicar-test.com",
                   "rule": "malware.clamav",
@@ -21,7 +23,9 @@
                 },
                 {
                   "category": "malware",
+                  "facts": null,
                   "finding": "malware.yara.luoke_fake_password_dialog/000000000006",
+                  "modelNotes": [],
                   "path": "~/Downloads/update.scpt",
                   "reveal": "~/Downloads/update.scpt",
                   "rule": "malware.yara.luoke_fake_password_dialog",
@@ -30,7 +34,9 @@
                 },
                 {
                   "category": null,
+                  "facts": null,
                   "finding": "keyboard.unvouched/000000000010",
+                  "modelNotes": [],
                   "path": "~/Applications/Keys.app/Contents/MacOS/Keys",
                   "reveal": "~/Applications/Keys.app/Contents/MacOS/Keys",
                   "rule": "keyboard.unvouched",
@@ -39,7 +45,9 @@
                 },
                 {
                   "category": null,
+                  "facts": null,
                   "finding": "mcp.secrets/000000000011",
+                  "modelNotes": [],
                   "path": "~/.gemini/settings.json",
                   "reveal": "~/.gemini/settings.json",
                   "rule": "mcp.secrets",
@@ -48,7 +56,9 @@
                 },
                 {
                   "category": null,
+                  "facts": null,
                   "finding": "posture.filevault",
+                  "modelNotes": [],
                   "path": null,
                   "reveal": null,
                   "rule": "posture.filevault",
@@ -57,7 +67,9 @@
                 },
                 {
                   "category": null,
+                  "facts": null,
                   "finding": "process.deleted-binary/000000000015",
+                  "modelNotes": [],
                   "path": "~/Applications/Gone.app/Contents/MacOS/gone",
                   "reveal": "~/Applications/Gone.app/Contents/MacOS/gone",
                   "rule": "process.deleted-binary",
@@ -66,7 +78,17 @@
                 },
                 {
                   "category": null,
+                  "facts": {
+                    "app": null,
+                    "client": "/opt/gone/tool",
+                    "clientType": "path",
+                    "grants": [
+                      "录屏"
+                    ],
+                    "loginItems": null
+                  },
                   "finding": "permission.stale-grant/000000000016",
+                  "modelNotes": [],
                   "path": "/opt/gone/tool",
                   "reveal": "/opt/gone/tool",
                   "rule": "permission.stale-grant",
@@ -75,7 +97,17 @@
                 },
                 {
                   "category": null,
+                  "facts": {
+                    "app": null,
+                    "client": "io.example.removed",
+                    "clientType": "bundle",
+                    "grants": [
+                      "完全磁盘访问"
+                    ],
+                    "loginItems": null
+                  },
                   "finding": "permission.stale-grant/000000000017",
+                  "modelNotes": [],
                   "path": null,
                   "reveal": null,
                   "rule": "permission.stale-grant",
@@ -88,6 +120,7 @@
             "autoCleaned": [],
             "autoclean": false,
             "disk": {
+              "available": 182000000000,
               "free": 182000000000,
               "total": 494000000000
             },
@@ -279,6 +312,7 @@
             },
             "scanning": null,
             "schema": 1,
+            "settings": [],
             "skipped": [],
             "virusDb": {
               "date": "2026-10-20",

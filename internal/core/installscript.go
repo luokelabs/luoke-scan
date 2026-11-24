@@ -17,6 +17,12 @@ import (
 // an install script, and a stricter idea of what counts: an install script is code nobody reads, run with the user's
 // rights on every install, so only what an install script has no business doing is reported, never what the common
 // legitimate ones do (build native code, download their own prebuilt binary, print a banner).
+//
+// A script is read line by line. A command continued over several lines (a backslash at the end of a line: a shell's
+// command, a string in JavaScript or Python) is read a second time joined on its first line (installReadings), so
+// nothing the lines show one by one is lost. A download piped into a shell is also found by the pipeline's stages
+// (shellPiped, skillcommands.go): behind xargs, env, nohup and the like, in a shell script and in a string handed to
+// exec or os.system.
 
 // InstallSignal is one thing an install script was found to do: a fixed phrase, never the text that matched.
 type InstallSignal struct {
@@ -364,6 +370,19 @@ func installHits(segs []installSegment, encoded bool, lang installLang, cancelle
 	return out
 }
 
+// installReadings are a script's hits: its lines as they are, and, when a command is continued over several lines,
+// the text with those put on their first line as well (skillJoinContinued; what it leaves empty is in the first
+// reading). The joined lines are cut where the skills' checks stop reading a line, not shorter: a continued command
+// is not minified code.
+func installReadings(text string, encoded bool, lang installLang, cancelled func() bool) (segs []installSegment, hits []installHit) {
+	segs = installSegments(text, 2000)
+	hits = installHits(segs, encoded, lang, cancelled)
+	if joined := skillJoinContinued(text, true); joined != text && !(cancelled != nil && cancelled()) {
+		hits = append(hits, installHits(installSegments(joined, skillLineMax), encoded, lang, cancelled)...)
+	}
+	return segs, hits
+}
+
 // installBlobs: the long encoded runs in the segments. Each that decodes to text is checked like the rest (its hits
 // marked encoded); one next to something that runs code is itself a hit: code decoded to run.
 func installBlobs(segs []installSegment, lang installLang, cancelled func() bool) []installHit {
@@ -388,11 +407,11 @@ func installBlobs(segs []installSegment, lang installLang, cancelled func() bool
 			if b == nil {
 				continue
 			}
-			var inner []installSegment
-			for _, piece := range installSegments(*b, 2000) {
-				inner = append(inner, installSegment{piece.text, s.line})
+			_, inner := installReadings(*b, true, lang, cancelled)
+			for _, h := range inner {
+				h.line = s.line
+				out = append(out, h)
 			}
-			out = append(out, installHits(inner, true, lang, cancelled)...)
 		}
 	}
 	return out
@@ -436,8 +455,8 @@ func InstallFileSignals(name, text string, cancelled func() bool) ([]InstallSign
 }
 
 func installSignals(text string, lang installLang, cancelled func() bool) ([]InstallSignal, bool) {
-	segs := installSegments(text, 2000)
-	hits := append(installHits(segs, false, lang, cancelled), installBlobs(segs, lang, cancelled)...)
+	segs, hits := installReadings(text, false, lang, cancelled)
+	hits = append(hits, installBlobs(segs, lang, cancelled)...)
 	if cancelled != nil && cancelled() {
 		return nil, false
 	}
@@ -823,7 +842,18 @@ type installRef struct {
 	direct bool
 }
 
+// installCommandTargets reads a command as written and, when a line of it is continued on the next (a backslash at
+// its end), joined as well: `node \` and `evil.js` on the next line run evil.js through node.
 func installCommandTargets(command string) (files []installRef, scripts []string) {
+	files, scripts = installTargetsIn(command)
+	if joined := skillJoinContinued(command, true); joined != command {
+		f, s := installTargetsIn(joined)
+		files, scripts = append(files, f...), append(scripts, s...)
+	}
+	return files, scripts
+}
+
+func installTargetsIn(command string) (files []installRef, scripts []string) {
 	via := func(paths ...string) {
 		for _, p := range paths {
 			files = append(files, installRef{path: p})

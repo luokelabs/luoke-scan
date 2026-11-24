@@ -12,7 +12,9 @@
               "items": [
                 {
                   "category": null,
+                  "facts": null,
                   "finding": "posture.filevault",
+                  "modelNotes": [],
                   "path": null,
                   "reveal": null,
                   "rule": "posture.filevault",
@@ -21,7 +23,9 @@
                 },
                 {
                   "category": null,
+                  "facts": null,
                   "finding": "process.deleted-binary/000000000005",
+                  "modelNotes": [],
                   "path": "~/Applications/Gone.app/Contents/MacOS/gone",
                   "reveal": "~/Applications/Gone.app/Contents/MacOS/gone",
                   "rule": "process.deleted-binary",
@@ -34,6 +38,7 @@
             "autoCleaned": [],
             "autoclean": false,
             "disk": {
+              "available": 182000000000,
               "free": 182000000000,
               "total": 494000000000
             },
@@ -159,6 +164,7 @@
             },
             "scanning": null,
             "schema": 1,
+            "settings": [],
             "skipped": [
               {
                 "reason": "fda",

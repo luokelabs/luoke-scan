@@ -1111,3 +1111,108 @@ def ipsw_no_fda(r: Run) -> None:
     fx.file("~/Downloads/iPhone17,1_26.1_23B85_Restore.ipsw", size=2 * MiB, at=days(10))
     r.update()
     r.scan(T0, "--no-full-disk-access")
+
+
+# ================================================================ space.reconcile：对账；space.system 的 Spotlight 索引
+
+def account(r: Run, used: int, *, total: int = 500 * GiB, free: int = 200 * GiB, available: Optional[int] = None,
+            system: Optional[int] = 25 * GiB, swap: Optional[int] = 2 * GiB) -> None:
+    """盘上一共用了多少（used），其中系统自己的卷 system、交换文件 swap；free 比 available 多出来的是可清除的。"""
+    r.fx.fake("volume", {"free": free, "total": total, "swap": swap, "available": available, "used": used, "system": system})
+
+
+def data_volume(fx: Fx) -> str:
+    """数据卷顶上的样子：应用、系统资源库、共享文件夹各有一点东西，系统的 Spotlight 索引列不出来（只有 root 能看）。
+    返回那个列不出来的文件夹，场景跑完要把权限改回去（不然临时目录删不掉）。"""
+    fx.file("volume/Applications/Big.app/Contents/MacOS/big", size=3 * MiB)
+    fx.file("volume/Library/Application Support/Tool/data.bin", size=2 * MiB)
+    fx.file("volume/Users/" + "Shared/shared.bin", size=1 * MiB)
+    fx.file("volume/Volumes/Other/elsewhere.bin", size=1 * MiB)   # 别的盘挂在这里：不算
+    return fx.dir("volume/.Spotlight-V100", mode=0)
+
+
+def usage(r: Run, clock: datetime.datetime, *, no_fda: bool = False, note: str = "") -> None:
+    r.mcp("resources/read", {"uri": "data/usage"}, clock=clock, no_fda=no_fda, note=note)
+
+
+@case("rules/space.reconcile/over", "盘上用了 300 GiB，量得到的只有几十 MiB 加系统的 27 GiB：差额过了门槛（30 GiB），报一条，点名量不了的 Spotlight 索引")
+def reconcile_over(r: Run) -> None:
+    fx = r.fx
+    fx.file("~/Movies/film.mov", size=4 * MiB, at=days(30))
+    fx.file("~/.Trash/old.bin", size=1 * MiB, at=days(3))
+    fx.fake("snapshots", [iso(days(1))])
+    locked = data_volume(fx)
+    try:
+        account(r, 300 * GiB, available=150 * GiB)
+        r.update()
+        r.scan(T0)
+        usage(r, T0, note="data/usage 的 reconcile：各部分、没量的、差额")
+    finally:
+        os.chmod(locked, 0o755)
+
+
+@case("rules/space.reconcile/under", "差额 2 GiB 左右，没到门槛：不报，数据里照样给")
+def reconcile_under(r: Run) -> None:
+    locked = data_volume(r.fx)
+    try:
+        account(r, 29 * GiB, free=471 * GiB)
+        r.update()
+        r.scan(T0)
+        usage(r, T0)
+    finally:
+        os.chmod(locked, 0o755)
+
+
+@case("rules/space.reconcile/no-full-disk-access", "没有完全磁盘访问：文稿和家目录外面都没量，差额再大也不报；数据里说哪些没量、差额是 null")
+def reconcile_no_fda(r: Run) -> None:
+    r.fx.file("~/Documents/report.pdf", size=2 * MiB, at=days(30))
+    locked = data_volume(r.fx)
+    try:
+        account(r, 300 * GiB)
+        r.update()
+        r.scan(T0, NO_FDA)
+        usage(r, T0, no_fda=True)
+    finally:
+        os.chmod(locked, 0o755)
+
+
+@case("rules/space.reconcile/other-user", "别的账户的家目录读不了（可能很大）：不报，数据里记成没量全")
+def reconcile_other_user(r: Run) -> None:
+    locked = [data_volume(r.fx), r.fx.dir("volume/Users/" + "x/Documents", mode=0)]
+    try:
+        account(r, 300 * GiB)
+        r.update()
+        r.scan(T0)
+        usage(r, T0)
+    finally:
+        for d in locked:
+            os.chmod(d, 0o755)
+
+
+@case("rules/space.reconcile/unknown", "不知道盘上一共用了多少（volume 里没有 used）：不对账，数据里是 null")
+def reconcile_unknown(r: Run) -> None:
+    locked = data_volume(r.fx)
+    try:
+        disk(r, 200 * GiB, 500 * GiB)
+        r.update()
+        r.scan(T0)
+        usage(r, T0)
+    finally:
+        os.chmod(locked, 0o755)
+
+
+SPOTLIGHT = "~/Library/Metadata/CoreSpotlight/index.spotlightV3"
+
+
+@case("rules/space.system/spotlight-large", "用户的 Spotlight 索引 11 GiB（门槛 10 GiB）：报一条，只说怎么让系统重建")
+def system_spotlight_large(r: Run) -> None:
+    bulk(r.fx, SPOTLIGHT, 11 * GiB, at=days(2))
+    r.update()
+    r.scan(T0)
+
+
+@case("rules/space.system/spotlight-ordinary", "索引 2 GiB：平常的大小，不报")
+def system_spotlight_ordinary(r: Run) -> None:
+    bulk(r.fx, SPOTLIGHT, 2 * GiB, at=days(2))
+    r.update()
+    r.scan(T0)

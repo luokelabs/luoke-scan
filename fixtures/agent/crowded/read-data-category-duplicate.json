@@ -9,6 +9,32 @@
           "text": {
             "auto": "duplicate",
             "bytes": 14680064,
+            "compared": {
+              "finished": true,
+              "maxFiles": 200000,
+              "maxGroups": 20,
+              "minBytes": 1048576,
+              "minWaste": 1048576,
+              "never": [
+                "hidden",
+                "node_modules",
+                "package",
+                "symlink",
+                "hard-link",
+                "icloud-only",
+                "other-volume"
+              ],
+              "noAccess": [],
+              "partial": [],
+              "places": [
+                "Downloads",
+                "Desktop",
+                "Documents",
+                "Movies",
+                "Music",
+                "Pictures"
+              ]
+            },
             "count": 7,
             "facts": {
               "apps": [],
@@ -29,11 +55,16 @@
                 "bytes": 2097152,
                 "facts": {
                   "copies": 1,
-                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-4.v2.pdf"
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-4.v2.pdf",
+                  "members": [
+                    "~/Documents/%E9%A6%99%E6%B8%AF-4.v2.pdf",
+                    "~/Downloads/%E9%A6%99%E6%B8%AF-4.v2.pdf"
+                  ]
                 },
                 "finding": "space.duplicates/000000000069",
                 "group": "duplicate",
                 "key": "i57",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "clone",
@@ -59,11 +90,16 @@
                 "bytes": 2097152,
                 "facts": {
                   "copies": 1,
-                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-6.v2.pdf"
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-6.v2.pdf",
+                  "members": [
+                    "~/Documents/%E9%A6%99%E6%B8%AF-6.v2.pdf",
+                    "~/Downloads/%E9%A6%99%E6%B8%AF-6.v2.pdf"
+                  ]
                 },
                 "finding": "space.duplicates/000000000070",
                 "group": "duplicate",
                 "key": "i58",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "clone",
@@ -89,11 +125,16 @@
                 "bytes": 2097152,
                 "facts": {
                   "copies": 1,
-                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-2.v2.pdf"
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-2.v2.pdf",
+                  "members": [
+                    "~/Documents/%E9%A6%99%E6%B8%AF-2.v2.pdf",
+                    "~/Downloads/%E9%A6%99%E6%B8%AF-2.v2.pdf"
+                  ]
                 },
                 "finding": "space.duplicates/000000000071",
                 "group": "duplicate",
                 "key": "i59",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "clone",
@@ -119,11 +160,16 @@
                 "bytes": 2097152,
                 "facts": {
                   "copies": 1,
-                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-0.v2.pdf"
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-0.v2.pdf",
+                  "members": [
+                    "~/Documents/%E9%A6%99%E6%B8%AF-0.v2.pdf",
+                    "~/Downloads/%E9%A6%99%E6%B8%AF-0.v2.pdf"
+                  ]
                 },
                 "finding": "space.duplicates/000000000072",
                 "group": "duplicate",
                 "key": "i60",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "clone",
@@ -149,11 +195,16 @@
                 "bytes": 2097152,
                 "facts": {
                   "copies": 1,
-                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-5.v2.pdf"
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-5.v2.pdf",
+                  "members": [
+                    "~/Documents/%E9%A6%99%E6%B8%AF-5.v2.pdf",
+                    "~/Downloads/%E9%A6%99%E6%B8%AF-5.v2.pdf"
+                  ]
                 },
                 "finding": "space.duplicates/000000000073",
                 "group": "duplicate",
                 "key": "i61",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "clone",
@@ -179,11 +230,16 @@
                 "bytes": 2097152,
                 "facts": {
                   "copies": 1,
-                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-3.v2.pdf"
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-3.v2.pdf",
+                  "members": [
+                    "~/Documents/%E9%A6%99%E6%B8%AF-3.v2.pdf",
+                    "~/Downloads/%E9%A6%99%E6%B8%AF-3.v2.pdf"
+                  ]
                 },
                 "finding": "space.duplicates/000000000074",
                 "group": "duplicate",
                 "key": "i62",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "clone",
@@ -209,11 +265,16 @@
                 "bytes": 2097152,
                 "facts": {
                   "copies": 1,
-                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-1.v2.pdf"
+                  "keep": "~/Documents/%E9%A6%99%E6%B8%AF-1.v2.pdf",
+                  "members": [
+                    "~/Documents/%E9%A6%99%E6%B8%AF-1.v2.pdf",
+                    "~/Downloads/%E9%A6%99%E6%B8%AF-1.v2.pdf"
+                  ]
                 },
                 "finding": "space.duplicates/000000000075",
                 "group": "duplicate",
                 "key": "i63",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "clone",

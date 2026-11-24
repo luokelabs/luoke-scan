@@ -3,7 +3,7 @@
   "accessory": "luoke-scan",
   "bundle_id": "ai.luoke.scan",
   "name": "螺壳扫描",
-  "version": "0.3.44",
+  "version": "0.3.46",
   "type": "app",
   "entry": [],
   "resident": false,
@@ -39,7 +39,7 @@
       {"name": "scan_restore", "title": "把清理时移进废纸篓的放回原处", "writes": true},
       {"name": "scan_autoclean", "title": "开或关不用点就清的四类", "writes": true}
     ],
-    "data": ["overview", "category", "history", "settings", "usage"],
+    "data": ["overview", "category", "history", "settings", "usage", "finding"],
     "service": {
       "summary": true,
       "pages": [
@@ -54,7 +54,7 @@
       {"id": "auto", "kind": "delegate", "title": "不用点就清 4 类", "on": "scan_autoclean"},
       {"id": "admin", "kind": "each-time", "title": "删除系统目录里的东西（要 Mac 的密码）"}
     ],
-    "listing": {"tagline": "它为这台 Mac 加护：拂去你不会想念的，无一不可复还。", "category": "系统"}
+    "listing": {"tagline": "找出占地方的文件和有风险的启动项、插件，清理前先问你，移到废纸篓的都能放回", "category": "系统"}
   },
   "_draft": "草案：等打包签名时去掉；scan 用 --this-mac（家目录、临时目录、常见项目目录、~/.luoke-scan）"
 }

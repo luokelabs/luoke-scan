@@ -41,6 +41,7 @@
                 "finding": "cache.rebuildable.pip/000000000018",
                 "group": "tool-cache",
                 "key": "i5",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",
@@ -70,6 +71,7 @@
                 "finding": "cache.rebuildable.go-build/000000000019",
                 "group": "tool-cache",
                 "key": "i6",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",
@@ -99,6 +101,7 @@
                 "finding": "cache.rebuildable.uv/000000000020",
                 "group": "tool-cache",
                 "key": "i7",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",
@@ -128,6 +131,7 @@
                 "finding": "cache.rebuildable.npm/000000000021",
                 "group": "tool-cache",
                 "key": "i8",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",
@@ -157,6 +161,7 @@
                 "finding": "cache.rebuildable.xcode-deriveddata/000000000022",
                 "group": "tool-cache",
                 "key": "i9",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",
@@ -186,6 +191,7 @@
                 "finding": "cache.rebuildable.bun/000000000023",
                 "group": "tool-cache",
                 "key": "i10",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",

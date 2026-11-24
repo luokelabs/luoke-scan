@@ -1,0 +1,139 @@
+{
+  "about": "差额 2 GiB 左右，没到门槛：不报，数据里照样给",
+  "case": "rules/space.reconcile/under",
+  "steps": [
+    {
+      "fakes": {
+        "volume": {
+          "available": null,
+          "free": 505732399104,
+          "swap": 2147483648,
+          "system": 26843545600,
+          "total": 536870912000,
+          "used": 31138512896
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "data/usage"
+      },
+      "reply": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "complete": true,
+                "folders": [],
+                "listedBytes": 0,
+                "measuredBytes": 0,
+                "more": 0,
+                "reconcile": {
+                  "complete": true,
+                  "day": "2026-10-20",
+                  "measured": 28997320704,
+                  "over": false,
+                  "parts": [
+                    {
+                      "bytes": 26843545600,
+                      "id": "macos"
+                    },
+                    {
+                      "bytes": 2147483648,
+                      "id": "swap"
+                    },
+                    {
+                      "bytes": 3145728,
+                      "id": "applications"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "id": "library"
+                    },
+                    {
+                      "bytes": 1048576,
+                      "id": "shared"
+                    },
+                    {
+                      "bytes": 0,
+                      "id": "home"
+                    }
+                  ],
+                  "purgeable": 0,
+                  "threshold": 32212254720,
+                  "total": 536870912000,
+                  "unexplained": 2141192192,
+                  "unmeasured": [
+                    {
+                      "blocks": false,
+                      "id": "spotlight-index",
+                      "why": "root"
+                    }
+                  ],
+                  "used": 31138512896
+                },
+                "scanned": {
+                  "finished": "2026-10-20T12:00:00Z",
+                  "started": "2026-10-20T12:00:00Z"
+                },
+                "schema": 1,
+                "shareUncheckedBytes": 0,
+                "unseen": []
+              },
+              "uri": "data/usage"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    }
+  ]
+}

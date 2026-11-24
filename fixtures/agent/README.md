@@ -35,7 +35,7 @@ python3 scripts/record_agent_fixtures.py --only decide-3 --keep   # 只录一个
 | `read-summary*.json` | `resources/read` `summary` |
 | `read-permissions*.json` | `resources/read` `permissions` |
 | `read-page-<页>*.json` | `resources/read` `page/overview`、`page/mac`、`page/cleaned` |
-| `read-data-<资源>*.json` | `resources/read` `data/overview`、`data/history`、`data/settings`、`data/usage`；`read-data-category-<类>.json` 是 `data/category?id=<类>`（概览里列出的每一类）。只读的原始数据，字段见 [docs/data-resources.md](../../docs/data-resources.md) |
+| `read-data-<资源>*.json` | `resources/read` `data/overview`、`data/history`、`data/settings`、`data/usage`；`read-data-category-<类>.json` 是 `data/category?id=<类>`（概览的 `reclaimable`、`settings` 里列出的每一类）；`read-data-finding.json` 是 `data/finding?id=<发现>`（要注意的里第一个 skill 或对话模板，带命中的那几行原文）。只读的原始数据，字段见 [docs/data-resources.md](../../docs/data-resources.md) |
 | `call-<工具>*.json` | `tools/call`：卡片、页上的点按（带 `ai.luoke/user-action`），或对话里模型调的只读工具 |
 
 带 `-after-…` 的是点完以后再读的。每个文件是 `{"request": …, "reply": …}`：`request` 是 agent 发的那条 JSON-RPC
@@ -216,6 +216,7 @@ JSON 按键排序、缩进两格。
   - 还没清理过。
 - 数据 `data/overview`：
   - 可以清的（`reclaimable`）：`cache` 1 项 62914560 字节、`temp` 1 项 131072000 字节、`leftover` 1 项 2101248 字节、`project` 1 项 147456 字节、`startup` 1 项 0 字节
+  - 是一项设置的（`settings`）：没有
   - 要看的（`attention`）：2 项，急的 0 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
 - 数据 `data/history`：0 批
 
@@ -395,6 +396,7 @@ JSON 按键排序、缩进两格。
   - 还没清理过。
 - 数据 `data/overview`：
   - 可以清的（`reclaimable`）：`cache` 1 项 62914560 字节、`temp` 1 项 131072000 字节、`leftover` 1 项 4198400 字节、`project` 1 项 147456 字节、`large-file` 1 项 41943040 字节、`startup` 1 项 0 字节、`malware` 2 项 8192 字节
+  - 是一项设置的（`settings`）：没有
   - 要看的（`attention`）：6 项，急的 2 项；大文件（`largeFiles`）1 个；自动清（`autoCleaned`）0 次
 - 数据 `data/history`：0 批
 
@@ -551,6 +553,7 @@ JSON 按键排序、缩进两格。
   - 还没清理过。
 - 数据 `data/overview`：
   - 可以清的（`reclaimable`）：`cache` 1 项 62914560 字节、`temp` 1 项 131072000 字节、`leftover` 1 项 2097152 字节、`project` 1 项 147456 字节
+  - 是一项设置的（`settings`）：没有
   - 要看的（`attention`）：4 项，急的 0 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
 - 数据 `data/history`：0 批
 
@@ -730,6 +733,7 @@ JSON 按键排序、缩进两格。
   - 还没清理过。
 - 数据 `data/overview`：
   - 可以清的（`reclaimable`）：`cache` 1 项 62914560 字节、`temp` 1 项 131072000 字节、`leftover` 2 项 6295552 字节、`project` 1 项 147456 字节、`startup` 1 项 0 字节、`malware` 2 项 8192 字节
+  - 是一项设置的（`settings`）：没有
   - 要看的（`attention`）：6 项，急的 2 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
 - 数据 `data/history`：0 批
 
@@ -883,6 +887,7 @@ JSON 按键排序、缩进两格。
   - 按钮：「放回」→ `scan_restore`
 - 数据 `data/overview`：
   - 可以清的（`reclaimable`）：`cache` 1 项 62914560 字节、`leftover` 1 项 2097152 字节、`project` 1 项 147456 字节
+  - 是一项设置的（`settings`）：没有
   - 要看的（`attention`）：4 项，急的 0 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
 - 数据 `data/history`：1 批
 
@@ -1055,6 +1060,7 @@ JSON 按键排序、缩进两格。
   - 按钮：「放回」→ `scan_restore`
 - 数据 `data/overview`：
   - 可以清的（`reclaimable`）：`temp` 1 项 131072000 字节、`project` 1 项 147456 字节
+  - 是一项设置的（`settings`）：没有
   - 要看的（`attention`）：4 项，急的 0 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）1 次
 - 数据 `data/history`：1 批
 
@@ -1259,6 +1265,7 @@ JSON 按键排序、缩进两格。
   - 还没清理过。
 - 数据 `data/overview`：
   - 可以清的（`reclaimable`）：`cache` 6 项 349175808 字节、`installer` 1 项 31457280 字节、`temp` 1 项 131072000 字节、`project` 1 项 147456 字节、`large-file` 3 项 65011712 字节、`startup` 1 项 0 字节、`ai-plugin` 1 项 0 字节、`malware` 2 项 8192 字节
+  - 是一项设置的（`settings`）：没有
   - 要看的（`attention`）：8 项，急的 2 项；大文件（`largeFiles`）3 个；自动清（`autoCleaned`）0 次
 - 数据 `data/history`：0 批
 
@@ -1446,6 +1453,7 @@ JSON 按键排序、缩进两格。
   - 还没清理过。
 - 数据 `data/overview`：
   - 可以清的（`reclaimable`）：`cache` 7 项 392167424 字节、`installer` 41 项 215121920 字节、`duplicate` 7 项 14680064 字节、`temp` 1 项 131072000 字节、`project` 1 项 147456 字节、`startup` 1 项 0 字节、`ai-plugin` 5 项 0 字节、`malware` 2 项 8192 字节
+  - 是一项设置的（`settings`）：没有
   - 要看的（`attention`）：10 项，急的 2 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
 - 数据 `data/history`：0 批
 
@@ -1605,6 +1613,7 @@ JSON 按键排序、缩进两格。
   - 还没清理过。
 - 数据 `data/overview`：
   - 可以清的（`reclaimable`）：`cache` 1 项 62914560 字节、`installer` 1 项 6291456 字节、`duplicate` 1 项 2097152 字节、`temp` 2 项 241258496 字节、`project` 1 项 147456 字节
+  - 是一项设置的（`settings`）：没有
   - 要看的（`attention`）：4 项，急的 0 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
 - 数据 `data/history`：0 批
 
@@ -1660,7 +1669,7 @@ JSON 按键排序、缩进两格。
 
 **扫描报的**
 
-- 概览（`summary`）：count 26，「23 项等你处理，其中 2 项要尽快」
+- 概览（`summary`）：count 24，「21 项等你处理，其中 2 项要尽快」
 - 权限（`permissions`）：`admin` ask、`auto` off、`fda` granted
 - outbox：3 件
   - `security/malware.clamav/000000000003`：`security`、`urgent` → 急事（urgent）
@@ -1678,11 +1687,11 @@ JSON 按键排序、缩进两格。
       - 病毒库认出了它。建议移到废纸篓，先不要打开。
       - 按钮：「移到废纸篓」→ `scan_apply`、「不是病毒」→ `scan_ignore`
   - `round/2026-10-20T12:00:00Z`：`findings`、`low` → 顺便看看（later）
-    - 标题：能清出 176.2 MB，另外 21 项等你处理
-    - 摘要：会重建的缓存 3 项，不用你选；另外 21 项在「螺壳扫描」里等你看。
+    - 标题：能清出 176.2 MB，另外 19 项等你处理
+    - 摘要：会重建的缓存 3 项，不用你选；另外 19 项在「螺壳扫描」里等你看。
     - 卡片（surface `round-000000000007`）：
       - **能清出 176.2 MB**
-      - 会重建的缓存 3 项，不用你选；另外 21 项在「螺壳扫描」里等你看。
+      - 会重建的缓存 3 项，不用你选；另外 19 项在「螺壳扫描」里等你看。
       - 按钮：「清理 3 项缓存」→ `scan_apply`、「打开自动清理」→ `scan_autoclean`
 - 基础页 `page/overview`：
   - **扫描**
@@ -1693,7 +1702,7 @@ JSON 按键排序、缩进两格。
   - 能清出
   - 176.2 MB
   - 等你处理
-  - 23 项
+  - 21 项
   - （分隔线）
   - 要尽快处理 2
   - 下载里的「eicar-test.com」可能是病毒
@@ -1809,7 +1818,8 @@ JSON 按键排序、缩进两格。
   - **清理记录**
   - 还没清理过。
 - 数据 `data/overview`：
-  - 可以清的（`reclaimable`）：`cache` 3 项 176164864 字节、`temp` 1 项 131072000 字节、`leftover` 2 项 6295552 字节、`project` 1 项 147456 字节、`startup` 1 项 0 字节、`ai-plugin` 7 项 49152 字节、`install-scripts` 2 项 0 字节、`malware` 2 项 8192 字节
+  - 可以清的（`reclaimable`）：`cache` 3 项 176164864 字节、`temp` 1 项 131072000 字节、`leftover` 2 项 6295552 字节、`project` 1 项 147456 字节、`startup` 1 项 0 字节、`ai-plugin` 7 项 49152 字节、`malware` 2 项 8192 字节
+  - 是一项设置的（`settings`）：`install-scripts` 2 项
   - 要看的（`attention`）：9 项，急的 2 项；大文件（`largeFiles`）0 个；自动清（`autoCleaned`）0 次
 - 数据 `data/history`：0 批
 
@@ -1840,9 +1850,10 @@ JSON 按键排序、缩进两格。
 | `read-data-category-project.json` | resources/read `data/category?id=project` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=project |
 | `read-data-category-startup.json` | resources/read `data/category?id=startup` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=startup |
 | `read-data-category-ai-plugin.json` | resources/read `data/category?id=ai-plugin` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=ai-plugin |
-| `read-data-category-install-scripts.json` | resources/read `data/category?id=install-scripts` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=install-scripts |
 | `read-data-category-malware.json` | resources/read `data/category?id=malware` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=malware |
+| `read-data-category-install-scripts.json` | resources/read `data/category?id=install-scripts` | 2026-10-20T12:00:00Z：读一类的详情 data/category?id=install-scripts |
 | `read-data-usage.json` | resources/read `data/usage` | 2026-10-20T12:00:00Z：读占地方最多的文件夹 data/usage |
+| `read-data-finding.json` | resources/read `data/finding?id=skill.download-exec/000000000016` | 2026-10-20T12:00:00Z：读一项发现和它命中的依据 data/finding?id=<发现> |
 | `call-scan_apply-caches.json` | tools/call `scan_apply`（带 user-action） | 2026-10-20T12:05:00Z：用户在扫描页上点缓存那一行的「清理」 |
 | `read-page-overview-after-caches.json` | resources/read `page/overview` | 2026-10-20T12:05:00Z：点完再读扫描页 |
 | `read-outbox-after-caches.json` | resources/read `luoke://luoke-scan/outbox` | 2026-10-20T12:05:00Z：点完再读 outbox |

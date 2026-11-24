@@ -110,10 +110,29 @@ func sameFolder(t *testing.T, dir string, mustBulk bool) {
 		if err != nil {
 			t.Fatalf("%s: %v", dir, err)
 		}
-		_, ok := readBulk(fd, dir)
+		plain, ok := readBulk(fd, dir, false, nil)
 		syscall.Close(fd)
 		if !ok {
 			t.Errorf("%s: getattrlistbulk did not read it", dir)
+		}
+		// asked also for what shares blocks (APFS), it says the same of everything else
+		if volumeType(dir) == "apfs" {
+			fd, err := syscall.Open(dir, syscall.O_RDONLY|syscall.O_DIRECTORY|syscall.O_CLOEXEC, 0)
+			if err != nil {
+				t.Fatalf("%s: %v", dir, err)
+			}
+			clones, ok := readBulk(fd, dir, true, nil)
+			syscall.Close(fd)
+			if !ok || len(clones) != len(plain) {
+				t.Errorf("%s: the clone-aware read: %d entries, ok %v; the plain one %d", dir, len(clones), ok, len(plain))
+			} else {
+				for i, e := range clones {
+					e.Shares, e.CloneID = 0, 0
+					if e != plain[i] {
+						t.Errorf("%s: the clone-aware read %+v, the plain one %+v", dir, e, plain[i])
+					}
+				}
+			}
 		}
 	}
 	for _, d := range folderDiff(dir) {

@@ -30,6 +30,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.parse
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -265,9 +266,17 @@ class Recorder:
         self.read("data/history", f"read-data-history{suffix}.json", "读清理记录的数据 data/history")
         self.read("data/settings", f"read-data-settings{suffix}.json", "读设置的数据 data/settings")
         if static:
-            for c in overview["reclaimable"]:
+            # 概览里列出的每一类：能清的（reclaimable），和是一项设置的（settings，install-scripts）
+            for c in overview["reclaimable"] + overview["settings"]:
                 self.read(f"data/category?id={c['id']}", f"read-data-category-{c['id']}.json", f"读一类的详情 data/category?id={c['id']}")
         self.read("data/usage", f"read-data-usage{suffix}.json", "读占地方最多的文件夹 data/usage")
+        if static:
+            # 一项发现和它命中的依据：要注意的里第一个 skill 或对话模板（没有就不读）
+            for it in overview["attention"]["items"]:
+                if it["rule"].startswith("skill.") or it["rule"] == "model.chat-template":
+                    self.read("data/finding?id=" + urllib.parse.quote(it["finding"], safe="/"), "read-data-finding.json",
+                              "读一项发现和它命中的依据 data/finding?id=<发现>")
+                    break
 
     def recorded(self, file: str) -> Any:
         """录过的那个资源读到的值（JSON 文字已经解开）。"""
@@ -815,8 +824,10 @@ def describe(sc: Scenario, files: Dict[str, str], scenario: dict) -> str:
         if "read-data-overview.json" in files:
             ov, hist = resource("read-data-overview.json"), resource("read-data-history.json")
             cats = "、".join(f"`{c['id']}` {c['count']} 项 {c['bytes']} 字节" for c in ov["reclaimable"]) or "没有"
+            sets = "、".join(f"`{c['id']}` {c['count']} 项" for c in ov["settings"]) or "没有"
             lines += ["- 数据 `data/overview`：",
                       f"  - 可以清的（`reclaimable`）：{cats}",
+                      f"  - 是一项设置的（`settings`）：{sets}",
                       f"  - 要看的（`attention`）：{ov['attention']['count']} 项，急的 {ov['attention']['urgent']} 项；"
                       f"大文件（`largeFiles`）{ov['largeFiles']['count']} 个；自动清（`autoCleaned`）{len(ov['autoCleaned'])} 次",
                       f"- 数据 `data/history`：{len(hist['batches'])} 批"]
@@ -889,7 +900,7 @@ python3 scripts/record_agent_fixtures.py --only decide-3 --keep   # 只录一个
 | `read-summary*.json` | `resources/read` `summary` |
 | `read-permissions*.json` | `resources/read` `permissions` |
 | `read-page-<页>*.json` | `resources/read` `page/overview`、`page/mac`、`page/cleaned` |
-| `read-data-<资源>*.json` | `resources/read` `data/overview`、`data/history`、`data/settings`、`data/usage`；`read-data-category-<类>.json` 是 `data/category?id=<类>`（概览里列出的每一类）。只读的原始数据，字段见 [docs/data-resources.md](../../docs/data-resources.md) |
+| `read-data-<资源>*.json` | `resources/read` `data/overview`、`data/history`、`data/settings`、`data/usage`；`read-data-category-<类>.json` 是 `data/category?id=<类>`（概览的 `reclaimable`、`settings` 里列出的每一类）；`read-data-finding.json` 是 `data/finding?id=<发现>`（要注意的里第一个 skill 或对话模板，带命中的那几行原文）。只读的原始数据，字段见 [docs/data-resources.md](../../docs/data-resources.md) |
 | `call-<工具>*.json` | `tools/call`：卡片、页上的点按（带 `ai.luoke/user-action`），或对话里模型调的只读工具 |
 
 带 `-after-…` 的是点完以后再读的。每个文件是 `{"request": …, "reply": …}`：`request` 是 agent 发的那条 JSON-RPC

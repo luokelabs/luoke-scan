@@ -25,6 +25,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"destructive\"],\"severity\":\"high\",\"files\":[\"a.py\"],\"lines\":[3]},{\"kinds\":[\"destructive\"],\"severity\":\"high\",\"files\":[\"b.js\"],\"lines\":[2]},{\"kinds\":[\"destructive\"],\"severity\":\"high\",\"files\":[\"c.sh\"],\"lines\":[2]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "destructive",
               "scope": "personal",
@@ -42,23 +43,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
-              "kinds": "destructive",
-              "scope": "personal",
-              "skill": "de-disk",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：在整个家目录或整个磁盘上批量删文件（a.sh 第 2 行）；抹掉磁盘（a.sh 第 3、4 行）"
-            },
-            "key": "~/.claude/skills/de-disk|e1d8a54a607d9827",
-            "path": "~/.claude/skills/de-disk",
-            "rule": "skill.destructive",
-            "severity": "high",
-            "title": "Claude Code 的 skill「de-disk」：在整个家目录或整个磁盘上批量删文件，另有 1 处要看",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"destructive\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[2,3,4,5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "destructive",
               "scope": "personal",
@@ -70,6 +55,24 @@
             "rule": "skill.destructive",
             "severity": "high",
             "title": "Claude Code 的 skill「de-rm」：删掉整个家目录、整个磁盘或系统文件夹",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"destructive\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[2]},{\"kinds\":[\"destructive\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[3,4]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "destructive",
+              "scope": "personal",
+              "skill": "de-disk",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：在整个家目录或整个磁盘上批量删文件（a.sh 第 2 行）；抹掉磁盘（a.sh 第 3、4 行）"
+            },
+            "key": "~/.claude/skills/de-disk|e1d8a54a607d9827",
+            "path": "~/.claude/skills/de-disk",
+            "rule": "skill.destructive",
+            "severity": "high",
+            "title": "Claude Code 的 skill「de-disk」：在整个家目录或整个磁盘上批量删文件，另有 1 处要看",
             "verdict": "info"
           }
         ],

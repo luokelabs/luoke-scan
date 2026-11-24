@@ -34,6 +34,7 @@
                 "finding": "stale.project/000000000025",
                 "group": "project",
                 "key": "i15",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",

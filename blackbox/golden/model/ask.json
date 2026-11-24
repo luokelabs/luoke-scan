@@ -145,6 +145,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"exfil\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
               "kinds": "exfil",
               "model_note": "本机模型看过（只是说明，不改结论）：它实际在做的：读本机的密钥文件再发到外部网址。说明里没说的：SKILL.md：把 ~/.aws/credentials 发往外部",
@@ -631,6 +632,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"exfil\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
               "kinds": "exfil",
               "model_note": "本机模型看过（只是说明，不改结论）：它实际在做的：读本机的密钥文件再发到外部网址。说明里没说的：SKILL.md：把 ~/.aws/credentials 发往外部",
@@ -752,6 +754,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"exfil\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
               "kinds": "exfil",
               "model_note": "本机模型看过（只是说明，不改结论）：它实际在做的：读本机的密钥文件再发到外部网址。说明里没说的：SKILL.md：把 ~/.aws/credentials 发往外部",

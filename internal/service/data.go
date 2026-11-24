@@ -1,6 +1,7 @@
 package service
 
 import (
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -36,6 +37,11 @@ var (
 // keep their names (core.AutoKind).
 var dataCategories = []string{"cache", "installer", "duplicate", "temp", "leftover", "project", "large-file",
 	"startup", "ai-plugin", "install-scripts", "malware"}
+
+// dataNotReclaimable: categories whose items are not space that can be freed: listed in the overview's settings, not
+// its reclaimable, and left out of data/usage's reclaim (data/category has them as any other). install-scripts is a
+// setting of a package manager: its item's target is the config file the fix writes a line into.
+var dataNotReclaimable = []string{"install-scripts"}
 
 // dataCategory: the category of a rule's items (and of its records in the clean-up record); "other" for a rule that
 // has none of these.
@@ -224,14 +230,29 @@ func (s *Service) itemFacts(f core.Finding, targets int) itemData {
 		d.group, d.reason = "malware", "signature"
 		putFacts(d.facts, ev, map[string]string{"signature": "signature", "rule": "rule"})
 	case f.Rule == core.InstallScriptsRuleID:
+		// A setting's state, not a file: what the tool does by default, what was seen here, and what turning it off
+		// takes and costs. Codes and literal settings only (docs/data-resources.md).
 		d.group, d.reason = "install-scripts", "scripts-on"
-		putFacts(d.facts, ev, map[string]string{"tool": "tool"})
+		putFacts(d.facts, ev, map[string]string{"tool": "tool", "name": "name", "risk": "risk", "reason": "cause",
+			"version": "version", "where": "where", "store": "store", "setting": "setting", "runs": "runs",
+			"manual": "manual", "allow": "allow", "allow_in": "allowIn", "cost": "cost",
+			"delay": "delay", "delay_since": "delaySince", "fixed_in": "fixedIn"})
+		for k, name := range map[string]string{"packages": "packages", "built": "built", "files": "files"} {
+			if l := splitList(ev[k], ","); len(l) > 0 {
+				d.facts[name] = l
+			}
+		}
+		if ev["config"] != "" {
+			d.facts["config"] = O{"file": ev["config"], "exists": ev["config_exists"] == "1", "line": ev["line"]}
+		}
+		d.facts["canApply"] = ev["append"] != ""
 	case strings.HasPrefix(f.Rule, "skill."):
 		d.group, d.reason = "skill", strings.TrimPrefix(f.Rule, "skill.")
 		putFacts(d.facts, ev, map[string]string{"agent": "agent", "skill": "skill", "scope": "scope"})
 		if k := splitList(ev["kinds"], ","); len(k) > 0 {
 			d.facts["kinds"] = k
 		}
+		putHits(d.facts, f)
 	case strings.HasPrefix(f.Rule, "model.chat-template"):
 		d.group, d.reason = "chat-template", "template-extra"
 		putFacts(d.facts, ev, map[string]string{"tool": "tool", "model": "model", "template": "template"})
@@ -241,6 +262,7 @@ func (s *Service) itemFacts(f core.Finding, targets int) itemData {
 		if t, ok := d.facts["template"].(string); ok {
 			d.facts["template"] = s.expandHome(t)
 		}
+		putHits(d.facts, f)
 	default:
 		d.group, d.reason = "other", f.Rule
 	}
@@ -254,31 +276,45 @@ type dataItem struct {
 	category string
 	bytes    int64
 	files    int
-	clears   bool // suggested to go
+	clears   bool     // suggested to go
+	targets  []string // every place it takes, not only the ones listed (data/usage: which row it is in)
 	info     itemData
 }
 
-func (s *Service) dataItem(it PlanItem, plan Plan, f *core.Finding) dataItem {
+func (s *Service) dataItem(it PlanItem, plan Plan, f *core.Finding, r *core.Report) dataItem {
 	paths := A{}
+	targets := make([]string, 0, len(it.Targets))
 	for i, t := range it.Targets {
-		if i >= dataPathsMost {
-			break
+		if i < dataPathsMost {
+			paths = append(paths, t.Path)
 		}
-		paths = append(paths, t.Path)
+		targets = append(targets, t.Path)
 	}
 	var info itemData
 	path, reveal := "", ""
 	if f != nil {
 		info = s.itemFacts(*f, len(it.Targets))
 		path, reveal = f.Path, s.revealTarget(*f)
+		// A duplicates item: every copy of the group, the one the rule keeps first and then the plan's targets in the
+		// rule's order (luoke-scan#234). Which one stays is the rule's alone.
+		if it.Rule == "space.duplicates" {
+			members := A{f.Path}
+			for _, t := range it.Targets {
+				members = append(members, t.Path)
+			}
+			info.facts["members"] = members
+		}
 	} else {
 		info = itemData{group: "other", reason: it.Rule, facts: O{}, userFiles: "none"}
 	}
 	// A duplicate's finding is the copy that stays (facts.keep): the item is the copies that go
-	if (path == "" || it.Rule == "space.duplicates") && len(it.Targets) > 0 {
+	// A setting's state (the install-scripts rule) is about no file: path and reveal stay empty. What scripts-off would
+	// write is in paths (the plan's target) and in facts.config.
+	setting := it.Rule == core.InstallScriptsRuleID
+	if (path == "" || it.Rule == "space.duplicates") && len(it.Targets) > 0 && !setting {
 		path = it.Targets[0].Path
 	}
-	if (reveal == "" || it.Rule == "space.duplicates") && len(it.Targets) > 0 {
+	if (reveal == "" || it.Rule == "space.duplicates") && len(it.Targets) > 0 && !setting {
 		reveal = it.Targets[0].Path
 	}
 	var bytes any
@@ -298,15 +334,23 @@ func (s *Service) dataItem(it PlanItem, plan Plan, f *core.Finding) dataItem {
 		"reason": info.reason, "facts": info.facts, "path": nilIfEmpty(path), "reveal": nilIfEmpty(reveal), "paths": paths,
 		"pathsMore": len(it.Targets) - len(paths), "bytes": bytes,
 		"suggested": it.Suggested, "options": stringsA(it.Options), "rebuilds": info.rebuilds, "userFiles": info.userFiles,
-		"password": plan.Admin, "restorable": restorable}
+		"password": plan.Admin, "restorable": restorable, "modelNotes": A{}}
+	if f != nil {
+		o["modelNotes"] = modelNotesData(*f, r)
+	}
 	if info.app != "" {
 		o["app"] = info.app
 	}
 	if info.appInstalled != nil {
 		o["appInstalled"] = *info.appInstalled
 	}
-	return dataItem{out: o, category: dataCategory(it.Rule), bytes: itemBytes(it), files: len(it.Targets),
-		clears: Clears(it.Suggested), info: info}
+	// A setting is in no file: the config file the fix would write is not a place the item is at.
+	files := len(it.Targets)
+	if setting {
+		files = 0
+	}
+	return dataItem{out: o, category: dataCategory(it.Rule), bytes: itemBytes(it), files: files,
+		clears: Clears(it.Suggested), targets: targets, info: info}
 }
 
 func nilIfEmpty(s string) any {
@@ -350,7 +394,7 @@ func (s *Service) dataItems(r *core.Report, st State) map[string][]dataItem {
 			if x, ok := about[it.FindingID]; ok {
 				fp = &x
 			}
-			d := s.dataItem(it, *p, fp)
+			d := s.dataItem(it, *p, fp, r)
 			out[d.category] = append(out[d.category], d)
 		}
 	}
@@ -427,9 +471,14 @@ func (s *Service) dataOverview() O {
 	st := s.state()
 	r := s.Store.LastReport()
 	items := s.dataItems(r, st)
-	reclaim := A{}
+	// settings: the categories of dataNotReclaimable that have items, shaped as reclaimable's (the page's way in to them)
+	reclaim, settings := A{}, A{}
 	for _, id := range append(append([]string{}, dataCategories...), "other") {
-		if len(items[id]) > 0 {
+		switch {
+		case len(items[id]) == 0:
+		case slices.Contains(dataNotReclaimable, id):
+			settings = append(settings, categorySummary(id, items[id]))
+		default:
 			reclaim = append(reclaim, categorySummary(id, items[id]))
 		}
 	}
@@ -442,7 +491,7 @@ func (s *Service) dataOverview() O {
 		large = O{"count": len(ls), "bytes": b}
 	}
 	out := O{"schema": dataSchema, "scanned": scannedData(r), "scanning": s.scanningData(r),
-		"autoCleaned": s.autoCleanedData(st, s.now().Add(-dataAutoCleanedFor)), "reclaimable": reclaim,
+		"autoCleaned": s.autoCleanedData(st, s.now().Add(-dataAutoCleanedFor)), "reclaimable": reclaim, "settings": settings,
 		"attention": s.attentionData(r, st, items), "largeFiles": large, "disk": s.diskData(),
 		"fullDiskAccess": s.permissionStates(st)["fda"], "autoclean": autocleanOn(st), "skipped": skippedData(r),
 		"virusDb": virusDbData(r)}
@@ -487,7 +536,18 @@ func (s *Service) diskData() any {
 	if !ok || total <= 0 {
 		return nil
 	}
-	return O{"free": free, "total": total}
+	// available: what can be written right now; free also counts what the system says it can purge (the Finder's
+	// figure), so available is never more than free. nil when not known.
+	var available any
+	if s.Config.Available != nil {
+		if a, ok := s.Config.Available(s.Config.Context.Home); ok {
+			if a > free {
+				a = free
+			}
+			available = a
+		}
+	}
+	return O{"free": free, "total": total, "available": available}
 }
 
 // skippedData: the checks the last round could not run, by rule, and why as a code: fda (needs Full Disk Access),
@@ -545,12 +605,7 @@ func (s *Service) attentionData(r *core.Report, st State, items map[string][]dat
 			if c, ok := planned[s.fid(x)]; ok {
 				cat = c
 			}
-			var path any
-			if strings.HasPrefix(x.Path, "/") {
-				path = x.Path
-			}
-			list = append(list, O{"finding": s.fid(x), "rule": x.Rule, "severity": string(x.Severity), "urgent": u,
-				"category": cat, "path": path, "reveal": nilIfEmpty(s.revealTarget(x))})
+			list = append(list, s.findingEntry(x, r, cat))
 		}
 		look := map[string]bool{}
 		for _, x := range v.look {
@@ -563,6 +618,66 @@ func (s *Service) attentionData(r *core.Report, st State, items map[string][]dat
 		}
 	}
 	return O{"count": len(list), "urgent": urgent, "items": list}
+}
+
+// attentionFacts: what the rule found, as codes, names and numbers the window writes its own words from (no title,
+// hint or how). By the rule; nil for a rule that gives none yet.
+func (s *Service) attentionFacts(f core.Finding) any {
+	if f.Rule == "permission.stale-grant" {
+		return s.staleGrantFacts(f)
+	}
+	// A skill's and a chat template's: the same facts their items in data/category have.
+	if (strings.HasPrefix(f.Rule, "skill.") || f.Rule == "model.chat-template") && !strings.HasSuffix(f.Rule, ".partial") {
+		return s.itemFacts(f, 0).facts
+	}
+	return nil
+}
+
+// staleGrantFacts: whose it is (the TCC client: a bundle id or a program's path; the app's name where Login Items
+// shows one), the privacy grants it still holds (each a name scan_open_settings takes), and what it left in Login
+// Items & Extensions (nil: nothing).
+func (s *Service) staleGrantFacts(f core.Finding) O {
+	kind := "bundle"
+	if strings.HasPrefix(f.Path, "/") {
+		kind = "path"
+	}
+	grants, left := A{}, false
+	for _, g := range strings.Split(f.Evidence["grants"], "、") {
+		if g == core.LoginItemsGrant {
+			left = true
+		} else if g != "" {
+			grants = append(grants, g)
+		}
+	}
+	var login any
+	if left {
+		var items []string
+		if raw, ok := f.Evidence[core.LeftItemsKey]; ok {
+			items = strings.Split(raw, "\n")
+		} else { // a round from before the rule kept them apart
+			for _, it := range strings.Split(f.Evidence["login_items"], "、") {
+				items = append(items, s.expandHome(it))
+			}
+		}
+		known := A{}
+		for _, it := range items {
+			if it != "" {
+				known = append(known, it)
+			}
+		}
+		login = O{"grant": core.LoginItemsGrant, "items": known, "starts": flagOf(f.Evidence, core.LeftStartsKey),
+			"root": flagOf(f.Evidence, core.LeftDaemonKey)}
+	}
+	return O{"client": f.Path, "clientType": kind, "app": nilIfEmpty(f.Evidence["app"]), "grants": grants, "loginItems": login}
+}
+
+// flagOf: a rule's yes or no ("1", "0"); nil where the round did not say.
+func flagOf(ev map[string]string, key string) any {
+	v, ok := ev[key]
+	if !ok {
+		return nil
+	}
+	return v == "1"
 }
 
 // autoCleanedData: the automatic cleans since then, newest first, each with what it took of each kind and how much of
@@ -635,7 +750,56 @@ func (s *Service) dataCategoryDetail(args map[string]string) O {
 	}
 	out["schema"], out["known"], out["scanned"], out["items"] = dataSchema, known, scannedData(r), list
 	out["more"] = len(items) - len(list)
+	if id == "duplicate" {
+		out["compared"] = s.duplicatesCompared(r)
+	}
 	return out
+}
+
+// duplicatesCompared: what the last round's duplicates check compared, once for the category (luoke-scan#234: a user
+// has more copies than an item lists), as codes and numbers. The folders under the home it looked through (the rule's
+// places it was allowed to look in), those left out for want of Full Disk Access, those it stopped in after maxFiles
+// files (space.duplicates-partial); the least size of a file it compares (its size and what it takes on disk), the
+// least a group's other copies must hold of their own to be listed, the most groups listed; finished false when the
+// round was interrupted before it (the items are an earlier round's, or none); what it never compares
+// (core.DuplicatesNever). nil before the first round, or without that check.
+func (s *Service) duplicatesCompared(r *core.Report) any {
+	var rule *core.DuplicateRule
+	for _, x := range s.Config.Rules {
+		if d, ok := x.(*core.DuplicateRule); ok {
+			rule = d
+		}
+	}
+	if rule == nil || r == nil {
+		return nil
+	}
+	finished := true
+	var left, cut []string
+	for _, x := range r.Skipped {
+		if x.Rule == rule.ID() {
+			left = core.DuplicatesNotLooked(x.Reason)
+			finished = strings.HasPrefix(x.Reason, core.NoAccessMark) // looked where it could; else interrupted, or failed
+		}
+	}
+	for _, f := range r.Findings {
+		if f.Rule == "space.duplicates-partial" {
+			cut = append(cut, strings.Split(f.Evidence["folders"], "、")...)
+		}
+	}
+	places, noAccess, partial := A{}, A{}, A{}
+	for _, p := range rule.Places {
+		if contains(left, p) {
+			noAccess = append(noAccess, p)
+		} else {
+			places = append(places, p)
+		}
+		if contains(cut, p) {
+			partial = append(partial, p)
+		}
+	}
+	return O{"places": places, "noAccess": noAccess, "partial": partial, "maxFiles": rule.MaxFiles,
+		"minBytes": rule.MinBytes, "minWaste": rule.MinWaste, "maxGroups": rule.MaxSets, "finished": finished,
+		"never": stringsA(core.DuplicatesNever)}
 }
 
 // dataHistory: data/history: the clean-up record, a batch per row (what one 「放回」 puts back together), newest first.
@@ -739,12 +903,16 @@ func (s *Service) dataSettings() O {
 		if i := strings.LastIndex(id, "/"); i > 0 {
 			rule = id[:i]
 		}
-		o := O{"finding": id, "rule": rule, "at": core.ISOTime(st.Ignored[id].Time), "path": nil}
+		o := O{"finding": id, "rule": rule, "at": core.ISOTime(st.Ignored[id].Time), "path": nil, "name": nil}
 		if f, ok := where[id]; ok {
 			rule = f.Rule
 			o["rule"] = rule
 			if strings.HasPrefix(f.Path, "/") {
 				o["path"] = f.Path
+			}
+			// A setting has no path: the tool it is a setting of, as the tool writes its own name.
+			if f.Rule == core.InstallScriptsRuleID {
+				o["name"] = nilIfEmpty(f.Evidence["name"])
 			}
 		}
 		o["category"] = dataCategory(rule)
@@ -761,4 +929,5 @@ func (s *Service) registerData() {
 	srv.Resource("data/history", "清理记录的数据", func() any { return s.dataHistory() })
 	srv.Resource("data/settings", "扫描的设置", func() any { return s.dataSettings() })
 	srv.Resource("data/usage", "占地方最多的文件夹", func() any { return s.dataUsage() })
+	srv.ResourceArgs("data/finding", "一项发现和它命中的依据", func(args map[string]string) any { return s.dataFinding(args) })
 }

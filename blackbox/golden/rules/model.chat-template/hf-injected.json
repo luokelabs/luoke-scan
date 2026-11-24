@@ -26,6 +26,7 @@
             "category": "skill",
             "evidence": {
               "files": "chat_template.jinja",
+              "hits": "[{\"kinds\":[\"hidden\"],\"files\":[\"chat_template.jinja\"],\"part\":\"template\"}]",
               "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download google/gemma-3-4b-it`）；拿不准就先别用这个模型",
               "kinds": "hidden",
               "model": "google/gemma-3-4b-it",
@@ -46,6 +47,7 @@
             "category": "skill",
             "evidence": {
               "files": "tokenizer_config.json",
+              "hits": "[{\"kinds\":[\"conceal\",\"steer\"],\"files\":[\"tokenizer_config.json\"],\"part\":\"template\"}]",
               "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download Qwen/Qwen2.5-7B-Instruct`）；拿不准就先别用这个模型",
               "kinds": "conceal,steer",
               "model": "Qwen/Qwen2.5-7B-Instruct",
@@ -316,6 +318,26 @@
               "title": "在访达里显示"
             },
             {
+              "annotations": {
+                "destructiveHint": false,
+                "readOnlyHint": true
+              },
+              "description": "请这台 Mac 上的模型用一两句话解释一条发现（只是说明，不改结论；要几秒到几十秒）",
+              "inputSchema": {
+                "properties": {
+                  "finding_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "finding_id"
+                ],
+                "type": "object"
+              },
+              "name": "scan_explain",
+              "title": "让本机模型说说这一项"
+            },
+            {
               "_meta": {
                 "ai.luoke/where": "mac"
               },
@@ -384,6 +406,11 @@
               "mimeType": "application/json",
               "name": "一类可以清的东西",
               "uri": "data/category"
+            },
+            {
+              "mimeType": "application/json",
+              "name": "一项发现和它命中的依据",
+              "uri": "data/finding"
             },
             {
               "mimeType": "application/json",
@@ -852,6 +879,7 @@
             "category": "skill",
             "evidence": {
               "files": "chat_template.jinja",
+              "hits": "[{\"kinds\":[\"hidden\"],\"files\":[\"chat_template.jinja\"],\"part\":\"template\"}]",
               "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download google/gemma-3-4b-it`）；拿不准就先别用这个模型",
               "kinds": "hidden",
               "model": "google/gemma-3-4b-it",
@@ -872,26 +900,7 @@
             "category": "skill",
             "evidence": {
               "files": "tokenizer_config.json",
-              "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download NousResearch/Hermes-2-Pro-Llama-3-8B`）；拿不准就先别用这个模型",
-              "kinds": "exfil",
-              "model": "NousResearch/Hermes-2-Pro-Llama-3-8B",
-              "template": "~/.cache/huggingface/hub/models--NousResearch--Hermes-2-Pro-Llama-3-8B/snapshots/rev1/tokenizer_config.json",
-              "tool": "Hugging Face",
-              "where": "对话模板",
-              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型把对话或资料发出去。原文没有记下"
-            },
-            "key": "~/.cache/huggingface/hub/models--NousResearch--Hermes-2-Pro-Llama-3-8B|e4f550c490eb",
-            "path": "~/.cache/huggingface/hub/models--NousResearch--Hermes-2-Pro-Llama-3-8B",
-            "rule": "model.chat-template",
-            "severity": "high",
-            "title": "Hugging Face 的模型 NousResearch/Hermes-2-Pro-Llama-3-8B：对话模板里多了给模型的话（让模型把对话或资料发出去）",
-            "verdict": "info"
-          },
-          {
-            "bytes": 8192,
-            "category": "skill",
-            "evidence": {
-              "files": "tokenizer_config.json",
+              "hits": "[{\"kinds\":[\"conceal\",\"steer\"],\"files\":[\"tokenizer_config.json\"],\"part\":\"template\"}]",
               "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download Qwen/Qwen2.5-7B-Instruct`）；拿不准就先别用这个模型",
               "kinds": "conceal,steer",
               "model": "Qwen/Qwen2.5-7B-Instruct",
@@ -905,6 +914,27 @@
             "rule": "model.chat-template",
             "severity": "high",
             "title": "Hugging Face 的模型 Qwen/Qwen2.5-7B-Instruct：对话模板里多了给模型的话（让模型瞒着你或骗你、让模型总推荐某样东西或附上链接）",
+            "verdict": "info"
+          },
+          {
+            "bytes": 8192,
+            "category": "skill",
+            "evidence": {
+              "files": "tokenizer_config.json",
+              "hits": "[{\"kinds\":[\"exfil\"],\"files\":[\"tokenizer_config.json\"],\"part\":\"template\"}]",
+              "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download NousResearch/Hermes-2-Pro-Llama-3-8B`）；拿不准就先别用这个模型",
+              "kinds": "exfil",
+              "model": "NousResearch/Hermes-2-Pro-Llama-3-8B",
+              "template": "~/.cache/huggingface/hub/models--NousResearch--Hermes-2-Pro-Llama-3-8B/snapshots/rev1/tokenizer_config.json",
+              "tool": "Hugging Face",
+              "where": "对话模板",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型把对话或资料发出去。原文没有记下"
+            },
+            "key": "~/.cache/huggingface/hub/models--NousResearch--Hermes-2-Pro-Llama-3-8B|e4f550c490eb",
+            "path": "~/.cache/huggingface/hub/models--NousResearch--Hermes-2-Pro-Llama-3-8B",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Hugging Face 的模型 NousResearch/Hermes-2-Pro-Llama-3-8B：对话模板里多了给模型的话（让模型把对话或资料发出去）",
             "verdict": "info"
           }
         ],

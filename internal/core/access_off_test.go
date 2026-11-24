@@ -84,7 +84,7 @@ func TestWalkStopsAtWhatTheRoundMayNotLookAt(t *testing.T) {
 	if _, ok := List(library); ok {
 		t.Error("listed the library")
 	}
-	if _, ok := spaceListEntries(library); ok {
+	if _, ok := spaceListEntries(library, nil); ok {
 		t.Error("listed the library to measure it")
 	}
 	if n := AllocatedSize(library); n != 0 {

@@ -768,8 +768,11 @@ func SkillReviewNote(a ReviewAnswer) (string, bool) {
 		}
 		parts = append(parts, "说明里没说的："+strings.Join(b, "；"))
 	}
-	return "本机模型看过（只是说明，不改结论）：" + strings.Join(parts, "。"), true
+	return SkillNoteLead + strings.Join(parts, "。"), true
 }
+
+// SkillNoteLead is how a note on a skill starts: the scan's own words, before what the model's answer says.
+const SkillNoteLead = "本机模型看过（只是说明，不改结论）："
 
 // SkillReviewAnnotate is the finding with the model's note as evidence SkillNoteKey; everything the rules set
 // stays as it was.

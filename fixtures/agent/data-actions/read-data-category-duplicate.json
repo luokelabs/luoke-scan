@@ -9,6 +9,32 @@
           "text": {
             "auto": "duplicate",
             "bytes": 2097152,
+            "compared": {
+              "finished": true,
+              "maxFiles": 200000,
+              "maxGroups": 20,
+              "minBytes": 1048576,
+              "minWaste": 1048576,
+              "never": [
+                "hidden",
+                "node_modules",
+                "package",
+                "symlink",
+                "hard-link",
+                "icloud-only",
+                "other-volume"
+              ],
+              "noAccess": [],
+              "partial": [],
+              "places": [
+                "Downloads",
+                "Desktop",
+                "Documents",
+                "Movies",
+                "Music",
+                "Pictures"
+              ]
+            },
             "count": 1,
             "facts": {
               "apps": [],
@@ -29,11 +55,16 @@
                 "bytes": 2097152,
                 "facts": {
                   "copies": 1,
-                  "keep": "~/Documents/report-2026.pdf"
+                  "keep": "~/Documents/report-2026.pdf",
+                  "members": [
+                    "~/Documents/report-2026.pdf",
+                    "~/Downloads/report-2026.pdf"
+                  ]
                 },
                 "finding": "space.duplicates/000000000008",
                 "group": "duplicate",
                 "key": "i4",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "clone",

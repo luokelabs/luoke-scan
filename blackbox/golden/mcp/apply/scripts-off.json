@@ -24,35 +24,54 @@
           {
             "category": "posture",
             "evidence": {
+              "allow": "npm rebuild esbuild fsnative --ignore-scripts=false",
               "append": "ignore-scripts=true",
-              "how": "点「关闭自动运行」会在 ~/.npmrc 末尾加一行 ignore-scripts=true；原来那份移到废纸篓，能放回。已装的依赖里 esbuild、fsnative 要跑安装脚本，改了以后装它们要单独放行：npm rebuild esbuild fsnative --ignore-scripts=false。这一行也会让项目自己的 prepare 和 pre、post 脚本不跑（比如 husky 装 git 钩子），要跑时用 npm run <脚本名>。升到 npm 12 以后默认就不跑依赖的安装脚本，也能设新版本晚几天再装（min-release-age）。",
-              "packages": "esbuild、fsnative",
+              "config": "~/.npmrc",
+              "config_exists": "1",
+              "cost": "own-scripts-off",
+              "fixed_in": "npm 12",
+              "line": "ignore-scripts=true",
+              "name": "npm",
+              "packages": "esbuild, fsnative",
+              "reason": "default-on",
+              "risk": "third-party-code-at-install",
               "tool": "npm",
               "used": "~/.npmrc",
-              "why": "装着的 npm 11.6.2（$FIXTURE/usr-local/lib/node_modules/npm）默认会跑依赖的安装脚本，~/.npmrc 里没有关掉"
+              "version": "11.6.2",
+              "where": "$FIXTURE/usr-local/lib/node_modules/npm"
             },
             "key": "npm",
-            "path": "~/.npmrc",
+            "path": "",
             "rule": "pkg.install-scripts",
-            "severity": "medium",
-            "title": "npm 允许依赖在安装时跑脚本",
-            "verdict": "confirm"
+            "severity": "low",
+            "title": "npm runs the install scripts that packages bring with them",
+            "verdict": "info"
           },
           {
             "category": "posture",
             "evidence": {
+              "allow": "pip install --only-binary :none: <package>",
               "append": "only-binary = :all:",
-              "how": "点「关闭自动运行」会新建 ~/.config/pip/pip.conf，写上 only-binary = :all:；放回时把它移走。改了以后，没有现成安装包（wheel）的包会装不上，本地的项目（pip install .）也可能装不上；要装时单独放行：pip install --only-binary :none: <包名>。也可以让新版本晚一天再装：pip 26.1 起在 [global] 加 uploaded-prior-to = P1D。",
+              "built": "pycrypto",
+              "config": "~/.config/pip/pip.conf",
+              "config_exists": "0",
+              "cost": "no-wheel-fails",
+              "delay": "uploaded-prior-to = P1D",
+              "delay_since": "pip 26.1",
+              "line": "only-binary = :all:",
+              "name": "pip",
+              "reason": "built-from-source",
+              "risk": "third-party-code-at-install",
+              "runs": "setup.py",
               "tool": "pip",
-              "used": "~/Library/Caches/pip",
-              "why": "pip 在这台 Mac 上从源码编译过 pycrypto，编译时会运行包自带的 setup.py"
+              "used": "~/Library/Caches/pip"
             },
             "key": "pip",
-            "path": "~/.config/pip/pip.conf",
+            "path": "",
             "rule": "pkg.install-scripts",
-            "severity": "medium",
-            "title": "pip 装源码包时会跑它的构建脚本",
-            "verdict": "confirm"
+            "severity": "low",
+            "title": "pip runs a package's own build script when it installs from source",
+            "verdict": "info"
           }
         ],
         "finishedAt": "2026-10-20T12:00:00Z",
@@ -93,79 +112,7 @@
             {
               "mimeType": "application/json",
               "text": {
-                "items": [
-                  {
-                    "card": [
-                      {
-                        "createSurface": {
-                          "catalogId": "ai.luoke/a2ui/agent/1",
-                          "surfaceId": "round-000000000001"
-                        },
-                        "version": "v0.9"
-                      },
-                      {
-                        "updateComponents": {
-                          "components": [
-                            {
-                              "children": [
-                                "h1",
-                                "t2"
-                              ],
-                              "component": "Column",
-                              "id": "root"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "h1",
-                              "text": "2 项等你处理",
-                              "variant": "h4"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t2",
-                              "text": "另外 2 项在「螺壳扫描」里等你看。",
-                              "variant": "caption"
-                            }
-                          ],
-                          "surfaceId": "round-000000000001"
-                        },
-                        "version": "v0.9"
-                      }
-                    ],
-                    "created": "2026-10-20T12:00:00Z",
-                    "data": {
-                      "cleans": [],
-                      "decide": {
-                        "bytes": 0,
-                        "caches": 0,
-                        "cachesBytes": 0,
-                        "cleaned": 0,
-                        "freed": 0,
-                        "offerAuto": false,
-                        "plan": null,
-                        "rest": 2,
-                        "skipped": {
-                          "fda": 0,
-                          "other": 0,
-                          "virusDb": 0
-                        },
-                        "toLook": 2,
-                        "trash": 0
-                      },
-                      "failed": [],
-                      "moreCleans": 0,
-                      "type": "round"
-                    },
-                    "deadline": null,
-                    "expires": "2026-10-23T12:00:00Z",
-                    "id": "round/2026-10-20T12:00:00Z",
-                    "kind": "findings",
-                    "summary": "另外 2 项在「螺壳扫描」里等你看。",
-                    "title": "2 项等你处理",
-                    "urgency": "low",
-                    "why_now": "扫描刚查完一轮"
-                  }
-                ]
+                "items": []
               },
               "uri": "luoke://luoke-scan/outbox"
             }
@@ -302,7 +249,7 @@
                       {
                         "component": "Text",
                         "id": "t13",
-                        "text": "2 项",
+                        "text": "0 项",
                         "variant": "h3"
                       },
                       {
@@ -404,7 +351,7 @@
                               "choices": {
                                 "path": "/choices"
                               },
-                              "plan_id": "p-000000000002"
+                              "plan_id": "p-000000000001"
                             },
                             "name": "scan_apply"
                           }
@@ -531,7 +478,7 @@
               "scripts-off"
             ]
           },
-          "plan_id": "p-000000000002"
+          "plan_id": "p-000000000001"
         },
         "name": "scan_apply"
       },
@@ -570,20 +517,20 @@
                     {
                       "component": "Text",
                       "id": "r97720-t2",
-                      "text": "npm 允许依赖在安装时跑脚本",
+                      "text": "npm 装软件时会自动运行里面的程序",
                       "variant": "caption"
                     },
                     {
                       "component": "Text",
                       "id": "r97720-t3",
-                      "text": "pip 装源码包时会跑它的构建脚本",
+                      "text": "pip 装软件时会自动运行里面的程序",
                       "variant": "caption"
                     },
                     {
                       "action": {
                         "event": {
                           "context": {
-                            "id": "p-000000000002"
+                            "id": "p-000000000001"
                           },
                           "name": "scan_restore"
                         }
@@ -629,7 +576,7 @@
                 "bytes": 0,
                 "count": 0
               },
-              "restore": "p-000000000002",
+              "restore": "p-000000000001",
               "retry": null,
               "round": null,
               "scriptsOff": 2,
@@ -710,7 +657,7 @@
                       {
                         "component": "Text",
                         "id": "t3",
-                        "text": "你清的：pip 装源码包时会跑它的构建脚本、npm 允许依赖在安装时跑脚本"
+                        "text": "你清的：pip 装软件时会自动运行里面的程序、npm 装软件时会自动运行里面的程序"
                       },
                       {
                         "component": "Text",
@@ -728,7 +675,7 @@
                         "action": {
                           "event": {
                             "context": {
-                              "id": "p-000000000002"
+                              "id": "p-000000000001"
                             },
                             "name": "scan_restore"
                           }
@@ -840,7 +787,7 @@
                       {
                         "component": "Text",
                         "id": "t3",
-                        "text": "你清的：pip 装源码包时会跑它的构建脚本、npm 允许依赖在安装时跑脚本"
+                        "text": "你清的：pip 装软件时会自动运行里面的程序、npm 装软件时会自动运行里面的程序"
                       },
                       {
                         "component": "Text",
@@ -858,7 +805,7 @@
                         "action": {
                           "event": {
                             "context": {
-                              "id": "p-000000000002"
+                              "id": "p-000000000001"
                             },
                             "name": "scan_restore"
                           }
@@ -898,7 +845,7 @@
       "mcp": "tools/call",
       "params": {
         "arguments": {
-          "id": "p-000000000002"
+          "id": "p-000000000001"
         },
         "name": "scan_restore"
       },
@@ -936,13 +883,13 @@
                     {
                       "component": "Text",
                       "id": "r0-t2",
-                      "text": "pip 装源码包时会跑它的构建脚本：改之前没有这个文件，加的那份移到了废纸篓",
+                      "text": "pip 装软件时会自动运行里面的程序：改之前没有这个文件，加的那份移到了废纸篓",
                       "variant": "caption"
                     },
                     {
                       "component": "Text",
                       "id": "r0-t3",
-                      "text": "npm 允许依赖在安装时跑脚本",
+                      "text": "npm 装软件时会自动运行里面的程序",
                       "variant": "caption"
                     }
                   ],
@@ -956,7 +903,7 @@
               "before": 0,
               "left": 0,
               "notes": [
-                "pip 装源码包时会跑它的构建脚本：改之前没有这个文件，加的那份移到了废纸篓"
+                "pip 装软件时会自动运行里面的程序：改之前没有这个文件，加的那份移到了废纸篓"
               ],
               "round": null,
               "type": "restored"
@@ -990,35 +937,54 @@
           {
             "category": "posture",
             "evidence": {
+              "allow": "npm rebuild esbuild fsnative --ignore-scripts=false",
               "append": "ignore-scripts=true",
-              "how": "点「关闭自动运行」会在 ~/.npmrc 末尾加一行 ignore-scripts=true；原来那份移到废纸篓，能放回。已装的依赖里 esbuild、fsnative 要跑安装脚本，改了以后装它们要单独放行：npm rebuild esbuild fsnative --ignore-scripts=false。这一行也会让项目自己的 prepare 和 pre、post 脚本不跑（比如 husky 装 git 钩子），要跑时用 npm run <脚本名>。升到 npm 12 以后默认就不跑依赖的安装脚本，也能设新版本晚几天再装（min-release-age）。",
-              "packages": "esbuild、fsnative",
+              "config": "~/.npmrc",
+              "config_exists": "1",
+              "cost": "own-scripts-off",
+              "fixed_in": "npm 12",
+              "line": "ignore-scripts=true",
+              "name": "npm",
+              "packages": "esbuild, fsnative",
+              "reason": "default-on",
+              "risk": "third-party-code-at-install",
               "tool": "npm",
               "used": "~/.npmrc",
-              "why": "装着的 npm 11.6.2（$FIXTURE/usr-local/lib/node_modules/npm）默认会跑依赖的安装脚本，~/.npmrc 里没有关掉"
+              "version": "11.6.2",
+              "where": "$FIXTURE/usr-local/lib/node_modules/npm"
             },
             "key": "npm",
-            "path": "~/.npmrc",
+            "path": "",
             "rule": "pkg.install-scripts",
-            "severity": "medium",
-            "title": "npm 允许依赖在安装时跑脚本",
-            "verdict": "confirm"
+            "severity": "low",
+            "title": "npm runs the install scripts that packages bring with them",
+            "verdict": "info"
           },
           {
             "category": "posture",
             "evidence": {
+              "allow": "pip install --only-binary :none: <package>",
               "append": "only-binary = :all:",
-              "how": "点「关闭自动运行」会新建 ~/.config/pip/pip.conf，写上 only-binary = :all:；放回时把它移走。改了以后，没有现成安装包（wheel）的包会装不上，本地的项目（pip install .）也可能装不上；要装时单独放行：pip install --only-binary :none: <包名>。也可以让新版本晚一天再装：pip 26.1 起在 [global] 加 uploaded-prior-to = P1D。",
+              "built": "pycrypto",
+              "config": "~/.config/pip/pip.conf",
+              "config_exists": "0",
+              "cost": "no-wheel-fails",
+              "delay": "uploaded-prior-to = P1D",
+              "delay_since": "pip 26.1",
+              "line": "only-binary = :all:",
+              "name": "pip",
+              "reason": "built-from-source",
+              "risk": "third-party-code-at-install",
+              "runs": "setup.py",
               "tool": "pip",
-              "used": "~/Library/Caches/pip",
-              "why": "pip 在这台 Mac 上从源码编译过 pycrypto，编译时会运行包自带的 setup.py"
+              "used": "~/Library/Caches/pip"
             },
             "key": "pip",
-            "path": "~/.config/pip/pip.conf",
+            "path": "",
             "rule": "pkg.install-scripts",
-            "severity": "medium",
-            "title": "pip 装源码包时会跑它的构建脚本",
-            "verdict": "confirm"
+            "severity": "low",
+            "title": "pip runs a package's own build script when it installs from source",
+            "verdict": "info"
           }
         ],
         "finishedAt": "2026-10-20T13:00:00Z",

@@ -11,6 +11,11 @@
         },
         {
           "mimeType": "application/json",
+          "name": "一项发现和它命中的依据",
+          "uri": "data/finding"
+        },
+        {
+          "mimeType": "application/json",
           "name": "清理记录的数据",
           "uri": "data/history"
         },

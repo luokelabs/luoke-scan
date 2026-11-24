@@ -26,6 +26,7 @@
             "category": "skill",
             "evidence": {
               "files": "Llama-3.1-8B-Instruct-Q4_K_M.gguf",
+              "hits": "[{\"kinds\":[\"ignore-rules\"],\"files\":[\"Llama-3.1-8B-Instruct-Q4_K_M.gguf\"],\"part\":\"template\"}]",
               "how": "在 LM Studio 里删掉这个模型，从可信的发布者重新下载；拿不准就先别用",
               "kinds": "ignore-rules",
               "model": "someone/Llama-3.1-8B-Instruct-GGUF",
@@ -46,6 +47,7 @@
             "category": "skill",
             "evidence": {
               "files": "Mistral-7B-Instruct-Q4_K_M.gguf",
+              "hits": "[{\"kinds\":[\"ignore-rules\"],\"files\":[\"Mistral-7B-Instruct-Q4_K_M.gguf\"],\"part\":\"template\"}]",
               "how": "多半不是原版：到 Hugging Face 上看清发布者，从原版重新下载（`hf download someone/Mistral-7B-Instruct-GGUF`）；拿不准就先别用这个模型",
               "kinds": "ignore-rules",
               "model": "someone/Mistral-7B-Instruct-GGUF",

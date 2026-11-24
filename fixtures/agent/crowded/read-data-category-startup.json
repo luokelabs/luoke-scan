@@ -33,6 +33,7 @@
                 "finding": "persistence.launchagent-missing/000000000078",
                 "group": "launch-agent",
                 "key": "i7",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",

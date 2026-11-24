@@ -34,11 +34,11 @@
                       "t29",
                       "t30",
                       "r32",
-                      "c-i12",
+                      "c-i10",
                       "t33",
+                      "c-i14",
+                      "c-i15",
                       "c-i16",
-                      "c-i17",
-                      "c-i18",
                       "c-g-i0",
                       "t34",
                       "t35",
@@ -55,9 +55,9 @@
                       "t50",
                       "c-i9",
                       "t51",
-                      "c-i10",
+                      "c-i17",
                       "t52",
-                      "c-i11",
+                      "c-i18",
                       "t53",
                       "r55",
                       "d56",
@@ -165,7 +165,7 @@
                   {
                     "component": "Text",
                     "id": "t13",
-                    "text": "23 项",
+                    "text": "21 项",
                     "variant": "h3"
                   },
                   {
@@ -378,13 +378,13 @@
                       "event": {
                         "context": {
                           "choices": {
+                            "i11": [
+                              "remove"
+                            ],
+                            "i12": [
+                              "remove"
+                            ],
                             "i13": [
-                              "remove"
-                            ],
-                            "i14": [
-                              "remove"
-                            ],
-                            "i15": [
                               "remove"
                             ]
                           },
@@ -411,7 +411,7 @@
                   },
                   {
                     "component": "ChoicePicker",
-                    "id": "c-i12",
+                    "id": "c-i10",
                     "label": "wings 留下的临时文件夹（131.1 MB）",
                     "options": [
                       {
@@ -428,7 +428,7 @@
                       }
                     ],
                     "value": {
-                      "path": "/choices/i12"
+                      "path": "/choices/i10"
                     }
                   },
                   {
@@ -439,7 +439,7 @@
                   },
                   {
                     "component": "ChoicePicker",
-                    "id": "c-i16",
+                    "id": "c-i14",
                     "label": "已经删掉的应用「removed」留下的数据（4.2 MB）",
                     "options": [
                       {
@@ -456,12 +456,12 @@
                       }
                     ],
                     "value": {
-                      "path": "/choices/i16"
+                      "path": "/choices/i14"
                     }
                   },
                   {
                     "component": "ChoicePicker",
-                    "id": "c-i17",
+                    "id": "c-i15",
                     "label": "已经删掉的应用「stillused」留下的数据（2.1 MB）",
                     "options": [
                       {
@@ -478,12 +478,12 @@
                       }
                     ],
                     "value": {
-                      "path": "/choices/i17"
+                      "path": "/choices/i15"
                     }
                   },
                   {
                     "component": "ChoicePicker",
-                    "id": "c-i18",
+                    "id": "c-i16",
                     "label": "很久没动过的项目「old-pushed」（147 KB）",
                     "options": [
                       {
@@ -500,7 +500,7 @@
                       }
                     ],
                     "value": {
-                      "path": "/choices/i18"
+                      "path": "/choices/i16"
                     }
                   },
                   {
@@ -814,7 +814,7 @@
                   },
                   {
                     "component": "ChoicePicker",
-                    "id": "c-i10",
+                    "id": "c-i17",
                     "label": "pip 装软件时会自动运行里面的程序",
                     "options": [
                       {
@@ -831,7 +831,7 @@
                       }
                     ],
                     "value": {
-                      "path": "/choices/i10"
+                      "path": "/choices/i17"
                     }
                   },
                   {
@@ -842,7 +842,7 @@
                   },
                   {
                     "component": "ChoicePicker",
-                    "id": "c-i11",
+                    "id": "c-i18",
                     "label": "uv 装软件时会自动运行里面的程序",
                     "options": [
                       {
@@ -859,7 +859,7 @@
                       }
                     ],
                     "value": {
-                      "path": "/choices/i11"
+                      "path": "/choices/i18"
                     }
                   },
                   {

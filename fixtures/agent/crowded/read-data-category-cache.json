@@ -41,6 +41,7 @@
                 "finding": "cache.rebuildable.pip/000000000021",
                 "group": "tool-cache",
                 "key": "i9",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",
@@ -70,6 +71,7 @@
                 "finding": "cache.rebuildable.go-build/000000000022",
                 "group": "tool-cache",
                 "key": "i10",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",
@@ -99,6 +101,7 @@
                 "finding": "cache.rebuildable.cargo-registry-cache/000000000023",
                 "group": "tool-cache",
                 "key": "i11",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",
@@ -128,6 +131,7 @@
                 "finding": "cache.rebuildable.gradle-caches/000000000024",
                 "group": "tool-cache",
                 "key": "i12",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",
@@ -157,6 +161,7 @@
                 "finding": "cache.rebuildable.composer/000000000025",
                 "group": "tool-cache",
                 "key": "i13",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",
@@ -186,6 +191,7 @@
                 "finding": "cache.rebuildable.gradle-wrapper/000000000026",
                 "group": "tool-cache",
                 "key": "i14",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",
@@ -215,6 +221,7 @@
                 "finding": "cache.rebuildable.node-gyp/000000000027",
                 "group": "tool-cache",
                 "key": "i15",
+                "modelNotes": [],
                 "options": [
                   "remove",
                   "keep",

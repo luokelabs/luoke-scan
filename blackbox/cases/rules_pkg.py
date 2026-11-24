@@ -25,7 +25,7 @@ def npm_project(r: Run) -> None:
     fx.json("~/Projects/app/node_modules/left-pad/package.json", {"name": "left-pad", "scripts": {"test": "node test.js"}})
 
 
-@case("rules/pkg.install-scripts/npm", "npm 11 用着、~/.npmrc 没关：要确认一条，列出已装的依赖里要跑脚本的和放行的命令；项目自己的 .npmrc 不算")
+@case("rules/pkg.install-scripts/npm", "npm 11 用着、~/.npmrc 没关：仅供参考一条（一项设置的现状，不指向哪个文件；标题是英文，证据只有代号和事实），带已装的依赖里要跑脚本的和放行的命令；项目自己的 .npmrc 不算")
 def npm(r: Run) -> None:
     fx = r.fx
     fx.json("usr-local/lib/node_modules/npm/package.json", {"name": "npm", "version": "11.6.2"})

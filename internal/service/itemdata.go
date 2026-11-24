@@ -62,15 +62,15 @@ func (s *Service) packageData(f core.Finding) O {
 		"more": f.Evidence["packages"] != "", "reveal": strings.HasPrefix(f.Path, "/")}
 }
 
-// spaceData: little free space (spaceItems). free, total, swap in bytes (total and swap null when the rule did not
-// measure them); caches: what the rebuildable caches hold; plan: the plan that deletes them as suggested, with each
+// spaceData: little free space (spaceItems). free (what can be written now), total, swap in bytes (total and swap
+// null when the rule did not measure them); purgeable: what the system says it could free besides (null: none); caches: what the rebuildable caches hold; plan: the plan that deletes them as suggested, with each
 // item's key and suggestion (the button sends them all), or null.
 func (s *Service) spaceData(low core.Finding, cacheBytes int64, p *Plan) O {
-	d := O{"type": "space-low", "free": nil, "total": nil, "swap": nil, "caches": cacheBytes, "plan": nil}
+	d := O{"type": "space-low", "free": nil, "total": nil, "swap": nil, "purgeable": nil, "caches": cacheBytes, "plan": nil}
 	if low.Bytes != nil {
 		d["free"] = *low.Bytes
 	}
-	for _, k := range []string{"total", "swap"} {
+	for _, k := range []string{"total", "swap", "purgeable"} {
 		if n, err := strconv.ParseInt(low.Evidence[k+"_bytes"], 10, 64); err == nil {
 			d[k] = n
 		}

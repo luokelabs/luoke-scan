@@ -213,6 +213,7 @@ func (r *ChatTemplateRule) checkModel(ctx *Context, m templateModel, known, seen
 	kinds := map[TemplateKind]bool{}
 	var sev Severity
 	var parts, files, digests []string
+	var hits []Hit
 	var template string
 	for _, f := range m.files {
 		st, ok := aiLstat(f.real)
@@ -247,6 +248,9 @@ func (r *ChatTemplateRule) checkModel(ctx *Context, m templateModel, known, seen
 		}
 		parts = append(parts, f.kind.part())
 		files = append(files, aiClean(f.shown, 80))
+		if len(hits) < hitsMost {
+			hits = append(hits, f.hit(row))
+		}
 		if template == "" && strings.HasPrefix(f.at, m.dir+"/") {
 			template = f.at // 「在访达里显示」 selects it, not the whole model folder
 		}
@@ -282,6 +286,7 @@ func (r *ChatTemplateRule) checkModel(ctx *Context, m templateModel, known, seen
 	if template != "" {
 		ev["template"] = ctx.Shown(template)
 	}
+	withHits(ev, hits, len(digests)-len(hits))
 	// What moving it to the Trash would free: a model with a folder of its own (not Ollama's, whose path is a manifest
 	// and whose files are shared) is offered for the Trash as a whole (service.trashableSkill), so its size is the
 	// folder's.
@@ -307,72 +312,9 @@ func chatTemplateHow(tool, name string) string {
 
 // readFile reads one template file within the limits and checks it; budget goes down by what was read.
 func (r *ChatTemplateRule) readFile(f templateFile, st syscall.Stat_t, budget *int64) chatTemplateRow {
-	var row chatTemplateRow
-	var texts []string
-	var syntax TemplateSyntax
-	if f.kind == tfGGUF {
-		if r.dataless(st) { // only in iCloud: reading even its header would download all of it
-			return row
-		}
-		fd, err := syscall.Open(f.real, syscall.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK|syscall.O_CLOEXEC, 0)
-		if err != nil {
-			return row
-		}
-		file := os.NewFile(uintptr(fd), f.real)
-		g := ReadGGUFTemplates(file, r.Limits.GGUF)
-		file.Close()
-		*budget -= g.Read
-		row.TooBig = g.TooBig
-		names := make([]string, 0, len(g.Templates))
-		for n := range g.Templates {
-			names = append(names, n)
-		}
-		sort.Strings(names)
-		for _, n := range names {
-			texts = append(texts, g.Templates[n])
-		}
-		syntax = SyntaxJinja
-	} else {
-		max := r.Limits.MaxTextBytes
-		if f.kind == tfConfig {
-			max = r.Limits.MaxJSONBytes
-		}
-		if st.Size > max {
-			row.TooBig = true
-			return row
-		}
-		if r.dataless(st) { // only in iCloud: reading it would download it
-			return row
-		}
-		data, ok := aiReadHead(f.real, int(st.Size))
-		if !ok {
-			return row
-		}
-		*budget -= int64(len(data))
-		text, ok := aiDecodeUTF8(data)
-		if !ok {
-			return row
-		}
-		switch f.kind {
-		case tfConfig:
-			texts, syntax = configTemplates(data), SyntaxJinja
-		case tfJinja:
-			texts, syntax = []string{text}, SyntaxJinja
-		case tfOllamaTemplate:
-			texts, syntax = []string{text}, SyntaxGo
-		case tfOllamaSystem:
-			texts, syntax = []string{text}, SyntaxPlain
-		case tfOllamaMessages:
-			var msgs []struct {
-				Content string `json:"content"`
-			}
-			if json.Unmarshal(data, &msgs) == nil {
-				for _, m := range msgs {
-					texts = append(texts, m.Content)
-				}
-			}
-			syntax = SyntaxPlain
-		}
+	texts, syntax, row := r.templateTexts(f, st, budget)
+	if texts == nil {
+		return row
 	}
 	found := map[TemplateKind]bool{}
 	h := sha256.New()
@@ -395,6 +337,82 @@ func (r *ChatTemplateRule) readFile(f templateFile, st syscall.Stat_t, budget *i
 	sum := h.Sum(nil)
 	row.Digest = hex.EncodeToString(sum[:8])
 	return row
+}
+
+// templateTexts are the templates in one file, read within the limits, and how they are written; budget goes down by
+// what was read. nil texts: nothing to check, and row says whether that is because the file is too big.
+func (r *ChatTemplateRule) templateTexts(f templateFile, st syscall.Stat_t, budget *int64) ([]string, TemplateSyntax, chatTemplateRow) {
+	var row chatTemplateRow
+	var texts []string
+	var syntax TemplateSyntax
+	if f.kind == tfGGUF {
+		if r.dataless(st) { // only in iCloud: reading even its header would download all of it
+			return nil, syntax, row
+		}
+		fd, err := syscall.Open(f.real, syscall.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK|syscall.O_CLOEXEC, 0)
+		if err != nil {
+			return nil, syntax, row
+		}
+		file := os.NewFile(uintptr(fd), f.real)
+		g := ReadGGUFTemplates(file, r.Limits.GGUF)
+		file.Close()
+		*budget -= g.Read
+		row.TooBig = g.TooBig
+		names := make([]string, 0, len(g.Templates))
+		for n := range g.Templates {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		for _, n := range names {
+			texts = append(texts, g.Templates[n])
+		}
+		syntax = SyntaxJinja
+	} else {
+		max := r.Limits.MaxTextBytes
+		if f.kind == tfConfig {
+			max = r.Limits.MaxJSONBytes
+		}
+		if st.Size > max {
+			row.TooBig = true
+			return nil, syntax, row
+		}
+		if r.dataless(st) { // only in iCloud: reading it would download it
+			return nil, syntax, row
+		}
+		data, ok := aiReadHead(f.real, int(st.Size))
+		if !ok {
+			return nil, syntax, row
+		}
+		*budget -= int64(len(data))
+		text, ok := aiDecodeUTF8(data)
+		if !ok {
+			return nil, syntax, row
+		}
+		switch f.kind {
+		case tfConfig:
+			texts, syntax = configTemplates(data), SyntaxJinja
+		case tfJinja:
+			texts, syntax = []string{text}, SyntaxJinja
+		case tfOllamaTemplate:
+			texts, syntax = []string{text}, SyntaxGo
+		case tfOllamaSystem:
+			texts, syntax = []string{text}, SyntaxPlain
+		case tfOllamaMessages:
+			var msgs []struct {
+				Content string `json:"content"`
+			}
+			if json.Unmarshal(data, &msgs) == nil {
+				for _, m := range msgs {
+					texts = append(texts, m.Content)
+				}
+			}
+			syntax = SyntaxPlain
+		}
+	}
+	if texts == nil {
+		texts = []string{}
+	}
+	return texts, syntax, row
 }
 
 // configTemplates are the templates in a tokenizer_config.json or chat_template.json: "chat_template" as one string,

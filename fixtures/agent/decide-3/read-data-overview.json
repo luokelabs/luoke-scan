@@ -12,7 +12,9 @@
               "items": [
                 {
                   "category": null,
+                  "facts": null,
                   "finding": "posture.filevault",
+                  "modelNotes": [],
                   "path": null,
                   "reveal": null,
                   "rule": "posture.filevault",
@@ -21,7 +23,9 @@
                 },
                 {
                   "category": null,
+                  "facts": null,
                   "finding": "process.deleted-binary/000000000004",
+                  "modelNotes": [],
                   "path": "~/Applications/Gone.app/Contents/MacOS/gone",
                   "reveal": "~/Applications/Gone.app/Contents/MacOS/gone",
                   "rule": "process.deleted-binary",
@@ -30,7 +34,17 @@
                 },
                 {
                   "category": null,
+                  "facts": {
+                    "app": null,
+                    "client": "/opt/gone/tool",
+                    "clientType": "path",
+                    "grants": [
+                      "录屏"
+                    ],
+                    "loginItems": null
+                  },
                   "finding": "permission.stale-grant/000000000005",
+                  "modelNotes": [],
                   "path": "/opt/gone/tool",
                   "reveal": "/opt/gone/tool",
                   "rule": "permission.stale-grant",
@@ -39,7 +53,17 @@
                 },
                 {
                   "category": null,
+                  "facts": {
+                    "app": null,
+                    "client": "io.example.removed",
+                    "clientType": "bundle",
+                    "grants": [
+                      "完全磁盘访问"
+                    ],
+                    "loginItems": null
+                  },
                   "finding": "permission.stale-grant/000000000006",
+                  "modelNotes": [],
                   "path": null,
                   "reveal": null,
                   "rule": "permission.stale-grant",
@@ -52,6 +76,7 @@
             "autoCleaned": [],
             "autoclean": false,
             "disk": {
+              "available": 182000000000,
               "free": 182000000000,
               "total": 494000000000
             },
@@ -156,6 +181,7 @@
             },
             "scanning": null,
             "schema": 1,
+            "settings": [],
             "skipped": [],
             "virusDb": {
               "date": "2026-10-20",

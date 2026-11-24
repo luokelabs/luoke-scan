@@ -25,57 +25,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
-              "kinds": "agent-tamper",
-              "scope": "personal",
-              "skill": "at-append-said",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 AI 的记忆或长期指令（CLAUDE.md 之类）（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/at-append-said|741fc5940c2407f9",
-            "path": "~/.claude/skills/at-append-said",
-            "rule": "skill.agent-tamper",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「at-append-said」：改 AI 的记忆或长期指令（CLAUDE.md 之类）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
-              "kinds": "agent-tamper",
-              "scope": "personal",
-              "skill": "at-cat-redirect",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 AI 工具的设置（钩子、MCP 服务器、权限）（scripts/x.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/at-cat-redirect|71dc352045281818",
-            "path": "~/.claude/skills/at-cat-redirect",
-            "rule": "skill.agent-tamper",
-            "severity": "high",
-            "title": "Claude Code 的 skill「at-cat-redirect」：改 AI 工具的设置（钩子、MCP 服务器、权限）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
-              "kinds": "agent-tamper",
-              "scope": "personal",
-              "skill": "at-glob",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改别的 skill（a.sh 第 2 行）"
-            },
-            "key": "~/.claude/skills/at-glob|bda469c3b1334260",
-            "path": "~/.claude/skills/at-glob",
-            "rule": "skill.agent-tamper",
-            "severity": "high",
-            "title": "Claude Code 的 skill「at-glob」：改别的 skill",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"agent-tamper\"],\"severity\":\"high\",\"files\":[\"a.js\"],\"lines\":[2]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
               "kinds": "agent-tamper",
               "scope": "personal",
@@ -93,6 +43,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"agent-tamper\"],\"severity\":\"high\",\"files\":[\"a.py\"],\"lines\":[2]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
               "kinds": "agent-tamper",
               "scope": "personal",
@@ -110,23 +61,43 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"agent-tamper\"],\"severity\":\"high\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
               "kinds": "agent-tamper",
               "scope": "personal",
-              "skill": "at-yolo",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 工具跳过确认直接做（SKILL.md 第 5 行）"
+              "skill": "at-glob",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改别的 skill（a.sh 第 2 行）"
             },
-            "key": "~/.claude/skills/at-yolo|3dd11e973236577f",
-            "path": "~/.claude/skills/at-yolo",
+            "key": "~/.claude/skills/at-glob|bda469c3b1334260",
+            "path": "~/.claude/skills/at-glob",
             "rule": "skill.agent-tamper",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「at-yolo」：让 AI 工具跳过确认直接做",
+            "severity": "high",
+            "title": "Claude Code 的 skill「at-glob」：改别的 skill",
             "verdict": "info"
           },
           {
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"agent-tamper\"],\"severity\":\"high\",\"files\":[\"scripts/x.sh\"],\"lines\":[2]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
+              "kinds": "agent-tamper",
+              "scope": "personal",
+              "skill": "at-cat-redirect",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 AI 工具的设置（钩子、MCP 服务器、权限）（scripts/x.sh 第 2 行）"
+            },
+            "key": "~/.claude/skills/at-cat-redirect|71dc352045281818",
+            "path": "~/.claude/skills/at-cat-redirect",
+            "rule": "skill.agent-tamper",
+            "severity": "high",
+            "title": "Claude Code 的 skill「at-cat-redirect」：改 AI 工具的设置（钩子、MCP 服务器、权限）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"agent-tamper\"],\"severity\":\"low\",\"files\":[\"x.sh\"],\"lines\":[2],\"declared\":true}]",
               "how": "它会改 AI 工具自己的东西；认得、用得着就留着，不认识就移到废纸篓",
               "kinds": "agent-tamper",
               "scope": "personal",
@@ -138,6 +109,42 @@
             "rule": "skill.agent-tamper",
             "severity": "low",
             "title": "Claude Code 的 skill「hooks-setup」：改 AI 工具的设置（钩子、MCP 服务器、权限）（它说自己就是做这个的）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"agent-tamper\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
+              "kinds": "agent-tamper",
+              "scope": "personal",
+              "skill": "at-append-said",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：改 AI 的记忆或长期指令（CLAUDE.md 之类）（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/at-append-said|741fc5940c2407f9",
+            "path": "~/.claude/skills/at-append-said",
+            "rule": "skill.agent-tamper",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「at-append-said」：改 AI 的记忆或长期指令（CLAUDE.md 之类）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"agent-tamper\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，看看 AI 工具的设置（钩子、MCP 服务器）和 CLAUDE.md 这类文件有没有被改",
+              "kinds": "agent-tamper",
+              "scope": "personal",
+              "skill": "at-yolo",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：让 AI 工具跳过确认直接做（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/at-yolo|3dd11e973236577f",
+            "path": "~/.claude/skills/at-yolo",
+            "rule": "skill.agent-tamper",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「at-yolo」：让 AI 工具跳过确认直接做",
             "verdict": "info"
           }
         ],

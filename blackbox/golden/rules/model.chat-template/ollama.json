@@ -25,6 +25,7 @@
             "category": "skill",
             "evidence": {
               "files": "MESSAGE",
+              "hits": "[{\"kinds\":[\"exfil\"],\"files\":[\"MESSAGE\"],\"part\":\"messages\"}]",
               "how": "是你自己用 Modelfile 建的，看看里面的 SYSTEM、TEMPLATE 是不是你写的；不是的话 `ollama rm someone/assistant-zh:latest` 删掉，从 ollama.com 上的原版重新拉",
               "kinds": "exfil",
               "model": "someone/assistant-zh:latest",
@@ -43,24 +44,7 @@
             "category": "skill",
             "evidence": {
               "files": "SYSTEM",
-              "how": "是你自己用 Modelfile 建的，看看里面的 SYSTEM、TEMPLATE 是不是你写的；不是的话 `ollama rm llama3.2:hidden` 删掉，从 ollama.com 上的原版重新拉",
-              "kinds": "ignore-rules,hidden",
-              "model": "llama3.2:hidden",
-              "tool": "Ollama",
-              "where": "默认系统提示",
-              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型不管原来的指令、藏着看不见的字符。原文没有记下"
-            },
-            "key": "~/.ollama/models/manifests/registry.ollama.ai/library/llama3.2/hidden|53ff4c4a7655",
-            "path": "~/.ollama/models/manifests/registry.ollama.ai/library/llama3.2/hidden",
-            "rule": "model.chat-template",
-            "severity": "high",
-            "title": "Ollama 的模型 llama3.2:hidden：对话模板里多了给模型的话（让模型不管原来的指令、藏着看不见的字符）",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "files": "SYSTEM",
+              "hits": "[{\"kinds\":[\"exfil\",\"conceal\"],\"files\":[\"SYSTEM\"],\"part\":\"system\"}]",
               "how": "是你自己用 Modelfile 建的，看看里面的 SYSTEM、TEMPLATE 是不是你写的；不是的话 `ollama rm qwen2.5:7b` 删掉，从 ollama.com 上的原版重新拉",
               "kinds": "exfil,conceal",
               "model": "qwen2.5:7b",
@@ -79,6 +63,7 @@
             "category": "skill",
             "evidence": {
               "files": "SYSTEM",
+              "hits": "[{\"kinds\":[\"exfil\",\"conceal\"],\"files\":[\"SYSTEM\"],\"part\":\"system\"}]",
               "how": "是你自己用 Modelfile 建的，看看里面的 SYSTEM、TEMPLATE 是不是你写的；不是的话 `ollama rm qwen2.5:latest` 删掉，从 ollama.com 上的原版重新拉",
               "kinds": "exfil,conceal",
               "model": "qwen2.5:latest",
@@ -91,6 +76,25 @@
             "rule": "model.chat-template",
             "severity": "high",
             "title": "Ollama 的模型 qwen2.5:latest：对话模板里多了给模型的话（让模型把对话或资料发出去、让模型瞒着你或骗你）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "files": "SYSTEM",
+              "hits": "[{\"kinds\":[\"ignore-rules\",\"hidden\"],\"files\":[\"SYSTEM\"],\"part\":\"system\"}]",
+              "how": "是你自己用 Modelfile 建的，看看里面的 SYSTEM、TEMPLATE 是不是你写的；不是的话 `ollama rm llama3.2:hidden` 删掉，从 ollama.com 上的原版重新拉",
+              "kinds": "ignore-rules,hidden",
+              "model": "llama3.2:hidden",
+              "tool": "Ollama",
+              "where": "默认系统提示",
+              "why": "用这个模型时，对话模板每次都会套在你的话外面交给模型，模型会照着做；各家正常的模板里只有轮次记号、工具调用的格式和几句固定的默认设定。这一个多了：让模型不管原来的指令、藏着看不见的字符。原文没有记下"
+            },
+            "key": "~/.ollama/models/manifests/registry.ollama.ai/library/llama3.2/hidden|53ff4c4a7655",
+            "path": "~/.ollama/models/manifests/registry.ollama.ai/library/llama3.2/hidden",
+            "rule": "model.chat-template",
+            "severity": "high",
+            "title": "Ollama 的模型 llama3.2:hidden：对话模板里多了给模型的话（让模型不管原来的指令、藏着看不见的字符）",
             "verdict": "info"
           }
         ],

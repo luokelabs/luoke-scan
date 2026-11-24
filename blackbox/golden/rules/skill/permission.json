@@ -25,40 +25,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
-              "kinds": "permission",
-              "scope": "personal",
-              "skill": "pm-readonly-delete",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：说自己只读，脚本却会删文件或往外发数据（SKILL.md）"
-            },
-            "key": "~/.claude/skills/pm-readonly-delete|d31320a15527f0aa",
-            "path": "~/.claude/skills/pm-readonly-delete",
-            "rule": "skill.permission",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「pm-readonly-delete」：说自己只读，脚本却会删文件或往外发数据",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
-              "kinds": "permission",
-              "scope": "personal",
-              "skill": "pm-readonly-send",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：说自己只读，脚本却会删文件或往外发数据（SKILL.md）"
-            },
-            "key": "~/.claude/skills/pm-readonly-send|9a5046a383207b6c",
-            "path": "~/.claude/skills/pm-readonly-send",
-            "rule": "skill.permission",
-            "severity": "medium",
-            "title": "Claude Code 的 skill「pm-readonly-send」：说自己只读，脚本却会删文件或往外发数据",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"permission\"],\"severity\":\"low\",\"files\":[\"SKILL.md\"]}]",
               "how": "认得的话，可以在 SKILL.md 的 allowed-tools 里把 Bash 限定到它要用的命令（例如 Bash(git status:*)）",
               "kinds": "permission",
               "scope": "personal",
@@ -76,6 +43,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"permission\"],\"severity\":\"low\",\"files\":[\"SKILL.md\"]}]",
               "how": "认得的话，可以在 SKILL.md 的 allowed-tools 里把 Bash 限定到它要用的命令（例如 Bash(git status:*)）",
               "kinds": "permission",
               "scope": "personal",
@@ -93,6 +61,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"permission\"],\"severity\":\"low\",\"files\":[\"SKILL.md\"]}]",
               "how": "认得的话，可以在 SKILL.md 的 allowed-tools 里把 Bash 限定到它要用的命令（例如 Bash(git status:*)）",
               "kinds": "permission",
               "scope": "personal",
@@ -104,6 +73,42 @@
             "rule": "skill.permission",
             "severity": "low",
             "title": "Claude Code 的 skill「pm-star-underscore」：允许 AI 不受限制地跑命令（allowed-tools 里的 Bash 没限定命令）",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"permission\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
+              "kinds": "permission",
+              "scope": "personal",
+              "skill": "pm-readonly-delete",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：说自己只读，脚本却会删文件或往外发数据（SKILL.md）"
+            },
+            "key": "~/.claude/skills/pm-readonly-delete|d31320a15527f0aa",
+            "path": "~/.claude/skills/pm-readonly-delete",
+            "rule": "skill.permission",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「pm-readonly-delete」：说自己只读，脚本却会删文件或往外发数据",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"permission\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做",
+              "kinds": "permission",
+              "scope": "personal",
+              "skill": "pm-readonly-send",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：说自己只读，脚本却会删文件或往外发数据（SKILL.md）"
+            },
+            "key": "~/.claude/skills/pm-readonly-send|9a5046a383207b6c",
+            "path": "~/.claude/skills/pm-readonly-send",
+            "rule": "skill.permission",
+            "severity": "medium",
+            "title": "Claude Code 的 skill「pm-readonly-send」：说自己只读，脚本却会删文件或往外发数据",
             "verdict": "info"
           }
         ],

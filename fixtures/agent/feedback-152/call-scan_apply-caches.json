@@ -96,13 +96,13 @@
       },
       "arguments": {
         "choices": {
+          "i11": [
+            "remove"
+          ],
+          "i12": [
+            "remove"
+          ],
           "i13": [
-            "remove"
-          ],
-          "i14": [
-            "remove"
-          ],
-          "i15": [
             "remove"
           ]
         },

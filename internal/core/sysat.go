@@ -183,6 +183,36 @@ func attrs(common, fork uint32) *unix.Attrlist {
 	return &unix.Attrlist{Bitmapcount: unix.ATTR_BIT_MAP_COUNT, Commonattr: common, Forkattr: fork}
 }
 
+// VolumeID names the volume path is on, the same across restarts: its UUID (getattrlist ATTR_VOL_UUID of where it
+// is mounted); where the volume has none, "dev:" and its device number (good while it stays mounted); "" when path
+// is not there.
+func VolumeID(path string) string {
+	var fs unix.Statfs_t
+	if unix.Statfs(path, &fs) != nil {
+		return ""
+	}
+	mount := unix.ByteSliceToString(fs.Mntonname[:])
+	var buf [4 + 16]byte // length, then the uuid_t
+	al := unix.Attrlist{Bitmapcount: unix.ATTR_BIT_MAP_COUNT, Volattr: unix.ATTR_VOL_INFO | unix.ATTR_VOL_UUID}
+	if mount != "" && getattrlist(mount, &al, buf[:], 0) == nil && *(*uint32)(unsafe.Pointer(&buf[0])) >= 4+16 {
+		const hex = "0123456789ABCDEF"
+		out := make([]byte, 0, 32)
+		zero := true
+		for _, b := range buf[4:] {
+			zero = zero && b == 0
+			out = append(out, hex[b>>4], hex[b&15])
+		}
+		if !zero {
+			return string(out)
+		}
+	}
+	var st unix.Stat_t
+	if unix.Lstat(path, &st) != nil {
+		return ""
+	}
+	return "dev:" + strconv.Itoa(int(st.Dev))
+}
+
 // procInfo is the proc_info call libproc's functions make (x/sys has no wrapper for it).
 func procInfo(call, pid int, flavor uint32, arg uint64, buf []byte) (int, syscall.Errno) {
 	var b uintptr

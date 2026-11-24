@@ -49,7 +49,7 @@ func (s *Service) scriptsOffItem(f core.Finding, key string) *PlanItem {
 	path := core.ScriptsConfigPath(tool, s.Config.Context.Home)
 	// Its place is fixed under the home (core.ScriptsConfigPath); the folders on the way are opened without following a
 	// link when it is written (openFolder), so a folder not there yet is fine.
-	if path == "" || f.Path != path || f.Evidence["append"] == "" || !s.Config.Context.MayLook(path) {
+	if path == "" || f.Evidence["config"] != path || f.Evidence["append"] == "" || !s.Config.Context.MayLook(path) {
 		return nil
 	}
 	t := Target{Path: path}
@@ -64,7 +64,10 @@ func (s *Service) scriptsOffItem(f core.Finding, key string) *PlanItem {
 	default:
 		return nil // a link (symbolic or hard), a folder, unreadable: not changed from here
 	}
-	return &PlanItem{Key: key, FindingID: s.fid(f), Rule: f.Rule, Category: string(f.Category), Title: f.Title,
+	// The item's title goes into the cards and answers this side still writes (「你清的：…」, the cleaning record), which
+	// are in Chinese: the page layer's words for it, not the finding's English title.
+	title, _ := s.plain(f)
+	return &PlanItem{Key: key, FindingID: s.fid(f), Rule: f.Rule, Category: string(f.Category), Title: title,
 		Targets: []Target{t}, Suggested: ChoiceKeep, Options: []string{ChoiceScriptsOff, ChoiceKeep, ChoiceIgnore}, Tool: tool}
 }
 

@@ -35,6 +35,7 @@
                 "finding": "leftover.installer/000000000012",
                 "group": "installer",
                 "key": "i11",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",

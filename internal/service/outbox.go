@@ -529,7 +529,9 @@ func (s *Service) roundView(f []core.Finding, r core.Report, id string) roundVie
 	v.toLook = len(v.look)
 	if v.plan != nil {
 		for _, it := range v.plan.Items {
-			if it.Suggested != ChoiceRemove && !hasItem(v.done, it.Key) {
+			// A setting's state that scan_apply can change when asked (the install-scripts rule) is only for reference:
+			// in the plan so that it can be applied, not something that waits for the user.
+			if it.Suggested != ChoiceRemove && !hasItem(v.done, it.Key) && it.Rule != core.InstallScriptsRuleID {
 				v.toLook++
 			}
 		}

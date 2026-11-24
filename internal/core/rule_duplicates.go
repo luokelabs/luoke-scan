@@ -35,6 +35,29 @@ func NewDuplicateRule(l *Layout, f *Fakes) Rule {
 	return r
 }
 
+// duplicatesLeftOut follows the places in the reason the rule gives for those it left out (NotLooked).
+const duplicatesLeftOut = " 里的重复文件"
+
+// DuplicatesNever: what the rule never compares, as codes (data/category's compared.never), each left out in files:
+// hidden files and folders, node_modules, packages (an app, a photo library: one file in Finder), links, a file with
+// another name too (a hard link), one kept only in iCloud, and what is on another volume mounted inside a folder.
+var DuplicatesNever = []string{"hidden", "node_modules", "package", "symlink", "hard-link", "icloud-only", "other-volume"}
+
+// DuplicatesNotLooked are the places a round's rule left out for want of Full Disk Access, read back from the reason it
+// was skipped with: its own (NotLooked), or one an interrupted round carried over with an earlier round's findings.
+// nil when the reason names none.
+func DuplicatesNotLooked(reason string) []string {
+	_, rest, ok := strings.Cut(reason, NoAccessMark+"，")
+	if !ok {
+		return nil
+	}
+	places, _, ok := strings.Cut(rest, duplicatesLeftOut)
+	if !ok || places == "" {
+		return nil
+	}
+	return strings.Split(places, "、")
+}
+
 func (r *DuplicateRule) ID() string { return "space.duplicates" }
 func (r *DuplicateRule) Emits() []string {
 	return []string{"space.duplicates", "space.duplicates-partial"}
@@ -274,7 +297,7 @@ func (r *DuplicateRule) Run(ctx *Context) ([]Finding, error) {
 			Evidence: map[string]string{"folders": folders}})
 	}
 	if len(left) > 0 {
-		return nil, Skip(NotLooked(strings.Join(left, "、")+" 里的重复文件"), out...)
+		return nil, Skip(NotLooked(strings.Join(left, "、")+duplicatesLeftOut), out...)
 	}
 	return out, nil
 }

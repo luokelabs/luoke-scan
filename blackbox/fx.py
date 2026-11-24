@@ -12,6 +12,7 @@
 """
 from __future__ import annotations
 
+import atexit
 import copy
 import ctypes
 import ctypes.util
@@ -21,6 +22,8 @@ import os
 import plistlib
 import shutil
 import subprocess
+import tempfile
+import threading
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 UTC = datetime.timezone.utc
@@ -196,6 +199,26 @@ GIT_ENV = {"PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "GIT_CONFIG_GLOBAL": "/dev/n
 Data = Union[bytes, str, None]
 
 
+_shared_lock = threading.Lock()
+_shared_tools: Optional[str] = None
+
+
+def shared_tools() -> str:
+    """这一次运行里各个假目录共用的一份假扫描器（只有可执行的那几个）。macOS 第一次运行一个新造出来的可执行文件要先检查它（约 0.13 秒），
+    这个检查全机器一次只做一个：每个假目录各拷一份的话，每个场景都要排一次队，同时跑再多也快不起来。所以只拷一份，
+    各个假目录硬链接过去（同一个文件，系统只检查一次）。"""
+    global _shared_tools
+    with _shared_lock:
+        if _shared_tools is None:
+            d = tempfile.mkdtemp(prefix="luoke-scan-bb-tools-")
+            for name in os.listdir(TOOLS):
+                if os.access(os.path.join(TOOLS, name), os.X_OK):
+                    shutil.copy2(os.path.join(TOOLS, name), os.path.join(d, name))
+            atexit.register(shutil.rmtree, d, True)
+            _shared_tools = d
+        return _shared_tools
+
+
 class Fx:
     """一个假目录。路径写法：`~/…` 在假家目录下，`$TMPDIR/…` 在假临时目录下，别的相对于根。"""
 
@@ -209,8 +232,14 @@ class Fx:
         for d in (self.home, self.tmp, os.path.join(self.home, "Projects")):
             os.makedirs(d, exist_ok=True)
         os.makedirs(self.tools, exist_ok=True)
+        shared = shared_tools()
         for name in os.listdir(TOOLS):
-            shutil.copy2(os.path.join(TOOLS, name), os.path.join(self.tools, name))
+            # 可执行的硬链接过去（见 shared_tools）；要换掉其中一个的，先删再写（replace_tool），别改到共用的那一份。
+            # 别的（next-version、XProtect.yara）是脚本和场景会改写的数据，各拷一份。
+            try:
+                os.link(os.path.join(shared, name), os.path.join(self.tools, name))
+            except OSError:   # 不是可执行的（共用的那一份里没有），或者不在同一个卷上
+                shutil.copy2(os.path.join(TOOLS, name), os.path.join(self.tools, name))
         if not quiet:   # 标准进程表里的 gpg-agent 在跑，它的程序在（不然成了「程序被删了」）
             self.file(GPG_AGENT, "#!/bin/sh\nexit 0\n", mode=0o755, at=days(30))
 

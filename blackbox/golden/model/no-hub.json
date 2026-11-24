@@ -25,6 +25,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"exfil\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
               "kinds": "exfil",
               "scope": "personal",
@@ -153,6 +154,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"exfil\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；用过的话，把它可能读过的密钥、令牌换新的",
               "kinds": "exfil",
               "scope": "personal",

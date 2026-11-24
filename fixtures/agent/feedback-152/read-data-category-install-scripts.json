@@ -1,6 +1,6 @@
 {
   "reply": {
-    "id": 1010,
+    "id": 1011,
     "jsonrpc": "2.0",
     "result": {
       "contents": [
@@ -25,24 +25,42 @@
               ],
               "userFiles": "none"
             },
-            "files": 2,
+            "files": 0,
             "id": "install-scripts",
             "items": [
               {
                 "bytes": null,
                 "facts": {
+                  "allow": "pip install --only-binary :none: <package>",
+                  "built": [
+                    "pycrypto"
+                  ],
+                  "canApply": true,
+                  "cause": "built-from-source",
+                  "config": {
+                    "exists": false,
+                    "file": "~/.config/pip/pip.conf",
+                    "line": "only-binary = :all:"
+                  },
+                  "cost": "no-wheel-fails",
+                  "delay": "uploaded-prior-to = P1D",
+                  "delaySince": "pip 26.1",
+                  "name": "pip",
+                  "risk": "third-party-code-at-install",
+                  "runs": "setup.py",
                   "tool": "pip"
                 },
                 "finding": "pkg.install-scripts/000000000029",
                 "group": "install-scripts",
-                "key": "i10",
+                "key": "i17",
+                "modelNotes": [],
                 "options": [
                   "scripts-off",
                   "keep",
                   "ignore"
                 ],
                 "password": false,
-                "path": "~/.config/pip/pip.conf",
+                "path": null,
                 "paths": [
                   "~/.config/pip/pip.conf"
                 ],
@@ -51,7 +69,7 @@
                 "reason": "scripts-on",
                 "rebuilds": false,
                 "restorable": true,
-                "reveal": "~/.config/pip/pip.conf",
+                "reveal": null,
                 "rule": "pkg.install-scripts",
                 "suggested": "keep",
                 "userFiles": "none"
@@ -59,18 +77,34 @@
               {
                 "bytes": null,
                 "facts": {
+                  "allow": "--no-config",
+                  "built": [
+                    "pyyaml"
+                  ],
+                  "canApply": true,
+                  "cause": "built-from-source",
+                  "config": {
+                    "exists": false,
+                    "file": "~/.config/uv/uv.toml",
+                    "line": "no-build = true"
+                  },
+                  "cost": "no-wheel-deps-fail",
+                  "delay": "exclude-newer = \"1 day\"",
+                  "name": "uv",
+                  "risk": "third-party-code-at-install",
                   "tool": "uv"
                 },
                 "finding": "pkg.install-scripts/000000000030",
                 "group": "install-scripts",
-                "key": "i11",
+                "key": "i18",
+                "modelNotes": [],
                 "options": [
                   "scripts-off",
                   "keep",
                   "ignore"
                 ],
                 "password": false,
-                "path": "~/.config/uv/uv.toml",
+                "path": null,
                 "paths": [
                   "~/.config/uv/uv.toml"
                 ],
@@ -79,7 +113,7 @@
                 "reason": "scripts-on",
                 "rebuilds": false,
                 "restorable": true,
-                "reveal": "~/.config/uv/uv.toml",
+                "reveal": null,
                 "rule": "pkg.install-scripts",
                 "suggested": "keep",
                 "userFiles": "none"
@@ -102,7 +136,7 @@
     }
   },
   "request": {
-    "id": 1010,
+    "id": 1011,
     "jsonrpc": "2.0",
     "method": "resources/read",
     "params": {

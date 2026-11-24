@@ -25,6 +25,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code 插件",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",
@@ -42,6 +43,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code 插件",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",
@@ -59,74 +61,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
-              "kinds": "destructive,download-exec",
-              "scope": "personal",
-              "skill": "nested",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）；删掉整个家目录、整个磁盘或系统文件夹（inner/SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/nested|59201f79c04630d7",
-            "path": "~/.claude/skills/nested",
-            "rule": "skill.download-exec",
-            "severity": "high",
-            "title": "Claude Code 的 skill「nested」：从网上下载代码直接运行，另有 1 处要看",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
-              "kinds": "download-exec",
-              "scope": "personal",
-              "skill": "a-very-long-skill-name-that-goes-on-and-…",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/long-name|f5b0af3847dabbb0",
-            "path": "~/.claude/skills/long-name",
-            "rule": "skill.download-exec",
-            "severity": "high",
-            "title": "Claude Code 的 skill「a-very-long-skill-name-that-goes-on-and-…」：从网上下载代码直接运行",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
-              "kinds": "download-exec",
-              "scope": "personal",
-              "skill": "claude",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/claude|c588cb159ec29c8d",
-            "path": "~/.claude/skills/claude",
-            "rule": "skill.download-exec",
-            "severity": "high",
-            "title": "Claude Code 的 skill「claude」：从网上下载代码直接运行",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
-              "kinds": "download-exec",
-              "scope": "personal",
-              "skill": "grouped",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
-            },
-            "key": "~/.claude/skills/group/grouped|c2d4b7c3cf838cf7",
-            "path": "~/.claude/skills/group/grouped",
-            "rule": "skill.download-exec",
-            "severity": "high",
-            "title": "Claude Code 的 skill「grouped」：从网上下载代码直接运行",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[1]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",
@@ -144,40 +79,25 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]},{\"kinds\":[\"destructive\"],\"severity\":\"high\",\"files\":[\"inner/SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
-              "kinds": "download-exec",
+              "kinds": "destructive,download-exec",
               "scope": "personal",
-              "skill": "shared",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+              "skill": "nested",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）；删掉整个家目录、整个磁盘或系统文件夹（inner/SKILL.md 第 5 行）"
             },
-            "key": "~/dotfiles/skills/shared|1d6e4590c4e9e5e1",
-            "path": "~/.claude/skills/shared",
+            "key": "~/.claude/skills/nested|59201f79c04630d7",
+            "path": "~/.claude/skills/nested",
             "rule": "skill.download-exec",
             "severity": "high",
-            "title": "Claude Code 的 skill「shared」：从网上下载代码直接运行",
+            "title": "Claude Code 的 skill「nested」：从网上下载代码直接运行，另有 1 处要看",
             "verdict": "info"
           },
           {
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
-              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
-              "kinds": "download-exec",
-              "scope": "project",
-              "skill": "p-claude",
-              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
-            },
-            "key": "~/Projects/app/.claude/skills/p-claude|d973678a59065bed",
-            "path": "~/Projects/app/.claude/skills/p-claude",
-            "rule": "skill.download-exec",
-            "severity": "high",
-            "title": "项目 app 里 Claude Code 的 skill「p-claude」：从网上下载代码直接运行",
-            "verdict": "info"
-          },
-          {
-            "category": "skill",
-            "evidence": {
-              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]},{\"kinds\":[\"exfil\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[6]},{\"kinds\":[\"escalation\"],\"severity\":\"low\",\"files\":[\"a.sh\"],\"lines\":[2]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec,escalation,exfil",
               "scope": "personal",
@@ -195,6 +115,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]},{\"kinds\":[\"injection\"],\"severity\":\"medium\",\"files\":[\"SKILL.md\"],\"lines\":[2]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec,injection",
               "scope": "personal",
@@ -211,7 +132,98 @@
           {
             "category": "skill",
             "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "a-very-long-skill-name-that-goes-on-and-…",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/long-name|f5b0af3847dabbb0",
+            "path": "~/.claude/skills/long-name",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「a-very-long-skill-name-that-goes-on-and-…」：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "claude",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/claude|c588cb159ec29c8d",
+            "path": "~/.claude/skills/claude",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「claude」：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "grouped",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/.claude/skills/group/grouped|c2d4b7c3cf838cf7",
+            "path": "~/.claude/skills/group/grouped",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「grouped」：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "personal",
+              "skill": "shared",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/dotfiles/skills/shared|1d6e4590c4e9e5e1",
+            "path": "~/.claude/skills/shared",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "Claude Code 的 skill「shared」：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
+              "agent": "Claude Code",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
+              "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
+              "kinds": "download-exec",
+              "scope": "project",
+              "skill": "p-claude",
+              "why": "AI 用这个 skill 时会照着它的说明做、运行它带的脚本，用的是你的权限。查到：从网上下载代码直接运行（SKILL.md 第 5 行）"
+            },
+            "key": "~/Projects/app/.claude/skills/p-claude|d973678a59065bed",
+            "path": "~/Projects/app/.claude/skills/p-claude",
+            "rule": "skill.download-exec",
+            "severity": "high",
+            "title": "项目 app 里 Claude Code 的 skill「p-claude」：从网上下载代码直接运行",
+            "verdict": "info"
+          },
+          {
+            "category": "skill",
+            "evidence": {
               "agent": "Codex",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",
@@ -229,6 +241,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Codex",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "project",
@@ -247,6 +260,7 @@
             "evidence": {
               "agent": "Cursor",
               "also": "~/.agents/skills/copy",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",
@@ -264,6 +278,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Cursor",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",
@@ -281,6 +296,7 @@
             "category": "skill",
             "evidence": {
               "agent": "Gemini CLI",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",
@@ -298,6 +314,7 @@
             "category": "skill",
             "evidence": {
               "agent": "GitHub Copilot",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",
@@ -315,6 +332,7 @@
             "category": "skill",
             "evidence": {
               "agent": "GitHub Copilot",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "project",
@@ -332,6 +350,7 @@
             "category": "skill",
             "evidence": {
               "agent": "多个 AI 工具共用",
+              "hits": "[{\"kinds\":[\"download-exec\"],\"severity\":\"high\",\"files\":[\"SKILL.md\"],\"lines\":[5]}]",
               "how": "不认识就在访达里把这个 skill 的文件夹移到废纸篓；认得的话看看它为什么要这样做；弄清楚之前别让 AI 用它",
               "kinds": "download-exec",
               "scope": "personal",

@@ -1,5 +1,5 @@
 {
-  "about": "npm 11 用着、~/.npmrc 没关：要确认一条，列出已装的依赖里要跑脚本的和放行的命令；项目自己的 .npmrc 不算",
+  "about": "npm 11 用着、~/.npmrc 没关：仅供参考一条（一项设置的现状，不指向哪个文件；标题是英文，证据只有代号和事实），带已装的依赖里要跑脚本的和放行的命令；项目自己的 .npmrc 不算",
   "case": "rules/pkg.install-scripts/npm",
   "steps": [
     {
@@ -24,19 +24,28 @@
           {
             "category": "posture",
             "evidence": {
+              "allow": "npm rebuild esbuild fsnative --ignore-scripts=false",
               "append": "ignore-scripts=true",
-              "how": "点「关闭自动运行」会在 ~/.npmrc 末尾加一行 ignore-scripts=true；原来那份移到废纸篓，能放回。已装的依赖里 esbuild、fsnative 要跑安装脚本，改了以后装它们要单独放行：npm rebuild esbuild fsnative --ignore-scripts=false。这一行也会让项目自己的 prepare 和 pre、post 脚本不跑（比如 husky 装 git 钩子），要跑时用 npm run <脚本名>。升到 npm 12 以后默认就不跑依赖的安装脚本，也能设新版本晚几天再装（min-release-age）。",
-              "packages": "esbuild、fsnative",
+              "config": "~/.npmrc",
+              "config_exists": "1",
+              "cost": "own-scripts-off",
+              "fixed_in": "npm 12",
+              "line": "ignore-scripts=true",
+              "name": "npm",
+              "packages": "esbuild, fsnative",
+              "reason": "default-on",
+              "risk": "third-party-code-at-install",
               "tool": "npm",
               "used": "~/.npmrc",
-              "why": "装着的 npm 11.6.2（$FIXTURE/usr-local/lib/node_modules/npm）默认会跑依赖的安装脚本，~/.npmrc 里没有关掉"
+              "version": "11.6.2",
+              "where": "$FIXTURE/usr-local/lib/node_modules/npm"
             },
             "key": "npm",
-            "path": "~/.npmrc",
+            "path": "",
             "rule": "pkg.install-scripts",
-            "severity": "medium",
-            "title": "npm 允许依赖在安装时跑脚本",
-            "verdict": "confirm"
+            "severity": "low",
+            "title": "npm runs the install scripts that packages bring with them",
+            "verdict": "info"
           }
         ],
         "finishedAt": "2026-10-20T12:00:00Z",

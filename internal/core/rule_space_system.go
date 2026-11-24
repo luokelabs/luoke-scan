@@ -34,6 +34,8 @@ type SystemSpaceRule struct {
 	IpswQuiet    time.Duration
 	// Device support written to within this long is in use (a device on that OS is being debugged).
 	DeviceSupportQuiet time.Duration
+	// The user's Spotlight index (what apps hand to Spotlight) from this size up is out of the ordinary.
+	MinSpotlightBytes int64
 	// Snapshots are the dates of Time Machine's local snapshots on the startup disk; ok false when tmutil does not
 	// answer. nil: this Mac's.
 	Snapshots func() ([]time.Time, bool)
@@ -43,7 +45,8 @@ type SystemSpaceRule struct {
 func NewSystemSpaceRule(l *Layout, f *Fakes) Rule {
 	r := &SystemSpaceRule{SnapshotAge: 2 * 24 * time.Hour, MinVMBytes: 5 << 30, MinModelBytes: 2 << 30, MinModelsTotal: 5 << 30,
 		MaxModels: 20, MinDeviceSupportBytes: 100 << 20, MinArchivesBytes: 1 << 30, MinSimulatorBytes: 5 << 30,
-		MinIpswBytes: 1 << 30, IpswQuiet: 24 * time.Hour, DeviceSupportQuiet: 30 * 24 * time.Hour}
+		MinIpswBytes: 1 << 30, IpswQuiet: 24 * time.Hour, DeviceSupportQuiet: 30 * 24 * time.Hour,
+		MinSpotlightBytes: 10 << 30}
 	if l != nil {
 		snaps := f.Snapshots
 		r.Snapshots = func() ([]time.Time, bool) {
@@ -60,7 +63,7 @@ func NewSystemSpaceRule(l *Layout, f *Fakes) Rule {
 func (r *SystemSpaceRule) ID() string { return "space.system" }
 func (r *SystemSpaceRule) Emits() []string {
 	return []string{"space.tm-snapshots", "space.vm-disk", "space.ai-model", "space.ai-models", "space.ipsw",
-		"space.xcode-device-support", "space.xcode-archives", "space.simulators"}
+		"space.xcode-device-support", "space.xcode-archives", "space.simulators", "space.spotlight-index"}
 }
 
 // thisMacSnapshots asks tmutil for the local snapshots.
@@ -290,6 +293,7 @@ func (r *SystemSpaceRule) Run(ctx *Context) ([]Finding, error) {
 		leftOut = append(leftOut, "下载、桌面、文稿里的系统恢复镜像")
 	}
 	out = append(out, r.xcode(ctx)...)
+	out = append(out, r.spotlight(ctx)...)
 	if len(leftOut) > 0 {
 		return nil, Skip(NotLooked(strings.Join(leftOut, "、")), out...)
 	}
@@ -475,6 +479,30 @@ func (r *SystemSpaceRule) xcode(ctx *Context) []Finding {
 		}
 	}
 	return out
+}
+
+// userSpotlight is the user's part of the Spotlight index: what apps (Mail, Notes, Messages…) hand to Spotlight to
+// be found by. The system's own index (/.Spotlight-V100) is read by root only: space.reconcile names it.
+const userSpotlight = "Library/Metadata/CoreSpotlight"
+
+// spotlight tells when the user's Spotlight index is far larger than it ordinarily is. Only told: rebuilding it is
+// the system's to do, on the user's say. Without Full Disk Access macOS does not let it be listed (nothing is
+// measured, nothing told).
+func (r *SystemSpaceRule) spotlight(ctx *Context) []Finding {
+	dir := filepath.Join(ctx.Home, userSpotlight)
+	if !ctx.MayLook(dir) || !Exists(dir) {
+		return nil
+	}
+	bytes := AllocatedSize(dir)
+	if bytes < r.MinSpotlightBytes {
+		return nil
+	}
+	return []Finding{{Rule: "space.spotlight-index", Category: CatSpace, Severity: Low, Verdict: Info, Path: dir, Bytes: Size(bytes),
+		Title: "Spotlight 的索引占了 " + FormatBytes(bytes),
+		Evidence: map[string]string{"threshold": FormatBytes(r.MinSpotlightBytes),
+			"why": "这是邮件、备忘录、信息等应用交给 Spotlight 用来搜索的索引，平常不会这么大；大成这样可能是索引出了问题",
+			"how": "让系统重建索引：系统设置 → Spotlight → 搜索隐私，把这块硬盘加进去再移除；或者在终端运行 sudo mdutil -E /（要管理员密码）。" +
+				"重建要一段时间，这期间搜索不全。别直接删这个文件夹；扫描不会自己做这件事"}}}
 }
 
 type modelFolder struct{ dir, name string }

@@ -1,0 +1,262 @@
+{
+  "about": "盘上用了 300 GiB，量得到的只有几十 MiB 加系统的 27 GiB：差额过了门槛（30 GiB），报一条，点名量不了的 Spotlight 索引",
+  "case": "rules/space.reconcile/over",
+  "steps": [
+    {
+      "fakes": {
+        "snapshots": [
+          "2026-10-19T12:00:00Z"
+        ],
+        "volume": {
+          "available": 161061273600,
+          "free": 214748364800,
+          "swap": 2147483648,
+          "system": 26843545600,
+          "total": 536870912000,
+          "used": 322122547200
+        }
+      }
+    },
+    {
+      "exit": 0,
+      "run": [
+        "luoke-scan",
+        "update",
+        "--data",
+        "$FIXTURE/data",
+        "--tool-dir",
+        "$FIXTURE/tools",
+        "--force"
+      ],
+      "stdout": [
+        "病毒库更新好了（daily 27000）"
+      ]
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "bytes": 239432892416,
+            "category": "space",
+            "evidence": {
+              "how": "在「系统设置 → 通用 → 储存空间」里看「系统数据」有多大。怀疑是 Spotlight 的索引时可以让系统重建它：系统设置 → Spotlight → 搜索隐私，把这块硬盘加进去再移除；或者在终端运行 sudo mdutil -E /（要管理员密码）。重建要一段时间，这期间搜索不全。扫描不会自己做这件事",
+              "measured": "29 GB",
+              "measured_bytes": "29002563584",
+              "purgeable": "53.69 GB",
+              "purgeable_bytes": "53687091200",
+              "snapshots": "1",
+              "spotlight": "unmeasured",
+              "threshold": "32.21 GB",
+              "unexplained": "239.43 GB",
+              "unexplained_bytes": "239432892416",
+              "unmeasured": "spotlight-index",
+              "used": "322.12 GB",
+              "used_bytes": "322122547200",
+              "why": "硬盘已用 322.12 GB，量得到的加起来 29 GB，系统说可以清除的 53.69 GB，还差 239.43 GB 对不上。扫描量不了、可能占着它的地方：系统的 Spotlight 索引（/.Spotlight-V100）、本地快照（现在有 1 个 Time Machine 的）"
+            },
+            "path": "~",
+            "rule": "space.unaccounted",
+            "severity": "low",
+            "title": "硬盘上有 239.43 GB 说不清是谁占的",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:00:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:00:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:00:00Z",
+        "--json"
+      ]
+    },
+    {
+      "clock": "2026-10-20T12:00:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "note": "data/usage 的 reconcile：各部分、没量的、差额",
+      "params": {
+        "uri": "data/usage"
+      },
+      "reply": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "complete": true,
+                "folders": [
+                  {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
+                    "apps": null,
+                    "bundleId": null,
+                    "bytes": 4194304,
+                    "day": "2026-10-20",
+                    "exclusiveBytes": 4194304,
+                    "grew7d": null,
+                    "holds": null,
+                    "id": "Movies",
+                    "kind": "known",
+                    "mix": {
+                      "bytes": 4194304,
+                      "count": 1,
+                      "files": [
+                        {
+                          "bytes": 4194304,
+                          "kind": "video",
+                          "modified": "2026-09-20",
+                          "name": "film.mov",
+                          "path": "~/Movies/film.mov"
+                        }
+                      ],
+                      "kinds": [
+                        {
+                          "bytes": 4194304,
+                          "count": 1,
+                          "id": "video"
+                        }
+                      ],
+                      "unknown": 0,
+                      "years": [
+                        {
+                          "before": false,
+                          "bytes": 4194304,
+                          "year": 2026
+                        }
+                      ]
+                    },
+                    "name": null,
+                    "paths": [
+                      "~/Movies"
+                    ],
+                    "pathsMore": 0,
+                    "reclaim": {
+                      "bytes": 0,
+                      "categories": [],
+                      "count": 0
+                    },
+                    "shareUncheckedBytes": 0,
+                    "sharedBytes": 0,
+                    "top": [
+                      {
+                        "actions": [
+                          {
+                            "app": null,
+                            "bundleId": null,
+                            "by": "finder",
+                            "categories": null,
+                            "command": null,
+                            "id": "review",
+                            "pane": null
+                          }
+                        ],
+                        "bytes": 4194304,
+                        "dir": false,
+                        "exclusiveBytes": null,
+                        "name": "film.mov",
+                        "path": "~/Movies/film.mov",
+                        "what": {
+                          "content": "user",
+                          "ifDeleted": "lost",
+                          "owner": "user"
+                        }
+                      }
+                    ],
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
+                  }
+                ],
+                "listedBytes": 4194304,
+                "measuredBytes": 4194304,
+                "more": 0,
+                "reconcile": {
+                  "complete": true,
+                  "day": "2026-10-20",
+                  "measured": 29002563584,
+                  "over": true,
+                  "parts": [
+                    {
+                      "bytes": 26843545600,
+                      "id": "macos"
+                    },
+                    {
+                      "bytes": 2147483648,
+                      "id": "swap"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "id": "home"
+                    },
+                    {
+                      "bytes": 3145728,
+                      "id": "applications"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "id": "library"
+                    },
+                    {
+                      "bytes": 1048576,
+                      "id": "shared"
+                    }
+                  ],
+                  "purgeable": 53687091200,
+                  "threshold": 32212254720,
+                  "total": 536870912000,
+                  "unexplained": 239432892416,
+                  "unmeasured": [
+                    {
+                      "blocks": false,
+                      "id": "spotlight-index",
+                      "why": "root"
+                    }
+                  ],
+                  "used": 322122547200
+                },
+                "scanned": {
+                  "finished": "2026-10-20T12:00:00Z",
+                  "started": "2026-10-20T12:00:00Z"
+                },
+                "schema": 1,
+                "shareUncheckedBytes": 0,
+                "unseen": []
+              },
+              "uri": "data/usage"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    }
+  ]
+}

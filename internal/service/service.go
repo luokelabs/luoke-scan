@@ -19,7 +19,7 @@ import (
 )
 
 // ToolVersion is this build's version; it must be the accessory manifest's (packaging/luoke-accessory.json).
-const ToolVersion = "0.3.44"
+const ToolVersion = "0.3.46"
 
 // ModelLink is luoke-core's model for the generate tasks.
 type ModelLink struct {
@@ -66,6 +66,9 @@ type Config struct {
 	// Volume is the free and total bytes of the disk home is on, read when the 「状态」 page is drawn; ok false when
 	// not known. A fake home answers its fakes' volume, so the page is the same each time.
 	Volume func(home string) (free, total int64, ok bool)
+	// Available is what can be written to that disk right now, without what the system may purge (free counts it);
+	// ok false when not known.
+	Available func(home string) (int64, bool)
 	// AppName is an installed app's own name for its bundle id ("" when it is not on this Mac): the 「状态」 page
 	// names a folder kept under a bundle id after its app.
 	AppName func(bundleID string) string
@@ -108,6 +111,7 @@ func NewConfig(ctx core.Context) Config {
 		Front:      func(string, map[string]any) bool { return false },
 		QuickWaits: QuickLookWaitsNow,
 		Volume:     core.VolumeCapacity,
+		Available:  core.VolumeAvailable,
 		AppName:    installedAppName,
 	}
 }
@@ -155,6 +159,12 @@ func FixtureConfig(l core.Layout, f *core.Fakes) Config {
 			return 0, 0, false
 		}
 		return f.Volume.Free, f.Volume.Total, true
+	}
+	cfg.Available = func(string) (int64, bool) {
+		if f == nil || f.Volume == nil {
+			return 0, false
+		}
+		return f.Volume.AvailableNow(), true
 	}
 	if PermissionOff(fdaPermission) {
 		no := false
@@ -245,6 +255,7 @@ func ThisMacConfig(s *core.Store, t core.Tools, otherData bool) Config {
 	ctx.Tmp = userTempDir()
 	ctx.SystemLibrary, ctx.Receipts = "/Library", "/var/db/receipts"
 	ctx.BackgroundItems = core.BackgroundItemsDir
+	ctx.VolumeRoot = "/System/Volumes/Data"
 	// Not known (the probe failed some other way): as without, so a round never brings up a dialog.
 	fda := false
 	if v := FullDiskAccessNow(h); v != nil {

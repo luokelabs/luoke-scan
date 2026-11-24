@@ -31,6 +31,23 @@
               {
                 "bytes": 12288,
                 "facts": {
+                  "hits": [
+                    {
+                      "declared": false,
+                      "files": [
+                        "tokenizer_config.json"
+                      ],
+                      "kinds": [
+                        "exfil",
+                        "conceal"
+                      ],
+                      "lines": [],
+                      "linesMore": 0,
+                      "part": "template",
+                      "severity": null
+                    }
+                  ],
+                  "hitsMore": 0,
                   "kinds": [
                     "exfil",
                     "conceal"
@@ -42,6 +59,7 @@
                 "finding": "model.chat-template/000000000009",
                 "group": "chat-template",
                 "key": "i0",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",
@@ -65,6 +83,23 @@
               {
                 "bytes": 12288,
                 "facts": {
+                  "hits": [
+                    {
+                      "declared": false,
+                      "files": [
+                        "tokenizer_config.json"
+                      ],
+                      "kinds": [
+                        "exfil",
+                        "conceal"
+                      ],
+                      "lines": [],
+                      "linesMore": 0,
+                      "part": "template",
+                      "severity": null
+                    }
+                  ],
+                  "hitsMore": 0,
                   "kinds": [
                     "exfil",
                     "conceal"
@@ -76,6 +111,7 @@
                 "finding": "model.chat-template/000000000010",
                 "group": "chat-template",
                 "key": "i1",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",
@@ -99,6 +135,23 @@
               {
                 "bytes": 12288,
                 "facts": {
+                  "hits": [
+                    {
+                      "declared": false,
+                      "files": [
+                        "tokenizer_config.json"
+                      ],
+                      "kinds": [
+                        "exfil",
+                        "conceal"
+                      ],
+                      "lines": [],
+                      "linesMore": 0,
+                      "part": "template",
+                      "severity": null
+                    }
+                  ],
+                  "hitsMore": 0,
                   "kinds": [
                     "exfil",
                     "conceal"
@@ -110,6 +163,7 @@
                 "finding": "model.chat-template/000000000011",
                 "group": "chat-template",
                 "key": "i2",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",
@@ -133,6 +187,23 @@
               {
                 "bytes": 12288,
                 "facts": {
+                  "hits": [
+                    {
+                      "declared": false,
+                      "files": [
+                        "tokenizer_config.json"
+                      ],
+                      "kinds": [
+                        "exfil",
+                        "conceal"
+                      ],
+                      "lines": [],
+                      "linesMore": 0,
+                      "part": "template",
+                      "severity": null
+                    }
+                  ],
+                  "hitsMore": 0,
                   "kinds": [
                     "exfil",
                     "conceal"
@@ -144,6 +215,7 @@
                 "finding": "model.chat-template/000000000012",
                 "group": "chat-template",
                 "key": "i3",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",
@@ -168,6 +240,39 @@
                 "bytes": null,
                 "facts": {
                   "agent": "Claude Code",
+                  "hits": [
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "download-exec"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "high"
+                    },
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "escalation"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "low"
+                    }
+                  ],
+                  "hitsMore": 0,
                   "kinds": [
                     "download-exec",
                     "escalation"
@@ -178,6 +283,7 @@
                 "finding": "skill.download-exec/000000000013",
                 "group": "skill",
                 "key": "i6",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",
@@ -202,6 +308,39 @@
                 "bytes": null,
                 "facts": {
                   "agent": "Claude Code",
+                  "hits": [
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "download-exec"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "high"
+                    },
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "escalation"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "low"
+                    }
+                  ],
+                  "hitsMore": 0,
                   "kinds": [
                     "download-exec",
                     "escalation"
@@ -212,6 +351,7 @@
                 "finding": "skill.download-exec/000000000014",
                 "group": "skill",
                 "key": "i7",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",
@@ -236,6 +376,39 @@
                 "bytes": null,
                 "facts": {
                   "agent": "Claude Code",
+                  "hits": [
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "download-exec"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "high"
+                    },
+                    {
+                      "declared": false,
+                      "files": [
+                        "SKILL.md"
+                      ],
+                      "kinds": [
+                        "escalation"
+                      ],
+                      "lines": [
+                        5
+                      ],
+                      "linesMore": 0,
+                      "part": null,
+                      "severity": "low"
+                    }
+                  ],
+                  "hitsMore": 0,
                   "kinds": [
                     "download-exec",
                     "escalation"
@@ -246,6 +419,7 @@
                 "finding": "skill.download-exec/000000000015",
                 "group": "skill",
                 "key": "i8",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",

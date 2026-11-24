@@ -24,64 +24,100 @@
           {
             "category": "posture",
             "evidence": {
+              "allow": "--no-config",
+              "built": "pyyaml",
+              "config": "~/.config/uv/uv.toml",
+              "config_exists": "1",
+              "cost": "no-wheel-deps-fail",
+              "delay": "exclude-newer = \"1 day\"",
+              "line": "no-build = true",
+              "manual": "add-at-top",
+              "name": "uv",
+              "reason": "built-from-source",
+              "risk": "third-party-code-at-install",
+              "tool": "uv",
+              "used": "~/.cache/uv"
+            },
+            "key": "uv",
+            "path": "",
+            "rule": "pkg.install-scripts",
+            "severity": "low",
+            "title": "uv runs a package's own build script when it installs from source",
+            "verdict": "info"
+          },
+          {
+            "category": "posture",
+            "evidence": {
+              "allow": "\"dependenciesMeta\": {\"<package>\": {\"built\": true}}",
+              "allow_in": "package.json",
               "append": "enableScripts: false",
-              "how": "点「关闭自动运行」会在 ~/.yarnrc.yml 末尾加一行 enableScripts: false；原来那份移到废纸篓，能放回。以后有包真要跑脚本，单独放行：在项目的 package.json 里写 \"dependenciesMeta\": {\"<包名>\": {\"built\": true}}。也可以让新版本晚一天再装：Yarn 4.10 起在 ~/.yarnrc.yml 加一行 npmMinimalAgeGate: \"1d\"。",
+              "config": "~/.yarnrc.yml",
+              "config_exists": "1",
+              "delay": "npmMinimalAgeGate: \"1d\"",
+              "delay_since": "Yarn 4.10",
+              "fixed_in": "Yarn 4.14",
+              "line": "enableScripts: false",
+              "name": "Yarn",
+              "reason": "default-on",
+              "risk": "third-party-code-at-install",
               "tool": "yarn",
               "used": "~/.yarnrc.yml",
-              "why": "用着的 Yarn 4.5.0（~/Projects/web）默认会跑依赖的安装脚本，~/.yarnrc.yml 里没有关掉"
+              "version": "4.5.0",
+              "where": "~/Projects/web"
             },
             "key": "yarn",
-            "path": "~/.yarnrc.yml",
+            "path": "",
             "rule": "pkg.install-scripts",
-            "severity": "medium",
-            "title": "Yarn 允许依赖在安装时跑脚本",
-            "verdict": "confirm"
+            "severity": "low",
+            "title": "Yarn runs the install scripts that packages bring with them",
+            "verdict": "info"
           },
           {
             "category": "posture",
             "evidence": {
-              "append": "only-binary = :all:",
-              "how": "点「关闭自动运行」会新建 ~/.config/pip/pip.conf，写上 only-binary = :all:；放回时把它移走。改了以后，没有现成安装包（wheel）的包会装不上，本地的项目（pip install .）也可能装不上；要装时单独放行：pip install --only-binary :none: <包名>。也可以让新版本晚一天再装：pip 26.1 起在 [global] 加 uploaded-prior-to = P1D。",
-              "tool": "pip",
-              "used": "~/Library/Caches/pip",
-              "why": "pip 在这台 Mac 上从源码编译过 pycrypto，编译时会运行包自带的 setup.py"
-            },
-            "key": "pip",
-            "path": "~/.config/pip/pip.conf",
-            "rule": "pkg.install-scripts",
-            "severity": "medium",
-            "title": "pip 装源码包时会跑它的构建脚本",
-            "verdict": "confirm"
-          },
-          {
-            "category": "posture",
-            "evidence": {
-              "how": "升到 pnpm 10 或更新：默认不跑依赖的安装脚本，pnpm 11 起新版本还默认晚一天才装。以后有包真要跑脚本，单独放行：在项目的 pnpm-workspace.yaml 的 allowBuilds 里写上它（pnpm 10 是 onlyBuiltDependencies）。",
+              "allow": "allowBuilds",
+              "allow_in": "pnpm-workspace.yaml",
+              "fixed_in": "pnpm 10",
+              "manual": "upgrade",
+              "name": "pnpm",
+              "reason": "old-store",
+              "risk": "third-party-code-at-install",
+              "store": "~/Library/pnpm/store/v3",
               "tool": "pnpm",
-              "used": "~/Library/pnpm",
-              "why": "~/Library/pnpm/store 只有 pnpm 9 或更早用的 v3 仓库，这些版本默认会跑依赖的安装脚本"
+              "used": "~/Library/pnpm"
             },
             "key": "pnpm",
             "path": "",
             "rule": "pkg.install-scripts",
-            "severity": "medium",
-            "title": "pnpm 允许依赖在安装时跑脚本",
-            "verdict": "confirm"
+            "severity": "low",
+            "title": "pnpm runs the install scripts that packages bring with them",
+            "verdict": "info"
           },
           {
             "category": "posture",
             "evidence": {
-              "how": "在 ~/.config/uv/uv.toml 最前面（任何 [表] 之前）加一行 no-build = true。改了以后，依赖里没有现成安装包（wheel）的会装不上（你自己的项目照样会构建）；uv 不能按包放行，要装时那一次加 --no-config（不读这份配置）。也可以让新版本晚一天再装：在 ~/.config/uv/uv.toml 加一行 exclude-newer = \"1 day\"。",
-              "tool": "uv",
-              "used": "~/.cache/uv",
-              "why": "uv 在这台 Mac 上从源码编译过 pyyaml，编译时会运行包自带的构建脚本"
+              "allow": "pip install --only-binary :none: <package>",
+              "append": "only-binary = :all:",
+              "built": "pycrypto",
+              "config": "~/.config/pip/pip.conf",
+              "config_exists": "0",
+              "cost": "no-wheel-fails",
+              "delay": "uploaded-prior-to = P1D",
+              "delay_since": "pip 26.1",
+              "line": "only-binary = :all:",
+              "name": "pip",
+              "reason": "built-from-source",
+              "risk": "third-party-code-at-install",
+              "runs": "setup.py",
+              "tool": "pip",
+              "used": "~/Library/Caches/pip"
             },
-            "key": "uv",
-            "path": "~/.config/uv/uv.toml",
+            "key": "pip",
+            "path": "",
             "rule": "pkg.install-scripts",
-            "severity": "medium",
-            "title": "uv 装源码包时会跑它的构建脚本",
-            "verdict": "confirm"
+            "severity": "low",
+            "title": "pip runs a package's own build script when it installs from source",
+            "verdict": "info"
           }
         ],
         "finishedAt": "2026-10-20T12:00:00Z",

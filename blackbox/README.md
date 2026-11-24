@@ -9,6 +9,8 @@ python3 blackbox/run.py                      # 跑全部场景，和 golden 比�
 python3 blackbox/run.py --only rules/cache   # 只跑名字以它开头的
 python3 blackbox/run.py --record --only …    # 重录（先确认差别是该有的）
 python3 blackbox/run.py --list               # 列出场景
+python3 blackbox/run.py --slow 20            # 跑完列出最慢的 20 个场景各用了几秒
+python3 blackbox/run.py -j 4                 # 同时跑 4 个；不给时按这台机器定：核数（Mac 上只算性能核）减去起跑时已经在忙的，至少 2 个
 LUOKE_SCAN_BIN=/path/to/luoke-scan python3 blackbox/run.py   # 换一个被测的程序（也可以 --bin）
 ```
 
@@ -34,6 +36,7 @@ LUOKE_SCAN_BIN=/path/to/luoke-scan python3 blackbox/run.py   # 换一个被测�
 | `SystemLibrary/`、`receipts/` | 当 `/Library`、`/var/db/receipts` |
 | `backgroundtaskmanagement/` | 当 `/private/var/db/com.apple.backgroundtaskmanagement`：「登录项与扩展」的记录 `BackgroundItems-v<N>.btm`（`fx.btm` 写） |
 | `Shared/`、`usr-local/`、`opt-homebrew/`、`etc/`、`usr-sbin/` | 当 `/Users/Shared`、`/usr/local`、`/opt/homebrew`、`/etc`、`/usr/sbin` |
+| `volume/` | 当数据卷的顶上（`/System/Volumes/Data`）：对账（`space.reconcile`）量这里的文件夹，`Applications`、`Library`、`Users/<别人>`、`.Spotlight-V100` 等照真机的名字放；没有就只算家目录 |
 | `Trash/` | 废纸篓：移到废纸篓的都进这里（名字前加 8 位十六进制和 `-`） |
 | `commands.log` | 要跑的系统命令（不真跑）：一行一个 `{"tool", "args"}` |
 | `fakes.json` | 本机状态的假答案，见下 |
@@ -58,7 +61,7 @@ TCC 只读 `home/Library/Application Support/com.apple.TCC/TCC.db`；「登录�
 | `running`、`commandLines`、`attachedImages` | 正在跑的程序的路径、它们的命令行、挂着的磁盘映像 |
 | `crontab` | 本用户的 crontab；`null`：读不了 |
 | `installedCommands` | 装着的命令（缓存自己的清理命令要它在） |
-| `volume` | 家目录所在的盘：`free`、`total`、`swap`（字节）；`null`：不知道 |
+| `volume` | 家目录所在的盘：`free`、`total`、`swap`（字节），可以再给 `available`（现在就能写的，不给就和 `free` 一样）、`used`（盘上一共用了多少，对账用；不给就不对账）、`system`（其中系统自己的卷）；`null`：不知道 |
 | `onBattery`、`lowPower`、`memoryPressure` | 两轮之间看一眼新下载的（`scan --quick`）要等的：在用电池、低电量模式、内存压力（1 正常、2 警告、4 严重） |
 | `vitals` | 运行状况（`vitals` 规则）：`cpu` 是一轮里两次读数时各进程用过的处理器秒数（`{"pid": [先, 后]}`，两次相隔 `sampleSeconds` 秒；`null` 读不到）、`footprint` 各进程占的内存（字节）、`memTotal`、`pressure`（1 正常、2 警告、4 严重，0 读不到）、`swap`（`null` 读不到）、`battery`（`cycles`、`designCycles`、`capacity`、`designCapacity`；`null` 没有电池）、`batteryUnknown`、`thermal`（两次读到的发热档位，0–4；空的是读不到）；整个是 `null` 时什么都不报 |
 | `staleFiles`、`downloaded`、`appsAdded` | Spotlight 的答复：很久没用的文件（`path`、`used`、`changed`）、最近下载的文件、应用来到文件夹的时间；前两个 `null`：Spotlight 没答 |

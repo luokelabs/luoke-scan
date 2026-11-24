@@ -10,14 +10,98 @@
             "complete": true,
             "folders": [
               {
+                "actions": [
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "scan",
+                    "categories": [
+                      "cache"
+                    ],
+                    "command": null,
+                    "id": "clean",
+                    "pane": null
+                  }
+                ],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 337641472,
                 "day": "2026-10-20",
+                "exclusiveBytes": 337641472,
                 "grew7d": null,
                 "holds": null,
                 "id": null,
                 "kind": "dev-caches",
+                "mix": {
+                  "bytes": 337641472,
+                  "count": 7,
+                  "files": [
+                    {
+                      "bytes": 62914560,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "blob",
+                      "path": "~/Library/Caches/pip/http/blob"
+                    },
+                    {
+                      "bytes": 56623104,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/Library/Caches/go-build/00/a"
+                    },
+                    {
+                      "bytes": 55574528,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/.gradle/caches/a"
+                    },
+                    {
+                      "bytes": 54525952,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/.cargo/registry/cache/a"
+                    },
+                    {
+                      "bytes": 53477376,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/.gradle/wrapper/dists/a"
+                    },
+                    {
+                      "bytes": 53477376,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/Library/Caches/node-gyp/a"
+                    },
+                    {
+                      "bytes": 1048576,
+                      "kind": "other",
+                      "modified": "2026-10-17",
+                      "name": "x",
+                      "path": "~/.cargo/registry/cache/index/x"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 337641472,
+                      "count": 7,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 337641472,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "~/.gradle",
@@ -27,212 +111,988 @@
                   "~/Library/Caches/node-gyp"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 337641472,
+                  "categories": [
+                    {
+                      "bytes": 337641472,
+                      "count": 6,
+                      "id": "cache"
+                    }
+                  ],
+                  "count": 6
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 109051904,
                     "dir": true,
+                    "exclusiveBytes": 109051904,
                     "name": ".gradle",
-                    "path": "~/.gradle"
+                    "path": "~/.gradle",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 62914560,
                     "dir": true,
+                    "exclusiveBytes": 62914560,
                     "name": "pip",
-                    "path": "~/Library/Caches/pip"
+                    "path": "~/Library/Caches/pip",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 56623104,
                     "dir": true,
+                    "exclusiveBytes": 56623104,
                     "name": "go-build",
-                    "path": "~/Library/Caches/go-build"
+                    "path": "~/Library/Caches/go-build",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 55574528,
                     "dir": true,
+                    "exclusiveBytes": 55574528,
                     "name": ".cargo",
-                    "path": "~/.cargo"
+                    "path": "~/.cargo",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 53477376,
                     "dir": true,
+                    "exclusiveBytes": 53477376,
                     "name": "node-gyp",
-                    "path": "~/Library/Caches/node-gyp"
+                    "path": "~/Library/Caches/node-gyp",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "cache",
+                  "ifDeleted": "rebuilds",
+                  "owner": null
+                }
               },
               {
+                "actions": [
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "scan",
+                    "categories": [
+                      "temp"
+                    ],
+                    "command": null,
+                    "id": "clean",
+                    "pane": null
+                  }
+                ],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 262156288,
                 "day": "2026-10-20",
+                "exclusiveBytes": 262156288,
                 "grew7d": null,
                 "holds": null,
                 "id": null,
                 "kind": "temp",
+                "mix": {
+                  "bytes": 262156288,
+                  "count": 53,
+                  "files": [
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00000/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00001/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00002/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00003/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00004/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00005/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00006/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00007/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00008/x"
+                    },
+                    {
+                      "bytes": 5242880,
+                      "kind": "other",
+                      "modified": "2026-10-20",
+                      "name": "x",
+                      "path": "$TMPDIR/busy-B00009/x"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 131072000,
+                      "count": 25,
+                      "id": "code"
+                    },
+                    {
+                      "bytes": 131084288,
+                      "count": 28,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 262156288,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "$TMPDIR"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 131072000,
+                  "categories": [
+                    {
+                      "bytes": 131072000,
+                      "count": 1,
+                      "id": "temp"
+                    }
+                  ],
+                  "count": 1
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 5242880,
                     "dir": true,
+                    "exclusiveBytes": 5242880,
                     "name": "busy-B00000",
-                    "path": "$TMPDIR/busy-B00000"
+                    "path": "$TMPDIR/busy-B00000",
+                    "what": {
+                      "content": "temp",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 5242880,
                     "dir": true,
+                    "exclusiveBytes": 5242880,
                     "name": "busy-B00001",
-                    "path": "$TMPDIR/busy-B00001"
+                    "path": "$TMPDIR/busy-B00001",
+                    "what": {
+                      "content": "temp",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 5242880,
                     "dir": true,
+                    "exclusiveBytes": 5242880,
                     "name": "busy-B00002",
-                    "path": "$TMPDIR/busy-B00002"
+                    "path": "$TMPDIR/busy-B00002",
+                    "what": {
+                      "content": "temp",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 5242880,
                     "dir": true,
+                    "exclusiveBytes": 5242880,
                     "name": "busy-B00003",
-                    "path": "$TMPDIR/busy-B00003"
+                    "path": "$TMPDIR/busy-B00003",
+                    "what": {
+                      "content": "temp",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 5242880,
                     "dir": true,
+                    "exclusiveBytes": 5242880,
                     "name": "busy-B00004",
-                    "path": "$TMPDIR/busy-B00004"
+                    "path": "$TMPDIR/busy-B00004",
+                    "what": {
+                      "content": "temp",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "temp",
+                  "ifDeleted": "rebuilds",
+                  "owner": null
+                }
               },
               {
+                "actions": [
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "scan",
+                    "categories": [
+                      "installer",
+                      "duplicate",
+                      "malware"
+                    ],
+                    "command": null,
+                    "id": "clean",
+                    "pane": null
+                  },
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "finder",
+                    "categories": null,
+                    "command": null,
+                    "id": "review",
+                    "pane": null
+                  }
+                ],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 229814272,
                 "day": "2026-10-20",
+                "exclusiveBytes": 229814272,
                 "grew7d": null,
                 "holds": null,
                 "id": "Downloads",
                 "kind": "known",
+                "mix": {
+                  "bytes": 229814272,
+                  "count": 51,
+                  "files": [
+                    {
+                      "bytes": 5246976,
+                      "kind": "installer",
+                      "modified": "2026-09-20",
+                      "name": "AsterChat-1.4.2-arm64.dmg",
+                      "path": "~/Downloads/AsterChat-1.4.2-arm64.dmg"
+                    },
+                    {
+                      "bytes": 5246976,
+                      "kind": "installer",
+                      "modified": "2026-09-20",
+                      "name": "AsterCode-1.5.2-arm64.dmg",
+                      "path": "~/Downloads/AsterCode-1.5.2-arm64.dmg"
+                    },
+                    {
+                      "bytes": 5246976,
+                      "kind": "installer",
+                      "modified": "2026-09-20",
+                      "name": "AsterDraw-1.2.2-arm64.dmg",
+                      "path": "~/Downloads/AsterDraw-1.2.2-arm64.dmg"
+                    },
+                    {
+                      "bytes": 5246976,
+                      "kind": "installer",
+                      "modified": "2026-09-20",
+                      "name": "AsterMail-1.3.2-arm64.dmg",
+                      "path": "~/Downloads/AsterMail-1.3.2-arm64.dmg"
+                    },
+                    {
+                      "bytes": 5246976,
+                      "kind": "installer",
+                      "modified": "2026-09-20",
+                      "name": "AsterSync-1.1.2-arm64.dmg",
+                      "path": "~/Downloads/AsterSync-1.1.2-arm64.dmg"
+                    },
+                    {
+                      "bytes": 5246976,
+                      "kind": "installer",
+                      "modified": "2026-09-20",
+                      "name": "BirchChat-1.10.2-arm64.dmg",
+                      "path": "~/Downloads/BirchChat-1.10.2-arm64.dmg"
+                    },
+                    {
+                      "bytes": 5246976,
+                      "kind": "installer",
+                      "modified": "2026-09-20",
+                      "name": "BirchCode-1.11.2-arm64.dmg",
+                      "path": "~/Downloads/BirchCode-1.11.2-arm64.dmg"
+                    },
+                    {
+                      "bytes": 5246976,
+                      "kind": "installer",
+                      "modified": "2026-09-20",
+                      "name": "BirchDraw-1.8.2-arm64.dmg",
+                      "path": "~/Downloads/BirchDraw-1.8.2-arm64.dmg"
+                    },
+                    {
+                      "bytes": 5246976,
+                      "kind": "installer",
+                      "modified": "2026-09-20",
+                      "name": "BirchMail-1.9.2-arm64.dmg",
+                      "path": "~/Downloads/BirchMail-1.9.2-arm64.dmg"
+                    },
+                    {
+                      "bytes": 5246976,
+                      "kind": "installer",
+                      "modified": "2026-09-20",
+                      "name": "BirchNote-1.6.2-arm64.dmg",
+                      "path": "~/Downloads/BirchNote-1.6.2-arm64.dmg"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 215121920,
+                      "count": 41,
+                      "id": "installer"
+                    },
+                    {
+                      "bytes": 14680064,
+                      "count": 7,
+                      "id": "document"
+                    },
+                    {
+                      "bytes": 4096,
+                      "count": 1,
+                      "id": "archive"
+                    },
+                    {
+                      "bytes": 8192,
+                      "count": 2,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 229814272,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "~/Downloads"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 229810176,
+                  "categories": [
+                    {
+                      "bytes": 215121920,
+                      "count": 41,
+                      "id": "installer"
+                    },
+                    {
+                      "bytes": 14680064,
+                      "count": 7,
+                      "id": "duplicate"
+                    },
+                    {
+                      "bytes": 8192,
+                      "count": 2,
+                      "id": "malware"
+                    }
+                  ],
+                  "count": 50
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 5246976,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "AsterChat-1.4.2-arm64.dmg",
-                    "path": "~/Downloads/AsterChat-1.4.2-arm64.dmg"
+                    "path": "~/Downloads/AsterChat-1.4.2-arm64.dmg",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   },
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 5246976,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "AsterCode-1.5.2-arm64.dmg",
-                    "path": "~/Downloads/AsterCode-1.5.2-arm64.dmg"
+                    "path": "~/Downloads/AsterCode-1.5.2-arm64.dmg",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   },
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 5246976,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "AsterDraw-1.2.2-arm64.dmg",
-                    "path": "~/Downloads/AsterDraw-1.2.2-arm64.dmg"
+                    "path": "~/Downloads/AsterDraw-1.2.2-arm64.dmg",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   },
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 5246976,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "AsterMail-1.3.2-arm64.dmg",
-                    "path": "~/Downloads/AsterMail-1.3.2-arm64.dmg"
+                    "path": "~/Downloads/AsterMail-1.3.2-arm64.dmg",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   },
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 5246976,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "AsterSync-1.1.2-arm64.dmg",
-                    "path": "~/Downloads/AsterSync-1.1.2-arm64.dmg"
+                    "path": "~/Downloads/AsterSync-1.1.2-arm64.dmg",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "user",
+                  "ifDeleted": "lost",
+                  "owner": "user"
+                }
               },
               {
+                "actions": [
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "scan",
+                    "categories": [
+                      "cache"
+                    ],
+                    "command": null,
+                    "id": "clean",
+                    "pane": null
+                  }
+                ],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 54525952,
                 "day": "2026-10-20",
+                "exclusiveBytes": 54525952,
                 "grew7d": null,
                 "holds": "cache",
                 "id": null,
                 "kind": "app",
+                "mix": {
+                  "bytes": 54525952,
+                  "count": 1,
+                  "files": [
+                    {
+                      "bytes": 54525952,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "a",
+                      "path": "~/Library/Caches/composer/a"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 54525952,
+                      "count": 1,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 54525952,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": "composer",
                 "paths": [
                   "~/Library/Caches/composer"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 54525952,
+                  "categories": [
+                    {
+                      "bytes": 54525952,
+                      "count": 1,
+                      "id": "cache"
+                    }
+                  ],
+                  "count": 1
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 54525952,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "a",
-                    "path": "~/Library/Caches/composer/a"
+                    "path": "~/Library/Caches/composer/a",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "cache",
+                  "ifDeleted": "rebuilds",
+                  "owner": null
+                }
               },
               {
+                "actions": [
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "finder",
+                    "categories": null,
+                    "command": null,
+                    "id": "review",
+                    "pane": null
+                  }
+                ],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 14680064,
                 "day": "2026-10-20",
+                "exclusiveBytes": 14680064,
                 "grew7d": null,
                 "holds": null,
                 "id": "Documents",
                 "kind": "known",
+                "mix": {
+                  "bytes": 14680064,
+                  "count": 7,
+                  "files": [
+                    {
+                      "bytes": 2097152,
+                      "kind": "document",
+                      "modified": "2026-09-20",
+                      "name": "%E9%A6%99%E6%B8%AF-0.v2.pdf",
+                      "path": "~/Documents/%E9%A6%99%E6%B8%AF-0.v2.pdf"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "document",
+                      "modified": "2026-09-20",
+                      "name": "%E9%A6%99%E6%B8%AF-1.v2.pdf",
+                      "path": "~/Documents/%E9%A6%99%E6%B8%AF-1.v2.pdf"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "document",
+                      "modified": "2026-09-20",
+                      "name": "%E9%A6%99%E6%B8%AF-2.v2.pdf",
+                      "path": "~/Documents/%E9%A6%99%E6%B8%AF-2.v2.pdf"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "document",
+                      "modified": "2026-09-20",
+                      "name": "%E9%A6%99%E6%B8%AF-3.v2.pdf",
+                      "path": "~/Documents/%E9%A6%99%E6%B8%AF-3.v2.pdf"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "document",
+                      "modified": "2026-09-20",
+                      "name": "%E9%A6%99%E6%B8%AF-4.v2.pdf",
+                      "path": "~/Documents/%E9%A6%99%E6%B8%AF-4.v2.pdf"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "document",
+                      "modified": "2026-09-20",
+                      "name": "%E9%A6%99%E6%B8%AF-5.v2.pdf",
+                      "path": "~/Documents/%E9%A6%99%E6%B8%AF-5.v2.pdf"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "document",
+                      "modified": "2026-09-20",
+                      "name": "%E9%A6%99%E6%B8%AF-6.v2.pdf",
+                      "path": "~/Documents/%E9%A6%99%E6%B8%AF-6.v2.pdf"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 14680064,
+                      "count": 7,
+                      "id": "document"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 14680064,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "~/Documents"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 0,
+                  "categories": [],
+                  "count": 0
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 2097152,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "%E9%A6%99%E6%B8%AF-0.v2.pdf",
-                    "path": "~/Documents/%E9%A6%99%E6%B8%AF-0.v2.pdf"
+                    "path": "~/Documents/%E9%A6%99%E6%B8%AF-0.v2.pdf",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   },
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 2097152,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "%E9%A6%99%E6%B8%AF-1.v2.pdf",
-                    "path": "~/Documents/%E9%A6%99%E6%B8%AF-1.v2.pdf"
+                    "path": "~/Documents/%E9%A6%99%E6%B8%AF-1.v2.pdf",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   },
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 2097152,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "%E9%A6%99%E6%B8%AF-2.v2.pdf",
-                    "path": "~/Documents/%E9%A6%99%E6%B8%AF-2.v2.pdf"
+                    "path": "~/Documents/%E9%A6%99%E6%B8%AF-2.v2.pdf",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   },
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 2097152,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "%E9%A6%99%E6%B8%AF-3.v2.pdf",
-                    "path": "~/Documents/%E9%A6%99%E6%B8%AF-3.v2.pdf"
+                    "path": "~/Documents/%E9%A6%99%E6%B8%AF-3.v2.pdf",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   },
                   {
+                    "actions": [
+                      {
+                        "app": null,
+                        "bundleId": null,
+                        "by": "finder",
+                        "categories": null,
+                        "command": null,
+                        "id": "review",
+                        "pane": null
+                      }
+                    ],
                     "bytes": 2097152,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "%E9%A6%99%E6%B8%AF-4.v2.pdf",
-                    "path": "~/Documents/%E9%A6%99%E6%B8%AF-4.v2.pdf"
+                    "path": "~/Documents/%E9%A6%99%E6%B8%AF-4.v2.pdf",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "user",
+                  "ifDeleted": "lost",
+                  "owner": "user"
+                }
               },
               {
+                "actions": [],
                 "apps": 5,
                 "bundleId": null,
                 "bytes": 11534336,
                 "day": "2026-10-20",
+                "exclusiveBytes": 11534336,
                 "grew7d": null,
                 "holds": null,
                 "id": null,
                 "kind": "removed-apps",
+                "mix": {
+                  "bytes": 11534336,
+                  "count": 6,
+                  "files": [
+                    {
+                      "bytes": 2097152,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "data.bin",
+                      "path": "~/Library/Application Support/io.example.removed/data.bin"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "code",
+                      "modified": "2026-08-21",
+                      "name": "k.json",
+                      "path": "~/Library/Application Support/io.parity.ethereum/keys/k.json"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "h.bin",
+                      "path": "~/Library/Application Support/org.present.oldhelper/h.bin"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "c.bin",
+                      "path": "~/Library/Caches/com.apple.example/c.bin"
+                    },
+                    {
+                      "bytes": 2097152,
+                      "kind": "other",
+                      "modified": "2026-10-19",
+                      "name": "c.bin",
+                      "path": "~/Library/Caches/io.example.stillused/c.bin"
+                    },
+                    {
+                      "bytes": 1048576,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "c.bin",
+                      "path": "~/Library/Containers/ABCDE12345.io.example.removed/c.bin"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 2097152,
+                      "count": 1,
+                      "id": "code"
+                    },
+                    {
+                      "bytes": 9437184,
+                      "count": 5,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 11534336,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "~/Library/Application Support/io.example.removed",
@@ -243,123 +1103,376 @@
                   "~/Library/Containers/ABCDE12345.io.example.removed"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 0,
+                  "categories": [],
+                  "count": 0
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": true,
+                    "exclusiveBytes": 2097152,
                     "name": "io.example.removed",
-                    "path": "~/Library/Application Support/io.example.removed"
+                    "path": "~/Library/Application Support/io.example.removed",
+                    "what": {
+                      "content": "app-data",
+                      "ifDeleted": "lost",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": true,
+                    "exclusiveBytes": 2097152,
                     "name": "io.parity.ethereum",
-                    "path": "~/Library/Application Support/io.parity.ethereum"
+                    "path": "~/Library/Application Support/io.parity.ethereum",
+                    "what": {
+                      "content": "app-data",
+                      "ifDeleted": "lost",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": true,
+                    "exclusiveBytes": 2097152,
                     "name": "org.present.oldhelper",
-                    "path": "~/Library/Application Support/org.present.oldhelper"
+                    "path": "~/Library/Application Support/org.present.oldhelper",
+                    "what": {
+                      "content": "app-data",
+                      "ifDeleted": "lost",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": true,
+                    "exclusiveBytes": 2097152,
                     "name": "com.apple.example",
-                    "path": "~/Library/Caches/com.apple.example"
+                    "path": "~/Library/Caches/com.apple.example",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": true,
+                    "exclusiveBytes": 2097152,
                     "name": "io.example.stillused",
-                    "path": "~/Library/Caches/io.example.stillused"
+                    "path": "~/Library/Caches/io.example.stillused",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "app-data",
+                  "ifDeleted": "lost",
+                  "owner": null
+                }
               },
               {
+                "actions": [
+                  {
+                    "app": null,
+                    "bundleId": null,
+                    "by": "scan",
+                    "categories": [
+                      "project"
+                    ],
+                    "command": null,
+                    "id": "clean",
+                    "pane": null
+                  }
+                ],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 3371008,
                 "day": "2026-10-20",
+                "exclusiveBytes": 3371008,
                 "grew7d": null,
                 "holds": null,
                 "id": null,
                 "kind": "folder",
+                "mix": {
+                  "bytes": 3371008,
+                  "count": 294,
+                  "files": [
+                    {
+                      "bytes": 2097152,
+                      "kind": "document",
+                      "modified": "2025-09-15",
+                      "name": "notes.txt",
+                      "path": "~/Projects/unpacked/notes.txt"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 2146304,
+                      "count": 13,
+                      "id": "document"
+                    },
+                    {
+                      "bytes": 8192,
+                      "count": 2,
+                      "id": "code"
+                    },
+                    {
+                      "bytes": 4096,
+                      "count": 1,
+                      "id": "photo"
+                    },
+                    {
+                      "bytes": 1212416,
+                      "count": 278,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 4096,
+                      "year": 2026
+                    },
+                    {
+                      "before": false,
+                      "bytes": 2170880,
+                      "year": 2025
+                    },
+                    {
+                      "before": false,
+                      "bytes": 1196032,
+                      "year": null
+                    }
+                  ]
+                },
                 "name": "Projects",
                 "paths": [
                   "~/Projects"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 147456,
+                  "categories": [
+                    {
+                      "bytes": 147456,
+                      "count": 1,
+                      "id": "project"
+                    }
+                  ],
+                  "count": 1
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 2101248,
                     "dir": true,
+                    "exclusiveBytes": 2101248,
                     "name": "unpacked",
-                    "path": "~/Projects/unpacked"
+                    "path": "~/Projects/unpacked",
+                    "what": {
+                      "content": "user",
+                      "ifDeleted": "lost",
+                      "owner": "user"
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "user",
+                  "ifDeleted": "lost",
+                  "owner": "user"
+                }
               },
               {
+                "actions": [],
                 "apps": null,
                 "bundleId": null,
                 "bytes": 3145728,
                 "day": "2026-10-20",
+                "exclusiveBytes": 3145728,
                 "grew7d": null,
                 "holds": null,
                 "id": "Library/Group Containers",
                 "kind": "known",
+                "mix": {
+                  "bytes": 3145728,
+                  "count": 2,
+                  "files": [
+                    {
+                      "bytes": 2097152,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "g.bin",
+                      "path": "~/Library/Group Containers/group.org.present.app.shared/g.bin"
+                    },
+                    {
+                      "bytes": 1048576,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "g.bin",
+                      "path": "~/Library/Group Containers/ABCDE12345.io.example.removed/g.bin"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 3145728,
+                      "count": 2,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 3145728,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": null,
                 "paths": [
                   "~/Library/Group Containers"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 0,
+                  "categories": [],
+                  "count": 0
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": true,
+                    "exclusiveBytes": 2097152,
                     "name": "group.org.present.app.shared",
-                    "path": "~/Library/Group Containers/group.org.present.app.shared"
+                    "path": "~/Library/Group Containers/group.org.present.app.shared",
+                    "what": {
+                      "content": null,
+                      "ifDeleted": null,
+                      "owner": null
+                    }
                   },
                   {
+                    "actions": [],
                     "bytes": 1048576,
                     "dir": true,
+                    "exclusiveBytes": 1048576,
                     "name": "ABCDE12345.io.example.removed",
-                    "path": "~/Library/Group Containers/ABCDE12345.io.example.removed"
+                    "path": "~/Library/Group Containers/ABCDE12345.io.example.removed",
+                    "what": {
+                      "content": null,
+                      "ifDeleted": null,
+                      "owner": null
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": null,
+                  "ifDeleted": null,
+                  "owner": null
+                }
               },
               {
+                "actions": [],
                 "apps": null,
                 "bundleId": "org.present.app",
                 "bytes": 2097152,
                 "day": "2026-10-20",
+                "exclusiveBytes": 2097152,
                 "grew7d": null,
                 "holds": "cache",
                 "id": null,
                 "kind": "app",
+                "mix": {
+                  "bytes": 2097152,
+                  "count": 1,
+                  "files": [
+                    {
+                      "bytes": 2097152,
+                      "kind": "other",
+                      "modified": "2026-08-21",
+                      "name": "c.bin",
+                      "path": "~/Library/Caches/org.present.app/c.bin"
+                    }
+                  ],
+                  "kinds": [
+                    {
+                      "bytes": 2097152,
+                      "count": 1,
+                      "id": "other"
+                    }
+                  ],
+                  "unknown": 0,
+                  "years": [
+                    {
+                      "before": false,
+                      "bytes": 2097152,
+                      "year": 2026
+                    }
+                  ]
+                },
                 "name": "Present",
                 "paths": [
                   "~/Library/Caches/org.present.app"
                 ],
                 "pathsMore": 0,
+                "reclaim": {
+                  "bytes": 0,
+                  "categories": [],
+                  "count": 0
+                },
+                "shareUncheckedBytes": 0,
+                "sharedBytes": 0,
                 "top": [
                   {
+                    "actions": [],
                     "bytes": 2097152,
                     "dir": false,
+                    "exclusiveBytes": null,
                     "name": "c.bin",
-                    "path": "~/Library/Caches/org.present.app/c.bin"
+                    "path": "~/Library/Caches/org.present.app/c.bin",
+                    "what": {
+                      "content": "cache",
+                      "ifDeleted": "rebuilds",
+                      "owner": null
+                    }
                   }
-                ]
+                ],
+                "what": {
+                  "content": "cache",
+                  "ifDeleted": "rebuilds",
+                  "owner": null
+                }
               }
             ],
             "listedBytes": 918966272,
             "measuredBytes": 918966272,
             "more": 0,
+            "reconcile": null,
             "scanned": {
               "finished": "2026-10-20T12:00:00Z",
               "started": "2026-10-20T12:00:00Z"
             },
             "schema": 1,
+            "shareUncheckedBytes": 0,
             "unseen": []
           },
           "uri": "data/usage"

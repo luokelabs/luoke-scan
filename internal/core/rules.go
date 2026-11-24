@@ -40,8 +40,9 @@ func FixtureRules(l Layout, f *Fakes) []Rule {
 
 // FirstRules run before RuleOrder and LaterRules after it, in this order. Kept apart from RuleOrder so that branches
 // adding a rule there and here do not touch the same lines. First: how this Mac runs (luoke-scan#126), looked at
-// before the round's own work keeps the processor busy and warms the Mac. Later: local models' chat templates.
+// before the round's own work keeps the processor busy and warms the Mac. Later: local models' chat templates; the account of the
+// disk, which takes the home's sizes from the space rule's round.
 var (
 	FirstRules = []string{"vitals"}
-	LaterRules = []string{"model.chat-template"}
+	LaterRules = []string{"model.chat-template", "space.reconcile"}
 )

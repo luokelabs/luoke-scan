@@ -29,7 +29,7 @@ func TestRulesFilesAreRead(t *testing.T) {
 		t.Fatalf("rules/ 里的文件 %v，程序读的是 %v：多出来的没人读", names, want)
 	}
 	for name, err := range map[string]error{"caches": cachesErr, "temp-folders": tempErr, "space-tools": spaceErr,
-		"build-artifacts": artifactsErr, "settings-files": settingsErr} {
+		"build-artifacts": artifactsErr, "settings-files": settingsErr, "folders": foldersErr} {
 		if err != nil {
 			t.Errorf("%s 读不出来：%v", name, err)
 		}
@@ -74,6 +74,8 @@ func decodeRulesFile(name string, b []byte) error {
 		_, err = decodeRules[artifactsList](b)
 	case "rules/settings-files.json":
 		_, err = decodeRules[settingsList](b)
+	case "rules/folders.json":
+		_, err = decodeRules[foldersList](b)
 	default:
 		err = errors.New("没有这个文件")
 	}
@@ -138,6 +140,48 @@ func TestRulesFilesRejectWhatIsWrong(t *testing.T) {
 		{"rules/settings-files.json", "样例写到家目录外面", func(m map[string]any) {
 			sample(m, "mcp", 0)["write"] = map[string]any{"../outside.json": "{}"}
 		}},
+		{"rules/folders.json", "content 不认得", func(m map[string]any) { entry(m, "folders", 0)["content"] = "mixed" }},
+		{"rules/folders.json", "ifDeleted 不认得", func(m map[string]any) { entry(m, "folders", 0)["ifDeleted"] = "fine" }},
+		{"rules/folders.json", "owner 有大写", func(m map[string]any) { entry(m, "folders", 0)["owner"] = "User" }},
+		{"rules/folders.json", "path 重了", func(m map[string]any) { entry(m, "folders", 1)["path"] = entry(m, "folders", 0)["path"] }},
+		{"rules/folders.json", "path 是绝对路径", func(m map[string]any) { entry(m, "folders", 0)["path"] = "/Users/me/Desktop" }},
+		{"rules/folders.json", "没有 samples", func(m map[string]any) { entry(m, "folders", 0)["samples"] = []any{} }},
+		{"rules/folders.json", "样例在这一条外面", func(m map[string]any) { entry(m, "folders", 0)["samples"] = []any{"Documents/a"} }},
+		{"rules/folders.json", "样例落在更深的一条上", func(m map[string]any) {
+			for _, e := range m["folders"].([]any) {
+				if e := e.(map[string]any); e["path"] == "Pictures" {
+					e["samples"] = []any{"Pictures/Photos Library.photoslibrary/a"}
+				}
+			}
+		}},
+		{"rules/folders.json", "没有 why", func(m map[string]any) { delete(entry(m, "folders", 0), "why") }},
+		{"rules/folders.json", "处理办法的 by 不认得", func(m map[string]any) { entry(m, "actions", 0)["by"] = "terminal" }},
+		{"rules/folders.json", "处理办法叫 clean", func(m map[string]any) { entry(m, "actions", 0)["id"] = "clean" }},
+		{"rules/folders.json", "处理办法的 id 重了", func(m map[string]any) { entry(m, "actions", 1)["id"] = entry(m, "actions", 0)["id"] }},
+		{"rules/folders.json", "访达里的办法带了命令", func(m map[string]any) { entry(m, "actions", 0)["command"] = "rm -rf x" }},
+		{"rules/folders.json", "系统设置的页不认得", func(m map[string]any) {
+			for _, a := range m["actions"].([]any) {
+				if a := a.(map[string]any); a["by"] == "system-settings" {
+					a["pane"] = "general"
+				}
+			}
+		}},
+		{"rules/folders.json", "命令行的办法没有命令", func(m map[string]any) {
+			for _, a := range m["actions"].([]any) {
+				if a := a.(map[string]any); a["by"] == "command" {
+					delete(a, "command")
+				}
+			}
+		}},
+		{"rules/folders.json", "应用的 bundleId 不像样", func(m map[string]any) {
+			for _, a := range m["actions"].([]any) {
+				if a := a.(map[string]any); a["by"] == "app" {
+					a["bundleId"] = "Messages"
+				}
+			}
+		}},
+		{"rules/folders.json", "文件夹用了清单里没有的办法", func(m map[string]any) { entry(m, "folders", 0)["actions"] = []any{"shred"} }},
+		{"rules/folders.json", "文件夹的办法写了两遍", func(m map[string]any) { entry(m, "folders", 0)["actions"] = []any{"review", "review"} }},
 	}
 	read := func(file string) map[string]any {
 		b, err := assets.FS.ReadFile(file)
@@ -544,5 +588,87 @@ func TestRulesSamplesSettingsFiles(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+// What a folder is: the deepest entry it is or is inside, by whole path parts; nothing for what no entry covers.
+func TestWhatFolder(t *testing.T) {
+	for rel, want := range map[string]FolderWhat{
+		"Library/Messages":                          {"Library/Messages", "messages", ContentUser, DeletedSynced},
+		"Library/Messages/Attachments/0a":           {"Library/Messages", "messages", ContentUser, DeletedSynced},
+		"Pictures/Photos Library.photoslibrary":     {"Pictures/Photos Library.photoslibrary", "photos", ContentUser, DeletedSynced},
+		"Pictures/旅行":                               {"Pictures", "user", ContentUser, DeletedLost},
+		".cache/huggingface/hub":                    {".cache/huggingface", "huggingface", ContentDownload, DeletedRedownload},
+		".cache/pip":                                {".cache", "", ContentCache, DeletedRebuilds},
+		"Library/Developer/Xcode/DerivedData/App":   {"Library/Developer/Xcode/DerivedData", "xcode", ContentCache, DeletedRebuilds},
+		"Library/Application Support/MobileSync":    {"Library/Application Support/MobileSync", "device-backups", ContentUser, DeletedLost},
+		"Library/Containers/com.docker.docker/Data": {"Library/Containers/com.docker.docker", "docker", ContentAppData, DeletedLost},
+	} {
+		if got, ok := WhatFolder(rel); !ok || got != want {
+			t.Errorf("%s：%+v %v，该是 %+v", rel, got, ok, want)
+		}
+	}
+	for _, rel := range []string{"Library/Messages2", "Library/Developer/Xcode", "Library/Application Support", "Projects", ".ollama",
+		"Library", "DesktopX", ""} {
+		if got, ok := WhatFolder(rel); ok {
+			t.Errorf("%s：不该有，得到 %+v", rel, got)
+		}
+	}
+}
+
+// What can be done about a folder: the actions of the deepest entry it is or is inside, in the entry's order, each
+// with the fields of its place; none where the entry lists none, and none without an entry.
+func TestFolderActions(t *testing.T) {
+	ids := func(rel string) string {
+		var out []string
+		for _, a := range FolderActions(rel) {
+			out = append(out, a.ID)
+		}
+		return strings.Join(out, " ")
+	}
+	for rel, want := range map[string]string{
+		"Library/Messages/Attachments/0a":      "storage-settings messages-keep",
+		"Downloads":                            "review",
+		"Library/Mobile Documents/x":           "remove-download icloud-optimize",
+		"Library/Containers/com.docker.docker": "docker-prune",
+		"Library/Caches/pip":                   "",
+		"Library/Developer/Xcode/DerivedData":  "",
+		"Projects":                             "",
+		".ollama":                              "",
+	} {
+		if got := ids(rel); got != want {
+			t.Errorf("%s: %q, want %q", rel, got, want)
+		}
+	}
+	got := FolderActions("Library/Messages")
+	if len(got) != 2 || got[0] != (FolderAction{ID: "storage-settings", By: ActionBySettings, Pane: "storage"}) ||
+		got[1] != (FolderAction{ID: "messages-keep", By: ActionByApp, App: "信息", BundleID: "com.apple.MobileSMS"}) {
+		t.Errorf("Library/Messages: %+v", got)
+	}
+	// the entries strictly inside a folder, each action once, in the list's order
+	below := func(rel string) string {
+		var out []string
+		for _, a := range FolderActionsBelow(rel) {
+			out = append(out, a.ID)
+		}
+		return strings.Join(out, " ")
+	}
+	for rel, want := range map[string]string{
+		".ollama":                         "ollama-rm",
+		".lmstudio":                       "lm-studio-models",
+		"Library/Developer/CoreSimulator": "xcode-simulators",
+		"Library/Developer/Xcode":         "xcode-archives",
+		"Library/Developer":               "xcode-archives xcode-simulators",
+		".ollama/models":                  "", // itself, not below
+		"Library/Containers":              "docker-prune",
+		"Projects":                        "",
+		".oll":                            "", // a whole part of the path, not its beginning
+	} {
+		if got := below(rel); got != want {
+			t.Errorf("below %s: %q, want %q", rel, got, want)
+		}
+	}
+	if a := FolderActions(".ollama/models/blobs"); len(a) != 1 || a[0] != (FolderAction{ID: "ollama-rm", By: ActionByCommand, Command: "ollama rm <model>"}) {
+		t.Errorf(".ollama/models: %+v", a)
 	}
 }

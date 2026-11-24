@@ -33,6 +33,7 @@
                 "finding": "stale.large-file/000000000012",
                 "group": "large-file",
                 "key": "i5",
+                "modelNotes": [],
                 "options": [
                   "trash",
                   "keep",

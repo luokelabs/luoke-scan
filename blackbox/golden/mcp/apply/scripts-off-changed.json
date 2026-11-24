@@ -24,18 +24,27 @@
           {
             "category": "posture",
             "evidence": {
+              "allow": "npm rebuild <package> --ignore-scripts=false",
               "append": "ignore-scripts=true",
-              "how": "点「关闭自动运行」会在 ~/.npmrc 末尾加一行 ignore-scripts=true；原来那份移到废纸篓，能放回。以后有包真要跑脚本，单独放行：npm rebuild <包名> --ignore-scripts=false。这一行也会让项目自己的 prepare 和 pre、post 脚本不跑（比如 husky 装 git 钩子），要跑时用 npm run <脚本名>。升到 npm 12 以后默认就不跑依赖的安装脚本，也能设新版本晚几天再装（min-release-age）。",
+              "config": "~/.npmrc",
+              "config_exists": "1",
+              "cost": "own-scripts-off",
+              "fixed_in": "npm 12",
+              "line": "ignore-scripts=true",
+              "name": "npm",
+              "reason": "default-on",
+              "risk": "third-party-code-at-install",
               "tool": "npm",
               "used": "~/.npmrc",
-              "why": "装着的 npm 11.6.2（$FIXTURE/usr-local/lib/node_modules/npm）默认会跑依赖的安装脚本，~/.npmrc 里没有关掉"
+              "version": "11.6.2",
+              "where": "$FIXTURE/usr-local/lib/node_modules/npm"
             },
             "key": "npm",
-            "path": "~/.npmrc",
+            "path": "",
             "rule": "pkg.install-scripts",
-            "severity": "medium",
-            "title": "npm 允许依赖在安装时跑脚本",
-            "verdict": "confirm"
+            "severity": "low",
+            "title": "npm runs the install scripts that packages bring with them",
+            "verdict": "info"
           }
         ],
         "finishedAt": "2026-10-20T12:00:00Z",
@@ -76,79 +85,7 @@
             {
               "mimeType": "application/json",
               "text": {
-                "items": [
-                  {
-                    "card": [
-                      {
-                        "createSurface": {
-                          "catalogId": "ai.luoke/a2ui/agent/1",
-                          "surfaceId": "round-000000000001"
-                        },
-                        "version": "v0.9"
-                      },
-                      {
-                        "updateComponents": {
-                          "components": [
-                            {
-                              "children": [
-                                "h1",
-                                "t2"
-                              ],
-                              "component": "Column",
-                              "id": "root"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "h1",
-                              "text": "1 项等你处理",
-                              "variant": "h4"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t2",
-                              "text": "另外 1 项在「螺壳扫描」里等你看。",
-                              "variant": "caption"
-                            }
-                          ],
-                          "surfaceId": "round-000000000001"
-                        },
-                        "version": "v0.9"
-                      }
-                    ],
-                    "created": "2026-10-20T12:00:00Z",
-                    "data": {
-                      "cleans": [],
-                      "decide": {
-                        "bytes": 0,
-                        "caches": 0,
-                        "cachesBytes": 0,
-                        "cleaned": 0,
-                        "freed": 0,
-                        "offerAuto": false,
-                        "plan": null,
-                        "rest": 1,
-                        "skipped": {
-                          "fda": 0,
-                          "other": 0,
-                          "virusDb": 0
-                        },
-                        "toLook": 1,
-                        "trash": 0
-                      },
-                      "failed": [],
-                      "moreCleans": 0,
-                      "type": "round"
-                    },
-                    "deadline": null,
-                    "expires": "2026-10-23T12:00:00Z",
-                    "id": "round/2026-10-20T12:00:00Z",
-                    "kind": "findings",
-                    "summary": "另外 1 项在「螺壳扫描」里等你看。",
-                    "title": "1 项等你处理",
-                    "urgency": "low",
-                    "why_now": "扫描刚查完一轮"
-                  }
-                ]
+                "items": []
               },
               "uri": "luoke://luoke-scan/outbox"
             }
@@ -283,7 +220,495 @@
                       {
                         "component": "Text",
                         "id": "t13",
-                        "text": "1 项",
+                        "text": "0 项",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t12",
+                          "t13"
+                        ],
+                        "component": "Column",
+                        "id": "s11"
+                      },
+                      {
+                        "children": [
+                          "s5",
+                          "s8",
+                          "s11"
+                        ],
+                        "component": "Row",
+                        "id": "r14",
+                        "justify": "spaceEvenly"
+                      },
+                      {
+                        "children": [
+                          "r14"
+                        ],
+                        "component": "Column",
+                        "id": "aside1",
+                        "placement": "aside"
+                      },
+                      {
+                        "component": "Divider",
+                        "id": "d15"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t16",
+                        "text": "可以清掉 1",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "ChoicePicker",
+                        "id": "c-i0",
+                        "label": "npm 装软件时会自动运行里面的程序",
+                        "options": [
+                          {
+                            "label": "关闭自动运行",
+                            "value": "scripts-off"
+                          },
+                          {
+                            "label": "先不动",
+                            "value": "keep"
+                          },
+                          {
+                            "label": "以后别提",
+                            "value": "ignore"
+                          }
+                        ],
+                        "value": {
+                          "path": "/choices/i0"
+                        }
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t17",
+                        "text": "遇到恶意软件，装的时候就会中招。建议关闭，个别软件可能会装不上。",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {
+                              "choices": {
+                                "path": "/choices"
+                              },
+                              "plan_id": "p-000000000001"
+                            },
+                            "name": "scan_apply"
+                          }
+                        },
+                        "child": "b18-text",
+                        "component": "Button",
+                        "id": "b18",
+                        "variant": "primary"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b18-text",
+                        "text": "按上面的选择清理"
+                      },
+                      {
+                        "children": [
+                          "b18"
+                        ],
+                        "component": "Row",
+                        "id": "r19"
+                      },
+                      {
+                        "component": "Divider",
+                        "id": "d20"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t21",
+                        "text": "自动清理"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {
+                              "on": true
+                            },
+                            "name": "scan_autoclean"
+                          }
+                        },
+                        "child": "b22-text",
+                        "component": "Button",
+                        "id": "b22",
+                        "on": false,
+                        "variant": "switch"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b22-text",
+                        "text": "打开自动清理"
+                      },
+                      {
+                        "children": [
+                          "t21",
+                          "b22"
+                        ],
+                        "component": "Row",
+                        "id": "r23",
+                        "justify": "spaceBetween"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t24",
+                        "text": "打开后，每天那一轮不用你点就清：会重建的缓存、装好了的应用的安装包、下载文件夹里的重复文件、测试工具留下的临时文件夹。移到废纸篓的都能放回，要你定的照样先问你。",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t25",
+                        "text": "病毒库更新于 10月20日",
+                        "variant": "caption"
+                      },
+                      {
+                        "children": [
+                          "d20",
+                          "r23",
+                          "t24",
+                          "t25"
+                        ],
+                        "component": "Column",
+                        "id": "aside2",
+                        "placement": "aside"
+                      }
+                    ],
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                },
+                {
+                  "updateDataModel": {
+                    "path": "/",
+                    "surfaceId": "overview",
+                    "value": {
+                      "choices": {
+                        "i0": [
+                          "keep"
+                        ]
+                      }
+                    }
+                  },
+                  "version": "v0.9"
+                }
+              ],
+              "uri": "page/overview"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "do": "点之前 ~/.npmrc 删了重写（不是查的那一个了）"
+    },
+    {
+      "clock": "2026-10-20T12:02:00Z",
+      "exit": 0,
+      "mcp": "tools/call",
+      "params": {
+        "arguments": {
+          "choices": {
+            "i0": [
+              "scripts-off"
+            ]
+          },
+          "plan_id": "p-000000000001"
+        },
+        "name": "scan_apply"
+      },
+      "reply": {
+        "id": 3,
+        "jsonrpc": "2.0",
+        "result": {
+          "content": [
+            {
+              "text": "1 项未能更改。npm 装软件时会自动运行里面的程序：未能更改，已经换成了别的文件，重新查一下再改。",
+              "type": "text"
+            }
+          ],
+          "isError": false,
+          "resultType": "complete",
+          "structuredContent": {
+            "card": [
+              {
+                "updateComponents": {
+                  "components": [
+                    {
+                      "children": [
+                        "r97720-t1",
+                        "r97720-t2"
+                      ],
+                      "component": "Column",
+                      "id": "root"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "r97720-t1",
+                      "text": "1 项未能更改。"
+                    },
+                    {
+                      "component": "Text",
+                      "id": "r97720-t2",
+                      "text": "npm 装软件时会自动运行里面的程序：未能更改，已经换成了别的文件，重新查一下再改",
+                      "variant": "caption"
+                    }
+                  ],
+                  "surfaceId": "overview"
+                },
+                "version": "v0.9"
+              }
+            ],
+            "data": {
+              "cloned": {
+                "bytes": 0,
+                "count": 0
+              },
+              "gone": 0,
+              "ignored": 0,
+              "left": [
+                "npm 装软件时会自动运行里面的程序：未能更改，已经换成了别的文件，重新查一下再改"
+              ],
+              "links": 0,
+              "moved": {
+                "bytes": 0,
+                "count": 0
+              },
+              "partly": 0,
+              "password": false,
+              "removed": {
+                "bytes": 0,
+                "count": 0
+              },
+              "restore": null,
+              "retry": null,
+              "round": null,
+              "scriptsOff": 0,
+              "skipped": 0,
+              "trashed": false,
+              "type": "applied",
+              "unchanged": 1,
+              "unrecorded": []
+            },
+            "done": false
+          }
+        }
+      },
+      "user-action": {
+        "at": "2026-10-20T20:02:00+08:00",
+        "componentId": "b18",
+        "surfaceId": "overview"
+      }
+    },
+    {
+      "exit": 0,
+      "json": {
+        "findings": [
+          {
+            "category": "posture",
+            "evidence": {
+              "allow": "npm rebuild <package> --ignore-scripts=false",
+              "append": "ignore-scripts=true",
+              "config": "~/.npmrc",
+              "config_exists": "1",
+              "cost": "own-scripts-off",
+              "fixed_in": "npm 12",
+              "line": "ignore-scripts=true",
+              "name": "npm",
+              "reason": "default-on",
+              "risk": "third-party-code-at-install",
+              "tool": "npm",
+              "used": "~/.npmrc",
+              "version": "11.6.2",
+              "where": "$FIXTURE/usr-local/lib/node_modules/npm"
+            },
+            "key": "npm",
+            "path": "",
+            "rule": "pkg.install-scripts",
+            "severity": "low",
+            "title": "npm runs the install scripts that packages bring with them",
+            "verdict": "info"
+          }
+        ],
+        "finishedAt": "2026-10-20T12:10:00Z",
+        "rulePack": "0.1.0",
+        "schema": "luoke-scan.report/v1",
+        "skipped": [],
+        "startedAt": "2026-10-20T12:10:00Z",
+        "versions": {
+          "clamav_db_date": "2026-10-20",
+          "clamav_db_version": "27000",
+          "clamscan": "ClamAV 1.4.3/fixture",
+          "rule_pack": "0.1.0",
+          "yara": "4.5.2"
+        }
+      },
+      "run": [
+        "luoke-scan",
+        "scan",
+        "--fixture",
+        "$FIXTURE",
+        "--clock",
+        "2026-10-20T12:10:00Z",
+        "--json"
+      ]
+    },
+    {
+      "clock": "2026-10-20T12:11:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "luoke://luoke-scan/outbox"
+      },
+      "reply": {
+        "id": 4,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": {
+                "items": []
+              },
+              "uri": "luoke://luoke-scan/outbox"
+            }
+          ],
+          "resultType": "complete"
+        }
+      }
+    },
+    {
+      "clock": "2026-10-20T12:11:00Z",
+      "exit": 0,
+      "mcp": "resources/read",
+      "params": {
+        "uri": "page/overview"
+      },
+      "reply": {
+        "id": 5,
+        "jsonrpc": "2.0",
+        "result": {
+          "contents": [
+            {
+              "mimeType": "application/json",
+              "text": [
+                {
+                  "createSurface": {
+                    "catalogId": "ai.luoke/a2ui/agent/1",
+                    "surfaceId": "overview"
+                  },
+                  "version": "v0.9"
+                },
+                {
+                  "updateComponents": {
+                    "components": [
+                      {
+                        "children": [
+                          "r4",
+                          "aside1",
+                          "d15",
+                          "t16",
+                          "c-i0",
+                          "t17",
+                          "r19",
+                          "aside2"
+                        ],
+                        "component": "Column",
+                        "id": "root"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "h1",
+                        "text": "扫描",
+                        "variant": "h4"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "n2",
+                        "text": "上次查 10月20日 20:10",
+                        "variant": "caption"
+                      },
+                      {
+                        "action": {
+                          "event": {
+                            "context": {},
+                            "name": "scan_now"
+                          }
+                        },
+                        "child": "b3-text",
+                        "component": "Button",
+                        "id": "b3"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "b3-text",
+                        "text": "现在查一下"
+                      },
+                      {
+                        "children": [
+                          "h1",
+                          "n2",
+                          "b3"
+                        ],
+                        "component": "Row",
+                        "id": "r4",
+                        "justify": "spaceBetween"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t6",
+                        "text": "这周清掉",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t7",
+                        "text": "还没清过",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t6",
+                          "t7"
+                        ],
+                        "component": "Column",
+                        "id": "s5"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t9",
+                        "text": "能清出",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t10",
+                        "text": "没有",
+                        "variant": "h3"
+                      },
+                      {
+                        "children": [
+                          "t9",
+                          "t10"
+                        ],
+                        "component": "Column",
+                        "id": "s8"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t12",
+                        "text": "等你处理",
+                        "variant": "caption"
+                      },
+                      {
+                        "component": "Text",
+                        "id": "t13",
+                        "text": "0 项",
                         "variant": "h3"
                       },
                       {
@@ -468,557 +893,6 @@
       }
     },
     {
-      "do": "点之前 ~/.npmrc 删了重写（不是查的那一个了）"
-    },
-    {
-      "clock": "2026-10-20T12:02:00Z",
-      "exit": 0,
-      "mcp": "tools/call",
-      "params": {
-        "arguments": {
-          "choices": {
-            "i0": [
-              "scripts-off"
-            ]
-          },
-          "plan_id": "p-000000000002"
-        },
-        "name": "scan_apply"
-      },
-      "reply": {
-        "id": 3,
-        "jsonrpc": "2.0",
-        "result": {
-          "content": [
-            {
-              "text": "1 项未能更改。npm 允许依赖在安装时跑脚本：未能更改，已经换成了别的文件，重新查一下再改。",
-              "type": "text"
-            }
-          ],
-          "isError": false,
-          "resultType": "complete",
-          "structuredContent": {
-            "card": [
-              {
-                "updateComponents": {
-                  "components": [
-                    {
-                      "children": [
-                        "r97720-t1",
-                        "r97720-t2"
-                      ],
-                      "component": "Column",
-                      "id": "root"
-                    },
-                    {
-                      "component": "Text",
-                      "id": "r97720-t1",
-                      "text": "1 项未能更改。"
-                    },
-                    {
-                      "component": "Text",
-                      "id": "r97720-t2",
-                      "text": "npm 允许依赖在安装时跑脚本：未能更改，已经换成了别的文件，重新查一下再改",
-                      "variant": "caption"
-                    }
-                  ],
-                  "surfaceId": "overview"
-                },
-                "version": "v0.9"
-              }
-            ],
-            "data": {
-              "cloned": {
-                "bytes": 0,
-                "count": 0
-              },
-              "gone": 0,
-              "ignored": 0,
-              "left": [
-                "npm 允许依赖在安装时跑脚本：未能更改，已经换成了别的文件，重新查一下再改"
-              ],
-              "links": 0,
-              "moved": {
-                "bytes": 0,
-                "count": 0
-              },
-              "partly": 0,
-              "password": false,
-              "removed": {
-                "bytes": 0,
-                "count": 0
-              },
-              "restore": null,
-              "retry": null,
-              "round": null,
-              "scriptsOff": 0,
-              "skipped": 0,
-              "trashed": false,
-              "type": "applied",
-              "unchanged": 1,
-              "unrecorded": []
-            },
-            "done": false
-          }
-        }
-      },
-      "user-action": {
-        "at": "2026-10-20T20:02:00+08:00",
-        "componentId": "b18",
-        "surfaceId": "overview"
-      }
-    },
-    {
-      "exit": 0,
-      "json": {
-        "findings": [
-          {
-            "category": "posture",
-            "evidence": {
-              "append": "ignore-scripts=true",
-              "how": "点「关闭自动运行」会在 ~/.npmrc 末尾加一行 ignore-scripts=true；原来那份移到废纸篓，能放回。以后有包真要跑脚本，单独放行：npm rebuild <包名> --ignore-scripts=false。这一行也会让项目自己的 prepare 和 pre、post 脚本不跑（比如 husky 装 git 钩子），要跑时用 npm run <脚本名>。升到 npm 12 以后默认就不跑依赖的安装脚本，也能设新版本晚几天再装（min-release-age）。",
-              "tool": "npm",
-              "used": "~/.npmrc",
-              "why": "装着的 npm 11.6.2（$FIXTURE/usr-local/lib/node_modules/npm）默认会跑依赖的安装脚本，~/.npmrc 里没有关掉"
-            },
-            "key": "npm",
-            "path": "~/.npmrc",
-            "rule": "pkg.install-scripts",
-            "severity": "medium",
-            "title": "npm 允许依赖在安装时跑脚本",
-            "verdict": "confirm"
-          }
-        ],
-        "finishedAt": "2026-10-20T12:10:00Z",
-        "rulePack": "0.1.0",
-        "schema": "luoke-scan.report/v1",
-        "skipped": [],
-        "startedAt": "2026-10-20T12:10:00Z",
-        "versions": {
-          "clamav_db_date": "2026-10-20",
-          "clamav_db_version": "27000",
-          "clamscan": "ClamAV 1.4.3/fixture",
-          "rule_pack": "0.1.0",
-          "yara": "4.5.2"
-        }
-      },
-      "run": [
-        "luoke-scan",
-        "scan",
-        "--fixture",
-        "$FIXTURE",
-        "--clock",
-        "2026-10-20T12:10:00Z",
-        "--json"
-      ]
-    },
-    {
-      "clock": "2026-10-20T12:11:00Z",
-      "exit": 0,
-      "mcp": "resources/read",
-      "params": {
-        "uri": "luoke://luoke-scan/outbox"
-      },
-      "reply": {
-        "id": 4,
-        "jsonrpc": "2.0",
-        "result": {
-          "contents": [
-            {
-              "mimeType": "application/json",
-              "text": {
-                "items": [
-                  {
-                    "card": [
-                      {
-                        "createSurface": {
-                          "catalogId": "ai.luoke/a2ui/agent/1",
-                          "surfaceId": "round-000000000003"
-                        },
-                        "version": "v0.9"
-                      },
-                      {
-                        "updateComponents": {
-                          "components": [
-                            {
-                              "children": [
-                                "h1",
-                                "t2"
-                              ],
-                              "component": "Column",
-                              "id": "root"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "h1",
-                              "text": "1 项等你处理",
-                              "variant": "h4"
-                            },
-                            {
-                              "component": "Text",
-                              "id": "t2",
-                              "text": "另外 1 项在「螺壳扫描」里等你看。",
-                              "variant": "caption"
-                            }
-                          ],
-                          "surfaceId": "round-000000000003"
-                        },
-                        "version": "v0.9"
-                      }
-                    ],
-                    "created": "2026-10-20T12:10:00Z",
-                    "data": {
-                      "cleans": [],
-                      "decide": {
-                        "bytes": 0,
-                        "caches": 0,
-                        "cachesBytes": 0,
-                        "cleaned": 0,
-                        "freed": 0,
-                        "offerAuto": false,
-                        "plan": null,
-                        "rest": 1,
-                        "skipped": {
-                          "fda": 0,
-                          "other": 0,
-                          "virusDb": 0
-                        },
-                        "toLook": 1,
-                        "trash": 0
-                      },
-                      "failed": [],
-                      "moreCleans": 0,
-                      "type": "round"
-                    },
-                    "deadline": null,
-                    "expires": "2026-10-23T12:10:00Z",
-                    "id": "round/2026-10-20T12:10:00Z",
-                    "kind": "findings",
-                    "summary": "另外 1 项在「螺壳扫描」里等你看。",
-                    "title": "1 项等你处理",
-                    "urgency": "low",
-                    "why_now": "扫描刚查完一轮"
-                  }
-                ]
-              },
-              "uri": "luoke://luoke-scan/outbox"
-            }
-          ],
-          "resultType": "complete"
-        }
-      }
-    },
-    {
-      "clock": "2026-10-20T12:11:00Z",
-      "exit": 0,
-      "mcp": "resources/read",
-      "params": {
-        "uri": "page/overview"
-      },
-      "reply": {
-        "id": 5,
-        "jsonrpc": "2.0",
-        "result": {
-          "contents": [
-            {
-              "mimeType": "application/json",
-              "text": [
-                {
-                  "createSurface": {
-                    "catalogId": "ai.luoke/a2ui/agent/1",
-                    "surfaceId": "overview"
-                  },
-                  "version": "v0.9"
-                },
-                {
-                  "updateComponents": {
-                    "components": [
-                      {
-                        "children": [
-                          "r4",
-                          "aside1",
-                          "d15",
-                          "t16",
-                          "c-i0",
-                          "t17",
-                          "r19",
-                          "aside2"
-                        ],
-                        "component": "Column",
-                        "id": "root"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "h1",
-                        "text": "扫描",
-                        "variant": "h4"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "n2",
-                        "text": "上次查 10月20日 20:10",
-                        "variant": "caption"
-                      },
-                      {
-                        "action": {
-                          "event": {
-                            "context": {},
-                            "name": "scan_now"
-                          }
-                        },
-                        "child": "b3-text",
-                        "component": "Button",
-                        "id": "b3"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "b3-text",
-                        "text": "现在查一下"
-                      },
-                      {
-                        "children": [
-                          "h1",
-                          "n2",
-                          "b3"
-                        ],
-                        "component": "Row",
-                        "id": "r4",
-                        "justify": "spaceBetween"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t6",
-                        "text": "这周清掉",
-                        "variant": "caption"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t7",
-                        "text": "还没清过",
-                        "variant": "h3"
-                      },
-                      {
-                        "children": [
-                          "t6",
-                          "t7"
-                        ],
-                        "component": "Column",
-                        "id": "s5"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t9",
-                        "text": "能清出",
-                        "variant": "caption"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t10",
-                        "text": "没有",
-                        "variant": "h3"
-                      },
-                      {
-                        "children": [
-                          "t9",
-                          "t10"
-                        ],
-                        "component": "Column",
-                        "id": "s8"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t12",
-                        "text": "等你处理",
-                        "variant": "caption"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t13",
-                        "text": "1 项",
-                        "variant": "h3"
-                      },
-                      {
-                        "children": [
-                          "t12",
-                          "t13"
-                        ],
-                        "component": "Column",
-                        "id": "s11"
-                      },
-                      {
-                        "children": [
-                          "s5",
-                          "s8",
-                          "s11"
-                        ],
-                        "component": "Row",
-                        "id": "r14",
-                        "justify": "spaceEvenly"
-                      },
-                      {
-                        "children": [
-                          "r14"
-                        ],
-                        "component": "Column",
-                        "id": "aside1",
-                        "placement": "aside"
-                      },
-                      {
-                        "component": "Divider",
-                        "id": "d15"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t16",
-                        "text": "可以清掉 1",
-                        "variant": "caption"
-                      },
-                      {
-                        "component": "ChoicePicker",
-                        "id": "c-i0",
-                        "label": "npm 装软件时会自动运行里面的程序",
-                        "options": [
-                          {
-                            "label": "关闭自动运行",
-                            "value": "scripts-off"
-                          },
-                          {
-                            "label": "先不动",
-                            "value": "keep"
-                          },
-                          {
-                            "label": "以后别提",
-                            "value": "ignore"
-                          }
-                        ],
-                        "value": {
-                          "path": "/choices/i0"
-                        }
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t17",
-                        "text": "遇到恶意软件，装的时候就会中招。建议关闭，个别软件可能会装不上。",
-                        "variant": "caption"
-                      },
-                      {
-                        "action": {
-                          "event": {
-                            "context": {
-                              "choices": {
-                                "path": "/choices"
-                              },
-                              "plan_id": "p-000000000004"
-                            },
-                            "name": "scan_apply"
-                          }
-                        },
-                        "child": "b18-text",
-                        "component": "Button",
-                        "id": "b18",
-                        "variant": "primary"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "b18-text",
-                        "text": "按上面的选择清理"
-                      },
-                      {
-                        "children": [
-                          "b18"
-                        ],
-                        "component": "Row",
-                        "id": "r19"
-                      },
-                      {
-                        "component": "Divider",
-                        "id": "d20"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t21",
-                        "text": "自动清理"
-                      },
-                      {
-                        "action": {
-                          "event": {
-                            "context": {
-                              "on": true
-                            },
-                            "name": "scan_autoclean"
-                          }
-                        },
-                        "child": "b22-text",
-                        "component": "Button",
-                        "id": "b22",
-                        "on": false,
-                        "variant": "switch"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "b22-text",
-                        "text": "打开自动清理"
-                      },
-                      {
-                        "children": [
-                          "t21",
-                          "b22"
-                        ],
-                        "component": "Row",
-                        "id": "r23",
-                        "justify": "spaceBetween"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t24",
-                        "text": "打开后，每天那一轮不用你点就清：会重建的缓存、装好了的应用的安装包、下载文件夹里的重复文件、测试工具留下的临时文件夹。移到废纸篓的都能放回，要你定的照样先问你。",
-                        "variant": "caption"
-                      },
-                      {
-                        "component": "Text",
-                        "id": "t25",
-                        "text": "病毒库更新于 10月20日",
-                        "variant": "caption"
-                      },
-                      {
-                        "children": [
-                          "d20",
-                          "r23",
-                          "t24",
-                          "t25"
-                        ],
-                        "component": "Column",
-                        "id": "aside2",
-                        "placement": "aside"
-                      }
-                    ],
-                    "surfaceId": "overview"
-                  },
-                  "version": "v0.9"
-                },
-                {
-                  "updateDataModel": {
-                    "path": "/",
-                    "surfaceId": "overview",
-                    "value": {
-                      "choices": {
-                        "i0": [
-                          "keep"
-                        ]
-                      }
-                    }
-                  },
-                  "version": "v0.9"
-                }
-              ],
-              "uri": "page/overview"
-            }
-          ],
-          "resultType": "complete"
-        }
-      }
-    },
-    {
       "clock": "2026-10-20T12:12:00Z",
       "exit": 0,
       "mcp": "tools/call",
@@ -1029,7 +903,7 @@
               "scripts-off"
             ]
           },
-          "plan_id": "p-000000000004"
+          "plan_id": "p-000000000002"
         },
         "name": "scan_apply"
       },
@@ -1067,14 +941,14 @@
                     {
                       "component": "Text",
                       "id": "r98320-t2",
-                      "text": "npm 允许依赖在安装时跑脚本",
+                      "text": "npm 装软件时会自动运行里面的程序",
                       "variant": "caption"
                     },
                     {
                       "action": {
                         "event": {
                           "context": {
-                            "id": "p-000000000004"
+                            "id": "p-000000000002"
                           },
                           "name": "scan_restore"
                         }
@@ -1120,7 +994,7 @@
                 "bytes": 0,
                 "count": 0
               },
-              "restore": "p-000000000004",
+              "restore": "p-000000000002",
               "retry": null,
               "round": null,
               "scriptsOff": 1,
@@ -1201,7 +1075,7 @@
                       {
                         "component": "Text",
                         "id": "t3",
-                        "text": "你清的：npm 允许依赖在安装时跑脚本"
+                        "text": "你清的：npm 装软件时会自动运行里面的程序"
                       },
                       {
                         "component": "Text",
@@ -1219,7 +1093,7 @@
                         "action": {
                           "event": {
                             "context": {
-                              "id": "p-000000000004"
+                              "id": "p-000000000002"
                             },
                             "name": "scan_restore"
                           }
@@ -1259,7 +1133,7 @@
       "mcp": "tools/call",
       "params": {
         "arguments": {
-          "id": "p-000000000004"
+          "id": "p-000000000002"
         },
         "name": "scan_restore"
       },
@@ -1296,7 +1170,7 @@
                     {
                       "component": "Text",
                       "id": "r98440-t2",
-                      "text": "npm 允许依赖在安装时跑脚本：改了以后你又动过这个文件，没换掉它；原来那份放在旁边：.npmrc（放回）",
+                      "text": "npm 装软件时会自动运行里面的程序：改了以后你又动过这个文件，没换掉它；原来那份放在旁边：.npmrc（放回）",
                       "variant": "caption"
                     }
                   ],
@@ -1310,7 +1184,7 @@
               "before": 0,
               "left": 0,
               "notes": [
-                "npm 允许依赖在安装时跑脚本：改了以后你又动过这个文件，没换掉它；原来那份放在旁边：.npmrc（放回）"
+                "npm 装软件时会自动运行里面的程序：改了以后你又动过这个文件，没换掉它；原来那份放在旁边：.npmrc（放回）"
               ],
               "round": null,
               "type": "restored"

@@ -165,6 +165,8 @@ func SkillFinding(skill Skill, signals []SkillSignal, also []string) *Finding {
 	if len(also) > 0 {
 		ev["also"] = skillAlsoText(also)
 	}
+	hits, more := skillHits(ordered)
+	withHits(ev, hits, more)
 	// Keyed on the folder and its contents: a later change is a new finding, not hidden by a "以后别提" for this one.
 	return &Finding{Rule: "skill." + string(top.Kind), Category: CatSkill, Severity: severity, Verdict: Info, Path: skill.Folder,
 		Title: title, Evidence: ev, Key: skill.RealFolder + "|" + skill.Digest}

@@ -213,6 +213,9 @@ func IdentifyAnswer(raw string) (FolderAnswer, bool) {
 	return FolderAnswer{Name: aiTrimWSNL(name.Str), What: aiTrimWSNL(what.Str), Kind: kind.Str, Sure: sure.Bool}, true
 }
 
+// IdentifyNoteLead is how a folder's name from the model starts: the scan's own words.
+const IdentifyNoteLead = "本机模型认的："
+
 // IdentifyNote is the line shown next to the path; ok false unless it is a sure name, without advice on deleting, an
 // address or a command.
 func IdentifyNote(a FolderAnswer) (string, bool) {
@@ -221,7 +224,7 @@ func IdentifyNote(a FolderAnswer) (string, bool) {
 		explainCommand.has(both) || hasAddress(both) {
 		return "", false
 	}
-	note := "本机模型认的：" + aiClean(a.Name, 40)
+	note := IdentifyNoteLead + aiClean(a.Name, 40)
 	if a.What != "" {
 		note += "（" + aiClean(a.What, 60) + "）"
 	}

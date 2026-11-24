@@ -30,11 +30,12 @@
       "category",
       "history",
       "settings",
-      "usage"
+      "usage",
+      "finding"
     ],
     "listing": {
       "category": "系统",
-      "tagline": "它为这台 Mac 加护：拂去你不会想念的，无一不可复还。"
+      "tagline": "找出占地方的文件和有风险的启动项、插件，清理前先问你，移到废纸篓的都能放回"
     },
     "permissions": [
       {
@@ -172,5 +173,5 @@
   ],
   "type": "app",
   "ui_element": true,
-  "version": "0.3.44"
+  "version": "0.3.46"
 }
